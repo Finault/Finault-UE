@@ -6603,7 +6603,7 @@ class CryptoProofChain {
     const blockchainAnchor = await this.anchorToBlockchain(documentHash);
 
     return {
-      version: '3.0.0', // ULTIMATE Diamond Tier - Blockchain Anchored
+      version: '4.0.0', // ULTIMATE Diamond Tier - Blockchain Anchored
       type: 'finault_cryptographic_proof',
       generated_at: new Date().toISOString(),
 

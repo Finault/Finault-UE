@@ -681,7 +681,7 @@ export default {
       return jsonResponse({
         status: 'healthy',
         service: 'finault-gateway',
-        version: '3.0.0',
+        version: '4.0.0',
         timestamp: new Date().toISOString(),
         uptime: process.uptime?.() || 0,
         capabilities: ['attribution', 'cost_calculation', 'audit_trail', 'multi_provider', 'api_key_auth'],
