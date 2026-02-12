@@ -37,11 +37,15 @@ function fail(name, detail) {
 }
 
 async function getPool() {
+  if (!process.env.POSTGRES_PASSWORD) {
+    throw new Error('POSTGRES_PASSWORD env var is required. Set it before running smoke tests.');
+  }
+
   return new Pool({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
     user: process.env.POSTGRES_USER || 'finault',
-    password: process.env.POSTGRES_PASSWORD || 'finault_dev',
+    password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB || 'finault_agentos',
     connectionTimeoutMillis: 5000,
   });

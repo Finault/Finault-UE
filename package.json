@@ -3,6 +3,7 @@
   "version": "4.0.0",
   "description": "Finault — The Finance-Safe Layer for AI Spend. Deterministic close packs, immutable ledgers, zero-trust verification.",
   "private": true,
+  "type": "module",
   "workspaces": [
     "apps/gateway",
     "apps/close-pack",

@@ -58,11 +58,16 @@ async function checkDocker() {
 
 async function checkPostgres() {
   console.log('\n[2/6] PostgreSQL Connection');
+  if (!process.env.POSTGRES_PASSWORD) {
+    fail('PostgreSQL reachable — POSTGRES_PASSWORD env var is required');
+    return;
+  }
+
   const pool = new Pool({
     host: process.env.POSTGRES_HOST || 'localhost',
     port: parseInt(process.env.POSTGRES_PORT || '5432', 10),
     user: process.env.POSTGRES_USER || 'finault',
-    password: process.env.POSTGRES_PASSWORD || 'finault_dev',
+    password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB || 'finault_agentos',
     connectionTimeoutMillis: 5000,
   });

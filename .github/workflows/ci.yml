@@ -34,14 +34,14 @@ jobs:
       - name: Run linter
         run: npm run lint --if-present
 
-      - name: Run unit tests
-        run: npm test -- --coverage --ci
+      - name: Run vitest suite
+        run: npx vitest run --coverage
 
-      - name: Run FCS tests
-        run: npm test -- tests/fcs/ --ci
+      - name: Run FCS threshold tests
+        run: node tests/fcs/fcs-threshold.test.js
 
       - name: Run integration tests
-        run: npm test -- tests/integration/ --ci
+        run: npx vitest run --config agentos/__tests__/integration/vitest.config.js
 
       - name: Upload coverage
         uses: codecov/codecov-action@v4

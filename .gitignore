@@ -5,6 +5,7 @@ node_modules/
 # Build output
 dist/
 *.tsbuildinfo
+.next/cache/
 
 # Wrangler
 .wrangler/
@@ -14,6 +15,8 @@ dist/
 .env
 .env.local
 .env.production
+**/.env.local
+**/.env.production
 
 # OS
 .DS_Store
@@ -45,3 +48,4 @@ structural-tests.txt
 # Temporary
 *.tmp
 *.bak
+vitest.config.ts.timestamp-*

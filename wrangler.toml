@@ -36,10 +36,10 @@ id = "d13878b328ce4836a0256687146a895b"
 name = "finault-gateway-dev"
 [env.development.vars]
 ENVIRONMENT = "development"
-SUPABASE_URL = "https://bejoptgsrhmklmllkobu.supabase.co"
-SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU"
-ENABLE_DEMO_MODE = "true"
-ALLOW_QUERY_ORG_ID = "true"
+# SUPABASE_URL and SUPABASE_KEY must be set via: wrangler secret put SUPABASE_URL -e development
+# SUPABASE_KEY must be set via: wrangler secret put SUPABASE_KEY -e development
+ENABLE_DEMO_MODE = "false"
+ALLOW_QUERY_ORG_ID = "false"
 
 [[env.development.r2_buckets]]
 binding = "CLOSEPACKS"
@@ -54,3 +54,16 @@ preview_id = "00000000000000000000000000000001"
 name = "finault-gateway-staging"
 [env.staging.vars]
 ENVIRONMENT = "staging"
+ENABLE_DEMO_MODE = "false"
+ALLOW_QUERY_ORG_ID = "false"
+# Secrets set via: wrangler secret put SUPABASE_URL -e staging
+# Secrets set via: wrangler secret put SUPABASE_KEY -e staging
+
+[[env.staging.r2_buckets]]
+binding = "CLOSEPACKS"
+bucket_name = "finault-closepacks-staging"
+
+[[env.staging.kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "00000000000000000000000000000000"
+preview_id = "00000000000000000000000000000001"
