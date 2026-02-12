@@ -33,6 +33,8 @@
     "typecheck": "tsc --noEmit -p apps/close-pack/tsconfig.json && cd dashboard && npx tsc --noEmit",
     "clean": "rm -rf dist/ .wrangler/",
     "preflight": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "deploy:preflight": "node scripts/deploy-preflight.js",
+    "deploy:secrets": "bash scripts/setup-secrets.sh",
     "verifier:start": "cd apps/verifier-service && python api_server_v2.py",
     "postinstall": "npm run audit || echo 'Install complete with warnings'"
   },
