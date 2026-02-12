@@ -1,0 +1,10 @@
+{
+  "all_reconciled": true,
+  "discrepancies": [],
+  "status": "clean",
+  "details": [
+    { "provider": "OpenAI", "invoice_total": 20000, "line_item_total": 20000, "reconciled": true, "variance": 0 },
+    { "provider": "Anthropic", "invoice_total": 15000, "line_item_total": 15000, "reconciled": true, "variance": 0 },
+    { "provider": "AWS", "invoice_total": 15000, "line_item_total": 15000, "reconciled": true, "variance": 0 }
+  ]
+}

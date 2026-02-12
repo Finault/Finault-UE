@@ -1,0 +1,36 @@
+// agentos/__tests__/integration/vitest.config.js
+import { defineConfig } from "file:///sessions/festive-fervent-lamport/mnt/Finault-Enterprise-Hardening/finault-monorepo/node_modules/vitest/dist/config.js";
+var vitest_config_default = defineConfig({
+  test: {
+    environment: "node",
+    globals: true,
+    testTimeout: 3e4,
+    // 30s per test (DB operations can be slow)
+    hookTimeout: 12e4,
+    // 2min for beforeAll (schema setup + migrations)
+    bail: 1,
+    // Stop on first failure — integration failures cascade
+    reporters: ["verbose"],
+    include: [
+      "agentos/__tests__/integration/**/*.test.js"
+    ],
+    exclude: [
+      "**/node_modules/**",
+      "**/setup/**"
+    ],
+    // Run test files sequentially (they share a database)
+    fileParallelism: false,
+    // Pool settings for integration tests
+    pool: "forks",
+    poolOptions: {
+      forks: {
+        singleFork: true
+        // All tests in one process (shared DB connection)
+      }
+    }
+  }
+});
+export {
+  vitest_config_default as default
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsiYWdlbnRvcy9fX3Rlc3RzX18vaW50ZWdyYXRpb24vdml0ZXN0LmNvbmZpZy5qcyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiY29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2Rpcm5hbWUgPSBcIi9zZXNzaW9ucy9mZXN0aXZlLWZlcnZlbnQtbGFtcG9ydC9tbnQvRmluYXVsdC1FbnRlcnByaXNlLUhhcmRlbmluZy9maW5hdWx0LW1vbm9yZXBvL2FnZW50b3MvX190ZXN0c19fL2ludGVncmF0aW9uXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ZpbGVuYW1lID0gXCIvc2Vzc2lvbnMvZmVzdGl2ZS1mZXJ2ZW50LWxhbXBvcnQvbW50L0ZpbmF1bHQtRW50ZXJwcmlzZS1IYXJkZW5pbmcvZmluYXVsdC1tb25vcmVwby9hZ2VudG9zL19fdGVzdHNfXy9pbnRlZ3JhdGlvbi92aXRlc3QuY29uZmlnLmpzXCI7Y29uc3QgX192aXRlX2luamVjdGVkX29yaWdpbmFsX2ltcG9ydF9tZXRhX3VybCA9IFwiZmlsZTovLy9zZXNzaW9ucy9mZXN0aXZlLWZlcnZlbnQtbGFtcG9ydC9tbnQvRmluYXVsdC1FbnRlcnByaXNlLUhhcmRlbmluZy9maW5hdWx0LW1vbm9yZXBvL2FnZW50b3MvX190ZXN0c19fL2ludGVncmF0aW9uL3ZpdGVzdC5jb25maWcuanNcIjsvKipcbiAqIEZpbmF1bHQgSW50ZWdyYXRpb24gVGVzdCBcdTIwMTQgVml0ZXN0IENvbmZpZ3VyYXRpb25cbiAqXG4gKiBTZXBhcmF0ZSBjb25maWcgZm9yIGludGVncmF0aW9uIHRlc3RzIHRoYXQgaGl0IHJlYWwgUG9zdGdyZVNRTC5cbiAqIFJ1biB3aXRoOiBucHggdml0ZXN0IHJ1biAtLWNvbmZpZyBhZ2VudG9zL19fdGVzdHNfXy9pbnRlZ3JhdGlvbi92aXRlc3QuY29uZmlnLmpzXG4gKi9cblxuaW1wb3J0IHsgZGVmaW5lQ29uZmlnIH0gZnJvbSAndml0ZXN0L2NvbmZpZyc7XG5cbmV4cG9ydCBkZWZhdWx0IGRlZmluZUNvbmZpZyh7XG4gIHRlc3Q6IHtcbiAgICBlbnZpcm9ubWVudDogJ25vZGUnLFxuICAgIGdsb2JhbHM6IHRydWUsXG4gICAgdGVzdFRpbWVvdXQ6IDMwMDAwLCAgICAgICAvLyAzMHMgcGVyIHRlc3QgKERCIG9wZXJhdGlvbnMgY2FuIGJlIHNsb3cpXG4gICAgaG9va1RpbWVvdXQ6IDEyMDAwMCwgICAgICAvLyAybWluIGZvciBiZWZvcmVBbGwgKHNjaGVtYSBzZXR1cCArIG1pZ3JhdGlvbnMpXG4gICAgYmFpbDogMSwgICAgICAgICAgICAgICAgICAvLyBTdG9wIG9uIGZpcnN0IGZhaWx1cmUgXHUyMDE0IGludGVncmF0aW9uIGZhaWx1cmVzIGNhc2NhZGVcbiAgICByZXBvcnRlcnM6IFsndmVyYm9zZSddLFxuICAgIGluY2x1ZGU6IFtcbiAgICAgICdhZ2VudG9zL19fdGVzdHNfXy9pbnRlZ3JhdGlvbi8qKi8qLnRlc3QuanMnLFxuICAgIF0sXG4gICAgZXhjbHVkZTogW1xuICAgICAgJyoqL25vZGVfbW9kdWxlcy8qKicsXG4gICAgICAnKiovc2V0dXAvKionLFxuICAgIF0sXG4gICAgLy8gUnVuIHRlc3QgZmlsZXMgc2VxdWVudGlhbGx5ICh0aGV5IHNoYXJlIGEgZGF0YWJhc2UpXG4gICAgZmlsZVBhcmFsbGVsaXNtOiBmYWxzZSxcbiAgICAvLyBQb29sIHNldHRpbmdzIGZvciBpbnRlZ3JhdGlvbiB0ZXN0c1xuICAgIHBvb2w6ICdmb3JrcycsXG4gICAgcG9vbE9wdGlvbnM6IHtcbiAgICAgIGZvcmtzOiB7XG4gICAgICAgIHNpbmdsZUZvcms6IHRydWUsICAgICAvLyBBbGwgdGVzdHMgaW4gb25lIHByb2Nlc3MgKHNoYXJlZCBEQiBjb25uZWN0aW9uKVxuICAgICAgfSxcbiAgICB9LFxuICB9LFxufSk7XG4iXSwKICAibWFwcGluZ3MiOiAiO0FBT0EsU0FBUyxvQkFBb0I7QUFFN0IsSUFBTyx3QkFBUSxhQUFhO0FBQUEsRUFDMUIsTUFBTTtBQUFBLElBQ0osYUFBYTtBQUFBLElBQ2IsU0FBUztBQUFBLElBQ1QsYUFBYTtBQUFBO0FBQUEsSUFDYixhQUFhO0FBQUE7QUFBQSxJQUNiLE1BQU07QUFBQTtBQUFBLElBQ04sV0FBVyxDQUFDLFNBQVM7QUFBQSxJQUNyQixTQUFTO0FBQUEsTUFDUDtBQUFBLElBQ0Y7QUFBQSxJQUNBLFNBQVM7QUFBQSxNQUNQO0FBQUEsTUFDQTtBQUFBLElBQ0Y7QUFBQTtBQUFBLElBRUEsaUJBQWlCO0FBQUE7QUFBQSxJQUVqQixNQUFNO0FBQUEsSUFDTixhQUFhO0FBQUEsTUFDWCxPQUFPO0FBQUEsUUFDTCxZQUFZO0FBQUE7QUFBQSxNQUNkO0FBQUEsSUFDRjtBQUFBLEVBQ0Y7QUFDRixDQUFDOyIsCiAgIm5hbWVzIjogW10KfQo=

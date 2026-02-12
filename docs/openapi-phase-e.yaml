@@ -1,0 +1,1782 @@
+openapi: 3.1.0
+info:
+  title: Finault Phase E API
+  description: Finault Phase E API provides endpoints for drift detection, confidence scoring, blockchain anchoring, ERP posting, and health monitoring.
+  version: 1.0.0
+  contact:
+    name: Finault Support
+    url: https://finault.ai
+  license:
+    name: Apache 2.0
+
+servers:
+  - url: https://api.finault.ai
+    description: Production API server
+
+tags:
+  - name: Drift Detection
+    description: Analyze and manage unit cost drift for financial closes
+  - name: FCS
+    description: Finault Confidence Score operations
+  - name: Blockchain Anchoring
+    description: Create and verify blockchain anchors for closes
+  - name: ERP Posting
+    description: Post journal entries and manage ERP integrations
+  - name: Health Check
+    description: System health monitoring endpoints
+
+components:
+  securitySchemes:
+    ApiKey:
+      type: apiKey
+      in: header
+      name: X-Finault-Key
+      description: API key for Finault API authentication
+
+  schemas:
+    # Error Schemas
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          const: false
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          enum:
+            - E_VALIDATION
+            - E_MISSING_FIELD
+            - E_INVALID_TYPE
+            - E_INVALID_VALUE
+            - E_INVALID_FORMAT
+            - E_FIELD_TOO_LONG
+            - E_OUT_OF_RANGE
+            - E_UNSUPPORTED
+            - E_INVALID_JSON
+            - E_UNAUTHORIZED
+            - E_FORBIDDEN
+            - E_INSUFFICIENT_SCOPE
+            - E_NOT_FOUND
+            - E_CONFLICT
+            - E_ALREADY_EXISTS
+            - E_IN_PROGRESS
+            - E_INTERNAL
+            - E_SUPABASE
+            - E_SUBSYSTEM_DOWN
+          description: Error code indicating the type of error
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+        request_id:
+          type: string
+          description: Request ID for tracking
+        timestamp:
+          type: string
+          format: date-time
+          description: When the error occurred
+
+    # Drift Detection Schemas
+    DriftMetricRequest:
+      type: object
+      required:
+        - provider
+        - model_or_sku
+        - unit_cost
+      properties:
+        provider:
+          type: string
+          description: Cloud provider name (e.g., aws, gcp, azure)
+          example: aws
+        model_or_sku:
+          type: string
+          description: Model or SKU identifier
+          example: t3.medium
+        unit_cost:
+          type: number
+          format: double
+          description: Unit cost value
+          example: 0.0416
+        currency:
+          type: string
+          description: Currency code (ISO 4217)
+          example: USD
+        unit_type:
+          type: string
+          description: Type of unit (e.g., hour, GB, request)
+          example: hour
+        period_start:
+          type: string
+          format: date-time
+          description: Start of the period
+        period_end:
+          type: string
+          format: date-time
+          description: End of the period
+
+    DriftEvent:
+      type: object
+      properties:
+        metric_id:
+          type: string
+        provider:
+          type: string
+        model_or_sku:
+          type: string
+        drift_pct:
+          type: number
+          format: double
+        drift_direction:
+          type: string
+          enum: [up, down]
+        severity:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+        baseline_value:
+          type: number
+          format: double
+        current_value:
+          type: number
+          format: double
+        detected_at:
+          type: string
+          format: date-time
+
+    DriftAnalyzeSummary:
+      type: object
+      properties:
+        high:
+          type: integer
+          description: Count of HIGH severity drift events
+        medium:
+          type: integer
+          description: Count of MEDIUM severity drift events
+        low:
+          type: integer
+          description: Count of LOW severity drift events
+        max_drift_pct:
+          type: number
+          format: double
+          description: Maximum drift percentage detected
+        max_severity:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+          nullable: true
+          description: Most severe drift level detected
+        overall_severity:
+          type: string
+          description: Overall severity assessment
+
+    DriftAnalyzeResponse:
+      type: object
+      required:
+        - success
+        - close_id
+        - analyzed_at
+        - baseline_version
+        - total_metrics
+        - drift_events
+        - no_drift
+        - insufficient_history
+        - summary
+      properties:
+        success:
+          type: boolean
+          const: true
+        close_id:
+          type: string
+          description: Close identifier
+        analyzed_at:
+          type: string
+          format: date-time
+          description: When analysis was performed
+        baseline_version:
+          type: string
+          description: Version of baseline used
+        total_metrics:
+          type: integer
+          description: Total metrics analyzed
+        drift_events:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriftEvent'
+          description: Detected drift events
+        no_drift:
+          type: array
+          items:
+            type: string
+          description: Metrics with no drift
+        insufficient_history:
+          type: array
+          items:
+            type: string
+          description: Metrics with insufficient historical data
+        summary:
+          $ref: '#/components/schemas/DriftAnalyzeSummary'
+
+    Baseline:
+      type: object
+      properties:
+        baseline_id:
+          type: string
+        provider:
+          type: string
+        model_or_sku:
+          type: string
+        baseline_value:
+          type: number
+          format: double
+        currency:
+          type: string
+        version:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    BaselineListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - baselines
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        baselines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Baseline'
+
+    DriftEventListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - drift_events
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        drift_events:
+          type: array
+          items:
+            $ref: '#/components/schemas/DriftEvent'
+
+    # FCS Schemas
+    FCSComputeRequest:
+      type: object
+      properties:
+        close_id:
+          type: string
+          description: Close identifier
+        coverage_pct:
+          type: number
+          format: double
+          minimum: 0
+          maximum: 100
+          description: Coverage percentage
+        exceptions_count:
+          type: integer
+          minimum: 0
+          description: Number of exceptions
+        reconciliation_passed:
+          type: boolean
+          description: Whether reconciliation passed
+        reconciliation_partial:
+          type: boolean
+          description: Whether reconciliation is partial
+        comparability_available:
+          type: boolean
+          description: Whether comparability data is available
+        history_depth:
+          type: integer
+          description: Depth of historical data
+        drift_severity_max:
+          type: string
+          enum: [NONE, LOW, MEDIUM, HIGH]
+          description: Maximum drift severity
+        missing_providers:
+          type: array
+          items:
+            type: string
+          description: List of missing providers
+
+    FCSScore:
+      type: object
+      required:
+        - fcs_version
+        - fcs_level
+        - fcs_score
+        - reason_codes
+        - evidence
+        - computed_at
+      properties:
+        fcs_id:
+          type: string
+          description: FCS identifier
+        close_id:
+          type: string
+          description: Associated close ID
+        fcs_version:
+          type: string
+          description: Version of FCS calculation
+          example: "1.0.0"
+        fcs_level:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+          description: FCS level classification
+        fcs_score:
+          type: integer
+          minimum: 0
+          maximum: 100
+          description: FCS score (0-100)
+        reason_codes:
+          type: array
+          items:
+            type: string
+          description: Codes explaining the score
+          example: ["high_coverage", "no_drift_detected"]
+        evidence:
+          type: object
+          description: Evidence supporting the score
+          additionalProperties: true
+        computed_at:
+          type: string
+          format: date-time
+          description: When score was computed
+
+    FCSComputeResponse:
+      type: object
+      required:
+        - success
+        - fcs
+      properties:
+        success:
+          type: boolean
+          const: true
+        fcs:
+          $ref: '#/components/schemas/FCSScore'
+
+    FCSSnapshot:
+      type: object
+      properties:
+        snapshot_id:
+          type: string
+        close_id:
+          type: string
+        fcs_score:
+          $ref: '#/components/schemas/FCSScore'
+        created_at:
+          type: string
+          format: date-time
+
+    FCSSnapshotListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - snapshots
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        snapshots:
+          type: array
+          items:
+            $ref: '#/components/schemas/FCSSnapshot'
+
+    # Blockchain Anchor Schemas
+    AnchorCreateRequest:
+      type: object
+      required:
+        - close_id
+        - merkle_root
+      properties:
+        close_id:
+          type: string
+          description: Close identifier
+          example: "close_123abc"
+        merkle_root:
+          type: string
+          description: Merkle root hash (hex format)
+          example: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef"
+          pattern: '^0x[a-fA-F0-9]{64}$'
+        zip_hash:
+          type: string
+          description: ZIP file hash (hex format)
+          pattern: '^0x[a-fA-F0-9]{64}$'
+        network:
+          type: string
+          enum: [ethereum-mainnet, ethereum-sepolia, polygon]
+          description: Blockchain network
+          default: ethereum-sepolia
+
+    Anchor:
+      type: object
+      required:
+        - anchor_id
+        - close_id
+        - network
+        - tx_hash
+        - status
+        - mode
+      properties:
+        anchor_id:
+          type: string
+          description: Unique anchor identifier
+        close_id:
+          type: string
+          description: Associated close ID
+        network:
+          type: string
+          enum: [ethereum-mainnet, ethereum-sepolia, polygon]
+          description: Blockchain network
+        tx_hash:
+          type: string
+          description: Transaction hash
+        block_number:
+          type: integer
+          description: Block number when anchored
+        status:
+          type: string
+          enum: [PENDING, CONFIRMED, FAILED]
+          description: Anchor status
+        explorer_url:
+          type: string
+          format: uri
+          description: Blockchain explorer URL
+        mode:
+          type: string
+          enum: [SOFT, HARD]
+          description: Anchoring mode
+        created_at:
+          type: string
+          format: date-time
+        confirmed_at:
+          type: string
+          format: date-time
+          nullable: true
+
+    AnchorCreateResponse:
+      type: object
+      required:
+        - success
+        - anchor
+      properties:
+        success:
+          type: boolean
+          const: true
+        anchor:
+          $ref: '#/components/schemas/Anchor'
+
+    AnchorVerifyRequest:
+      type: object
+      properties:
+        tx_hash:
+          type: string
+          description: Transaction hash to verify
+        close_id:
+          type: string
+          description: Close ID to verify
+        expected_payload:
+          type: string
+          description: Expected payload data
+        network:
+          type: string
+          enum: [ethereum-mainnet, ethereum-sepolia, polygon]
+          description: Blockchain network
+
+    AnchorVerification:
+      type: object
+      properties:
+        verified:
+          type: boolean
+          description: Whether verification succeeded
+        verification_method:
+          type: string
+          description: Method used for verification
+        verified_at:
+          type: string
+          format: date-time
+        payload_match:
+          type: boolean
+          description: Whether payload matches expected
+
+    AnchorVerifyResponse:
+      type: object
+      required:
+        - success
+        - verified
+        - anchor
+        - verification
+      properties:
+        success:
+          type: boolean
+          const: true
+        verified:
+          type: boolean
+        anchor:
+          $ref: '#/components/schemas/Anchor'
+        verification:
+          $ref: '#/components/schemas/AnchorVerification'
+
+    AnchorListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - anchors
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        anchors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Anchor'
+
+    # ERP Posting Schemas
+    JournalEntry:
+      type: object
+      required:
+        - account
+        - debit
+        - credit
+      properties:
+        account:
+          type: string
+          description: Account code or identifier
+          example: "1000"
+        debit:
+          type: number
+          format: double
+          description: Debit amount
+        credit:
+          type: number
+          format: double
+          description: Credit amount
+        description:
+          type: string
+          description: Entry description
+          example: "Monthly cloud cost allocation"
+
+    ERPPostRequest:
+      type: object
+      required:
+        - close_id
+        - erp
+        - entity
+      properties:
+        close_id:
+          type: string
+          description: Close identifier
+        erp:
+          type: string
+          enum: [quickbooks, netsuite, sap, dynamics, xero, sage]
+          description: ERP system type
+        entity:
+          type: string
+          description: Entity or company identifier
+        posting_policy_id:
+          type: string
+          description: Posting policy to apply
+        journal_entries:
+          type: array
+          items:
+            $ref: '#/components/schemas/JournalEntry'
+          description: Journal entries to post
+        dry_run:
+          type: boolean
+          description: Test posting without actually posting
+          default: false
+
+    ERPPostResponse:
+      type: object
+      required:
+        - success
+        - status
+        - attempt_id
+        - idempotency_key
+        - close_id
+      properties:
+        success:
+          type: boolean
+          const: true
+        status:
+          type: string
+          enum: [POSTED, DRY_RUN, ALREADY_POSTED, IN_PROGRESS]
+          description: Posting status
+        receipt:
+          type: object
+          description: Posted receipt details
+        attempt_id:
+          type: string
+          description: Posting attempt identifier
+        idempotency_key:
+          type: string
+          description: Idempotency key for this posting
+        close_id:
+          type: string
+          description: Associated close ID
+
+    ERPReceipt:
+      type: object
+      properties:
+        receipt_id:
+          type: string
+        close_id:
+          type: string
+        erp:
+          type: string
+        entity:
+          type: string
+        status:
+          type: string
+          enum: [POSTED, PENDING, FAILED, REVERSED]
+        entries_count:
+          type: integer
+        posted_at:
+          type: string
+          format: date-time
+        total_debit:
+          type: number
+          format: double
+        total_credit:
+          type: number
+          format: double
+
+    ERPReceiptListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - receipts
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        receipts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ERPReceipt'
+
+    ERPPostingPolicy:
+      type: object
+      required:
+        - policy_id
+        - name
+        - erp
+        - entity
+      properties:
+        policy_id:
+          type: string
+        name:
+          type: string
+        erp:
+          type: string
+          enum: [quickbooks, netsuite, sap, dynamics, xero, sage]
+        entity:
+          type: string
+        default_debit_account:
+          type: string
+        default_credit_account:
+          type: string
+        account_mapping:
+          type: object
+          additionalProperties:
+            type: string
+        auto_post_enabled:
+          type: boolean
+        approval_required:
+          type: boolean
+        variance_tolerance_amount:
+          type: number
+          format: double
+        variance_tolerance_pct:
+          type: number
+          format: double
+        created_at:
+          type: string
+          format: date-time
+
+    ERPPolicyCreateRequest:
+      type: object
+      required:
+        - name
+        - erp
+        - entity
+      properties:
+        name:
+          type: string
+          description: Policy name
+        erp:
+          type: string
+          enum: [quickbooks, netsuite, sap, dynamics, xero, sage]
+          description: ERP system type
+        entity:
+          type: string
+          description: Entity or company identifier
+        default_debit_account:
+          type: string
+          description: Default debit account
+        default_credit_account:
+          type: string
+          description: Default credit account
+        account_mapping:
+          type: object
+          description: Account mapping rules
+          additionalProperties:
+            type: string
+        auto_post_enabled:
+          type: boolean
+          description: Enable automatic posting
+        approval_required:
+          type: boolean
+          description: Require approval before posting
+        variance_tolerance_amount:
+          type: number
+          format: double
+          description: Variance tolerance amount
+        variance_tolerance_pct:
+          type: number
+          format: double
+          description: Variance tolerance percentage
+
+    ERPPolicyCreateResponse:
+      type: object
+      required:
+        - success
+        - policy
+      properties:
+        success:
+          type: boolean
+          const: true
+        policy:
+          $ref: '#/components/schemas/ERPPostingPolicy'
+
+    ERPPolicyListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - policies
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        policies:
+          type: array
+          items:
+            $ref: '#/components/schemas/ERPPostingPolicy'
+
+    VarianceRecord:
+      type: object
+      properties:
+        variance_id:
+          type: string
+        close_id:
+          type: string
+        receipt_id:
+          type: string
+        finault_total:
+          type: number
+          format: double
+        erp_total:
+          type: number
+          format: double
+        variance_amount:
+          type: number
+          format: double
+        variance_pct:
+          type: number
+          format: double
+        status:
+          type: string
+          enum: [PASS, FAIL, PENDING]
+        notes:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+
+    VarianceListResponse:
+      type: object
+      required:
+        - success
+        - count
+        - variance_records
+      properties:
+        success:
+          type: boolean
+          const: true
+        count:
+          type: integer
+        variance_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/VarianceRecord'
+
+    VarianceReconcileRequest:
+      type: object
+      required:
+        - close_id
+        - receipt_id
+        - finault_totals
+        - erp_totals
+      properties:
+        close_id:
+          type: string
+          description: Close identifier
+        receipt_id:
+          type: string
+          description: Receipt identifier
+        finault_totals:
+          type: object
+          description: Finault totals for comparison
+          additionalProperties:
+            type: number
+        erp_totals:
+          type: object
+          description: ERP totals for comparison
+          additionalProperties:
+            type: number
+        tolerance_amount:
+          type: number
+          format: double
+          description: Tolerance amount for variance
+        tolerance_pct:
+          type: number
+          format: double
+          description: Tolerance percentage for variance
+
+    VarianceReconcileResponse:
+      type: object
+      required:
+        - success
+        - close_id
+        - receipt_id
+        - overall_status
+        - variance_records
+        - total_variance_amount
+        - reconciled_at
+      properties:
+        success:
+          type: boolean
+          const: true
+        close_id:
+          type: string
+        receipt_id:
+          type: string
+        overall_status:
+          type: string
+          enum: [PASS, FAIL]
+          description: Overall reconciliation status
+        variance_records:
+          type: array
+          items:
+            $ref: '#/components/schemas/VarianceRecord'
+        total_variance_amount:
+          type: number
+          format: double
+        reconciled_at:
+          type: string
+          format: date-time
+
+    # Health Check Schemas
+    SubsystemHealth:
+      type: object
+      properties:
+        name:
+          type: string
+        status:
+          type: string
+          enum: [healthy, degraded, unhealthy]
+        latency_ms:
+          type: number
+        last_check:
+          type: string
+          format: date-time
+        message:
+          type: string
+
+    HealthCheckSummary:
+      type: object
+      properties:
+        total_subsystems:
+          type: integer
+        healthy:
+          type: integer
+        unhealthy:
+          type: integer
+
+    PhaseEHealthResponse:
+      type: object
+      required:
+        - success
+        - status
+        - timestamp
+        - total_latency_ms
+        - subsystems
+        - summary
+      properties:
+        success:
+          type: boolean
+          const: true
+        status:
+          type: string
+          enum: [healthy, degraded]
+          description: Overall health status
+        timestamp:
+          type: string
+          format: date-time
+          description: When health check was performed
+        total_latency_ms:
+          type: number
+          description: Total latency for all checks
+        subsystems:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/SubsystemHealth'
+          description: Individual subsystem health status
+        summary:
+          $ref: '#/components/schemas/HealthCheckSummary'
+
+paths:
+  # Drift Detection Endpoints
+  /v1/drift/analyze:
+    post:
+      tags:
+        - Drift Detection
+      summary: Analyze unit cost drift for a close
+      description: Analyzes metrics for cost drift by comparing against historical baselines
+      operationId: analyzeDrift
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - close_id
+                - metrics
+              properties:
+                close_id:
+                  type: string
+                  description: Close identifier
+                  example: "close_789xyz"
+                metrics:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/DriftMetricRequest'
+                  description: Metrics to analyze for drift
+                  minItems: 1
+      responses:
+        '200':
+          description: Drift analysis completed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriftAnalyzeResponse'
+              examples:
+                success:
+                  summary: Successful drift analysis
+                  value:
+                    success: true
+                    close_id: "close_789xyz"
+                    analyzed_at: "2024-02-06T10:30:00Z"
+                    baseline_version: "1.2.3"
+                    total_metrics: 3
+                    drift_events:
+                      - metric_id: "metric_001"
+                        provider: "aws"
+                        model_or_sku: "t3.medium"
+                        drift_pct: 12.5
+                        drift_direction: "up"
+                        severity: "MEDIUM"
+                        baseline_value: 0.0416
+                        current_value: 0.0468
+                        detected_at: "2024-02-06T10:25:00Z"
+                    no_drift:
+                      - "metric_002"
+                      - "metric_003"
+                    insufficient_history: []
+                    summary:
+                      high: 0
+                      medium: 1
+                      low: 0
+                      max_drift_pct: 12.5
+                      max_severity: "MEDIUM"
+                      overall_severity: "MEDIUM"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/drift/baselines:
+    get:
+      tags:
+        - Drift Detection
+      summary: List baselines
+      description: Retrieve baselines for drift detection
+      operationId: listBaselines
+      security:
+        - ApiKey: []
+      parameters:
+        - name: provider
+          in: query
+          schema:
+            type: string
+          description: Filter by provider
+        - name: model
+          in: query
+          schema:
+            type: string
+          description: Filter by model or SKU
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 50
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Successfully retrieved baselines
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BaselineListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/drift/events:
+    get:
+      tags:
+        - Drift Detection
+      summary: List drift events
+      description: Retrieve recorded drift events
+      operationId: listDriftEvents
+      security:
+        - ApiKey: []
+      parameters:
+        - name: close_id
+          in: query
+          schema:
+            type: string
+          description: Filter by close ID
+        - name: severity
+          in: query
+          schema:
+            type: string
+            enum: [HIGH, MEDIUM, LOW]
+          description: Filter by severity level
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Successfully retrieved drift events
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DriftEventListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # FCS Endpoints
+  /v1/fcs/compute:
+    post:
+      tags:
+        - FCS
+      summary: Compute Finault Confidence Score
+      description: Calculate the Finault Confidence Score based on provided metrics
+      operationId: computeFCS
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FCSComputeRequest'
+      responses:
+        '200':
+          description: FCS computed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FCSComputeResponse'
+              examples:
+                highConfidence:
+                  summary: High confidence score
+                  value:
+                    success: true
+                    fcs:
+                      fcs_id: "fcs_abc123"
+                      close_id: "close_789xyz"
+                      fcs_version: "1.0.0"
+                      fcs_level: "HIGH"
+                      fcs_score: 92
+                      reason_codes: ["high_coverage", "no_drift_detected", "reconciliation_passed"]
+                      evidence:
+                        coverage_pct: 98.5
+                        exceptions_count: 1
+                        reconciliation_passed: true
+                        drift_severity_max: "LOW"
+                      computed_at: "2024-02-06T10:35:00Z"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/fcs/snapshots:
+    get:
+      tags:
+        - FCS
+      summary: List FCS snapshots
+      description: Retrieve historical FCS snapshots
+      operationId: listFCSSnapshots
+      security:
+        - ApiKey: []
+      parameters:
+        - name: close_id
+          in: query
+          schema:
+            type: string
+          description: Filter by close ID
+        - name: level
+          in: query
+          schema:
+            type: string
+            enum: [HIGH, MEDIUM, LOW]
+          description: Filter by FCS level
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Successfully retrieved FCS snapshots
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FCSSnapshotListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Blockchain Anchoring Endpoints
+  /v1/anchor/create:
+    post:
+      tags:
+        - Blockchain Anchoring
+      summary: Create blockchain anchor
+      description: Create a new blockchain anchor for a close
+      operationId: createAnchor
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnchorCreateRequest'
+      responses:
+        '200':
+          description: Anchor created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnchorCreateResponse'
+              examples:
+                success:
+                  summary: Successful anchor creation
+                  value:
+                    success: true
+                    anchor:
+                      anchor_id: "anchor_def456"
+                      close_id: "close_789xyz"
+                      network: "ethereum-sepolia"
+                      tx_hash: "0xabcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab"
+                      block_number: 5123456
+                      status: "CONFIRMED"
+                      explorer_url: "https://sepolia.etherscan.io/tx/0xabcd1234567890abcdef1234567890abcdef1234567890abcdef1234567890ab"
+                      mode: "SOFT"
+                      created_at: "2024-02-06T10:40:00Z"
+                      confirmed_at: "2024-02-06T10:41:30Z"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - anchor already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/anchor/verify:
+    post:
+      tags:
+        - Blockchain Anchoring
+      summary: Verify blockchain anchor
+      description: Verify an existing blockchain anchor
+      operationId: verifyAnchor
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnchorVerifyRequest'
+      responses:
+        '200':
+          description: Anchor verified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnchorVerifyResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Anchor not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/anchor/status:
+    get:
+      tags:
+        - Blockchain Anchoring
+      summary: List anchors
+      description: Retrieve blockchain anchors with optional filtering
+      operationId: listAnchors
+      security:
+        - ApiKey: []
+      parameters:
+        - name: close_id
+          in: query
+          schema:
+            type: string
+          description: Filter by close ID
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PENDING, CONFIRMED, FAILED]
+          description: Filter by anchor status
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Successfully retrieved anchors
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnchorListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # ERP Posting Endpoints
+  /v1/erp/post:
+    post:
+      tags:
+        - ERP Posting
+      summary: Post journal entries to ERP
+      description: Post journal entries to an integrated ERP system. Requires `erp:write` scope for non-dry-run operations.
+      operationId: postToERP
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ERPPostRequest'
+      responses:
+        '200':
+          description: Journal entries posted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERPPostResponse'
+              examples:
+                posted:
+                  summary: Entries successfully posted
+                  value:
+                    success: true
+                    status: "POSTED"
+                    attempt_id: "attempt_123abc"
+                    idempotency_key: "key_456def"
+                    close_id: "close_789xyz"
+                dryRun:
+                  summary: Dry run test successful
+                  value:
+                    success: true
+                    status: "DRY_RUN"
+                    attempt_id: "attempt_789xyz"
+                    idempotency_key: "key_012jkl"
+                    close_id: "close_789xyz"
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient scope for operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Conflict - entry already posted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/erp/receipts:
+    get:
+      tags:
+        - ERP Posting
+      summary: List ERP receipts
+      description: Retrieve ERP posting receipts
+      operationId: listERPReceipts
+      security:
+        - ApiKey: []
+      parameters:
+        - name: close_id
+          in: query
+          schema:
+            type: string
+          description: Filter by close ID
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Successfully retrieved receipts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERPReceiptListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/erp/policies:
+    get:
+      tags:
+        - ERP Posting
+      summary: List ERP posting policies
+      description: Retrieve ERP posting policies
+      operationId: listERPPolicies
+      security:
+        - ApiKey: []
+      parameters:
+        - name: erp
+          in: query
+          schema:
+            type: string
+            enum: [quickbooks, netsuite, sap, dynamics, xero, sage]
+          description: Filter by ERP type
+        - name: entity
+          in: query
+          schema:
+            type: string
+          description: Filter by entity
+      responses:
+        '200':
+          description: Successfully retrieved policies
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERPPolicyListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - ERP Posting
+      summary: Create ERP posting policy
+      description: Create a new ERP posting policy. Requires `erp:admin` scope.
+      operationId: createERPPolicy
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ERPPolicyCreateRequest'
+      responses:
+        '201':
+          description: Policy created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERPPolicyCreateResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Insufficient scope for operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/erp/variance:
+    get:
+      tags:
+        - ERP Posting
+      summary: List variance records
+      description: Retrieve variance records between Finault and ERP
+      operationId: listVarianceRecords
+      security:
+        - ApiKey: []
+      parameters:
+        - name: close_id
+          in: query
+          schema:
+            type: string
+          description: Filter by close ID
+        - name: receipt_id
+          in: query
+          schema:
+            type: string
+          description: Filter by receipt ID
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [PASS, FAIL, PENDING]
+          description: Filter by status
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 50
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Successfully retrieved variance records
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VarianceListResponse'
+        '400':
+          description: Invalid query parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - ERP Posting
+      summary: Reconcile variance
+      description: Perform variance reconciliation between Finault and ERP totals
+      operationId: reconcileVariance
+      security:
+        - ApiKey: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VarianceReconcileRequest'
+      responses:
+        '200':
+          description: Variance reconciliation completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VarianceReconcileResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Health Check Endpoint
+  /v1/health/phase-e:
+    get:
+      tags:
+        - Health Check
+      summary: Deep health check for Phase E
+      description: Performs comprehensive health checks on all Phase E subsystems
+      operationId: healthCheckPhaseE
+      security:
+        - ApiKey: []
+      responses:
+        '200':
+          description: Health check completed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhaseEHealthResponse'
+              examples:
+                healthy:
+                  summary: All subsystems healthy
+                  value:
+                    success: true
+                    status: "healthy"
+                    timestamp: "2024-02-06T10:50:00Z"
+                    total_latency_ms: 245
+                    subsystems:
+                      drift_detection:
+                        name: Drift Detection Service
+                        status: healthy
+                        latency_ms: 45
+                        last_check: "2024-02-06T10:50:00Z"
+                      fcs:
+                        name: FCS Service
+                        status: healthy
+                        latency_ms: 32
+                        last_check: "2024-02-06T10:50:00Z"
+                      blockchain:
+                        name: Blockchain Service
+                        status: healthy
+                        latency_ms: 78
+                        last_check: "2024-02-06T10:50:00Z"
+                      erp:
+                        name: ERP Integration Service
+                        status: healthy
+                        latency_ms: 90
+                        last_check: "2024-02-06T10:50:00Z"
+                    summary:
+                      total_subsystems: 4
+                      healthy: 4
+                      unhealthy: 0
+                degraded:
+                  summary: Some subsystems degraded
+                  value:
+                    success: true
+                    status: "degraded"
+                    timestamp: "2024-02-06T10:50:00Z"
+                    total_latency_ms: 512
+                    subsystems:
+                      drift_detection:
+                        name: Drift Detection Service
+                        status: healthy
+                        latency_ms: 45
+                        last_check: "2024-02-06T10:50:00Z"
+                      fcs:
+                        name: FCS Service
+                        status: degraded
+                        latency_ms: 250
+                        last_check: "2024-02-06T10:50:00Z"
+                        message: "Elevated response times"
+                      blockchain:
+                        name: Blockchain Service
+                        status: healthy
+                        latency_ms: 78
+                        last_check: "2024-02-06T10:50:00Z"
+                      erp:
+                        name: ERP Integration Service
+                        status: healthy
+                        latency_ms: 90
+                        last_check: "2024-02-06T10:50:00Z"
+                    summary:
+                      total_subsystems: 4
+                      healthy: 3
+                      unhealthy: 0
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'

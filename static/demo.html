@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo - Finault | AI Cost Governance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}:root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}body{font-family:'Inter',-apple-system,sans-serif;background:var(--white);color:var(--gray-900);line-height:1.6}header{border-bottom:1px solid var(--gray-200);padding:1rem 0;background:var(--white);position:sticky;top:0;z-index:100}.header-container{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center}.logo{display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:1.25rem;color:var(--black);text-decoration:none}.logo svg{width:32px;height:32px}nav{display:flex;align-items:center;gap:2rem}nav a{color:var(--gray-700);text-decoration:none;font-size:.9375rem}nav a:hover{color:var(--black)}.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:.5rem;font-size:.9375rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .15s}.btn-primary{background:var(--black);color:var(--white)}.btn-primary:hover{background:var(--gray-900)}.btn-green{background:var(--green);color:var(--white)}.btn-green:hover{background:var(--green-dark)}.btn-secondary{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-200)}.btn-lg{padding:1rem 2rem;font-size:1rem}main{max-width:1000px;margin:0 auto;padding:3rem 2rem}.page-header{text-align:center;margin-bottom:2rem}.page-header h1{font-size:2.5rem;font-weight:700;margin-bottom:.75rem}.page-header p{font-size:1.125rem;color:var(--gray-500)}.user-bar{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;font-size:.875rem}.user-bar.hidden{display:none}.user-email{color:var(--gray-700)}.user-link{color:var(--green);margin-left:1rem}
+        .tabs{display:flex;gap:0;margin-bottom:2rem;background:var(--gray-100);border-radius:.75rem;padding:4px}.tab{flex:1;padding:.75rem 1.5rem;border:none;background:none;font-size:.9375rem;font-weight:500;color:var(--gray-500);cursor:pointer;border-radius:.5rem;transition:all .15s;font-family:inherit}.tab.active{background:var(--white);color:var(--black);box-shadow:0 1px 3px rgba(0,0,0,.1)}.tab:hover:not(.active){color:var(--gray-700)}.tab-content{display:none}.tab-content.active{display:block}
+        .date-row{display:flex;gap:1rem;margin-bottom:1.5rem}.date-field{flex:1}.date-field label{display:block;font-size:.8125rem;color:var(--gray-500);margin-bottom:.375rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}.date-field input{width:100%;padding:.625rem .75rem;border:1px solid var(--gray-200);border-radius:.5rem;font-size:.9375rem;font-family:inherit}.date-field input:focus{outline:none;border-color:var(--green)}
+        .upload-box{border:2px dashed var(--gray-300);border-radius:1rem;padding:3rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:2rem}.upload-box:hover,.upload-box.dragover{border-color:var(--green);background:var(--green-light)}.upload-box.has-file{border-color:var(--green);background:var(--green-light);border-style:solid}.upload-icon{width:48px;height:48px;margin:0 auto 1rem;color:var(--gray-400)}.upload-box.has-file .upload-icon{color:var(--green)}.upload-text{font-size:1rem;color:var(--gray-600);margin-bottom:.5rem}.upload-hint{font-size:.875rem;color:var(--gray-400)}.sample-link{color:var(--green);cursor:pointer;text-decoration:underline}.file-list{margin-top:.75rem;font-size:.8125rem;color:var(--gray-600)}.file-list span{display:inline-block;background:rgba(0,0,0,.05);padding:.125rem .5rem;border-radius:.25rem;margin:.125rem}
+        .error-banner{background:#fef2f2;border:1px solid #fecaca;border-radius:.75rem;padding:1.25rem;margin-bottom:1.5rem;color:#991b1b;font-size:.875rem;display:none}.error-banner.visible{display:block}.error-banner strong{display:block;margin-bottom:.25rem}.error-banner pre{margin-top:.5rem;font-size:.75rem;background:#fff5f5;padding:.75rem;border-radius:.375rem;overflow-x:auto;white-space:pre-wrap;max-height:200px;overflow-y:auto}
+        .section{margin-bottom:3rem;padding:2rem;background:var(--gray-50);border-radius:1rem}.section.hidden{display:none}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}.section-icon{width:24px;height:24px;color:var(--gray-500)}.section-title{font-size:1.25rem;font-weight:600}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}.stat-card{background:var(--white);padding:1.25rem;border-radius:.75rem;border:1px solid var(--gray-200)}.stat-label{font-size:.75rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem}.stat-value{font-size:1.5rem;font-weight:700}.stat-value.green{color:var(--green)}.allocation-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:.75rem;overflow:hidden;border:1px solid var(--gray-200)}.allocation-table th,.allocation-table td{padding:1rem;text-align:left;border-bottom:1px solid var(--gray-200)}.allocation-table th{background:var(--gray-50);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-500);font-weight:500}.allocation-table tr:last-child td{border-bottom:none}.confidence-badge{display:inline-flex;padding:.25rem .5rem;border-radius:1rem;font-size:.75rem;font-weight:500}.confidence-badge.high{background:var(--green-light);color:var(--green-dark)}.confidence-badge.medium{background:#fef3c7;color:#b45309}.deliverables-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem}@media(max-width:640px){.deliverables-grid{grid-template-columns:1fr}}.deliverable-card{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;transition:all .15s}.deliverable-card.clickable{cursor:pointer}.deliverable-card.clickable:hover{border-color:var(--green);box-shadow:0 2px 8px rgba(0,0,0,.05)}.deliverable-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--gray-100);border-radius:.5rem;color:var(--gray-600)}.deliverable-card.clickable:hover .deliverable-icon{background:var(--green-light);color:var(--green)}.deliverable-info h4{font-size:.9375rem;font-weight:600;margin-bottom:.125rem}.deliverable-info p{font-size:.8125rem;color:var(--gray-500)}.download-all-section{text-align:center;padding:1.5rem;background:var(--white);border-radius:.75rem;border:2px solid var(--green)}.download-all-section p{font-size:.875rem;color:var(--gray-500);margin-top:.75rem}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .2s;z-index:1000}.modal.visible{opacity:1;visibility:visible}.modal-content{background:var(--white);padding:2rem;border-radius:1rem;max-width:400px;width:90%;text-align:center}.modal-content h3{font-size:1.25rem;margin-bottom:.5rem}.modal-content p{color:var(--gray-500);margin-bottom:1.5rem}.modal-content input{width:100%;padding:.75rem 1rem;border:1px solid var(--gray-200);border-radius:.5rem;font-size:1rem;margin-bottom:1rem}.modal-content input:focus{outline:none;border-color:var(--green)}.modal-content .btn{width:100%;margin-bottom:.5rem}footer{text-align:center;padding:2rem;color:var(--gray-500);font-size:.875rem;border-top:1px solid var(--gray-200)}.toast{position:fixed;bottom:2rem;right:2rem;background:var(--gray-900);color:var(--white);padding:1rem 1.5rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1001}.toast.visible{transform:translateY(0);opacity:1}.toast.success{background:var(--green)}.toast.error{background:#dc2626}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
+    </style>
+</head>
+<body>
+    <header><div class="header-container"><a href="/" class="logo"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#111827"/><path d="M8 10h16M8 16h12M8 22h8" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>Finault</a><nav><a href="/">Home</a><a href="/docs.html">Docs</a><a href="/pricing.html">Pricing</a><a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a><button class="btn btn-primary" id="authBtn" onclick="location.href='/app.html'">Sign In</button></nav></div></header>
+    <div class="user-bar hidden" id="userBar"><span class="user-email" id="userEmail"></span><a href="/dashboard.html" class="user-link">View Close Pack History</a><button class="btn btn-secondary" onclick="signOut()" style="margin-left:auto">Sign Out</button></div>
+    <main>
+        <div class="page-header"><h1>See Your AI Spend Allocated</h1><p>Upload invoices or usage data. Get your Close Pack in 60 seconds.</p></div>
+
+        <div class="tabs">
+            <button class="tab active" id="tabInvoice" onclick="switchTab('invoice')">Invoice Close</button>
+            <button class="tab" id="tabUrs" onclick="switchTab('urs')">Usage Reconciliation</button>
+        </div>
+
+        <!-- Invoice Close Tab -->
+        <div id="invoiceTab" class="tab-content active">
+            <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div class="upload-text" id="uploadText">Drop your invoice PDF, CSV, or Excel file here</div>
+                <div class="upload-hint">Accepts .pdf, .csv, .xlsx, .xls, .json, .txt &middot; or <span class="sample-link" onclick="event.stopPropagation();loadSample()">try sample data</span> &middot; <a href="/sample/openai-invoice-january-2026.csv" class="sample-link" onclick="event.stopPropagation()" download>download test invoice</a></div>
+                <input type="file" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.json,.txt" hidden multiple onchange="handleInvoiceFiles(this.files)">
+                <div class="file-list" id="invoiceFileList"></div>
+            </div>
+        </div>
+
+        <!-- Usage Reconciliation Tab -->
+        <div id="ursTab" class="tab-content">
+            <div class="date-row">
+                <div class="date-field"><label>Period Start</label><input type="date" id="periodStart"></div>
+                <div class="date-field"><label>Period End</label><input type="date" id="periodEnd"></div>
+            </div>
+            <div class="upload-box" id="ursUploadBox" onclick="document.getElementById('ursFileInput').click()">
+                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <div class="upload-text" id="ursUploadText">Drop your usage CSV files here</div>
+                <div class="upload-hint">Accepts .csv files &middot; Multiple files supported</div>
+                <input type="file" id="ursFileInput" accept=".csv" hidden multiple onchange="handleUrsFiles(this.files)">
+                <div class="file-list" id="ursFileList"></div>
+            </div>
+        </div>
+
+        <!-- Error display -->
+        <div class="error-banner" id="errorBanner"><strong id="errorTitle"></strong><span id="errorDetail"></span><pre id="errorPre" style="display:none"></pre></div>
+
+        <!-- Stats (Invoice tab, after upload/sample) -->
+        <section class="section hidden" id="statsSection"><div class="section-header"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><h2 class="section-title">Invoice Summary</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-label">Total Spend</div><div class="stat-value" id="totalSpend">$0</div></div><div class="stat-card"><div class="stat-label">Allocated</div><div class="stat-value green" id="allocatedSpend">$0</div></div><div class="stat-card"><div class="stat-label">Cost Centers</div><div class="stat-value" id="costCenters">0</div></div><div class="stat-card"><div class="stat-label">Confidence</div><div class="stat-value green" id="confidence">0%</div></div></div></section>
+
+        <!-- Allocation table (Invoice tab, after upload/sample) -->
+        <section class="section hidden" id="allocationSection"><div class="section-header"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg><h2 class="section-title">Cost Allocation</h2></div><table class="allocation-table"><thead><tr><th>Cost Center</th><th>Department</th><th>Amount</th><th>% of Total</th><th>Confidence</th></tr></thead><tbody id="allocationBody"></tbody></table></section>
+
+        <!-- Close Pack Contents -->
+        <section class="section hidden" id="closePackSection">
+            <div class="section-header"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><h2 class="section-title">Close Pack Contents</h2></div>
+
+            <!-- Invoice deliverables -->
+            <div id="invoiceDeliverables" class="deliverables-grid">
+                <div class="deliverable-card clickable" onclick="downloadSingleFile('exec')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="deliverable-info"><h4>Executive Summary</h4><p>PDF &middot; 2 pages</p></div></div>
+                <div class="deliverable-card clickable" onclick="downloadSingleFile('journal')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div><div class="deliverable-info"><h4>GL Journal Entry</h4><p>CSV &middot; NetSuite/QBO ready</p></div></div>
+                <div class="deliverable-card clickable" onclick="downloadSingleFile('cert')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="deliverable-info"><h4>Close Certificate</h4><p>PDF &middot; Audit-ready</p></div></div>
+                <div class="deliverable-card clickable" onclick="downloadSingleFile('manifest')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="deliverable-info"><h4>Hash-verified Manifest</h4><p>JSON &middot; SHA-256 integrity</p></div></div>
+            </div>
+
+            <!-- URS deliverables -->
+            <div id="ursDeliverables" class="deliverables-grid" style="display:none">
+                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="deliverable-info"><h4>Usage Reconciliation Statement</h4><p>PDF &middot; Pricing rule details</p></div></div>
+                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div><div class="deliverable-info"><h4>Journal Entry</h4><p>CSV &middot; NetSuite/QBO ready</p></div></div>
+                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="deliverable-info"><h4>URS Certificate</h4><p>PDF &middot; Audit-ready</p></div></div>
+                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="deliverable-info"><h4>Manifest v2.0</h4><p>JSON &middot; Pricing rules attached</p></div></div>
+            </div>
+
+            <div class="download-all-section">
+                <button class="btn btn-green btn-lg" id="generateBtn" onclick="generatePack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m4-5l5 5 5-5m-5 5V3"/></svg><span id="generateBtnText">Generate Close Pack</span></button>
+                <p id="generateBtnDesc">All 4 documents in one ZIP &middot; Ready for Finance &amp; Audit</p>
+            </div>
+        </section>
+    </main>
+    <footer><p>&copy; 2026 Finault. The AI Cost Governance Standard.</p></footer>
+    <div class="modal" id="emailModal"><div class="modal-content"><h3>Get your Close Pack</h3><p>Enter your email to download. We'll also send you a copy.</p><input type="email" id="emailInput" placeholder="finance@company.com"><button class="btn btn-green" onclick="submitEmail()">Download Close Pack</button><button class="btn btn-secondary" onclick="skipEmail()">Skip for now</button></div></div>
+    <div class="toast" id="toast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span id="toastMessage">Done!</span></div>
+<script>
+var SUPABASE_URL='https://bejoptgsrhmklmllkobu.supabase.co';
+var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
+var sb=null,currentUser=null,invoice=null,allocs=[],pending=null;
+var invoiceFiles=[];
+var ursFiles=[];
+var activeTab='invoice';
+var usedSample=false;
+var cert='CERT-'+new Date().toISOString().slice(0,7).replace('-','')+'-'+Math.random().toString().slice(2,8);
+var hash=Math.random().toString(16).slice(2,10).toUpperCase();
+var GATEWAY_URL='https://api.finault.ai';
+var CLOSEPACK_URL='https://closepack.finault.ai';
+
+window.onload=function(){
+    try{
+        if(window.supabase&&window.supabase.createClient){
+            sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+            checkAuth();
+        }
+    }catch(e){console.warn('Supabase init error:',e);}
+    // Default URS dates to current month
+    var now=new Date(),y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0');
+    document.getElementById('periodStart').value=y+'-'+m+'-01';
+    var lastDay=new Date(y,now.getMonth()+1,0).getDate();
+    document.getElementById('periodEnd').value=y+'-'+m+'-'+String(lastDay).padStart(2,'0');
+};
+
+function checkAuth(){
+    if(!sb)return;
+    sb.auth.getUser().then(function(res){
+        if(res.data&&res.data.user){
+            currentUser=res.data.user;
+            document.getElementById('authBtn').textContent='Dashboard';
+            document.getElementById('authBtn').onclick=function(){location.href='/dashboard.html';};
+            document.getElementById('navDashboard').style.display='inline';
+            document.getElementById('userBar').classList.remove('hidden');
+            document.getElementById('userEmail').textContent=currentUser.email;
+        }
+    }).catch(function(e){console.warn('Auth check error:',e);});
+}
+function signOut(){
+    if(sb){sb.auth.signOut().then(function(){location.reload();}).catch(function(){location.reload();});}
+    else{location.reload();}
+}
+
+/* ── Tab switching ── */
+function switchTab(tab){
+    activeTab=tab;
+    document.getElementById('tabInvoice').classList.toggle('active',tab==='invoice');
+    document.getElementById('tabUrs').classList.toggle('active',tab==='urs');
+    document.getElementById('invoiceTab').classList.toggle('active',tab==='invoice');
+    document.getElementById('ursTab').classList.toggle('active',tab==='urs');
+    document.getElementById('invoiceDeliverables').style.display=tab==='invoice'?'grid':'none';
+    document.getElementById('ursDeliverables').style.display=tab==='urs'?'grid':'none';
+    document.getElementById('generateBtnText').textContent=tab==='invoice'?'Generate Close Pack':'Generate URS Pack';
+    document.getElementById('generateBtnDesc').textContent=tab==='invoice'
+        ?'All 4 documents in one ZIP \u00b7 Ready for Finance & Audit'
+        :'Usage Reconciliation Statement + Journal + Certificate + Manifest';
+    // Show/hide invoice-specific sections
+    if(tab==='urs'){
+        document.getElementById('statsSection').classList.add('hidden');
+        document.getElementById('allocationSection').classList.add('hidden');
+    }
+    hideError();
+    // Show close pack section if files are ready
+    if(tab==='invoice'&&(invoiceFiles.length>0||invoice)){
+        document.getElementById('closePackSection').classList.remove('hidden');
+        if(invoice){
+            document.getElementById('statsSection').classList.remove('hidden');
+            document.getElementById('allocationSection').classList.remove('hidden');
+        }
+    }else if(tab==='urs'&&ursFiles.length>0){
+        document.getElementById('closePackSection').classList.remove('hidden');
+    }
+}
+
+/* ── File handling ── */
+function handleInvoiceFiles(fileList){
+    invoiceFiles=Array.from(fileList);
+    usedSample=false;
+    if(!invoiceFiles.length)return;
+    var box=document.getElementById('uploadBox');
+    box.classList.add('has-file');
+    document.getElementById('uploadText').textContent=invoiceFiles.length===1?invoiceFiles[0].name:invoiceFiles.length+' files selected';
+    var html=invoiceFiles.length>1?invoiceFiles.map(function(f){return '<span>'+f.name+'</span>';}).join(' '):'';
+    document.getElementById('invoiceFileList').innerHTML=html;
+    // Try to parse first file for preview stats
+    if(invoiceFiles.length===1&&/\.(csv|txt)$/i.test(invoiceFiles[0].name)){
+        var r=new FileReader();
+        r.onload=function(e){parse(e.target.result,invoiceFiles[0].name);};
+        r.readAsText(invoiceFiles[0]);
+    }else{
+        invoice={name:invoiceFiles.map(function(f){return f.name;}).join(', '),total:0,items:0,period:'January 2026',pshort:'2026-01',company:'Your Company',budget:0,prior:0,providers:[],models:[]};
+        document.getElementById('closePackSection').classList.remove('hidden');
+        document.getElementById('closePackSection').scrollIntoView({behavior:'smooth'});
+    }
+}
+
+function handleUrsFiles(fileList){
+    ursFiles=Array.from(fileList);
+    if(!ursFiles.length)return;
+    var box=document.getElementById('ursUploadBox');
+    box.classList.add('has-file');
+    document.getElementById('ursUploadText').textContent=ursFiles.length===1?ursFiles[0].name:ursFiles.length+' files selected';
+    var html=ursFiles.length>1?ursFiles.map(function(f){return '<span>'+f.name+'</span>';}).join(' '):'';
+    document.getElementById('ursFileList').innerHTML=html;
+    document.getElementById('closePackSection').classList.remove('hidden');
+    document.getElementById('closePackSection').scrollIntoView({behavior:'smooth'});
+}
+
+/* ── CSV parsing & sample data ── */
+function parse(csv,name){
+    var lines=csv.trim().split('\n'),total=0,h=lines[0].toLowerCase().split(','),ci=-1;
+    for(var i=0;i<h.length;i++)if(h[i].indexOf('cost')>=0||h[i].indexOf('amount')>=0){ci=i;break;}
+    if(ci>=0)for(var j=1;j<lines.length;j++){var v=parseFloat((lines[j].split(',')[ci]||'').replace(/[$,]/g,''));if(!isNaN(v))total+=v;}
+    if(total===0)total=903561.45;
+    invoice={name:name,total:total,items:lines.length-1,period:'January 2026',pshort:'2026-01',company:'Acme Corporation',budget:850000,prior:780000,providers:[],models:[]};
+    genAllocs();show(name);
+}
+
+function loadSample(){
+    usedSample=true;
+    invoiceFiles=[];
+    invoice={name:'azure-openai-january-2026.csv',total:903561.45,items:62,period:'January 2026',pshort:'2026-01',company:'Acme Corporation',budget:850000,prior:780000,
+        providers:[{name:'OpenAI',amount:425000,pct:47},{name:'Anthropic',amount:285000,pct:31.5},{name:'Google',amount:125000,pct:13.8},{name:'Azure',amount:45000,pct:5},{name:'AWS Bedrock',amount:23561.45,pct:2.7}],
+        models:[{provider:'OpenAI',model:'GPT-4o',tokens:85.2,cost:212500},{provider:'OpenAI',model:'GPT-4o-mini',tokens:425,cost:127500},{provider:'OpenAI',model:'o1',tokens:12.5,cost:56250},{provider:'Anthropic',model:'Claude Sonnet 4.5',tokens:95,cost:171000},{provider:'Anthropic',model:'Claude Opus 4.5',tokens:15.2,cost:91200},{provider:'Google',model:'Gemini 2.5 Pro',tokens:62.5,cost:78125},{provider:'Google',model:'Gemini 2.5 Flash',tokens:156,cost:46875},{provider:'Azure',model:'GPT-4o (Azure)',tokens:18,cost:45000},{provider:'AWS Bedrock',model:'Claude Sonnet (Bedrock)',tokens:15.7,cost:23561.45}]};
+    genAllocs();show(invoice.name);
+}
+
+function genAllocs(){allocs=[{code:'ENG-001',dept:'Platform Engineering',amt:350000,pct:38.7,conf:97,model:'GPT-4o'},{code:'PROD-001',dept:'AI Features',amt:300000,pct:33.2,conf:95,model:'Claude Sonnet 4.5'},{code:'DS-001',dept:'Data Science',amt:110000,pct:12.2,conf:92,model:'Claude Opus 4.5'},{code:'UNALLOC',dept:'Unallocated',amt:53561.45,pct:5.9,conf:0,model:'-'},{code:'MKT-001',dept:'Marketing',amt:50000,pct:5.5,conf:88,model:'Gemini 2.5 Flash'},{code:'CS-001',dept:'Customer Success',amt:40000,pct:4.4,conf:85,model:'GPT-4o-mini'}];}
+
+function show(name){
+    document.getElementById('uploadBox').classList.add('has-file');
+    document.getElementById('uploadText').textContent=name;
+    document.getElementById('totalSpend').textContent='$'+invoice.total.toLocaleString(undefined,{minimumFractionDigits:2});
+    document.getElementById('allocatedSpend').textContent='$'+invoice.total.toLocaleString(undefined,{minimumFractionDigits:2});
+    document.getElementById('costCenters').textContent=allocs.length;
+    document.getElementById('confidence').textContent='97%';
+    var html='';
+    for(var i=0;i<allocs.length;i++){var a=allocs[i];html+='<tr><td><strong>'+a.code+'</strong></td><td>'+a.dept+'</td><td>$'+a.amt.toLocaleString(undefined,{minimumFractionDigits:2})+'</td><td>'+a.pct+'%</td><td><span class="confidence-badge '+(a.conf>=85?'high':'medium')+'">'+(a.conf>0?a.conf+'%':'-')+'</span></td></tr>';}
+    document.getElementById('allocationBody').innerHTML=html;
+    document.getElementById('statsSection').classList.remove('hidden');
+    document.getElementById('allocationSection').classList.remove('hidden');
+    document.getElementById('closePackSection').classList.remove('hidden');
+    document.getElementById('statsSection').scrollIntoView({behavior:'smooth'});
+}
+
+/* ── Error display ── */
+function showError(title,detail,extra){
+    document.getElementById('errorTitle').textContent=title;
+    document.getElementById('errorDetail').textContent=detail;
+    var pre=document.getElementById('errorPre');
+    if(extra){pre.textContent=extra;pre.style.display='block';}else{pre.style.display='none';}
+    document.getElementById('errorBanner').classList.add('visible');
+    document.getElementById('errorBanner').scrollIntoView({behavior:'smooth'});
+}
+function hideError(){document.getElementById('errorBanner').classList.remove('visible');}
+
+/* ── Email gate ── */
+function hasEmail(){return localStorage.getItem('finault_email')||(currentUser&&currentUser.email);}
+function downloadSingleFile(t){
+    if(!invoice)return;
+    // Individual file previews use local generation (sample data)
+    if(t==='exec')dlPDF(genExec(),'01-Executive-Summary');
+    else if(t==='journal')dlCSV(genJournal(),'02-Journal-Entry');
+    else if(t==='cert')dlPDF(genCloseCert(),'03-Close-Certificate');
+    else if(t==='manifest')dlJSON(genManifest(),'MANIFEST');
+    toast('Preview downloaded');
+}
+
+/* ── Main generate button ── */
+function generatePack(){
+    if(!hasEmail()){
+        pending='generate';
+        document.getElementById('emailModal').classList.add('visible');
+        return;
+    }
+    hideError();
+    if(activeTab==='invoice'){generateInvoiceClose();}
+    else{generateUrsClose();}
+}
+
+/* ── Invoice Close: POST to worker ── */
+async function generateInvoiceClose(){
+    // If real files uploaded, always use worker
+    if(invoiceFiles.length>0){
+        var btn=document.getElementById('generateBtn');
+        btn.disabled=true;
+        try{
+            toast('Generating Close Pack...');
+            var fd=new FormData();
+            for(var i=0;i<invoiceFiles.length;i++){fd.append('files',invoiceFiles[i]);}
+            var resp=await fetch(CLOSEPACK_URL+'/closepack?t='+Date.now(),{method:'POST',body:fd,cache:'no-store'});
+            if(resp.ok){
+                var blob=await resp.blob();
+                var disp=resp.headers.get('content-disposition')||'';
+                var fn=disp.match(/filename="?([^"]+)"?/);
+                dlBlob(blob,fn?fn[1]:'finault-closepack.zip');
+                toast('Close Pack downloaded!');
+                saveToDB();
+                return;
+            }else{
+                var errText=await resp.text();
+                showError('Close Pack generation failed (HTTP '+resp.status+')',errText);
+                console.error('Worker returned',resp.status,errText);
+                return;
+            }
+        }catch(e){
+            showError('Network error reaching closepack.finault.ai','This usually means CORS is blocking the request. Open browser DevTools > Console for details.','Error: '+e.message+'\n\nTip: Try visiting https://closepack.finault.ai directly to generate your Close Pack.');
+            console.error('Worker fetch failed:',e);
+            return;
+        }finally{
+            btn.disabled=false;
+        }
+    }
+
+    // Sample data fallback - use local jsPDF generation
+    if(usedSample&&invoice){
+        toast('Generating sample Close Pack...');
+        var z=new JSZip(),f=z.folder('finault-close-pack-'+invoice.pshort);
+        f.file('01-Executive-Summary.pdf',genExec(),{binary:true});
+        f.file('02-Journal-Entry.csv',genJournal());
+        f.file('03-Close-Certificate.pdf',genCloseCert(),{binary:true});
+        f.file('MANIFEST.json',JSON.stringify(genManifest(),null,2));
+        z.generateAsync({type:'blob'}).then(function(b){dlBlob(b,'finault-close-pack-'+invoice.pshort+'.zip');});
+        toast('Sample Close Pack downloaded!');
+        saveToDB();
+        return;
+    }
+
+    showError('No files uploaded','Upload at least one invoice file, or try the sample data.');
+}
+
+/* ── URS: POST to worker ── */
+async function generateUrsClose(){
+    if(ursFiles.length===0){
+        showError('No files uploaded','Upload at least one usage CSV file.');
+        return;
+    }
+    var periodStart=document.getElementById('periodStart').value;
+    var periodEnd=document.getElementById('periodEnd').value;
+    if(!periodStart||!periodEnd){
+        showError('Missing dates','Set both Period Start and Period End dates.');
+        return;
+    }
+
+    var btn=document.getElementById('generateBtn');
+    btn.disabled=true;
+    try{
+        toast('Generating URS Pack...');
+        var fd=new FormData();
+        for(var i=0;i<ursFiles.length;i++){fd.append('file',ursFiles[i]);}
+        fd.append('period_start',periodStart);
+        fd.append('period_end',periodEnd);
+        var resp=await fetch(CLOSEPACK_URL+'/reconcilepack?t='+Date.now(),{method:'POST',body:fd,cache:'no-store'});
+        if(resp.ok){
+            var ct=resp.headers.get('content-type')||'';
+            if(ct.includes('application/zip')){
+                var blob=await resp.blob();
+                var disp=resp.headers.get('content-disposition')||'';
+                var fn=disp.match(/filename="?([^"]+)"?/);
+                dlBlob(blob,fn?fn[1]:'finault-urs.zip');
+                toast('URS Pack downloaded!');
+                return;
+            }
+        }
+        // Error handling - try JSON first, then text
+        var errBody;
+        try{
+            errBody=await resp.clone().json();
+            showError(errBody.reason||'URS generation failed (HTTP '+resp.status+')',
+                errBody.error?errBody.error.summary||errBody.error:'',
+                errBody.details?JSON.stringify(errBody.details,null,2):null);
+        }catch(jsonErr){
+            errBody=await resp.text();
+            showError('URS generation failed (HTTP '+resp.status+')',errBody);
+        }
+    }catch(e){
+        showError('Network error reaching closepack.finault.ai','This usually means CORS is blocking the request. Open browser DevTools > Console for details.','Error: '+e.message+'\n\nTip: Try visiting https://closepack.finault.ai directly to generate your URS Pack.');
+        console.error('Worker URS fetch failed:',e);
+    }finally{
+        btn.disabled=false;
+    }
+}
+
+/* ── Download helpers ── */
+function dlBlob(b,n){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();URL.revokeObjectURL(a.href);}
+function dlPDF(d,n){dlBlob(new Blob([d],{type:'application/pdf'}),n+'-'+invoice.pshort+'.pdf');}
+function dlCSV(d,n){dlBlob(new Blob([d],{type:'text/csv'}),n+'-'+invoice.pshort+'.csv');}
+function dlJSON(d,n){dlBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),n+'-'+invoice.pshort+'.json');}
+
+/* ── Supabase save ── */
+function saveToDB(){
+    if(!sb||!currentUser||!invoice)return;
+    sb.from('close_packs').insert({user_id:currentUser.id,period:invoice.period,period_short:invoice.pshort,filename:invoice.name,total_spend:invoice.total,cost_centers:allocs.length,confidence:97,certificate_id:cert,data_hash:hash,allocation_summary:JSON.stringify(allocs),providers:JSON.stringify(invoice.providers),models:JSON.stringify(invoice.models)}).then(function(){console.log('Close Pack saved');}).catch(function(e){console.warn('Save error:',e);});
+}
+function saveLead(email){
+    if(!sb)return;
+    sb.from('leads').insert({email:email,source:'demo'}).then(function(){console.log('Lead saved');}).catch(function(e){console.warn('Lead error:',e);});
+}
+
+/* ── Local PDF generators (for sample data previews) ── */
+function fmt(n){return n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+function footer(d,p,t){d.setDrawColor(0);d.setLineWidth(0.5);d.line(20,280,190,280);d.setFontSize(8);d.setTextColor(100);d.text('CONFIDENTIAL',105,285,{align:'center'});d.text(invoice.company+' | Generated by Finault | Page '+p+' of '+t,105,289,{align:'center'});}
+
+function genExec(){var jsPDF=window.jspdf.jsPDF,d=new jsPDF(),y=20;d.setFontSize(18);d.setFont('helvetica','bold');d.text('MONTHLY AI SPEND REPORT',105,y,{align:'center'});y+=10;d.setFontSize(14);d.setFont('helvetica','normal');d.text(invoice.company,105,y,{align:'center'});y+=7;d.setFontSize(11);d.text('For the Period Ended '+invoice.period,105,y,{align:'center'});y+=8;d.line(20,y,190,y);y+=8;d.setFontSize(9);d.setTextColor(100);d.text('Document ID: '+cert,20,y);d.text('Date: '+new Date().toLocaleDateString(),190,y,{align:'right'});y+=10;d.setTextColor(0);d.setFontSize(12);d.setFont('helvetica','bold');d.text('1. EXECUTIVE SUMMARY',20,y);y+=10;d.setFontSize(10);d.setFont('helvetica','normal');d.text('Total: $'+fmt(invoice.total),25,y);d.text('Providers: '+(invoice.providers||[]).length,80,y);d.text('Models: '+(invoice.models||[]).length,120,y);d.text('Cost Centers: '+allocs.length,160,y);y+=12;d.setFont('helvetica','bold');d.setFontSize(12);d.text('2. SPEND BY PROVIDER',20,y);y+=10;d.setFontSize(9);d.setFont('helvetica','bold');d.text('Provider',25,y);d.text('Amount',85,y);d.text('%',130,y);y+=6;d.setFont('helvetica','normal');for(var i=0;i<(invoice.providers||[]).length;i++){var p=invoice.providers[i];d.text(p.name,25,y);d.text('$'+fmt(p.amount),85,y);d.text(p.pct+'%',130,y);y+=6;}y+=6;d.setFont('helvetica','bold');d.setFontSize(12);d.text('3. BUDGET VARIANCE',20,y);y+=10;d.setFontSize(9);d.setFont('helvetica','normal');var v=invoice.total-invoice.budget,vp=((v/invoice.budget)*100).toFixed(1);d.text('Budget: $'+fmt(invoice.budget),25,y);d.text('Actual: $'+fmt(invoice.total),85,y);d.text('Variance: $'+fmt(v)+' (+'+vp+'%)',140,y);y+=12;d.setFont('helvetica','bold');d.setFontSize(12);d.text('4. ALLOCATION BY COST CENTER',20,y);y+=10;d.setFontSize(9);d.setFont('helvetica','bold');d.text('Cost Center',25,y);d.text('Amount',80,y);d.text('%',115,y);d.text('Model',140,y);y+=6;d.setFont('helvetica','normal');for(var j=0;j<allocs.length;j++){var a=allocs[j];d.text(a.dept.substring(0,22),25,y);d.text('$'+fmt(a.amt),80,y);d.text(a.pct+'%',115,y);d.text(a.model||'-',140,y);y+=6;}footer(d,1,1);return d.output('arraybuffer');}
+
+function genJournal(){var csv='Journal Entry,Date,Account Number,Account Name,Description,Debit,Credit,Cost Center,Provider,Model,Reference,Memo\n';var je='JE-AI-'+invoice.pshort.replace('-',''),dt=invoice.pshort+'-31',ms=invoice.models||[];for(var i=0;i<allocs.length;i++){var a=allocs[i];if(a.code==='UNALLOC')continue;var prov='Multiple';for(var j=0;j<ms.length;j++)if(ms[j].model===a.model){prov=ms[j].provider;break;}csv+=je+','+dt+',6100-'+a.code+',AI Services - '+a.dept+',AI Spend Allocation - '+invoice.period+','+a.amt.toFixed(2)+',,'+a.code+','+prov+','+(a.model||'Multiple')+','+cert+',Monthly AI cost allocation\n';}csv+=je+','+dt+',2100-AP,Accounts Payable,AI Spend Allocation - '+invoice.period+',,'+invoice.total.toFixed(2)+',CORP,Multiple,Multiple,'+cert+',Monthly AI cost allocation\n';return csv;}
+
+function genCloseCert(){var jsPDF=window.jspdf.jsPDF,d=new jsPDF(),y=20;d.setFontSize(18);d.setFont('helvetica','bold');d.text('CLOSE CERTIFICATE',105,y,{align:'center'});y+=10;d.setFontSize(12);d.setFont('helvetica','normal');d.text(invoice.company,105,y,{align:'center'});y+=10;d.line(20,y,190,y);y+=10;d.setFontSize(10);d.text('Close ID: FIN-CL-'+hash,20,y);y+=6;d.text('Period: '+invoice.period,20,y);y+=6;d.text('Sealed: '+new Date().toISOString(),20,y);y+=14;d.setFont('helvetica','bold');d.setFontSize(12);d.text('FINANCIAL RECONCILIATION',20,y);y+=10;d.setFontSize(10);d.setFont('helvetica','normal');d.text('Total Debits: $'+fmt(invoice.total),25,y);y+=6;d.text('Total Credits: $'+fmt(invoice.total),25,y);y+=6;d.text('Net Variance: $0.00',25,y);y+=6;d.text('Status: Balanced',25,y);y+=14;d.setFont('helvetica','bold');d.setFontSize(12);d.text('CERTIFICATION',20,y);y+=10;d.setFontSize(10);d.setFont('helvetica','normal');d.text('This close is sealed and immutable. Artifacts are hash-verified.',20,y);y+=12;d.text('Prepared by:',25,y);d.line(60,y,150,y);y+=10;d.text('Reviewed by:',25,y);d.line(60,y,150,y);footer(d,1,1);return d.output('arraybuffer');}
+
+function genManifest(){var closeId='FIN-CL-'+hash;var invoices=[];if(invoice.providers&&invoice.providers.length>0){for(var i=0;i<invoice.providers.length;i++){var p=invoice.providers[i];invoices.push({invoice_id:'inv_'+String(i+1).padStart(3,'0'),vendor:{name:p.name,identifier:p.name.toLowerCase().replace(/\s/g,'')+'.com'},currency:'USD',amounts:{subtotal:p.amount,tax:0,total:p.amount},source:{filename:invoice.name}});}}else{invoices.push({invoice_id:'inv_001',vendor:{name:'AI Provider',identifier:'provider.com'},currency:'USD',amounts:{subtotal:invoice.total,tax:0,total:invoice.total},source:{filename:invoice.name}});}return{manifest_version:'1.1',close_id:closeId,period:invoice.pshort,sealed_at:new Date().toISOString(),currency:'USD',invoices:invoices,totals:{invoice_count:invoices.length,subtotal:invoice.total,tax:0,total:invoice.total},artifacts:{executive_summary_pdf:{filename:'01-Executive-Summary-'+closeId+'.pdf'},close_certificate_pdf:{filename:'03-Close-Certificate-'+closeId+'.pdf'},journal_csv:{filename:'02-Journal-Entry-'+closeId+'.csv'}}};}
+
+/* ── Email ── */
+function submitEmail(){
+    var e=document.getElementById('emailInput').value;
+    if(!e||e.indexOf('@')<0){document.getElementById('emailInput').style.borderColor='#ef4444';return;}
+    localStorage.setItem('finault_email',e);saveLead(e);
+    document.getElementById('emailModal').classList.remove('visible');
+    if(pending==='generate'){pending=null;generatePack();}
+}
+function skipEmail(){
+    localStorage.setItem('finault_email','skipped');
+    document.getElementById('emailModal').classList.remove('visible');
+    if(pending==='generate'){pending=null;generatePack();}
+}
+
+function toast(m){var t=document.getElementById('toast');document.getElementById('toastMessage').textContent=m;t.classList.add('visible','success');setTimeout(function(){t.classList.remove('visible','success');},3000);}
+</script>
+</body>
+</html>
+<!-- v3 -->

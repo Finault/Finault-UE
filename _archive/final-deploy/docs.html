@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - Finault | AI Cost Governance</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--white);color:var(--gray-900);line-height:1.7}
+        
+        .docs-layout{display:flex;min-height:100vh}
+        
+        /* Sidebar */
+        .docs-sidebar{width:260px;background:var(--gray-50);border-right:1px solid var(--gray-200);position:fixed;height:100vh;overflow-y:auto;padding:1.5rem 0}
+        .sidebar-header{padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--gray-200);margin-bottom:1rem}
+        .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.125rem;color:var(--black);text-decoration:none}
+        .logo-icon{width:28px;height:28px;background:var(--gray-900);border-radius:6px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:16px;height:16px}
+        
+        .sidebar-nav{padding:0 .75rem}
+        .nav-section{margin-bottom:1.5rem}
+        .nav-section-title{font-size:.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);padding:0 .75rem;margin-bottom:.5rem}
+        .nav-link{display:block;padding:.5rem .75rem;color:var(--gray-600);text-decoration:none;font-size:.875rem;border-radius:.375rem;transition:all .15s}
+        .nav-link:hover{background:var(--gray-200);color:var(--gray-900)}
+        .nav-link.active{background:var(--green-light);color:var(--green-dark);font-weight:500}
+        
+        /* Main content */
+        .docs-main{flex:1;margin-left:260px;padding:2rem 3rem;max-width:900px}
+        
+        h1{font-size:2.5rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem}
+        h2{font-size:1.75rem;font-weight:600;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--gray-200)}
+        h3{font-size:1.25rem;font-weight:600;margin:2rem 0 .75rem}
+        h4{font-size:1rem;font-weight:600;margin:1.5rem 0 .5rem}
+        
+        p{margin-bottom:1rem;color:var(--gray-700)}
+        
+        .lead{font-size:1.125rem;color:var(--gray-600);margin-bottom:2rem}
+        
+        code{font-family:'JetBrains Mono',monospace;font-size:.875em;background:var(--gray-100);padding:.25rem .5rem;border-radius:.25rem;color:var(--gray-800)}
+        
+        pre{background:var(--gray-900);border-radius:.5rem;padding:1.5rem;overflow-x:auto;margin:1rem 0 1.5rem;border:1px solid var(--gray-700)}
+        pre code{background:none;padding:0;color:#e5e7eb;font-size:.875rem;line-height:1.7;display:block;white-space:pre-wrap;word-break:break-word}
+        .comment{color:#9ca3af}
+        .string{color:#86efac}
+        .keyword{color:#93c5fd}
+        .number{color:#f9a8d4}
+        
+        /* Selection styling for code */
+        pre code::selection{background:#4b5563;color:#fff}
+        pre code::-moz-selection{background:#4b5563;color:#fff}
+        
+        .endpoint{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:.5rem;padding:1.25rem;margin:1rem 0}
+        .endpoint-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
+        .method{display:inline-flex;padding:.25rem .625rem;border-radius:.25rem;font-size:.75rem;font-weight:600;font-family:'JetBrains Mono',monospace}
+        .method.get{background:#dbeafe;color:#1d4ed8}
+        .method.post{background:var(--green-light);color:var(--green-dark)}
+        .method.delete{background:#fee2e2;color:#dc2626}
+        .endpoint-path{font-family:'JetBrains Mono',monospace;font-size:.9375rem;color:var(--gray-700)}
+        .endpoint-desc{font-size:.9375rem;color:var(--gray-600)}
+        
+        table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem}
+        th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--gray-200)}
+        th{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-500);background:var(--gray-50)}
+        td{font-size:.9375rem}
+        td code{font-size:.8125rem}
+        
+        .callout{padding:1rem 1.25rem;border-radius:.5rem;margin:1.5rem 0;display:flex;gap:.75rem}
+        .callout.info{background:#dbeafe;border-left:4px solid #3b82f6}
+        .callout.warning{background:#fef3c7;border-left:4px solid #f59e0b}
+        .callout.success{background:var(--green-light);border-left:4px solid var(--green)}
+        .callout svg{flex-shrink:0;margin-top:.125rem}
+        .callout p{margin:0;font-size:.9375rem}
+        
+        .badge{display:inline-flex;padding:.25rem .5rem;border-radius:1rem;font-size:.6875rem;font-weight:600;margin-left:.5rem}
+        .badge-pro{background:#dbeafe;color:#1d4ed8}
+        .badge-business{background:#fef3c7;color:#b45309}
+        
+        ul,ol{margin:1rem 0 1.5rem 1.5rem}
+        li{margin-bottom:.5rem}
+        
+        @media(max-width:1024px){
+            .docs-sidebar{display:none}
+            .docs-main{margin-left:0;padding:1.5rem}
+        }
+    </style>
+</head>
+<body>
+    <div class="docs-layout">
+        <aside class="docs-sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">
+                    <span class="logo-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
+                    </span>
+                    Finault Docs
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Getting Started</div>
+                    <a href="#overview" class="nav-link active">Overview</a>
+                    <a href="#quickstart" class="nav-link">Quickstart</a>
+                    <a href="#concepts" class="nav-link">Core Concepts</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Features</div>
+                    <a href="#invoice-analyzer" class="nav-link">Invoice Analyzer</a>
+                    <a href="#close-pack" class="nav-link">Close Pack</a>
+                    <a href="#unit-economics" class="nav-link">Unit Economics</a>
+                    <a href="#allocation-rules" class="nav-link">Allocation Rules</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Gateway</div>
+                    <a href="#gateway-setup" class="nav-link">Setup</a>
+                    <a href="#gateway-endpoints" class="nav-link">Endpoints</a>
+                    <a href="#budget-enforcement" class="nav-link">Budget Enforcement</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">API Reference</div>
+                    <a href="#authentication" class="nav-link">Authentication</a>
+                    <a href="#api-analyze" class="nav-link">Analyze</a>
+                    <a href="#api-allocate" class="nav-link">Allocate</a>
+                    <a href="#api-closepack" class="nav-link">Close Pack</a>
+                    <a href="#api-verify" class="nav-link">Verify</a>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Security</div>
+                    <a href="#data-security" class="nav-link">Data Security</a>
+                    <a href="#compliance" class="nav-link">Compliance</a>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="docs-main">
+            <h1 id="overview">Finault Documentation</h1>
+            <p class="lead">Turn AI invoices into audit-ready journal entries. This documentation covers everything from basic invoice analysis to real-time gateway integration.</p>
+            
+            <div class="callout success">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <p><strong>New to Finault?</strong> Start with the <a href="#quickstart">Quickstart guide</a> to upload your first invoice in 60 seconds.</p>
+            </div>
+            
+            <h2 id="quickstart">Quickstart</h2>
+            
+            <h3>1. Upload an Invoice</h3>
+            <p>Go to <a href="/app.html">app.html</a> and drag your AI provider CSV (OpenAI, Anthropic, Azure, or Google) into the upload zone. Or click "Try with Sample Data" to see how it works.</p>
+            
+            <h3>2. Review Allocation</h3>
+            <p>Finault automatically detects your provider, extracts costs, and allocates to cost centers based on project metadata. Review the allocation breakdown and confidence scores.</p>
+            
+            <h3>3. Download Close Pack</h3>
+            <p>Click "Download Complete Close Pack" to get a ZIP containing:</p>
+            <ul>
+                <li><strong>Executive Summary</strong> — CFO-ready overview PDF</li>
+                <li><strong>GL Journal Entry</strong> — NetSuite/QuickBooks-ready CSV</li>
+                <li><strong>Reconciliation Certificate</strong> — Audit-ready proof with SHA-256 hash</li>
+                <li><strong>Controls Narrative</strong> — SOX-compliant documentation</li>
+            </ul>
+            
+            <h2 id="concepts">Core Concepts</h2>
+            
+            <h3>Cost Centers</h3>
+            <p>Cost centers are organizational units (teams, projects, departments) that consume AI resources. Finault maps invoice line items to cost centers using project metadata and custom rules.</p>
+            
+            <h3>Allocation Rules</h3>
+            <p>Rules define how costs are assigned to GL codes and cost centers. Pattern matching (e.g., <code>proj-platform-*</code> → <code>ENG-001</code>) allows flexible, automated allocation.</p>
+            
+            <h3>Confidence Scores</h3>
+            <p>Each allocation has a confidence score (0-100%) based on the clarity of the metadata match. High confidence (90%+) means strong mapping; lower scores may need manual review.</p>
+            
+            <h3>Data Integrity</h3>
+            <p>Every Close Pack includes a SHA-256 hash of the source data, ensuring the output can be verified against the original invoice. This is critical for audit compliance.</p>
+            
+            <h2 id="invoice-analyzer">Invoice Analyzer</h2>
+            <p>The Invoice Analyzer accepts CSV exports from major AI providers and automatically detects the format.</p>
+            
+            <h4>Supported Providers</h4>
+            <table>
+                <thead>
+                    <tr><th>Provider</th><th>Export Source</th><th>Key Fields</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>OpenAI</td><td>Usage page CSV</td><td><code>cost_in_usd</code>, <code>project_name</code>, <code>model</code></td></tr>
+                    <tr><td>Anthropic</td><td>Billing CSV</td><td><code>amount</code>, <code>workspace</code>, <code>model</code></td></tr>
+                    <tr><td>Azure OpenAI</td><td>Cost Management export</td><td><code>Cost</code>, <code>ResourceGroup</code>, <code>ServiceName</code></td></tr>
+                    <tr><td>Google Cloud</td><td>Billing export</td><td><code>cost</code>, <code>project.id</code>, <code>service.description</code></td></tr>
+                </tbody>
+            </table>
+            
+            <h2 id="close-pack">Close Pack</h2>
+            <p>The Close Pack is a finance-ready deliverable containing everything needed to close the books on AI spend.</p>
+            
+            <h4>Components</h4>
+            <table>
+                <thead>
+                    <tr><th>Document</th><th>Format</th><th>Purpose</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Executive Summary</td><td>PDF</td><td>High-level spend overview for CFO/leadership</td></tr>
+                    <tr><td>GL Journal Entry</td><td>CSV</td><td>Import-ready journal entries for ERP systems</td></tr>
+                    <tr><td>Reconciliation Certificate</td><td>PDF</td><td>Audit trail with data integrity hash</td></tr>
+                    <tr><td>Controls Narrative</td><td>PDF</td><td>SOX 404 compliant control documentation</td></tr>
+                </tbody>
+            </table>
+            
+            <h2 id="unit-economics">Unit Economics <span class="badge badge-pro">PRO</span></h2>
+            <p>Understand the true cost of AI in your business with unit economics calculations.</p>
+            
+            <h4>Metrics</h4>
+            <ul>
+                <li><strong>Cost per Transaction</strong> — Total spend ÷ API calls</li>
+                <li><strong>Cost per User</strong> — Total spend ÷ Active users</li>
+                <li><strong>AI % of Revenue</strong> — Total spend ÷ AI-attributed revenue × 100</li>
+                <li><strong>Revenue per $1 Spent</strong> — AI-attributed revenue ÷ Total spend</li>
+            </ul>
+            
+            <div class="callout warning">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <p><strong>Benchmark:</strong> AI costs above 30% of AI-attributed revenue may squeeze margins at scale.</p>
+            </div>
+            
+            <h2 id="gateway-setup">Gateway Setup <span class="badge badge-business">BUSINESS</span></h2>
+            <p>Route all AI API calls through Finault Gateway for real-time cost attribution, budget enforcement, and compliance logging.</p>
+            
+            <h3>Quick Integration</h3>
+            <p>Change one environment variable to start routing through Finault:</p>
+            
+            <pre><code><span class="comment"># For OpenAI</span>
+<span class="keyword">export</span> OPENAI_BASE_URL=<span class="string">"https://gateway.finault.ai/v1"</span>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxxxxxxxxxxx"</span>
+
+<span class="comment"># For Anthropic</span>
+<span class="keyword">export</span> ANTHROPIC_BASE_URL=<span class="string">"https://gateway.finault.ai/anthropic"</span>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxxxxxxxxxxx"</span></code></pre>
+            
+            <h3>Headers</h3>
+            <p>Add cost attribution headers to your requests:</p>
+            
+            <table>
+                <thead>
+                    <tr><th>Header</th><th>Required</th><th>Description</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>X-Finault-Key</code></td><td>Yes</td><td>Your Finault API key</td></tr>
+                    <tr><td><code>X-Cost-Center</code></td><td>No</td><td>Cost center code (e.g., ENG-001)</td></tr>
+                    <tr><td><code>X-Project</code></td><td>No</td><td>Project identifier</td></tr>
+                    <tr><td><code>X-Budget-Id</code></td><td>No</td><td>Budget to charge against</td></tr>
+                </tbody>
+            </table>
+            
+            <h2 id="gateway-endpoints">Gateway Endpoints</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/v1/chat/completions</span>
+                </div>
+                <p class="endpoint-desc">Proxy to OpenAI Chat Completions with automatic cost tracking.</p>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/v1/usage</span>
+                </div>
+                <p class="endpoint-desc">Real-time usage and cost metrics by cost center, project, or time period.</p>
+            </div>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/v1/budgets/check</span>
+                </div>
+                <p class="endpoint-desc">Check if a request would exceed budget before making the call.</p>
+            </div>
+            
+            <h2 id="budget-enforcement">Budget Enforcement <span class="badge badge-business">BUSINESS</span></h2>
+            <p>Set hard or soft limits on AI spend by team, project, or time period.</p>
+            
+            <h4>Budget Types</h4>
+            <ul>
+                <li><strong>Hard Limit</strong> — Requests that would exceed budget return HTTP 402 (Payment Required)</li>
+                <li><strong>Soft Limit</strong> — Alerts triggered at threshold (e.g., 80%) but requests continue</li>
+            </ul>
+            
+            <pre><code><span class="comment"># Create a budget</span>
+curl -X POST https://gateway.finault.ai/v1/budgets \
+  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -d '{
+    <span class="string">"name"</span>: <span class="string">"Platform Team Monthly"</span>,
+    <span class="string">"cost_center"</span>: <span class="string">"ENG-001"</span>,
+    <span class="string">"limit"</span>: <span class="number">50000</span>,
+    <span class="string">"period"</span>: <span class="string">"monthly"</span>,
+    <span class="string">"type"</span>: <span class="string">"hard"</span>,
+    <span class="string">"alert_threshold"</span>: <span class="number">0.8</span>
+  }'</code></pre>
+            
+            <h2 id="authentication">API Authentication</h2>
+            <p>All API requests require a Finault API key in the Authorization header.</p>
+            
+            <pre><code>Authorization: Bearer fin_live_xxxxxxxxxxxx</code></pre>
+            
+            <h4>API Key Types</h4>
+            <table>
+                <thead>
+                    <tr><th>Prefix</th><th>Environment</th><th>Use For</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><code>fin_live_</code></td><td>Production</td><td>Live API calls, real billing</td></tr>
+                    <tr><td><code>fin_test_</code></td><td>Test</td><td>Development, no billing</td></tr>
+                </tbody>
+            </table>
+            
+            <h2 id="api-analyze">API: Analyze <span class="badge badge-business">BUSINESS</span></h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/v1/analyze</span>
+                </div>
+                <p class="endpoint-desc">Upload and analyze an invoice CSV. Returns parsed costs and detected provider.</p>
+            </div>
+            
+            <pre><code>curl -X POST https://gateway.finault.ai/v1/analyze \
+  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -F <span class="string">"file=@invoice.csv"</span></code></pre>
+            
+            <h2 id="api-allocate">API: Allocate <span class="badge badge-business">BUSINESS</span></h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/v1/allocate</span>
+                </div>
+                <p class="endpoint-desc">Run cost allocation on analyzed invoice data.</p>
+            </div>
+            
+            <h2 id="api-closepack">API: Close Pack <span class="badge badge-business">BUSINESS</span></h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method post">POST</span>
+                    <span class="endpoint-path">/v1/close-pack</span>
+                </div>
+                <p class="endpoint-desc">Generate a complete Close Pack ZIP from allocated data.</p>
+            </div>
+            
+            <h2 id="api-verify">API: Verify</h2>
+            
+            <div class="endpoint">
+                <div class="endpoint-header">
+                    <span class="method get">GET</span>
+                    <span class="endpoint-path">/v1/attest/verify</span>
+                </div>
+                <p class="endpoint-desc">Verify a data integrity hash from a Close Pack.</p>
+            </div>
+            
+            <pre><code>curl <span class="string">"https://gateway.finault.ai/v1/attest/verify?hash=sha256:7f83b1657..."</span></code></pre>
+            
+            <h2 id="data-security">Data Security</h2>
+            
+            <h4>Encryption</h4>
+            <ul>
+                <li><strong>In Transit</strong> — TLS 1.3 for all connections</li>
+                <li><strong>At Rest</strong> — AES-256 encryption for stored data</li>
+            </ul>
+            
+            <h4>Data Retention</h4>
+            <table>
+                <thead>
+                    <tr><th>Tier</th><th>Retention</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Free</td><td>No data stored (download only)</td></tr>
+                    <tr><td>Pro</td><td>90 days</td></tr>
+                    <tr><td>Business</td><td>2 years</td></tr>
+                    <tr><td>Enterprise</td><td>Custom (up to 7 years)</td></tr>
+                </tbody>
+            </table>
+            
+            <h2 id="compliance">Compliance</h2>
+            
+            <h4>Standards</h4>
+            <ul>
+                <li><strong>SOX 404</strong> — Controls Narrative document provides required documentation</li>
+                <li><strong>GAAP/IFRS</strong> — Journal entries follow standard accounting practices</li>
+                <li><strong>EU AI Act</strong> — Audit logging supports Article 12 requirements (Enterprise)</li>
+                <li><strong>SOC 2 Type II</strong> — In progress (Q2 2026)</li>
+            </ul>
+            
+            <div class="callout info">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <p>Questions? Email <a href="mailto:support@finault.ai">support@finault.ai</a> or join our <a href="#">Slack community</a>.</p>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Highlight active nav link based on scroll
+        const sections = document.querySelectorAll('h2[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 100) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

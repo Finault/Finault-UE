@@ -1,0 +1,17 @@
+{
+  "name": "finault-close-pack",
+  "version": "1.0.0",
+  "description": "Finault Close Pack — Real pdf-lib PDFs, JSZip bundling, SHA-256 hashing",
+  "main": "core/closeExecutor.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "pdf-lib": "^1.17.1",
+    "jszip": "^3.10.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

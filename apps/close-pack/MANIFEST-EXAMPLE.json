@@ -1,0 +1,16 @@
+{
+  "close_pack_id": "CP-2026-01-20260128063609",
+  "company": "Acme Corporation",
+  "period": "2026-01",
+  "generated_at": "2026-01-28T06:36:09.301085Z",
+  "files": {
+    "executive_summary": "01-Executive-Summary.pdf",
+    "journal_entry": "02-Journal-Entry.xlsx",
+    "reconciliation": "03-Reconciliation-Certificate.pdf",
+    "controls_narrative": "04-Controls-Narrative.pdf",
+    "evidence_bundle": "05-Evidence-Bundle.json"
+  },
+  "reconciliation_status": "BALANCED",
+  "total_cost": "45678.90",
+  "master_hash": "2952d59fb5bf8e1b64fb893d601ef439e95ba766c652e75ee3ffd09347bb0bf8"
+}

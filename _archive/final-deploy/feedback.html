@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feedback | Finault</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #fafafa; color: #171717; min-height: 100vh; display: flex; flex-direction: column; }
+    .nav { padding: 14px 40px; display: flex; align-items: center; background: #fff; border-bottom: 1px solid #e5e5e5; }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: #171717; }
+    .logo svg { width: 32px; height: 32px; }
+    .logo span { font-size: 20px; font-weight: 600; }
+    
+    .container { max-width: 600px; margin: 60px auto; padding: 0 24px; flex: 1; }
+    h1 { font-size: 32px; font-weight: 600; margin-bottom: 12px; text-align: center; }
+    .subtitle { font-size: 16px; color: #737373; text-align: center; margin-bottom: 40px; }
+    
+    .form-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 16px; padding: 32px; }
+    
+    .form-group { margin-bottom: 24px; }
+    .form-label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+    .form-input, .form-textarea, .form-select { width: 100%; padding: 12px 16px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 15px; font-family: inherit; transition: border-color 0.2s; }
+    .form-input:focus, .form-textarea:focus, .form-select:focus { outline: none; border-color: #22c55e; }
+    .form-textarea { min-height: 150px; resize: vertical; }
+    
+    .rating-group { display: flex; gap: 8px; margin-top: 8px; }
+    .rating-btn { width: 48px; height: 48px; border: 1px solid #e5e5e5; background: #fff; border-radius: 8px; font-size: 18px; cursor: pointer; transition: all 0.2s; }
+    .rating-btn:hover { background: #f5f5f5; }
+    .rating-btn.selected { background: #22c55e; color: #fff; border-color: #22c55e; }
+    
+    .checkbox-group { display: flex; flex-direction: column; gap: 12px; }
+    .checkbox-label { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+    .checkbox-label input { width: 20px; height: 20px; accent-color: #22c55e; }
+    
+    .submit-btn { width: 100%; padding: 14px; background: #171717; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+    .submit-btn:hover { background: #000; }
+    
+    .success-message { text-align: center; padding: 40px 20px; }
+    .success-icon { font-size: 48px; margin-bottom: 16px; }
+    .success-title { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+    .success-text { color: #737373; }
+    
+    .footer { padding: 40px 24px; text-align: center; }
+    .footer p { font-size: 14px; color: #737373; }
+    .footer a { color: #525252; }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html" class="logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#171717"/><path d="M9 8H23V11H12V14H21V17H12V24H9V8Z" fill="#22C55E"/></svg>
+      <span>Finault</span>
+    </a>
+  </nav>
+
+  <div class="container">
+    <h1>Share Your Feedback</h1>
+    <p class="subtitle">Help us build what you need. Every response is read by our team.</p>
+
+    <div class="form-card" id="feedback-form">
+      <form onsubmit="submitFeedback(event)">
+        <div class="form-group">
+          <label class="form-label">How would you rate your experience with Finault?</label>
+          <div class="rating-group" id="rating-group">
+            <button type="button" class="rating-btn" data-value="1" onclick="selectRating(1)">1</button>
+            <button type="button" class="rating-btn" data-value="2" onclick="selectRating(2)">2</button>
+            <button type="button" class="rating-btn" data-value="3" onclick="selectRating(3)">3</button>
+            <button type="button" class="rating-btn" data-value="4" onclick="selectRating(4)">4</button>
+            <button type="button" class="rating-btn" data-value="5" onclick="selectRating(5)">5</button>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:#a3a3a3;margin-top:8px;">
+            <span>Not useful</span>
+            <span>Very useful</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">What would you like us to build next?</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="features" value="history">
+              Upload history & month-over-month comparison
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="features" value="netsuite">
+              Direct NetSuite integration
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="features" value="anomaly">
+              Anomaly detection & alerts
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="features" value="forecast">
+              Spend forecasting
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="features" value="api">
+              API access
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="features" value="slack">
+              Slack notifications
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">What's your biggest pain point with AI cost management?</label>
+          <textarea class="form-textarea" name="pain_point" placeholder="Tell us about the challenges you face..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">How much does your company spend on AI APIs monthly?</label>
+          <select class="form-select" name="spend">
+            <option value="">Select range...</option>
+            <option value="<1k">Less than $1,000</option>
+            <option value="1k-10k">$1,000 - $10,000</option>
+            <option value="10k-50k">$10,000 - $50,000</option>
+            <option value="50k-100k">$50,000 - $100,000</option>
+            <option value=">100k">More than $100,000</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Your email (optional, for follow-up)</label>
+          <input type="email" class="form-input" name="email" placeholder="you@company.com">
+        </div>
+
+        <button type="submit" class="submit-btn">Submit Feedback</button>
+      </form>
+    </div>
+
+    <div class="form-card" id="success-message" style="display:none;">
+      <div class="success-message">
+        <div class="success-icon">🎉</div>
+        <div class="success-title">Thank you!</div>
+        <p class="success-text">Your feedback helps us build a better product. We read every response.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2026 Finault. <a href="privacy.html">Privacy</a> · <a href="index.html">Back to Home</a></p>
+  </footer>
+
+  <script>
+    let selectedRating = 0;
+    
+    function selectRating(value) {
+      selectedRating = value;
+      document.querySelectorAll('.rating-btn').forEach(btn => {
+        btn.classList.toggle('selected', parseInt(btn.dataset.value) <= value);
+      });
+    }
+    
+    function submitFeedback(event) {
+      event.preventDefault();
+      
+      // In production, this would send to your backend
+      const formData = {
+        rating: selectedRating,
+        features: [...document.querySelectorAll('input[name="features"]:checked')].map(c => c.value),
+        pain_point: document.querySelector('textarea[name="pain_point"]').value,
+        spend: document.querySelector('select[name="spend"]').value,
+        email: document.querySelector('input[name="email"]').value,
+        timestamp: new Date().toISOString()
+      };
+      
+      console.log('Feedback submitted:', formData);
+      
+      // Show success message
+      document.getElementById('feedback-form').style.display = 'none';
+      document.getElementById('success-message').style.display = 'block';
+    }
+  </script>
+</body>
+</html>

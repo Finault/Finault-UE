@@ -1,0 +1,13 @@
+# Finault PDF Generator Service
+# Diamond Tier - CFO/Auditor-Ready Documents
+
+# Web framework
+flask==3.0.0
+flask-cors==4.0.0
+gunicorn==21.2.0
+
+# PDF Generation (reportlab is the gold standard)
+reportlab==4.0.8
+
+# Supporting libraries
+python-dateutil==2.8.2

@@ -1,0 +1,20 @@
+{
+  "closeId": "FIN-CL-TEST-MEDIUM",
+  "analyzedAt": "2024-12-31T23:59:59Z",
+  "driftEvents": [
+    {
+      "drift_id": "DFT-001",
+      "metric_key": "OpenAI|gpt-4|USD",
+      "severity": "LOW",
+      "current_value": 0.033,
+      "baseline_value": 0.030,
+      "deviation_percent": 10,
+      "detected_at": "2024-12-31T23:59:59Z"
+    }
+  ],
+  "insufficientHistory": [],
+  "summary": {
+    "overallDriftSeverity": "LOW",
+    "totalMetricsAnalyzed": 15
+  }
+}

@@ -1,0 +1,84 @@
+version: '3.8'
+
+services:
+  # Main AgentOS API
+  agentos:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./logs:/app/logs
+      - ./AGENTS.md:/app/AGENTS.md
+
+  # PostgreSQL for local development (use Supabase in production)
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=finault
+      - POSTGRES_PASSWORD=finault_dev
+      - POSTGRES_DB=finault_agentos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/00-auth-stub.sql:/docker-entrypoint-initdb.d/00-auth-stub.sql
+      - ../database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finault"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # MCP Server (optional - for MCP integrations)
+  mcp-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["node", "mcp/finault-mcp-server.js"]
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      - postgres
+    restart: unless-stopped
+
+  # Nightly compound job (cron-like)
+  compound-scheduler:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["sh", "-c", "while true; do sleep 86400; node -e \"import('./agents/compound-learning.js').then(m => new m.default('system').nightlyCompound())\"; done"]
+    environment:
+      - SUPABASE_URL=${SUPABASE_URL}
+      - SUPABASE_SERVICE_KEY=${SUPABASE_SERVICE_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    depends_on:
+      - agentos
+    restart: unless-stopped
+    volumes:
+      - ./AGENTS.md:/app/AGENTS.md
+      - ./logs:/app/logs
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: finault-network

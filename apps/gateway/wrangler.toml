@@ -1,0 +1,140 @@
+name = "finault-gateway-gold"
+main = "gateway-wired.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = true
+
+# Production route (commented out - already deployed)
+# routes = [
+#   { pattern = "api.finault.ai/*", zone_name = "finault.ai" }
+# ]
+
+# FIX 8 (CRITICAL): KV Namespace IDs - MUST be set via CI/CD environment variables
+# ═══════════════════════════════════════════════════════════════════════════════════════════════════
+# SECURITY WARNING: The IDs below are EXAMPLES ONLY and must be replaced with actual production IDs
+# via `wrangler secret` commands or CI/CD environment variables.
+#
+# Production Deployment Steps:
+# 1. Create KV namespaces in Cloudflare dashboard (or via API)
+# 2. Obtain the actual namespace IDs
+# 3. Set them via: wrangler secret put CACHE_ID
+# 4. Set them via: wrangler secret put SESSIONS_ID
+# 5. Deploy: wrangler deploy
+#
+# OR use CI/CD to pass environment variables:
+# wrangler deploy --env production \
+#   --var CACHE_ID=<actual-production-id> \
+#   --var SESSIONS_ID=<actual-production-id>
+#
+# NEVER commit real production IDs to version control.
+# ═══════════════════════════════════════════════════════════════════════════════════════════════════
+kv_namespaces = [
+  { binding = "CACHE", id = "" },
+  { binding = "KV_CACHE", id = "" },
+  { binding = "SESSIONS", id = "" }
+]
+
+# Environment variables (set via wrangler secret or dashboard)
+[vars]
+GATEWAY_VERSION = "4.1.0-gold"
+ERP_LIVE_MODE = "false"        # Set to "true" to enable real ERP API posting (QB, NS, Xero)
+ANCHOR_MODE = "LIVE"           # LIVE = real blockchain txns, SOFT = hash-only simulation
+
+# ============================================================================
+# CRON TRIGGERS - Autopilot Recovery System + WAL Processing
+# ============================================================================
+[triggers]
+crons = [
+  "*/5 * * * *",  # Every 5 minutes - Process WAL entries (GAP #2 SOLUTION)
+  "0 9 * * *",    # Daily at 9 AM UTC - Check disputes, send reminders
+  "0 14 * * 1"    # Mondays at 2 PM UTC - Weekly escalation check
+]
+
+# Required secrets (set via `wrangler secret put`):
+# - SUPABASE_URL: Supabase project URL (e.g., https://xyzabc.supabase.co)
+# - SUPABASE_SERVICE_KEY: Supabase service role key for backend API access
+# - OPENAI_API_KEY: OpenAI API key for GPT model access
+# - ANTHROPIC_API_KEY: Anthropic API key for Claude model access
+# - GOOGLE_API_KEY: Google AI API key (optional, for Gemini model support)
+# - AZURE_OPENAI_KEY: Azure OpenAI API key (optional, for Azure deployments)
+# - AZURE_OPENAI_ENDPOINT: Azure OpenAI endpoint URL (optional, required if AZURE_OPENAI_KEY is set)
+#
+# Blockchain Anchoring (Phase E):
+# - ANCHOR_PRIVATE_KEY: Wallet private key for on-chain anchoring (optional)
+# - ANCHOR_RPC_URL: Default RPC endpoint, e.g. Sepolia Infura/Alchemy (optional)
+# - ANCHOR_RPC_URL_MAINNET: Mainnet RPC endpoint (optional)
+# - ANCHOR_RPC_URL_POLYGON: Polygon RPC endpoint (optional)
+#
+# ERP Posting — QuickBooks:
+# - QB_CLIENT_ID: QuickBooks OAuth client ID (optional)
+# - QB_CLIENT_SECRET: QuickBooks OAuth client secret (optional)
+# - QB_REFRESH_TOKEN: QuickBooks refresh token (optional)
+# - QB_REALM_ID: QuickBooks realm ID (optional)
+#
+# ERP Posting — NetSuite:
+# - NS_ACCOUNT_ID: NetSuite account ID (optional)
+# - NS_CONSUMER_KEY: NetSuite OAuth consumer key (optional)
+# - NS_CONSUMER_SECRET: NetSuite OAuth consumer secret (optional)
+# - NS_TOKEN_ID: NetSuite token ID (optional)
+# - NS_TOKEN_SECRET: NetSuite token secret (optional)
+#
+# ERP Posting — Xero:
+# - XERO_CLIENT_ID: Xero OAuth client ID (optional)
+# - XERO_CLIENT_SECRET: Xero OAuth client secret (optional)
+# - XERO_REFRESH_TOKEN: Xero refresh token (optional)
+# - XERO_TENANT_ID: Xero tenant/organization ID (optional)
+#
+# Email & Notifications:
+# - RESEND_API_KEY: Resend email service API key (for sending dispute/alert emails)
+# - SENDGRID_API_KEY: SendGrid API key (fallback email service)
+
+# For development
+[env.development]
+workers_dev = true
+# MEDIUM: KV IDs must be configured via environment variables or wrangler.toml override
+# Error if not set: wrangler will fail with helpful message
+kv_namespaces = [
+  { binding = "CACHE", id = "" },
+  { binding = "SESSIONS", id = "" }
+]
+
+[env.development.vars]
+GATEWAY_VERSION = "4.0.0-gold-dev"
+
+# For staging
+[env.staging]
+workers_dev = true
+# MEDIUM: KV IDs must be configured via environment variables or wrangler.toml override
+# Error if not set: wrangler will fail with helpful message
+kv_namespaces = [
+  { binding = "CACHE", id = "" },
+  { binding = "SESSIONS", id = "" }
+]
+
+[env.staging.vars]
+GATEWAY_VERSION = "4.0.0-gold-staging"
+
+# For production
+[env.production]
+workers_dev = false
+# FIX 8 (CRITICAL): KV IDs MUST be set via environment variables or secrets - NOT hardcoded
+# Production deployment MUST use actual namespace IDs obtained from Cloudflare dashboard
+kv_namespaces = [
+  { binding = "CACHE", id = "" },
+  { binding = "SESSIONS", id = "" }
+]
+
+[env.production.vars]
+GATEWAY_VERSION = "4.0.0-gold-production"
+
+# FIX 8 (CRITICAL): Production KV IDs must be injected via:
+# wrangler deploy --env production \
+#   --var CACHE_ID=$PRODUCTION_CACHE_ID \
+#   --var SESSIONS_ID=$PRODUCTION_SESSIONS_ID
+# OR via wrangler secret put commands
+
+# Deployment notes:
+# 1. Run: wrangler secret put SUPABASE_URL
+# 2. Run: wrangler secret put SUPABASE_KEY
+# 3. Run: wrangler secret put JWT_SECRET
+# 4. Deploy: wrangler deploy

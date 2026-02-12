@@ -1,0 +1,72 @@
+{
+  "name": "finault-platform",
+  "version": "4.0.0",
+  "description": "Finault — The Finance-Safe Layer for AI Spend. Deterministic close packs, immutable ledgers, zero-trust verification.",
+  "private": true,
+  "workspaces": [
+    "apps/gateway",
+    "apps/close-pack",
+    "apps/verifier-service"
+  ],
+  "scripts": {
+    "dev": "wrangler dev",
+    "build": "node scripts/build.js",
+    "deploy": "node scripts/deploy-all.js",
+    "deploy:gateway": "npm run build && wrangler deploy",
+    "deploy:pages": "wrangler pages deploy static --project-name finault",
+    "deploy:verifier": "cd apps/verifier-service && flyctl deploy",
+    "test": "vitest",
+    "test:fcs": "node tests/fcs/fcs-threshold.test.js",
+    "test:smoke": "node tests/smoke.test.js",
+    "test:integration": "vitest run --config agentos/__tests__/integration/vitest.config.js",
+    "test:integration:watch": "vitest --config agentos/__tests__/integration/vitest.config.js",
+    "deploy:verify": "node scripts/deployment-verify.js",
+    "deploy:smoke": "node scripts/smoke-test.js",
+    "verify": "node tools/verify-close.js",
+    "lint": "eslint apps/ platform/ integrations/ dashboard/src/ --ext .ts,.tsx,.js",
+    "lint:fix": "eslint apps/ platform/ integrations/ dashboard/src/ --ext .ts,.tsx,.js --fix",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix",
+    "db:migrate": "node scripts/migrate.js",
+    "db:reset": "node scripts/db-reset.js",
+    "typecheck": "tsc --noEmit -p apps/close-pack/tsconfig.json && cd dashboard && npx tsc --noEmit",
+    "clean": "rm -rf dist/ .wrangler/",
+    "preflight": "npm run lint && npm run typecheck && npm run test && npm run build",
+    "verifier:start": "cd apps/verifier-service && python api_server_v2.py",
+    "postinstall": "npm run audit || echo 'Install complete with warnings'"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.74.0",
+    "@supabase/supabase-js": "^2.95.3",
+    "arweave": "^1.14.4",
+    "ethers": "^6.13.0",
+    "hono": "^4.11.9",
+    "jszip": "^3.10.1",
+    "pdf-lib": "^1.17.1",
+    "stripe": "^14.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240925.0",
+    "@types/node": "^20.14.0",
+    "esbuild": "^0.21.0",
+    "eslint": "^8.57.0",
+    "jest": "^29.7.0",
+    "pg": "^8.18.0",
+    "typescript": "^5.5.0",
+    "vitest": "^1.0.0",
+    "wrangler": "^3.80.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "fintech",
+    "ai-cost",
+    "close-pack",
+    "audit",
+    "reconciliation",
+    "blockchain-anchoring"
+  ],
+  "author": "Finault Inc.",
+  "license": "UNLICENSED"
+}

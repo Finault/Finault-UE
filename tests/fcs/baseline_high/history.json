@@ -1,0 +1,12 @@
+{
+  "close_id": "FIN-CL-TEST-HIGH",
+  "artifact_type": "invoice_close",
+  "prior_close_id": "FIN-CL-2024-11",
+  "history_depth": 5,
+  "chain": [
+    { "close_id": "FIN-CL-2024-11", "period_start": "2024-11-01", "period_end": "2024-11-30" },
+    { "close_id": "FIN-CL-2024-10", "period_start": "2024-10-01", "period_end": "2024-10-31" },
+    { "close_id": "FIN-CL-2024-09", "period_start": "2024-09-01", "period_end": "2024-09-30" },
+    { "close_id": "FIN-CL-2024-08", "period_start": "2024-08-01", "period_end": "2024-08-31" }
+  ]
+}

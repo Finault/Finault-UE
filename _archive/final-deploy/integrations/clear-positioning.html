@@ -1,0 +1,504 @@
+/**
+ * FINAULT CLEAR POSITIONING
+ * 
+ * Addresses Criticism #6: Your Positioning Is Muddled
+ * 
+ * THE ONE SENTENCE: "Turn AI invoices into journal entries. Automatically."
+ * 
+ * Everything else supports this sentence.
+ */
+
+// =============================================================================
+// NEW HERO SECTION
+// =============================================================================
+
+const newHeroHTML = `
+<!-- HERO SECTION: Clear, Single Message -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      AI FinOps Platform
+    </div>
+    
+    <h1 class="hero-headline">
+      Turn AI invoices into journal entries.
+      <span class="hero-highlight">Automatically.</span>
+    </h1>
+    
+    <p class="hero-subtext">
+      Upload your OpenAI, Anthropic, or Azure invoice. 
+      Get ERP-ready exports in 60 seconds. 
+      No spreadsheets. No manual mapping.
+    </p>
+    
+    <div class="hero-cta">
+      <a href="/demo" class="btn-primary">
+        Try Free Demo
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+        </svg>
+      </a>
+      <a href="#how-it-works" class="btn-secondary">
+        See How It Works
+      </a>
+    </div>
+    
+    <div class="hero-proof">
+      <div class="proof-item">
+        <strong>60 sec</strong>
+        <span>Processing time</span>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-item">
+        <strong>4 ERPs</strong>
+        <span>Supported exports</span>
+      </div>
+      <div class="proof-divider"></div>
+      <div class="proof-item">
+        <strong>3 Providers</strong>
+        <span>OpenAI, Anthropic, Azure</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="hero-visual">
+    <!-- Simple flow diagram -->
+    <div class="flow-diagram">
+      <div class="flow-step">
+        <div class="flow-icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+          </svg>
+        </div>
+        <span>Upload Invoice</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step active">
+        <div class="flow-icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+          </svg>
+        </div>
+        <span>Auto-Allocate</span>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="flow-icon">
+          <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <span>Export to ERP</span>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+// =============================================================================
+// SUPPORTING SECTIONS (Everything supports the main message)
+// =============================================================================
+
+const supportingSectionsHTML = `
+<!-- HOW IT WORKS: Reinforces the core value prop -->
+<section id="how-it-works" class="section how-it-works">
+  <div class="section-header">
+    <h2>From Invoice to Journal Entry in 3 Steps</h2>
+    <p>What used to take 4 hours now takes 60 seconds</p>
+  </div>
+  
+  <div class="steps-grid">
+    <div class="step">
+      <div class="step-number">1</div>
+      <h3>Upload Your Invoice</h3>
+      <p>Drag and drop your CSV export from OpenAI, Anthropic, or Azure. We auto-detect the format.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">2</div>
+      <h3>Configure Cost Centers</h3>
+      <p>Map projects to cost centers using rules. Save them for next month—one-time setup.</p>
+    </div>
+    <div class="step">
+      <div class="step-number">3</div>
+      <h3>Export to Your ERP</h3>
+      <p>Download journal entries for QuickBooks, Xero, NetSuite, or Sage. Import directly.</p>
+    </div>
+  </div>
+</section>
+
+<!-- EXPORTS: Shows the tangible output -->
+<section class="section exports">
+  <div class="section-header">
+    <h2>ERP-Ready Exports</h2>
+    <p>Tested and validated with real accounting systems</p>
+  </div>
+  
+  <div class="exports-grid">
+    <div class="export-card">
+      <img src="/images/quickbooks-logo.svg" alt="QuickBooks" />
+      <span>QuickBooks Online</span>
+      <span class="badge-verified">✓ Verified</span>
+    </div>
+    <div class="export-card">
+      <img src="/images/xero-logo.svg" alt="Xero" />
+      <span>Xero</span>
+      <span class="badge-verified">✓ Verified</span>
+    </div>
+    <div class="export-card">
+      <img src="/images/netsuite-logo.svg" alt="NetSuite" />
+      <span>NetSuite</span>
+      <span class="badge-coming">Coming Soon</span>
+    </div>
+    <div class="export-card">
+      <img src="/images/sage-logo.svg" alt="Sage" />
+      <span>Sage</span>
+      <span class="badge-coming">Coming Soon</span>
+    </div>
+  </div>
+</section>
+
+<!-- GATEWAY: Secondary capability, supports main value -->
+<section class="section gateway">
+  <div class="section-header">
+    <h2>Or: Track Costs in Real-Time</h2>
+    <p>For teams who want continuous visibility, not just monthly reports</p>
+  </div>
+  
+  <div class="gateway-content">
+    <div class="gateway-text">
+      <h3>The Finault Gateway</h3>
+      <p>Route your AI API calls through Finault to:</p>
+      <ul>
+        <li>Track costs as they happen</li>
+        <li>Attribute every call to a cost center</li>
+        <li>Set budget alerts and limits</li>
+        <li>Generate Close Packs automatically</li>
+      </ul>
+      <a href="/gateway" class="link-arrow">Learn more about the Gateway →</a>
+    </div>
+    <div class="gateway-code">
+      <pre><code># Before: Direct to OpenAI
+curl https://api.openai.com/v1/chat/completions
+
+# After: Through Finault (one line change)
+curl https://gateway.finault.ai/v1/chat/completions \\
+  -H "X-Finault-Cost-Center: engineering"</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- CTA: Reinforces the main action -->
+<section class="section cta">
+  <div class="cta-content">
+    <h2>Ready to stop wrestling with spreadsheets?</h2>
+    <p>Try the demo with sample data. No signup required.</p>
+    <a href="/demo" class="btn-primary btn-large">
+      Try Free Demo
+      <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+      </svg>
+    </a>
+  </div>
+</section>
+`;
+
+// =============================================================================
+// CSS FOR CLEAR POSITIONING
+// =============================================================================
+
+const positioningCSS = `
+<style>
+/* Hero Section */
+.hero {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 80px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  gap: 64px;
+}
+
+.hero-content {
+  flex: 1;
+  max-width: 600px;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #166534;
+  margin-bottom: 24px;
+}
+
+.badge-dot {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.hero-headline {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #111827;
+  margin: 0 0 24px;
+}
+
+.hero-highlight {
+  color: #10b981;
+}
+
+.hero-subtext {
+  font-size: 18px;
+  line-height: 1.6;
+  color: #6b7280;
+  margin: 0 0 32px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  background: #111827;
+  color: white;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #374151;
+  transform: translateY(-1px);
+}
+
+.btn-primary svg {
+  width: 20px;
+  height: 20px;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 14px 28px;
+  background: transparent;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.hero-proof {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.proof-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.proof-item strong {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.proof-item span {
+  font-size: 13px;
+  color: #9ca3af;
+}
+
+.proof-divider {
+  width: 1px;
+  height: 40px;
+  background: #e5e7eb;
+}
+
+/* Flow Diagram */
+.hero-visual {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.flow-diagram {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 40px;
+  background: #f9fafb;
+  border-radius: 16px;
+  border: 1px solid #e5e7eb;
+}
+
+.flow-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.flow-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  transition: all 0.2s;
+}
+
+.flow-step.active .flow-icon {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.flow-icon svg {
+  width: 28px;
+  height: 28px;
+  color: #6b7280;
+}
+
+.flow-step.active .flow-icon svg {
+  color: white;
+}
+
+.flow-step span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.flow-arrow {
+  font-size: 24px;
+  color: #d1d5db;
+}
+
+/* Sections */
+.section {
+  padding: 80px 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.section-header h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 12px;
+}
+
+.section-header p {
+  font-size: 18px;
+  color: #6b7280;
+  margin: 0;
+}
+
+/* Steps */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 32px;
+}
+
+.step {
+  text-align: center;
+  padding: 32px;
+}
+
+.step-number {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #111827;
+  color: white;
+  font-size: 20px;
+  font-weight: 700;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+}
+
+.step h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 12px;
+}
+
+.step p {
+  font-size: 15px;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .hero {
+    flex-direction: column;
+    padding: 40px 24px;
+  }
+  
+  .hero-headline {
+    font-size: 36px;
+  }
+  
+  .hero-visual {
+    width: 100%;
+  }
+  
+  .steps-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+</style>
+`;
+
+console.log('=== POSITIONING CSS ===');
+console.log(positioningCSS);
+console.log('\n=== HERO HTML ===');
+console.log(newHeroHTML);
+console.log('\n=== SUPPORTING SECTIONS ===');
+console.log(supportingSectionsHTML);

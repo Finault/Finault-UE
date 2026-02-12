@@ -1,0 +1,186 @@
+version: '3.8'
+
+services:
+  # ============================================================================
+  # Verifier API
+  # ============================================================================
+  verifier:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.verifier
+    ports:
+      - "8000:8000"
+    environment:
+      - FINAULT_ENV=production
+      - PORT=8000
+      - WORKERS=4
+      - JWT_SECRET=${JWT_SECRET:-change-me-in-production}
+      - HMAC_SECRET=${HMAC_SECRET:-change-me-in-production}
+      - DATABASE_URL=postgresql://finault:finault@postgres:5432/finault
+      - STORAGE_ENDPOINT=http://minio:9000
+      - STORAGE_BUCKET=finault-closepacks
+      - STORAGE_ACCESS_KEY=minioadmin
+      - STORAGE_SECRET_KEY=minioadmin
+      - PROMETHEUS_ENABLED=true
+      - LOG_LEVEL=INFO
+    depends_on:
+      - postgres
+      - minio
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # Gateway
+  # ============================================================================
+  gateway:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - VERIFIER_URL=http://verifier:8000
+      - STORAGE_ENDPOINT=http://minio:9000
+      - STORAGE_BUCKET=finault-telemetry
+      - STORAGE_ACCESS_KEY=minioadmin
+      - STORAGE_SECRET_KEY=minioadmin
+    depends_on:
+      - verifier
+      - minio
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # PostgreSQL (Supabase-compatible)
+  # ============================================================================
+  postgres:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=finault
+      - POSTGRES_PASSWORD=finault
+      - POSTGRES_DB=finault
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ../supabase/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U finault"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # MinIO (S3-compatible object storage)
+  # ============================================================================
+  minio:
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    volumes:
+      - minio-data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # MinIO Setup (creates buckets)
+  # ============================================================================
+  minio-setup:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      mc mb myminio/finault-closepacks --ignore-existing;
+      mc mb myminio/finault-telemetry --ignore-existing;
+      mc mb myminio/finault-receipts --ignore-existing;
+      mc mb myminio/finault-audit-logs --ignore-existing;
+      exit 0;
+      "
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # Prometheus (Metrics)
+  # ============================================================================
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-lifecycle'
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # Grafana (Dashboards)
+  # ============================================================================
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_USERS_ALLOW_SIGN_UP=false
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    depends_on:
+      - prometheus
+    networks:
+      - finault-network
+
+  # ============================================================================
+  # Redis (Caching & Rate Limiting)
+  # ============================================================================
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - finault-network
+
+networks:
+  finault-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  minio-data:
+  prometheus-data:
+  grafana-data:
+  redis-data:

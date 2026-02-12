@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Complete Guide to AI Cost Allocation | Finault Blog</title>
+  <meta name="description" content="Learn how to attribute AI spend to teams, projects, and cost centers.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root { --white: #FFFFFF; --gray-50: #FAFAFA; --gray-100: #F5F5F5; --gray-200: #E5E5E5; --gray-300: #D4D4D4; --gray-400: #A3A3A3; --gray-500: #737373; --gray-600: #525252; --gray-700: #404040; --gray-800: #262626; --gray-900: #171717; --green-500: #16A34A; --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; --font-mono: 'JetBrains Mono', monospace; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: var(--font-sans); background: var(--white); color: var(--gray-900); -webkit-font-smoothing: antialiased; }
+    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-200); }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--gray-900); }
+    .logo svg { width: 32px; height: 32px; }
+    .logo span { font-size: 20px; font-weight: 600; letter-spacing: -0.02em; }
+    .nav-links { display: flex; align-items: center; gap: 28px; }
+    .nav-links a { font-size: 14px; color: var(--gray-600); text-decoration: none; }
+    .btn { display: inline-flex; align-items: center; padding: 12px 24px; font-size: 14px; font-weight: 500; border-radius: 8px; text-decoration: none; }
+    .btn-primary { background: var(--green-500); color: var(--white); }
+
+    .article-header { padding: 140px 24px 60px; max-width: 720px; margin: 0 auto; }
+    .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--gray-500); text-decoration: none; margin-bottom: 24px; }
+    .back-link:hover { color: var(--gray-700); }
+    .article-meta { display: flex; gap: 12px; margin-bottom: 16px; }
+    .article-tag { font-size: 12px; font-weight: 500; color: var(--green-600); background: rgba(22, 163, 74, 0.1); padding: 4px 10px; border-radius: 100px; }
+    .article-date { font-size: 13px; color: var(--gray-500); }
+    .article-header h1 { font-size: 40px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 16px; }
+    .article-header p { font-size: 18px; color: var(--gray-600); line-height: 1.6; }
+
+    .article-content { max-width: 720px; margin: 0 auto; padding: 0 24px 80px; }
+    .article-content h2 { font-size: 28px; font-weight: 600; margin-top: 48px; margin-bottom: 16px; }
+    .article-content h3 { font-size: 20px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; }
+    .article-content p { font-size: 16px; color: var(--gray-700); line-height: 1.8; margin-bottom: 20px; }
+    .article-content ul, .article-content ol { margin-bottom: 20px; padding-left: 24px; }
+    .article-content li { font-size: 16px; color: var(--gray-700); line-height: 1.8; margin-bottom: 8px; }
+    .article-content code { font-family: var(--font-mono); font-size: 14px; background: var(--gray-100); padding: 2px 6px; border-radius: 4px; }
+
+    .code-block { background: var(--gray-900); border-radius: 12px; padding: 20px; margin: 24px 0; overflow-x: auto; }
+    .code-block pre { font-family: var(--font-mono); font-size: 13px; color: var(--gray-300); line-height: 1.6; margin: 0; }
+
+    .callout { background: var(--gray-50); border-left: 3px solid var(--green-500); padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0; }
+    .callout p { margin: 0; font-size: 15px; }
+
+    .footer { padding: 40px 24px; background: var(--gray-50); border-top: 1px solid var(--gray-200); text-align: center; }
+    .footer-links { display: flex; justify-content: center; gap: 32px; margin-bottom: 20px; }
+    .footer-links a { font-size: 14px; color: var(--gray-600); text-decoration: none; }
+    .footer-copy { font-size: 13px; color: var(--gray-500); }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <a href="../index.html" class="logo">
+      <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#16A34A"/><path d="M8 16h16M16 8v16" stroke="white" stroke-width="2.5" stroke-linecap="round"/></svg>
+      <span>Finault</span>
+    </a>
+    <div class="nav-links">
+      <a href="../index.html#features">Features</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../docs.html">Docs</a>
+      <a href="../demo.html" class="btn btn-primary">Get Started</a>
+    </div>
+  </nav>
+
+  <article>
+    <header class="article-header">
+      <a href="../blog.html" class="back-link">← Back to Blog</a>
+      <div class="article-meta">
+        <span class="article-tag">Guide</span>
+        <span class="article-date">January 15, 2026</span>
+      </div>
+      <h1>The Complete Guide to AI Cost Allocation</h1>
+      <p>Learn how to attribute AI spend to teams, projects, and cost centers. Includes real-world examples from companies spending $10K-$500K/month on AI APIs.</p>
+    </header>
+
+    <div class="article-content">
+      <h2>Why AI Cost Allocation Matters</h2>
+      <p>As AI spend grows from experimental budgets to material line items, finance teams need the same visibility they have for cloud infrastructure. The problem: AI invoices are a black box of API calls with no attribution.</p>
+      
+      <p>Without proper allocation, you can't answer basic questions:</p>
+      <ul>
+        <li>Which team is driving the spend increase?</li>
+        <li>Which project is over budget?</li>
+        <li>What's the AI cost per customer?</li>
+        <li>Are we allocating to the right GL accounts?</li>
+      </ul>
+
+      <h2>The Three Allocation Methods</h2>
+      
+      <h3>1. API Key-Based Allocation</h3>
+      <p>The simplest method: one API key per cost center. When you see <code>sk-prod-chatbot-*</code> on your invoice, you know it belongs to the chatbot project.</p>
+      
+      <div class="callout">
+        <p><strong>Pro:</strong> Works with zero infrastructure. <strong>Con:</strong> Doesn't scale past 10-20 keys.</p>
+      </div>
+
+      <h3>2. Gateway Proxy Allocation</h3>
+      <p>Route all AI traffic through a proxy that tags each request with attribution headers. This is how Finault works:</p>
+      
+      <div class="code-block">
+<pre>curl https://gateway.finault.ai/v1/chat/completions \
+  -H "Authorization: Bearer sk-..." \
+  -H "X-Finault-Cost-Center: ENG-001" \
+  -H "X-Finault-Project: chatbot" \
+  -H "X-Finault-Team: Platform"</pre>
+      </div>
+      
+      <p>Every request is tagged in real-time. No post-hoc guessing.</p>
+
+      <h3>3. Pattern Matching Allocation</h3>
+      <p>For existing invoices without tagging, use pattern matching rules:</p>
+      <ul>
+        <li><code>*-prod-*</code> → Production (70%)</li>
+        <li><code>*-dev-*</code> → Development (15%)</li>
+        <li><code>*-test-*</code> → QA (10%)</li>
+        <li>Everything else → Unallocated (5%)</li>
+      </ul>
+
+      <h2>Real-World Example</h2>
+      <p>A Series B startup spending $85K/month on AI APIs implemented Finault and discovered:</p>
+      <ul>
+        <li>40% of spend was from a single internal tool nobody knew about</li>
+        <li>Development environment was 3x production (should be 0.1x)</li>
+        <li>One customer was responsible for 25% of AI costs but only 5% of revenue</li>
+      </ul>
+      
+      <p>Within 30 days, they reduced spend by 35% without impacting any production workloads.</p>
+
+      <h2>Getting Started</h2>
+      <p>The fastest path to AI cost visibility:</p>
+      <ol>
+        <li>Upload your current invoice to <a href="../demo.html">Finault's demo</a></li>
+        <li>See the allocation breakdown instantly</li>
+        <li>Download a Close Pack for your finance team</li>
+        <li>Implement the Gateway for real-time tagging going forward</li>
+      </ol>
+    </div>
+  </article>
+
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="../docs.html">Documentation</a>
+      <a href="../pricing.html">Pricing</a>
+      <a href="../privacy.html">Privacy</a>
+      <a href="../terms.html">Terms</a>
+    </div>
+    <p class="footer-copy">© 2026 Finault. All rights reserved.</p>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,18 @@
+Invoice Number,Invoice Date,Vendor,Bill To,Description,Quantity,Unit Price,Amount,Currency
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,GPT-4o API Usage - Input Tokens (42.2M tokens),42200000,0.0050,211000.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,GPT-4o API Usage - Output Tokens (12.8M tokens),12800000,0.0150,192000.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,GPT-4o-mini API Usage - Input Tokens (85.5M tokens),85500000,0.00015,12825.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,GPT-4o-mini API Usage - Output Tokens (38.2M tokens),38200000,0.00060,22920.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,o1 API Usage - Input Tokens (8.5M tokens),8500000,0.0150,127500.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,o1 API Usage - Output Tokens (2.1M tokens),2100000,0.0600,126000.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,text-embedding-3-large (156M tokens),156000000,0.00013,20280.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,Whisper API Usage (1250 minutes),1250,0.0060,7.50,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,DALL-E 3 Image Generation (HD 1024x1024),2800,0.0800,224.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,Fine-tuning: GPT-4o-mini Training (5.2M tokens),5200000,0.0080,41600.00,USD
+INV-OAI-2026-0147,2026-01-31,OpenAI Inc.,Acme Corporation,Dedicated Capacity - GPT-4o (Reserved Throughput),1,18500.00,18500.00,USD
+,,,,Subtotal,,,772856.50,USD
+,,,,Tax (0%),,,0.00,USD
+,,,,Total,,,772856.50,USD
+,,,,Amount Due,,,772856.50,USD
+,,,,Payment Terms: Net 30,,,,
+,,,,Due Date: 2026-03-02,,,,

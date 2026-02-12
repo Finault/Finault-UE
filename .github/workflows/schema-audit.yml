@@ -1,0 +1,93 @@
+name: Schema Audit (Gap #3 Prevention)
+
+on:
+  pull_request:
+    paths:
+      - 'database/**/*.sql'
+      - 'apps/**'
+      - 'platform/**'
+  schedule:
+    # Run weekly audit every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:  # Allow manual trigger
+
+jobs:
+  audit-schema:
+    name: Detect Unused Tables
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Run Schema Audit
+        id: audit
+        run: |
+          python3 scripts/schema-audit.py || echo "unused_found=true" >> $GITHUB_OUTPUT
+
+      - name: Upload Audit Report
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: schema-audit-report
+          path: schema-audit-report.json
+
+      - name: Comment on PR (if unused tables found)
+        if: github.event_name == 'pull_request' && steps.audit.outputs.unused_found == 'true'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            const report = JSON.parse(fs.readFileSync('schema-audit-report.json', 'utf8'));
+
+            const unusedTables = report.unused_table_list;
+            const unusedCount = report.unused_tables;
+
+            if (unusedCount > 0) {
+              const comment = `## ⚠️ Schema Audit Warning
+
+**Gap #3 Prevention:** This PR introduces or leaves **${unusedCount} unused table(s)** in the database schema.
+
+### Unused Tables:
+${unusedTables.map(table => `- \`${table}\``).join('\n')}
+
+### Action Required:
+1. **If these tables are intentional (future use)**: Add a comment in the schema explaining why they exist
+2. **If these tables are dead code**: Remove them with a migration
+3. **If these tables should be used**: Add code references to them
+
+### Why This Matters:
+- Unused tables slow down migrations
+- RLS policies on dead tables waste CPU
+- Dead indexes consume storage
+- Future developers waste time understanding unused tables
+
+Run \`python3 scripts/schema-audit.py\` locally to see the full report.
+`;
+
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: comment
+              });
+            }
+
+      - name: Fail if unused tables found in PR
+        if: github.event_name == 'pull_request' && steps.audit.outputs.unused_found == 'true'
+        run: |
+          echo "❌ PR contains unused database tables!"
+          echo "Run 'python3 scripts/schema-audit.py' to see details."
+          exit 1
+
+      - name: Weekly Report (Slack/Email)
+        if: github.event_name == 'schedule' && steps.audit.outputs.unused_found == 'true'
+        run: |
+          echo "📊 Weekly schema audit found unused tables."
+          echo "Create a cleanup issue or migration."
+          # TODO: Add Slack/email notification here

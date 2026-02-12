@@ -1,0 +1,11 @@
+{
+  "period_start": "2024-12-01",
+  "period_end": "2024-12-31",
+  "providers": ["OpenAI"],
+  "expected_providers": ["OpenAI"],
+  "total_spend": 20000,
+  "currency": "USD",
+  "invoices": [
+    { "provider": "OpenAI", "total": 20000 }
+  ]
+}

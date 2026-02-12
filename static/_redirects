@@ -1,0 +1,9 @@
+# Cloudflare Pages Redirects Configuration for Finault
+# https://developers.cloudflare.com/pages/platform/redirects/
+
+# Route API requests to api.finault.ai
+/api/* https://api.finault.ai/api/:splat 301
+
+# Note: Clean URL rewrites (/foo -> /foo.html) are NOT needed here.
+# Cloudflare Pages automatically serves foo.html at /foo natively.
+# Adding explicit 200 rewrites causes infinite redirect loops.

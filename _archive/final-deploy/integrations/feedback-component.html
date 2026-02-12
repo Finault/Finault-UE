@@ -1,0 +1,377 @@
+/**
+ * FINAULT FEEDBACK COMPONENT
+ * 
+ * Addresses Criticism #27: No Feedback Loop
+ * 
+ * Features:
+ * - Thumbs up/down on allocation results
+ * - Optional text feedback
+ * - Allocation correction UI
+ * - Sends feedback to API
+ */
+
+const feedbackComponentHTML = `
+<!-- Feedback Component -->
+<style>
+.finault-feedback {
+  background: #f9fafb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 24px;
+  border: 1px solid #e5e7eb;
+}
+
+.finault-feedback-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.finault-feedback-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.finault-feedback-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.finault-feedback-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  border: 2px solid #e5e7eb;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.finault-feedback-btn:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}
+
+.finault-feedback-btn.selected-good {
+  border-color: #10b981;
+  background: #ecfdf5;
+}
+
+.finault-feedback-btn.selected-bad {
+  border-color: #ef4444;
+  background: #fef2f2;
+}
+
+.finault-feedback-btn svg {
+  width: 24px;
+  height: 24px;
+}
+
+.finault-feedback-btn.good svg {
+  color: #10b981;
+}
+
+.finault-feedback-btn.bad svg {
+  color: #ef4444;
+}
+
+.finault-feedback-form {
+  display: none;
+  margin-top: 16px;
+}
+
+.finault-feedback-form.visible {
+  display: block;
+}
+
+.finault-feedback-textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  font-size: 14px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.finault-feedback-textarea:focus {
+  outline: none;
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+.finault-feedback-submit {
+  margin-top: 12px;
+  padding: 10px 20px;
+  background: #111827;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.finault-feedback-submit:hover {
+  background: #374151;
+}
+
+.finault-feedback-thanks {
+  display: none;
+  text-align: center;
+  padding: 20px;
+}
+
+.finault-feedback-thanks.visible {
+  display: block;
+}
+
+.finault-feedback-thanks svg {
+  width: 48px;
+  height: 48px;
+  color: #10b981;
+  margin-bottom: 8px;
+}
+
+.finault-feedback-thanks p {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Allocation Correction */
+.finault-correction {
+  background: white;
+  border: 1px solid #fbbf24;
+  border-radius: 8px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.finault-correction-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.finault-correction-header svg {
+  width: 20px;
+  height: 20px;
+  color: #f59e0b;
+}
+
+.finault-correction-header span {
+  font-weight: 600;
+  color: #92400e;
+  font-size: 14px;
+}
+
+.finault-correction-row {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #fef3c7;
+}
+
+.finault-correction-row:last-child {
+  border-bottom: none;
+}
+
+.finault-correction-current {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.finault-correction-arrow {
+  color: #d1d5db;
+}
+
+.finault-correction-select {
+  padding: 8px 12px;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+}
+</style>
+
+<div id="finault-feedback" class="finault-feedback">
+  <div class="finault-feedback-header">
+    <span class="finault-feedback-title">Did we get this allocation right?</span>
+    <div class="finault-feedback-buttons">
+      <button class="finault-feedback-btn good" onclick="finaultFeedback('good')" title="Yes, looks good">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
+        </svg>
+      </button>
+      <button class="finault-feedback-btn bad" onclick="finaultFeedback('bad')" title="Needs improvement">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  
+  <!-- Feedback form (shows after thumbs down) -->
+  <div id="finault-feedback-form" class="finault-feedback-form">
+    <textarea 
+      id="finault-feedback-text"
+      class="finault-feedback-textarea" 
+      placeholder="What's wrong with this allocation? (optional)"
+    ></textarea>
+    
+    <!-- Correction UI -->
+    <div id="finault-correction" class="finault-correction" style="display: none;">
+      <div class="finault-correction-header">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+        </svg>
+        <span>Correct the allocation:</span>
+      </div>
+      <div id="finault-correction-rows">
+        <!-- Populated dynamically -->
+      </div>
+    </div>
+    
+    <button class="finault-feedback-submit" onclick="finaultSubmitFeedback()">
+      Submit Feedback
+    </button>
+  </div>
+  
+  <!-- Thank you message -->
+  <div id="finault-feedback-thanks" class="finault-feedback-thanks">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+    </svg>
+    <p>Thanks for your feedback! This helps improve our allocations.</p>
+  </div>
+</div>
+
+<script>
+let finaultFeedbackState = {
+  rating: null,
+  comment: '',
+  corrections: {},
+  allocationData: null
+};
+
+function finaultFeedback(type) {
+  finaultFeedbackState.rating = type;
+  
+  // Update button styles
+  const goodBtn = document.querySelector('.finault-feedback-btn.good');
+  const badBtn = document.querySelector('.finault-feedback-btn.bad');
+  
+  goodBtn.classList.remove('selected-good');
+  badBtn.classList.remove('selected-bad');
+  
+  if (type === 'good') {
+    goodBtn.classList.add('selected-good');
+    // If good, submit immediately
+    finaultSubmitFeedback();
+  } else {
+    badBtn.classList.add('selected-bad');
+    // Show feedback form
+    document.getElementById('finault-feedback-form').classList.add('visible');
+    
+    // Show correction UI if we have allocation data
+    if (finaultFeedbackState.allocationData) {
+      showCorrectionUI(finaultFeedbackState.allocationData);
+    }
+  }
+}
+
+function showCorrectionUI(allocationData) {
+  const container = document.getElementById('finault-correction-rows');
+  const correctionDiv = document.getElementById('finault-correction');
+  
+  if (!allocationData || !allocationData.cost_centers) return;
+  
+  // Build cost center options
+  const costCenters = allocationData.cost_centers.map(cc => cc.cost_center);
+  const optionsHTML = costCenters.map(cc => 
+    \`<option value="\${cc}">\${cc}</option>\`
+  ).join('') + '<option value="__other__">Other...</option>';
+  
+  // Build rows for top items
+  const rows = allocationData.cost_centers.slice(0, 5).map(cc => \`
+    <div class="finault-correction-row">
+      <span class="finault-correction-current">\${cc.cost_center} → $\${cc.amount.toFixed(2)}</span>
+      <span class="finault-correction-arrow">→</span>
+      <select class="finault-correction-select" 
+              data-original="\${cc.cost_center}"
+              onchange="finaultRecordCorrection(this)">
+        <option value="">Keep as is</option>
+        \${optionsHTML}
+      </select>
+    </div>
+  \`).join('');
+  
+  container.innerHTML = rows;
+  correctionDiv.style.display = 'block';
+}
+
+function finaultRecordCorrection(selectEl) {
+  const original = selectEl.dataset.original;
+  const newValue = selectEl.value;
+  
+  if (newValue && newValue !== '') {
+    finaultFeedbackState.corrections[original] = newValue;
+  } else {
+    delete finaultFeedbackState.corrections[original];
+  }
+}
+
+async function finaultSubmitFeedback() {
+  finaultFeedbackState.comment = document.getElementById('finault-feedback-text')?.value || '';
+  
+  try {
+    // Send to API
+    await fetch('https://finault-gateway.finault.workers.dev/v1/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        rating: finaultFeedbackState.rating,
+        comment: finaultFeedbackState.comment,
+        corrections: finaultFeedbackState.corrections,
+        allocation_id: finaultFeedbackState.allocationData?.id,
+        timestamp: new Date().toISOString()
+      })
+    }).catch(() => {});
+    
+    // Show thanks
+    document.getElementById('finault-feedback-form').classList.remove('visible');
+    document.querySelector('.finault-feedback-header').style.display = 'none';
+    document.getElementById('finault-feedback-thanks').classList.add('visible');
+    
+    // Store locally
+    localStorage.setItem('finault_last_feedback', JSON.stringify(finaultFeedbackState));
+    
+  } catch (error) {
+    console.error('Feedback submission error:', error);
+  }
+}
+
+// Set allocation data for corrections
+function finaultSetAllocationData(data) {
+  finaultFeedbackState.allocationData = data;
+}
+
+// Export
+window.finaultSetAllocationData = finaultSetAllocationData;
+window.finaultFeedback = finaultFeedback;
+</script>
+`;
+
+console.log(feedbackComponentHTML);

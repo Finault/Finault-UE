@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Webhooks | Finault API</title>
+  <meta name="description" content="Finault webhook events documentation. Get notified when allocations complete, budgets exceed, or anomalies are detected.">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; color: #fafafa; }
+    
+    .layout { display: flex; min-height: 100vh; }
+    
+    .sidebar { width: 280px; background: #111; border-right: 1px solid #262626; padding: 24px; position: fixed; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; text-decoration: none; color: #fff; }
+    .sidebar-logo svg { width: 28px; height: 28px; }
+    .sidebar-logo span { font-size: 18px; font-weight: 600; }
+    
+    .sidebar-section { margin-bottom: 24px; }
+    .sidebar-label { font-size: 11px; font-weight: 600; color: #737373; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+    .sidebar-link { display: block; padding: 8px 12px; color: #a3a3a3; text-decoration: none; font-size: 14px; border-radius: 6px; margin-bottom: 2px; }
+    .sidebar-link:hover { background: #1a1a1a; color: #fff; }
+    .sidebar-link.active { background: #22c55e20; color: #22c55e; }
+    
+    .main { flex: 1; margin-left: 280px; }
+    
+    .header { padding: 20px 40px; border-bottom: 1px solid #262626; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    
+    .content { padding: 40px; max-width: 900px; }
+    
+    h2 { font-size: 24px; font-weight: 600; margin-bottom: 16px; margin-top: 48px; padding-top: 24px; border-top: 1px solid #262626; }
+    h2:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+    h3 { font-size: 18px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; }
+    
+    p { color: #a3a3a3; line-height: 1.7; margin-bottom: 16px; }
+    
+    .code-block { background: #0d0d0d; border: 1px solid #262626; border-radius: 8px; padding: 16px; overflow-x: auto; margin: 16px 0; }
+    .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; color: #e5e5e5; margin: 0; }
+    .code-block .comment { color: #737373; }
+    .code-block .string { color: #22c55e; }
+    .code-block .number { color: #f59e0b; }
+    .code-block .key { color: #60a5fa; }
+    
+    .event-card { background: #111; border: 1px solid #262626; border-radius: 12px; margin: 24px 0; overflow: hidden; }
+    .event-header { padding: 16px 20px; border-bottom: 1px solid #262626; display: flex; align-items: center; gap: 12px; }
+    .event-name { font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 600; color: #22c55e; }
+    .event-desc { font-size: 14px; color: #a3a3a3; }
+    .event-body { padding: 20px; }
+    
+    .callout { background: #1a1a1a; border-left: 3px solid #22c55e; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+    .callout-title { font-weight: 600; margin-bottom: 8px; }
+    .callout p { margin: 0; font-size: 14px; }
+    
+    .param-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    .param-table th, .param-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #262626; }
+    .param-table th { font-size: 12px; font-weight: 600; color: #737373; text-transform: uppercase; }
+    .param-table td { font-size: 14px; }
+    .param-table code { background: #262626; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .content { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#171717"/><path d="M9 8H23V11H12V14H21V17H12V24H9V8Z" fill="#22C55E"/></svg>
+        <span>Finault</span>
+      </a>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Getting Started</div>
+        <a href="api.html#introduction" class="sidebar-link">Introduction</a>
+        <a href="api.html#authentication" class="sidebar-link">Authentication</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Endpoints</div>
+        <a href="api.html#allocate" class="sidebar-link">Allocate Invoice</a>
+        <a href="api.html#close-pack" class="sidebar-link">Generate Close Pack</a>
+        <a href="api.html#rules" class="sidebar-link">Allocation Rules</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Webhooks</div>
+        <a href="#overview" class="sidebar-link active">Overview</a>
+        <a href="#events" class="sidebar-link">Event Types</a>
+        <a href="#security" class="sidebar-link">Security</a>
+      </div>
+    </aside>
+    
+    <main class="main">
+      <header class="header">
+        <h1>Webhooks</h1>
+      </header>
+      
+      <div class="content">
+        <h2 id="overview">Overview</h2>
+        <p>Webhooks allow you to receive real-time notifications when events occur in your Finault account. Instead of polling our API, we'll send HTTP POST requests to your endpoint.</p>
+        
+        <h3>Setting Up Webhooks</h3>
+        <p>Configure webhook endpoints in your <a href="#" style="color:#22c55e">dashboard settings</a> or via the API:</p>
+        
+        <div class="code-block">
+          <pre>curl -X POST https://api.finault.ai/v1/webhooks \
+  -H <span class="string">"Authorization: Bearer fsk_live_xxx"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{
+    "url": "https://your-app.com/webhooks/finault",
+    "events": ["allocation.complete", "budget.exceeded"]
+  }'</span></pre>
+        </div>
+        
+        <h2 id="events">Event Types</h2>
+        
+        <div class="event-card">
+          <div class="event-header">
+            <span class="event-name">allocation.complete</span>
+          </div>
+          <div class="event-body">
+            <p class="event-desc">Triggered when an invoice allocation completes successfully.</p>
+            
+            <h3>Payload</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"event"</span>: <span class="string">"allocation.complete"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-01-26T20:34:02.067Z"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"allocation_id"</span>: <span class="string">"alloc_abc123"</span>,
+    <span class="key">"provider"</span>: <span class="string">"openai"</span>,
+    <span class="key">"period"</span>: <span class="string">"2026-01"</span>,
+    <span class="key">"total_spend"</span>: <span class="number">156057.70</span>,
+    <span class="key">"currency"</span>: <span class="string">"USD"</span>,
+    <span class="key">"confidence_score"</span>: <span class="number">97.3</span>,
+    <span class="key">"cost_centers"</span>: <span class="number">4</span>,
+    <span class="key">"close_pack_url"</span>: <span class="string">"https://api.finault.ai/v1/close-pack/alloc_abc123"</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="event-card">
+          <div class="event-header">
+            <span class="event-name">budget.warning</span>
+          </div>
+          <div class="event-body">
+            <p class="event-desc">Triggered when spend reaches a budget threshold (50%, 75%, 90%).</p>
+            
+            <h3>Payload</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"event"</span>: <span class="string">"budget.warning"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-01-26T15:30:00.000Z"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"budget_id"</span>: <span class="string">"budget_xyz789"</span>,
+    <span class="key">"budget_name"</span>: <span class="string">"Engineering Monthly"</span>,
+    <span class="key">"threshold_percent"</span>: <span class="number">75</span>,
+    <span class="key">"current_spend"</span>: <span class="number">75420.00</span>,
+    <span class="key">"budget_limit"</span>: <span class="number">100000.00</span>,
+    <span class="key">"currency"</span>: <span class="string">"USD"</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="event-card">
+          <div class="event-header">
+            <span class="event-name">budget.exceeded</span>
+          </div>
+          <div class="event-body">
+            <p class="event-desc">Triggered when spend exceeds a budget limit. If hard caps are enabled, requests will be blocked.</p>
+            
+            <h3>Payload</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"event"</span>: <span class="string">"budget.exceeded"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-01-26T18:45:00.000Z"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"budget_id"</span>: <span class="string">"budget_xyz789"</span>,
+    <span class="key">"budget_name"</span>: <span class="string">"Engineering Monthly"</span>,
+    <span class="key">"current_spend"</span>: <span class="number">102340.00</span>,
+    <span class="key">"budget_limit"</span>: <span class="number">100000.00</span>,
+    <span class="key">"overage"</span>: <span class="number">2340.00</span>,
+    <span class="key">"hard_cap_enabled"</span>: <span class="key">true</span>,
+    <span class="key">"requests_blocked"</span>: <span class="number">47</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="event-card">
+          <div class="event-header">
+            <span class="event-name">anomaly.detected</span>
+          </div>
+          <div class="event-body">
+            <p class="event-desc">Triggered when unusual spending patterns are detected.</p>
+            
+            <h3>Payload</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"event"</span>: <span class="string">"anomaly.detected"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-01-26T12:00:00.000Z"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"anomaly_id"</span>: <span class="string">"anom_def456"</span>,
+    <span class="key">"type"</span>: <span class="string">"spend_spike"</span>,
+    <span class="key">"severity"</span>: <span class="string">"warning"</span>,
+    <span class="key">"description"</span>: <span class="string">"GPT-4o usage up 47% compared to 7-day average"</span>,
+    <span class="key">"affected_model"</span>: <span class="string">"gpt-4o"</span>,
+    <span class="key">"current_daily_spend"</span>: <span class="number">8420.00</span>,
+    <span class="key">"average_daily_spend"</span>: <span class="number">5726.00</span>,
+    <span class="key">"increase_percent"</span>: <span class="number">47.0</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="event-card">
+          <div class="event-header">
+            <span class="event-name">gateway.error</span>
+          </div>
+          <div class="event-body">
+            <p class="event-desc">Triggered when the gateway encounters an error with an AI provider.</p>
+            
+            <h3>Payload</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"event"</span>: <span class="string">"gateway.error"</span>,
+  <span class="key">"timestamp"</span>: <span class="string">"2026-01-26T09:15:00.000Z"</span>,
+  <span class="key">"data"</span>: {
+    <span class="key">"provider"</span>: <span class="string">"openai"</span>,
+    <span class="key">"error_type"</span>: <span class="string">"rate_limit"</span>,
+    <span class="key">"error_message"</span>: <span class="string">"Rate limit exceeded"</span>,
+    <span class="key">"requests_affected"</span>: <span class="number">12</span>,
+    <span class="key">"fallback_triggered"</span>: <span class="key">true</span>,
+    <span class="key">"fallback_provider"</span>: <span class="string">"anthropic"</span>
+  }
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <h2 id="security">Security</h2>
+        
+        <h3>Signature Verification</h3>
+        <p>All webhook requests include a signature header that you should verify to ensure the request came from Finault.</p>
+        
+        <div class="code-block">
+          <pre>X-Finault-Signature: sha256=5d41402abc4b2a76b9719d911017c592</pre>
+        </div>
+        
+        <p>Verify the signature using your webhook secret:</p>
+        
+        <div class="code-block">
+          <pre><span class="comment"># Python example</span>
+import hmac
+import hashlib
+
+def verify_webhook(payload, signature, secret):
+    expected = hmac.new(
+        secret.encode(),
+        payload.encode(),
+        hashlib.sha256
+    ).hexdigest()
+    return hmac.compare_digest(f<span class="string">"sha256={expected}"</span>, signature)</pre>
+        </div>
+        
+        <h3>Retry Policy</h3>
+        <p>If your endpoint returns a non-2xx response, we'll retry with exponential backoff:</p>
+        
+        <table class="param-table">
+          <tr>
+            <th>Attempt</th>
+            <th>Delay</th>
+          </tr>
+          <tr><td>1</td><td>Immediate</td></tr>
+          <tr><td>2</td><td>1 minute</td></tr>
+          <tr><td>3</td><td>5 minutes</td></tr>
+          <tr><td>4</td><td>30 minutes</td></tr>
+          <tr><td>5</td><td>2 hours</td></tr>
+        </table>
+        
+        <p>After 5 failed attempts, the webhook will be marked as failed and you'll receive an email notification.</p>
+        
+        <div class="callout">
+          <div class="callout-title">💡 Best Practice</div>
+          <p>Respond to webhooks quickly (within 5 seconds) with a 200 status. Process the payload asynchronously if needed.</p>
+        </div>
+        
+        <h3>IP Allowlist</h3>
+        <p>Webhook requests originate from these IP addresses:</p>
+        <div class="code-block">
+          <pre>52.89.214.238
+34.212.75.30
+54.218.53.128</pre>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

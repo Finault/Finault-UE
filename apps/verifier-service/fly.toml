@@ -1,0 +1,88 @@
+# Fly.io Configuration for Finault Verifier Service
+app = "finault-verifier"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Database Configuration
+  # SUPABASE_URL and SUPABASE_KEY are set via `fly secrets set`
+  # Do not put credentials in this file
+
+  # Application Environment
+  ENVIRONMENT = "production"
+  LOG_LEVEL = "info"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.checks]
+    # LOW: Stricter health check timeout for faster failure detection
+    [http_service.checks.health]
+      type = "http"
+      interval = "30s"
+      timeout = "8s"
+      grace_period = "5s"
+      method = "GET"
+      path = "/health"
+
+[vm]
+  memory = "512mb"
+  cpus = 1
+
+[[vm.swap_file_size]]
+  swap_size_mb = 256
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  processes = ["app"]
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["http"]
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 100
+    soft_limit = 80
+
+[metrics]
+  port = 9090
+  path = "/metrics"
+
+[deploy]
+  strategy = "rolling"
+  wait_timeout = "300s"
+  max_unavailable = 1
+
+[[processes]]
+  name = "app"
+  processes = ["app"]
+
+# Auto-scaling configuration (LOW: Monitor resource usage with stricter thresholds)
+[[auto_scaling]]
+  min_machines_running = 1
+  max_machines_running = 3
+
+  [auto_scaling.policies]
+    cpu_threshold = 70
+    memory_threshold = 80
+
+# LOW: Monitoring and alerting recommendations
+# Consider setting up alerts for:
+# - CPU usage >85% sustained for 5+ minutes
+# - Memory usage >85% sustained for 5+ minutes
+# - Request latency p95 > 1000ms
+# - Error rate > 1%
+# Setup via: fly alerts add

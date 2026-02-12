@@ -1,0 +1,36 @@
+# Cloudflare Pages Configuration for Finault Static Frontend
+# https://developers.cloudflare.com/pages/configuration/
+
+[build]
+# No build command needed - static HTML files are served directly
+command = ""
+output_directory = "static"
+
+[deployment]
+# Primary production branch
+production_branch = "main"
+
+[env.production]
+# Production environment variables (if needed)
+# Example: FINAULT_API_BASE = "https://api.finault.com"
+
+[env.preview]
+# Preview/staging environment variables (if needed)
+
+# Environment-specific settings
+[triggers]
+# Automatic deployments trigger on push to main branch
+# (configured in Cloudflare Pages project dashboard)
+
+# Site configuration
+[site]
+# This configuration works with:
+# - Domain: finault.com (primary)
+# - Subdomains configured separately:
+#   - api.finault.com → Cloudflare Workers (gateway)
+#   - verify.finault.com → Fly.io (Python verifier)
+#   - closepack.finault.ai → R2 (already deployed)
+
+# Cache settings are defined in _headers file
+# Redirect rules are defined in _redirects file
+# Security headers are defined in _headers file

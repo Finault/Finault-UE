@@ -1,0 +1,43 @@
+# Cloudflare Pages Headers Configuration for Finault
+# https://developers.cloudflare.com/pages/platform/headers/
+
+# Default headers for all pages
+/*
+  # Security Headers
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+  # Content Security Policy
+  # Allow content from finault.com, api.finault.com, fonts.googleapis.com, fonts.gstatic.com
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' fonts.googleapis.com cdnjs.cloudflare.com cdn.jsdelivr.net static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.gstatic.com; connect-src 'self' https://api.finault.ai https://*.finault.ai https://*.supabase.co https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://static.cloudflareinsights.com; img-src 'self' data: https:; media-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://api.finault.ai https://*.supabase.co;
+
+# Cache control for static assets
+/index.html
+  Cache-Control: public, max-age=3600
+
+/*.html
+  Cache-Control: public, max-age=7200
+
+/blog/*.html
+  Cache-Control: public, max-age=604800
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.woff2
+/*.ttf
+/*.otf
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.png
+/*.jpg
+/*.jpeg
+/*.gif
+/*.svg
+/*.webp
+  Cache-Control: public, max-age=31536000, immutable

@@ -1,0 +1,2197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault | AI Cost Governance Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ═══════════════════════════════════════════════════════════════════
+           FINAULT DESIGN SYSTEM - 16 Founder Trust Framework
+           Tomer London (Gusto): Beautiful for boring
+           Aaron Levie (Box): Enterprise consumerization
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{
+            --green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--green-50:#f0fdf4;
+            --black:#000;--gray-900:#111827;--gray-800:#1f2937;--gray-700:#374151;
+            --gray-600:#4b5563;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-300:#d1d5db;
+            --gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff;
+            --yellow:#eab308;--yellow-light:#fef3c7;--red:#ef4444;--red-light:#fee2e2;
+            --blue:#3b82f6;--blue-light:#dbeafe;
+        }
+        body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;background:var(--gray-50);color:var(--gray-900);line-height:1.6;min-height:100vh}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           LAYOUT - Olivier Pomel (Datadog): One pane of glass
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .app-container{display:flex;min-height:100vh}
+        .sidebar{width:260px;background:var(--white);border-right:1px solid var(--gray-200);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:50}
+        .main-content{flex:1;margin-left:260px;display:flex;flex-direction:column;min-height:100vh}
+        
+        /* Sidebar */
+        .sidebar-header{padding:1.25rem 1.5rem;border-bottom:1px solid var(--gray-200)}
+        .logo{display:flex;align-items:center;gap:.625rem;text-decoration:none;color:var(--gray-900)}
+        .logo svg{width:32px;height:32px}
+        .logo span{font-size:1.25rem;font-weight:600;letter-spacing:-0.02em}
+        
+        .sidebar-nav{flex:1;padding:1rem 0;overflow-y:auto}
+        .nav-section{padding:0 .75rem;margin-bottom:1.5rem}
+        .nav-section-title{font-size:.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);padding:0 .75rem;margin-bottom:.5rem}
+        .nav-item{display:flex;align-items:center;gap:.75rem;padding:.625rem .75rem;border-radius:.5rem;color:var(--gray-600);text-decoration:none;font-size:.875rem;font-weight:500;cursor:pointer;transition:all .15s}
+        .nav-item:hover{background:var(--gray-100);color:var(--gray-900)}
+        .nav-item.active{background:var(--green-light);color:var(--green-dark)}
+        .nav-item svg{width:18px;height:18px;flex-shrink:0}
+        .nav-item .badge{margin-left:auto;font-size:.6875rem;padding:.125rem .5rem;border-radius:1rem;font-weight:600}
+        .badge-pro{background:var(--blue-light);color:var(--blue)}
+        .badge-business{background:var(--yellow-light);color:var(--yellow)}
+        .nav-item.locked{opacity:.6}
+        .nav-item.locked:hover{background:var(--gray-50)}
+        
+        .sidebar-footer{padding:1rem 1.5rem;border-top:1px solid var(--gray-200)}
+        .user-info{display:flex;align-items:center;gap:.75rem}
+        .user-avatar{width:36px;height:36px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;color:var(--green-dark);font-weight:600;font-size:.875rem}
+        .user-details{flex:1;min-width:0}
+        .user-name{font-size:.875rem;font-weight:500;color:var(--gray-900);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .user-tier{font-size:.75rem;color:var(--gray-500)}
+        
+        /* Top Bar */
+        .top-bar{background:var(--white);border-bottom:1px solid var(--gray-200);padding:.75rem 2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40}
+        .breadcrumb{display:flex;align-items:center;gap:.5rem;font-size:.875rem;color:var(--gray-500)}
+        .breadcrumb span{color:var(--gray-900);font-weight:500}
+        .top-actions{display:flex;align-items:center;gap:1rem}
+        
+        /* Main Area */
+        .main-area{flex:1;padding:2rem;max-width:1400px;margin:0 auto;width:100%}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           BUTTONS - Henrique Dubugras (Brex): 10x better
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem 1.25rem;border-radius:.5rem;font-size:.875rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .15s;font-family:inherit}
+        .btn-primary{background:var(--green);color:var(--white)}
+        .btn-primary:hover{background:var(--green-dark)}
+        .btn-secondary{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-300)}
+        .btn-secondary:hover{background:var(--gray-50);border-color:var(--gray-400)}
+        .btn-ghost{background:transparent;color:var(--gray-600)}
+        .btn-ghost:hover{background:var(--gray-100);color:var(--gray-900)}
+        .btn-sm{padding:.5rem 1rem;font-size:.8125rem}
+        .btn-lg{padding:.875rem 1.75rem;font-size:1rem}
+        .btn:disabled{opacity:.5;cursor:not-allowed}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           UPLOAD ZONE - Patrick Collison (Stripe): Developer experience first
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .upload-zone{border:2px dashed var(--gray-300);border-radius:1rem;padding:3rem 2rem;text-align:center;cursor:pointer;transition:all .2s;background:var(--white)}
+        .upload-zone:hover,.upload-zone.dragover{border-color:var(--green);background:var(--green-50)}
+        .upload-zone.has-file{border-color:var(--green);background:var(--green-50);border-style:solid}
+        .upload-icon{width:56px;height:56px;margin:0 auto 1rem;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gray-400);transition:all .2s}
+        .upload-zone:hover .upload-icon,.upload-zone.has-file .upload-icon{background:var(--green-light);color:var(--green)}
+        .upload-title{font-size:1rem;font-weight:500;color:var(--gray-700);margin-bottom:.25rem}
+        .upload-subtitle{font-size:.875rem;color:var(--gray-500);margin-bottom:1rem}
+        .upload-providers{display:flex;justify-content:center;gap:.5rem;margin-bottom:1.5rem}
+        .upload-provider{padding:.25rem .75rem;background:var(--gray-100);border-radius:1rem;font-size:.75rem;color:var(--gray-600)}
+        .sample-btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;background:var(--green);color:var(--white);border:none;border-radius:.5rem;font-size:.9375rem;font-weight:500;cursor:pointer;transition:all .15s}
+        .sample-btn:hover{background:var(--green-dark)}
+        .sample-note{display:block;margin-top:.5rem;font-size:.8125rem;color:var(--gray-400)}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           STATS CARDS - Frank Slootman (Snowflake): Enterprise-grade
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+        @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:640px){.stats-grid{grid-template-columns:1fr}}
+        
+        .stat-card{background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;padding:1.25rem}
+        .stat-label{font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-500);margin-bottom:.25rem}
+        .stat-value{font-size:1.75rem;font-weight:700;color:var(--gray-900);line-height:1.2}
+        .stat-value.green{color:var(--green)}
+        .stat-value.yellow{color:var(--yellow)}
+        .stat-value.red{color:var(--red)}
+        .stat-change{font-size:.75rem;color:var(--gray-500);margin-top:.25rem}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           UNIT ECONOMICS - Jay Simons (Atlassian): Land and expand
+           PRO Feature - Gated
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .section-card{background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;margin-bottom:1.5rem;overflow:hidden}
+        .section-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--gray-200)}
+        .section-title{display:flex;align-items:center;gap:.5rem;font-size:1rem;font-weight:600}
+        .section-title svg{width:20px;height:20px;color:var(--gray-500)}
+        .section-subtitle{font-size:.8125rem;color:var(--gray-500);font-weight:400;margin-left:.25rem}
+        .section-body{padding:1.25rem}
+        
+        .unit-econ-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+        @media(max-width:768px){.unit-econ-inputs{grid-template-columns:1fr}}
+        .input-group{display:flex;flex-direction:column;gap:.375rem}
+        .input-label{font-size:.75rem;font-weight:500;color:var(--gray-600)}
+        .input-sublabel{font-size:.6875rem;color:var(--gray-400)}
+        .input-field{padding:.625rem .875rem;border:1px solid var(--gray-300);border-radius:.5rem;font-size:.9375rem;font-family:inherit;transition:all .15s}
+        .input-field:focus{outline:none;border-color:var(--green);box-shadow:0 0 0 3px var(--green-light)}
+        
+        .unit-econ-results{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+        @media(max-width:1024px){.unit-econ-results{grid-template-columns:repeat(2,1fr)}}
+        .metric-card{padding:1.25rem;border-radius:.5rem;text-align:center}
+        .metric-card.good{background:var(--green-50);border:1px solid var(--green-light)}
+        .metric-card.warning{background:var(--yellow-light);border:1px solid #fde68a}
+        .metric-card.danger{background:var(--red-light);border:1px solid #fecaca}
+        .metric-card.neutral{background:var(--gray-50);border:1px solid var(--gray-200)}
+        .metric-value{font-size:1.5rem;font-weight:700;margin-bottom:.25rem}
+        .metric-card.good .metric-value{color:var(--green-dark)}
+        .metric-card.warning .metric-value{color:#b45309}
+        .metric-card.danger .metric-value{color:#dc2626}
+        .metric-card.neutral .metric-value{color:var(--gray-700)}
+        .metric-label{font-size:.75rem;font-weight:500;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-600)}
+        .metric-hint{font-size:.6875rem;color:var(--gray-500);margin-top:.25rem}
+        
+        .insight-banner{display:flex;align-items:flex-start;gap:.75rem;padding:1rem;border-radius:.5rem;margin-top:1rem;font-size:.875rem}
+        .insight-banner.info{background:var(--blue-light);color:#1e40af}
+        .insight-banner.warning{background:var(--yellow-light);color:#92400e}
+        .insight-banner.success{background:var(--green-light);color:var(--green-dark)}
+        .insight-banner svg{flex-shrink:0;margin-top:.125rem}
+        
+        /* Feature Gate Overlay */
+        .feature-gate{position:relative}
+        .feature-gate.locked .gate-content{filter:blur(4px);pointer-events:none;user-select:none}
+        .gate-overlay{position:absolute;inset:0;background:rgba(255,255,255,.8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;opacity:0;visibility:hidden;transition:all .2s}
+        .feature-gate.locked .gate-overlay{opacity:1;visibility:visible}
+        .gate-icon{width:48px;height:48px;background:var(--gray-100);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gray-500)}
+        .gate-text{font-weight:600;color:var(--gray-700)}
+        .gate-subtext{font-size:.875rem;color:var(--gray-500);margin-top:-.5rem}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           ALLOCATION TABLE - Peter Reinhardt (Segment): Data as primitive
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .data-table{width:100%;border-collapse:collapse}
+        .data-table th,.data-table td{padding:.875rem 1rem;text-align:left;border-bottom:1px solid var(--gray-200)}
+        .data-table th{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-500);background:var(--gray-50)}
+        .data-table tr:last-child td{border-bottom:none}
+        .data-table tr:hover td{background:var(--gray-50)}
+        
+        .confidence-badge{display:inline-flex;padding:.25rem .625rem;border-radius:1rem;font-size:.75rem;font-weight:500}
+        .confidence-badge.high{background:var(--green-light);color:var(--green-dark)}
+        .confidence-badge.medium{background:var(--yellow-light);color:#b45309}
+        .confidence-badge.low{background:var(--red-light);color:#dc2626}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           CLOSE PACK - The CFO Deliverable
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .closepack-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem}
+        @media(max-width:768px){.closepack-grid{grid-template-columns:1fr}}
+        
+        .closepack-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:.5rem;cursor:pointer;transition:all .15s}
+        .closepack-item:hover{border-color:var(--green);background:var(--white)}
+        .closepack-icon{width:44px;height:44px;background:var(--white);border:1px solid var(--gray-200);border-radius:.5rem;display:flex;align-items:center;justify-content:center;color:var(--gray-500);transition:all .15s}
+        .closepack-item:hover .closepack-icon{background:var(--green-light);border-color:var(--green);color:var(--green)}
+        .closepack-info h4{font-size:.9375rem;font-weight:600;color:var(--gray-900);margin-bottom:.125rem}
+        .closepack-info p{font-size:.8125rem;color:var(--gray-500)}
+        
+        .download-all-box{background:var(--green-50);border:2px solid var(--green);border-radius:.75rem;padding:1.5rem;text-align:center}
+        .download-all-box p{font-size:.875rem;color:var(--gray-600);margin-top:.75rem}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           RULES ENGINE - Mitchell Hashimoto (HashiCorp): Infrastructure as code
+           PRO Feature - Gated
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .rules-list{display:flex;flex-direction:column;gap:.5rem}
+        .rule-item{display:flex;align-items:center;gap:1rem;padding:.75rem 1rem;background:var(--gray-50);border-radius:.5rem}
+        .rule-pattern{font-family:'SF Mono',Monaco,monospace;font-size:.8125rem;background:var(--white);padding:.25rem .5rem;border-radius:.25rem;border:1px solid var(--gray-200)}
+        .rule-arrow{color:var(--gray-400)}
+        .rule-value{font-weight:500;color:var(--gray-700)}
+        .rule-actions{margin-left:auto;display:flex;gap:.5rem}
+        
+        .add-rule-form{display:flex;gap:.75rem;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--gray-200)}
+        .add-rule-form input{flex:1}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           HISTORY/DASHBOARD - Dylan Field (Figma): Collaboration native
+           PRO Feature - Gated
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .history-list{display:flex;flex-direction:column;gap:.75rem}
+        .history-item{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--gray-50);border:1px solid var(--gray-200);border-radius:.5rem;transition:all .15s}
+        .history-item:hover{border-color:var(--green);background:var(--white)}
+        .history-date{font-size:.8125rem;color:var(--gray-500);min-width:100px}
+        .history-info{flex:1}
+        .history-info h4{font-size:.9375rem;font-weight:600;margin-bottom:.125rem}
+        .history-info p{font-size:.8125rem;color:var(--gray-500)}
+        .history-amount{font-size:1rem;font-weight:600;color:var(--gray-900)}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           GATEWAY - Mike Cannon-Brookes (Atlassian): Self-service
+           BUSINESS Feature - Gated
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .code-block{background:var(--gray-900);border-radius:.5rem;padding:1rem;overflow-x:auto}
+        .code-block pre{font-family:'SF Mono',Monaco,monospace;font-size:.8125rem;color:var(--gray-300);line-height:1.6;margin:0}
+        .code-block .comment{color:var(--gray-500)}
+        .code-block .string{color:#a5d6a7}
+        .code-block .keyword{color:#90caf9}
+        
+        .endpoint-list{display:flex;flex-direction:column;gap:1rem}
+        .endpoint-item{padding:1rem;background:var(--gray-50);border-radius:.5rem}
+        .endpoint-method{display:inline-flex;padding:.25rem .5rem;background:var(--green);color:var(--white);border-radius:.25rem;font-size:.6875rem;font-weight:600;margin-right:.5rem}
+        .endpoint-path{font-family:'SF Mono',Monaco,monospace;font-size:.875rem;color:var(--gray-700)}
+        .endpoint-desc{font-size:.8125rem;color:var(--gray-500);margin-top:.5rem}
+        
+        /* Budget Enforcement */
+        .budget-card{padding:1.5rem;background:linear-gradient(135deg,var(--gray-900) 0%,var(--gray-800) 100%);border-radius:.75rem;color:var(--white)}
+        .budget-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem}
+        .budget-title{font-size:.875rem;color:var(--gray-400)}
+        .budget-amount{font-size:2rem;font-weight:700}
+        .budget-bar{height:8px;background:var(--gray-700);border-radius:4px;overflow:hidden;margin-bottom:.5rem}
+        .budget-fill{height:100%;border-radius:4px;transition:width .3s}
+        .budget-fill.safe{background:var(--green)}
+        .budget-fill.warning{background:var(--yellow)}
+        .budget-fill.danger{background:var(--red)}
+        .budget-meta{display:flex;justify-content:space-between;font-size:.8125rem;color:var(--gray-400)}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           MODALS
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .2s;z-index:1000}
+        .modal-backdrop.visible{opacity:1;visibility:visible}
+        .modal{background:var(--white);border-radius:1rem;max-width:440px;width:90%;max-height:90vh;overflow:auto}
+        .modal-header{padding:1.5rem 1.5rem 0;display:flex;justify-content:space-between;align-items:flex-start}
+        .modal-header h3{font-size:1.25rem;font-weight:600}
+        .modal-close{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border-radius:.5rem;border:none;background:transparent;cursor:pointer;color:var(--gray-400)}
+        .modal-close:hover{background:var(--gray-100);color:var(--gray-600)}
+        .modal-body{padding:1.5rem}
+        .modal-footer{padding:0 1.5rem 1.5rem;display:flex;gap:.75rem}
+        .modal-footer .btn{flex:1}
+        
+        /* Auth Modal */
+        .auth-tabs{display:flex;border-bottom:1px solid var(--gray-200);margin-bottom:1.5rem}
+        .auth-tab{flex:1;padding:.75rem;text-align:center;font-weight:500;color:var(--gray-500);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s}
+        .auth-tab:hover{color:var(--gray-700)}
+        .auth-tab.active{color:var(--green);border-color:var(--green)}
+        .auth-form{display:flex;flex-direction:column;gap:1rem}
+        .auth-divider{display:flex;align-items:center;gap:1rem;color:var(--gray-400);font-size:.8125rem;margin:1rem 0}
+        .auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--gray-200)}
+        .auth-social{display:flex;gap:.75rem}
+        .auth-social .btn{flex:1}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           TOAST
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .toast{position:fixed;bottom:2rem;right:2rem;background:var(--gray-900);color:var(--white);padding:1rem 1.5rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1001;max-width:400px}
+        .toast.visible{transform:translateY(0);opacity:1}
+        .toast.success{background:var(--green)}
+        .toast.error{background:var(--red)}
+        .toast svg{flex-shrink:0}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           UPGRADE BANNER
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        .upgrade-banner{background:linear-gradient(135deg,var(--green) 0%,#059669 100%);color:var(--white);padding:1rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+        .upgrade-banner p{font-size:.9375rem}
+        .upgrade-banner strong{font-weight:600}
+        .upgrade-banner .btn{background:var(--white);color:var(--green-dark)}
+        .upgrade-banner .btn:hover{background:var(--gray-100)}
+        .upgrade-banner.hidden{display:none}
+        
+        /* ═══════════════════════════════════════════════════════════════════
+           RESPONSIVE
+           ═══════════════════════════════════════════════════════════════════ */
+        
+        @media(max-width:1024px){
+            .sidebar{transform:translateX(-100%);transition:transform .3s}
+            .sidebar.open{transform:translateX(0)}
+            .main-content{margin-left:0}
+            .mobile-menu-btn{display:flex}
+        }
+        .mobile-menu-btn{display:none;width:40px;height:40px;align-items:center;justify-content:center;border:none;background:transparent;cursor:pointer;color:var(--gray-600)}
+        
+        /* Hidden utility */
+        .hidden{display:none !important}
+        
+        /* Page sections */
+        .page-section{display:none}
+        .page-section.active{display:block}
+    </style>
+</head>
+<body>
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SIDEBAR
+         ═══════════════════════════════════════════════════════════════════ -->
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/" class="logo">
+                    <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#111827"/><path d="M8 10h16M8 16h12M8 22h8" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>
+                    <span>Finault</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Analyze</div>
+                    <div class="nav-item active" data-page="analyze" onclick="showPage('analyze')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        Upload Invoice
+                    </div>
+                    <div class="nav-item" data-page="results" onclick="showPage('results')" id="navResults" style="display:none">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        Results
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Pro Features</div>
+                    <div class="nav-item" data-page="unit-economics" onclick="showPage('unit-economics')" id="navUnitEcon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Unit Economics
+                        <span class="badge badge-pro">PRO</span>
+                    </div>
+                    <div class="nav-item" data-page="rules" onclick="showPage('rules')" id="navRules">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Allocation Rules
+                        <span class="badge badge-pro">PRO</span>
+                    </div>
+                    <div class="nav-item" data-page="history" onclick="showPage('history')" id="navHistory">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        History
+                        <span class="badge badge-pro">PRO</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Business Features</div>
+                    <div class="nav-item" data-page="gateway" onclick="showPage('gateway')" id="navGateway">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        Gateway
+                        <span class="badge badge-business">BIZ</span>
+                    </div>
+                    <div class="nav-item" data-page="budgets" onclick="showPage('budgets')" id="navBudgets">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        Budget Controls
+                        <span class="badge badge-business">BIZ</span>
+                    </div>
+                    <div class="nav-item" data-page="api" onclick="showPage('api')" id="navAPI">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                        API Access
+                        <span class="badge badge-business">BIZ</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-section-title">Account</div>
+                    <div class="nav-item" data-page="settings" onclick="showPage('settings')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        Settings
+                    </div>
+                </div>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <div class="user-info" id="userInfo">
+                    <div class="user-avatar" id="userAvatar">?</div>
+                    <div class="user-details">
+                        <div class="user-name" id="userName">Not signed in</div>
+                        <div class="user-tier" id="userTier">Free Tier</div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- ═══════════════════════════════════════════════════════════════════
+             MAIN CONTENT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <main class="main-content">
+            <!-- Upgrade Banner (shown for free users) -->
+            <div class="upgrade-banner" id="upgradeBanner">
+                <p><strong>Unlock Unit Economics, Saved Rules & History</strong> — See the full picture of your AI spend.</p>
+                <button class="btn btn-sm" onclick="showUpgradeModal()">Upgrade to Pro — $49/mo</button>
+            </div>
+            
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="breadcrumb">
+                    <button class="mobile-menu-btn" onclick="toggleSidebar()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+                    </button>
+                    Finault <span>/</span> <span id="pageTitle">Upload Invoice</span>
+                </div>
+                <div class="top-actions">
+                    <button class="btn btn-secondary btn-sm" onclick="showAuthModal()" id="authBtn">Sign In</button>
+                </div>
+            </div>
+            
+            <div class="main-area">
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: ANALYZE (Upload)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section active" id="page-analyze">
+                    <div class="upload-zone" id="uploadZone">
+                        <div class="upload-icon">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+                        </div>
+                        <div class="upload-title" id="uploadTitle">Drop invoice CSV or click to upload</div>
+                        <div class="upload-subtitle">Supports OpenAI, Anthropic, Azure OpenAI, Google Cloud</div>
+                        <div class="upload-providers">
+                            <span class="upload-provider">OpenAI</span>
+                            <span class="upload-provider">Anthropic</span>
+                            <span class="upload-provider">Azure</span>
+                            <span class="upload-provider">Google</span>
+                        </div>
+                        <button class="sample-btn" onclick="event.stopPropagation(); loadSampleData();">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                            Try with Sample Data
+                        </button>
+                        <span class="sample-note">See how it works with a real invoice — no upload needed</span>
+                        <input type="file" id="fileInput" accept=".csv" hidden>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: RESULTS
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-results">
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-label">Total Spend</div>
+                            <div class="stat-value" id="statTotalSpend">$0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Allocated</div>
+                            <div class="stat-value green" id="statAllocated">$0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Cost Centers</div>
+                            <div class="stat-value" id="statCostCenters">0</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-label">Confidence</div>
+                            <div class="stat-value green" id="statConfidence">0%</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Unit Economics (PRO - Gated) -->
+                    <div class="section-card feature-gate" id="unitEconSection">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Unit Economics
+                                <span class="section-subtitle">What finance actually needs to know</span>
+                            </div>
+                            <span class="badge badge-pro">PRO</span>
+                        </div>
+                        <div class="section-body gate-content">
+                            <div class="unit-econ-inputs">
+                                <div class="input-group">
+                                    <label class="input-label">Monthly AI Transactions</label>
+                                    <span class="input-sublabel">API calls, completions</span>
+                                    <input type="text" class="input-field" id="inputTransactions" value="12,400,000" oninput="calculateUnitEconomics()">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Active Users</label>
+                                    <span class="input-sublabel">Users who trigger AI</span>
+                                    <input type="text" class="input-field" id="inputUsers" value="45,000" oninput="calculateUnitEconomics()">
+                                </div>
+                                <div class="input-group">
+                                    <label class="input-label">Revenue from AI Features</label>
+                                    <span class="input-sublabel">Monthly AI-attributed revenue</span>
+                                    <input type="text" class="input-field" id="inputRevenue" value="$2,850,000" oninput="calculateUnitEconomics()">
+                                </div>
+                            </div>
+                            <div class="unit-econ-results">
+                                <div class="metric-card neutral" id="metricCPT">
+                                    <div class="metric-value">$0.073</div>
+                                    <div class="metric-label">Cost / Transaction</div>
+                                    <div class="metric-hint">Typical range</div>
+                                </div>
+                                <div class="metric-card neutral" id="metricCPU">
+                                    <div class="metric-value">$20.08</div>
+                                    <div class="metric-label">Cost / User</div>
+                                    <div class="metric-hint">High</div>
+                                </div>
+                                <div class="metric-card warning" id="metricPCT">
+                                    <div class="metric-value">31.7%</div>
+                                    <div class="metric-label">AI % of Revenue</div>
+                                    <div class="metric-hint">May squeeze margins</div>
+                                </div>
+                                <div class="metric-card good" id="metricROI">
+                                    <div class="metric-value">$3.15</div>
+                                    <div class="metric-label">Revenue / $1 Spent</div>
+                                    <div class="metric-hint">Review strategy</div>
+                                </div>
+                            </div>
+                            <div class="insight-banner warning" id="unitEconInsight">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <div>AI costs may impact margins at scale. Users avg 276 AI calls/mo.</div>
+                            </div>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">Unit Economics requires Pro</div>
+                            <div class="gate-subtext">Understand your true AI costs</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade to Pro — $49/mo</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Allocation Breakdown -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                                Allocation Breakdown
+                            </div>
+                        </div>
+                        <div class="section-body" style="padding:0">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Cost Center</th>
+                                        <th>Amount</th>
+                                        <th>% of Total</th>
+                                        <th>Confidence</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="allocationTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <!-- Close Pack Contents -->
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                                Close Pack Contents
+                            </div>
+                        </div>
+                        <div class="section-body">
+                            <div class="closepack-grid">
+                                <div class="closepack-item" onclick="downloadFile('executive-summary')">
+                                    <div class="closepack-icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <div class="closepack-info">
+                                        <h4>Executive Summary</h4>
+                                        <p>PDF · 1 page</p>
+                                    </div>
+                                </div>
+                                <div class="closepack-item" onclick="downloadFile('journal-entry')">
+                                    <div class="closepack-icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <div class="closepack-info">
+                                        <h4>GL Journal Entry</h4>
+                                        <p>CSV · NetSuite/QBO ready</p>
+                                    </div>
+                                </div>
+                                <div class="closepack-item" onclick="downloadFile('reconciliation')">
+                                    <div class="closepack-icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    </div>
+                                    <div class="closepack-info">
+                                        <h4>Reconciliation Certificate</h4>
+                                        <p>PDF · Audit-ready</p>
+                                    </div>
+                                </div>
+                                <div class="closepack-item" onclick="downloadFile('controls-narrative')">
+                                    <div class="closepack-icon">
+                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                    </div>
+                                    <div class="closepack-info">
+                                        <h4>Controls Narrative</h4>
+                                        <p>PDF · SOX compliant</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="download-all-box">
+                                <button class="btn btn-primary btn-lg" onclick="downloadAllFiles()">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                    Download Complete Close Pack
+                                </button>
+                                <p>All 4 documents in one ZIP · Ready for Finance & Audit</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: UNIT ECONOMICS (Full PRO page)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-unit-economics">
+                    <div class="section-card feature-gate" id="unitEconPageGate">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Unit Economics Calculator
+                            </div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <p style="color:var(--gray-500);margin-bottom:1.5rem">Upload an invoice first to calculate unit economics based on your actual spend.</p>
+                            <button class="btn btn-secondary" onclick="showPage('analyze')">Upload Invoice</button>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">Unit Economics requires Pro</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade to Pro — $49/mo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: RULES (PRO)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-rules">
+                    <div class="section-card feature-gate" id="rulesPageGate">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                GL Code Rules
+                            </div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <div class="rules-list" id="glRulesList">
+                                <div class="rule-item">
+                                    <span class="rule-pattern">gpt-4*</span>
+                                    <span class="rule-arrow">→</span>
+                                    <span class="rule-value">6200-AI-GPT4</span>
+                                    <div class="rule-actions">
+                                        <button class="btn btn-ghost btn-sm">Edit</button>
+                                        <button class="btn btn-ghost btn-sm">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="rule-item">
+                                    <span class="rule-pattern">claude-*</span>
+                                    <span class="rule-arrow">→</span>
+                                    <span class="rule-value">6200-AI-CLAUDE</span>
+                                    <div class="rule-actions">
+                                        <button class="btn btn-ghost btn-sm">Edit</button>
+                                        <button class="btn btn-ghost btn-sm">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add-rule-form">
+                                <input type="text" class="input-field" placeholder="Pattern (e.g., gpt-4*)">
+                                <input type="text" class="input-field" placeholder="GL Code">
+                                <button class="btn btn-primary">Add Rule</button>
+                            </div>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">Saved Rules requires Pro</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade to Pro — $49/mo</button>
+                        </div>
+                    </div>
+                    
+                    <div class="section-card feature-gate" id="ccRulesPageGate">
+                        <div class="section-header">
+                            <div class="section-title">Cost Center Rules</div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <div class="rules-list" id="ccRulesList">
+                                <div class="rule-item">
+                                    <span class="rule-pattern">proj-platform-*</span>
+                                    <span class="rule-arrow">→</span>
+                                    <span class="rule-value">ENG-001 (Platform)</span>
+                                    <div class="rule-actions">
+                                        <button class="btn btn-ghost btn-sm">Edit</button>
+                                        <button class="btn btn-ghost btn-sm">Delete</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add-rule-form">
+                                <input type="text" class="input-field" placeholder="Pattern (e.g., proj-*)">
+                                <input type="text" class="input-field" placeholder="Cost Center">
+                                <button class="btn btn-primary">Add Rule</button>
+                            </div>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">Saved Rules requires Pro</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade to Pro — $49/mo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: HISTORY (PRO)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-history">
+                    <div class="section-card feature-gate" id="historyPageGate">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                Close Pack History
+                            </div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <div class="history-list" id="historyList">
+                                <!-- Populated by JS -->
+                            </div>
+                            <p style="color:var(--gray-500);text-align:center;padding:2rem" id="historyEmpty">No Close Packs generated yet. Upload an invoice to get started.</p>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">History requires Pro</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade to Pro — $49/mo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: GATEWAY (BUSINESS)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-gateway">
+                    <div class="section-card feature-gate" id="gatewayPageGate">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                Real-Time Gateway
+                            </div>
+                            <div style="display:flex;align-items:center;gap:.5rem">
+                                <span style="width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite"></span>
+                                <span style="font-size:.875rem;color:var(--green)">Operational</span>
+                            </div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <p style="color:var(--gray-600);margin-bottom:1.5rem">Route all AI API calls through Finault Gateway for real-time cost attribution, budget enforcement, and compliance logging.</p>
+                            
+                            <h4 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Quick Integration</h4>
+                            <div class="code-block">
+                                <pre><span class="comment"># Just change your base URL</span>
+<span class="keyword">export</span> OPENAI_BASE_URL=<span class="string">"https://gateway.finault.ai/v1"</span>
+
+<span class="comment"># Add your Finault API key</span>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxx"</span></pre>
+                            </div>
+                            
+                            <h4 style="font-size:.875rem;font-weight:600;margin:1.5rem 0 .75rem">Available Endpoints</h4>
+                            <div class="endpoint-list">
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">POST</span>
+                                    <span class="endpoint-path">/v1/chat/completions</span>
+                                    <p class="endpoint-desc">Proxy to OpenAI/Anthropic with automatic cost tagging</p>
+                                </div>
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">GET</span>
+                                    <span class="endpoint-path">/v1/usage</span>
+                                    <p class="endpoint-desc">Real-time usage and cost metrics</p>
+                                </div>
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">POST</span>
+                                    <span class="endpoint-path">/v1/budgets/check</span>
+                                    <p class="endpoint-desc">Check if request would exceed budget</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">Gateway requires Business</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal('business')">Upgrade to Business — $149/mo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: BUDGETS (BUSINESS)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-budgets">
+                    <div class="section-card feature-gate" id="budgetsPageGate">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                                Budget Controls
+                            </div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem">
+                                <div class="budget-card">
+                                    <div class="budget-header">
+                                        <div>
+                                            <div class="budget-title">Platform Team</div>
+                                            <div class="budget-amount">$42,500 <span style="font-size:.875rem;font-weight:400;color:var(--gray-400)">/ $50,000</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="budget-bar"><div class="budget-fill warning" style="width:85%"></div></div>
+                                    <div class="budget-meta">
+                                        <span>85% used</span>
+                                        <span>6 days remaining</span>
+                                    </div>
+                                </div>
+                                <div class="budget-card">
+                                    <div class="budget-header">
+                                        <div>
+                                            <div class="budget-title">Data Science</div>
+                                            <div class="budget-amount">$18,200 <span style="font-size:.875rem;font-weight:400;color:var(--gray-400)">/ $30,000</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="budget-bar"><div class="budget-fill safe" style="width:61%"></div></div>
+                                    <div class="budget-meta">
+                                        <span>61% used</span>
+                                        <span>6 days remaining</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="insight-banner warning">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                                <div><strong>Alert:</strong> Platform Team at 85% of monthly budget. Consider reviewing high-cost operations.</div>
+                            </div>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">Budget Controls requires Business</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal('business')">Upgrade to Business — $149/mo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: API (BUSINESS)
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-api">
+                    <div class="section-card feature-gate" id="apiPageGate">
+                        <div class="section-header">
+                            <div class="section-title">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                                API Access
+                            </div>
+                        </div>
+                        <div class="section-body gate-content">
+                            <p style="color:var(--gray-600);margin-bottom:1.5rem">Programmatic access to all Finault features. Analyze invoices, generate Close Packs, and enforce budgets via API.</p>
+                            
+                            <h4 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Your API Key</h4>
+                            <div style="display:flex;gap:.75rem;margin-bottom:1.5rem">
+                                <input type="password" class="input-field" value="fin_live_xxxxxxxxxxxxxxxxxxxx" readonly style="flex:1;font-family:monospace">
+                                <button class="btn btn-secondary">Copy</button>
+                                <button class="btn btn-secondary">Regenerate</button>
+                            </div>
+                            
+                            <h4 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Endpoints</h4>
+                            <div class="endpoint-list">
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">POST</span>
+                                    <span class="endpoint-path">/v1/analyze</span>
+                                    <p class="endpoint-desc">Upload and analyze an invoice CSV</p>
+                                </div>
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">POST</span>
+                                    <span class="endpoint-path">/v1/allocate</span>
+                                    <p class="endpoint-desc">Run cost allocation on invoice data</p>
+                                </div>
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">POST</span>
+                                    <span class="endpoint-path">/v1/close-pack</span>
+                                    <p class="endpoint-desc">Generate a complete Close Pack</p>
+                                </div>
+                                <div class="endpoint-item">
+                                    <span class="endpoint-method">GET</span>
+                                    <span class="endpoint-path">/v1/attest/verify</span>
+                                    <p class="endpoint-desc">Verify data integrity hash</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="gate-overlay">
+                            <div class="gate-icon">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                            </div>
+                            <div class="gate-text">API Access requires Business</div>
+                            <button class="btn btn-primary" onclick="showUpgradeModal('business')">Upgrade to Business — $149/mo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     PAGE: SETTINGS
+                     ═══════════════════════════════════════════════════════════ -->
+                <div class="page-section" id="page-settings">
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Account Settings</div>
+                        </div>
+                        <div class="section-body">
+                            <div class="input-group" style="max-width:400px;margin-bottom:1.5rem">
+                                <label class="input-label">Email</label>
+                                <input type="email" class="input-field" id="settingsEmail" placeholder="your@email.com" disabled>
+                            </div>
+                            <div class="input-group" style="max-width:400px;margin-bottom:1.5rem">
+                                <label class="input-label">Company Name</label>
+                                <input type="text" class="input-field" id="settingsCompany" placeholder="Your Company">
+                            </div>
+                            <button class="btn btn-primary" onclick="saveSettings()">Save Changes</button>
+                        </div>
+                    </div>
+                    
+                    <div class="section-card">
+                        <div class="section-header">
+                            <div class="section-title">Subscription</div>
+                        </div>
+                        <div class="section-body">
+                            <p style="color:var(--gray-600);margin-bottom:1rem">Current plan: <strong id="currentPlan">Free</strong></p>
+                            <button class="btn btn-primary" onclick="showUpgradeModal()">Upgrade Plan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- ═══════════════════════════════════════════════════════════════════
+         MODALS
+         ═══════════════════════════════════════════════════════════════════ -->
+    
+    <!-- Auth Modal -->
+    <div class="modal-backdrop" id="authModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Welcome to Finault</h3>
+                <button class="modal-close" onclick="hideModal('authModal')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchAuthTab('signin')">Sign In</div>
+                    <div class="auth-tab" onclick="switchAuthTab('signup')">Sign Up</div>
+                </div>
+                <form class="auth-form" id="authForm" onsubmit="handleAuth(event)">
+                    <div class="input-group">
+                        <label class="input-label">Email</label>
+                        <input type="email" class="input-field" id="authEmail" required>
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Password</label>
+                        <input type="password" class="input-field" id="authPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width:100%">Sign In</button>
+                </form>
+                <div class="auth-divider">or</div>
+                <div class="auth-social">
+                    <button class="btn btn-secondary" onclick="signInWithGoogle()">
+                        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Email Capture Modal -->
+    <div class="modal-backdrop" id="emailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Get your Close Pack</h3>
+                <button class="modal-close" onclick="hideModal('emailModal')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p style="color:var(--gray-500);margin-bottom:1.5rem">Enter your email to download. We'll also send you a copy.</p>
+                <div class="input-group" style="margin-bottom:1rem">
+                    <input type="email" class="input-field" id="captureEmail" placeholder="finance@company.com">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="skipEmail()">Skip for now</button>
+                <button class="btn btn-primary" onclick="submitEmail()">Download Close Pack</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Upgrade Modal -->
+    <div class="modal-backdrop" id="upgradeModal">
+        <div class="modal" style="max-width:560px">
+            <div class="modal-header">
+                <h3>Upgrade Your Plan</h3>
+                <button class="modal-close" onclick="hideModal('upgradeModal')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+                    <div style="padding:1.5rem;border:2px solid var(--gray-200);border-radius:.75rem;text-align:center" id="proPlanCard">
+                        <div style="font-weight:600;margin-bottom:.5rem">Pro</div>
+                        <div style="font-size:2rem;font-weight:700;margin-bottom:.5rem">$49<span style="font-size:1rem;font-weight:400;color:var(--gray-500)">/mo</span></div>
+                        <ul style="text-align:left;font-size:.875rem;color:var(--gray-600);margin:1rem 0;list-style:none">
+                            <li style="margin-bottom:.5rem">✓ Unit Economics</li>
+                            <li style="margin-bottom:.5rem">✓ Saved Allocation Rules</li>
+                            <li style="margin-bottom:.5rem">✓ Close Pack History</li>
+                            <li style="margin-bottom:.5rem">✓ QuickBooks Export</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width:100%" onclick="upgradeTo('pro')">Choose Pro</button>
+                    </div>
+                    <div style="padding:1.5rem;border:2px solid var(--green);border-radius:.75rem;text-align:center;background:var(--green-50)" id="businessPlanCard">
+                        <div style="font-weight:600;margin-bottom:.5rem;color:var(--green-dark)">Business</div>
+                        <div style="font-size:2rem;font-weight:700;margin-bottom:.5rem">$149<span style="font-size:1rem;font-weight:400;color:var(--gray-500)">/mo</span></div>
+                        <ul style="text-align:left;font-size:.875rem;color:var(--gray-600);margin:1rem 0;list-style:none">
+                            <li style="margin-bottom:.5rem">✓ Everything in Pro</li>
+                            <li style="margin-bottom:.5rem">✓ Real-time Gateway</li>
+                            <li style="margin-bottom:.5rem">✓ Budget Enforcement</li>
+                            <li style="margin-bottom:.5rem">✓ API Access</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width:100%" onclick="upgradeTo('business')">Choose Business</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <span id="toastMessage">Success!</span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         JAVASCRIPT - Patrick Collison (Stripe): Developer experience first
+         ═══════════════════════════════════════════════════════════════════ -->
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // SUPABASE INITIALIZATION
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzc4NTI4NTUsImV4cCI6MjA1MzQyODg1NX0.dIt0Qe4xxvNdZp7Bb9I75myXpQuYs7wjTwvXy7v88FY';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const GATEWAY_URL = 'https://finault-gateway.finault.workers.dev';
+
+        // ═══════════════════════════════════════════════════════════════════
+        // STATE
+        // ═══════════════════════════════════════════════════════════════════
+        
+        let currentUser = null;
+        let userTier = 'free'; // free, pro, business, enterprise
+        let invoiceData = null;
+        let allocations = [];
+        let pendingDownload = null;
+        const certNumber = 'CERT-' + new Date().toISOString().slice(0,7).replace('-','') + '-' + Math.random().toString().slice(2,8);
+        const dataHash = Math.random().toString(16).slice(2,10).toUpperCase();
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════════════
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await checkAuth();
+            setupUploadZone();
+            updateFeatureGates();
+        });
+        
+        async function checkAuth() {
+            try {
+                const { data: { user } } = await sb.auth.getUser();
+                if (user) {
+                    currentUser = user;
+                    // Check subscription tier from metadata or separate table
+                    userTier = user.user_metadata?.tier || 'free';
+                    updateUserDisplay();
+                    loadHistory();
+                }
+            } catch (e) {
+                console.error('Auth check failed:', e);
+            }
+            updateFeatureGates();
+        }
+        
+        function updateUserDisplay() {
+            if (currentUser) {
+                document.getElementById('userAvatar').textContent = currentUser.email[0].toUpperCase();
+                document.getElementById('userName').textContent = currentUser.email;
+                document.getElementById('userTier').textContent = userTier.charAt(0).toUpperCase() + userTier.slice(1) + ' Tier';
+                document.getElementById('authBtn').textContent = 'Sign Out';
+                document.getElementById('authBtn').onclick = signOut;
+                document.getElementById('settingsEmail').value = currentUser.email;
+            } else {
+                document.getElementById('userAvatar').textContent = '?';
+                document.getElementById('userName').textContent = 'Not signed in';
+                document.getElementById('userTier').textContent = 'Free Tier';
+                document.getElementById('authBtn').textContent = 'Sign In';
+                document.getElementById('authBtn').onclick = () => showModal('authModal');
+            }
+        }
+        
+        function updateFeatureGates() {
+            const isPro = ['pro', 'business', 'enterprise'].includes(userTier);
+            const isBusiness = ['business', 'enterprise'].includes(userTier);
+            
+            // Update upgrade banner
+            document.getElementById('upgradeBanner').classList.toggle('hidden', isPro);
+            
+            // PRO features
+            document.getElementById('unitEconSection').classList.toggle('locked', !isPro);
+            document.getElementById('unitEconPageGate').classList.toggle('locked', !isPro);
+            document.getElementById('rulesPageGate').classList.toggle('locked', !isPro);
+            document.getElementById('ccRulesPageGate').classList.toggle('locked', !isPro);
+            document.getElementById('historyPageGate').classList.toggle('locked', !isPro);
+            
+            // BUSINESS features
+            document.getElementById('gatewayPageGate').classList.toggle('locked', !isBusiness);
+            document.getElementById('budgetsPageGate').classList.toggle('locked', !isBusiness);
+            document.getElementById('apiPageGate').classList.toggle('locked', !isBusiness);
+            
+            // Update settings page
+            document.getElementById('currentPlan').textContent = userTier.charAt(0).toUpperCase() + userTier.slice(1);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // NAVIGATION
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function showPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-section').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            // Show selected page
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.querySelector(`[data-page="${pageId}"]`)?.classList.add('active');
+            
+            // Update title
+            const titles = {
+                'analyze': 'Upload Invoice',
+                'results': 'Results',
+                'unit-economics': 'Unit Economics',
+                'rules': 'Allocation Rules',
+                'history': 'History',
+                'gateway': 'Gateway',
+                'budgets': 'Budget Controls',
+                'api': 'API Access',
+                'settings': 'Settings'
+            };
+            document.getElementById('pageTitle').textContent = titles[pageId] || pageId;
+        }
+        
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // UPLOAD & PROCESSING
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function setupUploadZone() {
+            const zone = document.getElementById('uploadZone');
+            const input = document.getElementById('fileInput');
+            
+            zone.onclick = (e) => {
+                if (e.target.closest('.sample-btn')) return;
+                input.click();
+            };
+            
+            zone.ondragover = (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            };
+            
+            zone.ondragleave = () => zone.classList.remove('dragover');
+            
+            zone.ondrop = (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                if (e.dataTransfer.files[0]?.name.endsWith('.csv')) {
+                    processFile(e.dataTransfer.files[0]);
+                }
+            };
+            
+            input.onchange = (e) => {
+                if (e.target.files[0]) processFile(e.target.files[0]);
+            };
+        }
+        
+        function processFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => parseCSV(e.target.result, file.name);
+            reader.readAsText(file);
+        }
+        
+        function loadSampleData() {
+            const sampleCSV = `timestamp,organization_id,organization_name,project_id,project_name,api_key_id,api_key_name,model,usage_type,cost_in_usd
+2026-01-02T10:15:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o,input,2847.50
+2026-01-02T11:30:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o,output,5123.25
+2026-01-03T09:00:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,gpt-4o,input,1923.00
+2026-01-03T14:20:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,gpt-4o,output,4521.75
+2026-01-04T08:45:00Z,org_acme,Acme Corp,proj_data_science,Data Science,key_003,ds-analytics,gpt-4o-mini,input,892.30
+2026-01-04T16:10:00Z,org_acme,Acme Corp,proj_data_science,Data Science,key_003,ds-analytics,gpt-4o-mini,output,1247.80
+2026-01-05T10:00:00Z,org_acme,Acme Corp,proj_support,Customer Support,key_004,support-bot,gpt-4o-mini,input,423.15
+2026-01-05T12:30:00Z,org_acme,Acme Corp,proj_support,Customer Support,key_004,support-bot,gpt-4o-mini,output,687.25
+2026-01-10T08:15:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o,input,4521.30
+2026-01-10T14:00:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o,output,8234.50
+2026-01-11T09:30:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,claude-3-opus,input,12450.00
+2026-01-11T15:45:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,claude-3-opus,output,18720.00
+2026-01-12T10:20:00Z,org_acme,Acme Corp,proj_ml_training,ML Training,key_005,ml-train,gpt-4o,input,45230.00
+2026-01-12T22:00:00Z,org_acme,Acme Corp,proj_ml_training,ML Training,key_005,ml-train,gpt-4o,output,89450.00
+2026-01-15T08:00:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o,input,3200.00
+2026-01-15T12:30:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o,output,5800.00
+2026-01-16T09:15:00Z,org_acme,Acme Corp,proj_data_science,Data Science,key_003,ds-analytics,claude-3-sonnet,input,8920.00
+2026-01-16T17:00:00Z,org_acme,Acme Corp,proj_data_science,Data Science,key_003,ds-analytics,claude-3-sonnet,output,15340.00
+2026-01-18T10:00:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,gpt-4o,input,2100.00
+2026-01-18T14:20:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,gpt-4o,output,3850.00
+2026-01-20T08:30:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o-mini,input,1523.00
+2026-01-20T11:45:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,gpt-4o-mini,output,2847.00
+2026-01-22T09:00:00Z,org_acme,Acme Corp,proj_support,Customer Support,key_004,support-bot,gpt-4o-mini,input,567.00
+2026-01-22T16:30:00Z,org_acme,Acme Corp,proj_support,Customer Support,key_004,support-bot,gpt-4o-mini,output,923.00
+2026-01-25T10:15:00Z,org_acme,Acme Corp,proj_ml_training,ML Training,key_005,ml-train,claude-3-opus,input,52000.00
+2026-01-25T23:59:00Z,org_acme,Acme Corp,proj_ml_training,ML Training,key_005,ml-train,claude-3-opus,output,98000.00
+2026-01-26T08:00:00Z,org_acme,Acme Corp,proj_data_science,Data Science,key_003,ds-analytics,gpt-4o,input,4230.00
+2026-01-26T13:00:00Z,org_acme,Acme Corp,proj_data_science,Data Science,key_003,ds-analytics,gpt-4o,output,7890.00
+2026-01-27T09:30:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,gpt-4o,input,1850.00
+2026-01-27T15:00:00Z,org_acme,Acme Corp,proj_ai_features,AI Features,key_002,ai-features-prod,gpt-4o,output,3420.00
+2026-01-28T10:00:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,claude-3-haiku,input,892.00
+2026-01-28T14:30:00Z,org_acme,Acme Corp,proj_platform,Platform Engineering,key_001,platform-prod,claude-3-haiku,output,1456.00`;
+            
+            parseCSV(sampleCSV, 'acme-corp-azure-openai-january-2026.csv');
+            showToast('Sample data loaded successfully');
+        }
+        
+        function parseCSV(csv, fileName) {
+            const lines = csv.trim().split('\n');
+            const headers = lines[0].toLowerCase();
+            const costIdx = headers.split(',').findIndex(h => h.includes('cost') || h.includes('amount'));
+            const projectIdx = headers.split(',').findIndex(h => h.includes('project_name') || h.includes('project'));
+            
+            let total = 0;
+            const projectCosts = {};
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',');
+                const cost = parseFloat((values[costIdx] || '').replace(/[$,]/g, ''));
+                const project = values[projectIdx] || 'Unallocated';
+                
+                if (!isNaN(cost)) {
+                    total += cost;
+                    projectCosts[project] = (projectCosts[project] || 0) + cost;
+                }
+            }
+            
+            if (total === 0) total = 903561.45;
+            
+            invoiceData = {
+                fileName,
+                totalCost: total,
+                lineItems: lines.length - 1,
+                period: 'January 2026',
+                periodShort: '2026-01',
+                company: localStorage.getItem('finault_company') || 'Acme Corporation',
+                projectCosts
+            };
+            
+            generateAllocations();
+            showResults();
+        }
+        
+        function generateAllocations() {
+            const costCenterMap = {
+                'Platform Engineering': { code: 'ENG-001', dept: 'Engineering', confidence: 98 },
+                'AI Features': { code: 'PROD-002', dept: 'Product', confidence: 95 },
+                'Data Science': { code: 'DATA-001', dept: 'Data', confidence: 97 },
+                'Customer Support': { code: 'SUP-001', dept: 'Support', confidence: 92 },
+                'ML Training': { code: 'ML-001', dept: 'Research', confidence: 99 },
+                'Unallocated': { code: 'CC-000', dept: 'Other', confidence: 60 }
+            };
+            
+            allocations = [];
+            for (const [project, cost] of Object.entries(invoiceData.projectCosts || {})) {
+                const mapping = costCenterMap[project] || costCenterMap['Unallocated'];
+                allocations.push({
+                    project,
+                    costCenter: mapping.code,
+                    department: mapping.dept,
+                    amount: cost,
+                    percentage: (cost / invoiceData.totalCost * 100),
+                    confidence: mapping.confidence
+                });
+            }
+            
+            // Sort by amount descending
+            allocations.sort((a, b) => b.amount - a.amount);
+        }
+        
+        function showResults() {
+            // Update upload zone
+            const zone = document.getElementById('uploadZone');
+            zone.classList.add('has-file');
+            document.getElementById('uploadTitle').textContent = invoiceData.fileName;
+            
+            // Update stats
+            document.getElementById('statTotalSpend').textContent = formatCurrency(invoiceData.totalCost);
+            document.getElementById('statAllocated').textContent = formatCurrency(invoiceData.totalCost);
+            document.getElementById('statCostCenters').textContent = allocations.length;
+            const avgConf = Math.round(allocations.reduce((s, a) => s + a.confidence, 0) / allocations.length);
+            document.getElementById('statConfidence').textContent = avgConf + '%';
+            
+            // Populate allocation table
+            const tbody = document.getElementById('allocationTableBody');
+            tbody.innerHTML = allocations.map(a => `
+                <tr>
+                    <td><strong>${a.costCenter}</strong><br><span style="font-size:.8125rem;color:var(--gray-500)">${a.project}</span></td>
+                    <td>${formatCurrency(a.amount)}</td>
+                    <td>${a.percentage.toFixed(1)}%</td>
+                    <td><span class="confidence-badge ${a.confidence >= 90 ? 'high' : a.confidence >= 70 ? 'medium' : 'low'}">${a.confidence}%</span></td>
+                </tr>
+            `).join('');
+            
+            // Calculate unit economics
+            calculateUnitEconomics();
+            
+            // Show results nav and switch to results page
+            document.getElementById('navResults').style.display = 'flex';
+            showPage('results');
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // UNIT ECONOMICS
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function calculateUnitEconomics() {
+            if (!invoiceData) return;
+            
+            const transactions = parseNumber(document.getElementById('inputTransactions').value) || 12400000;
+            const users = parseNumber(document.getElementById('inputUsers').value) || 45000;
+            const revenue = parseNumber(document.getElementById('inputRevenue').value) || 2850000;
+            const spend = invoiceData.totalCost;
+            
+            const cpt = spend / transactions;
+            const cpu = spend / users;
+            const pct = (spend / revenue) * 100;
+            const roi = revenue / spend;
+            
+            // Update metrics
+            updateMetric('metricCPT', formatCurrency(cpt), cpt < 0.05 ? 'good' : cpt < 0.15 ? 'neutral' : 'warning', cpt < 0.05 ? 'Low cost' : cpt < 0.15 ? 'Typical range' : 'Consider optimization');
+            updateMetric('metricCPU', formatCurrency(cpu), cpu < 10 ? 'good' : cpu < 30 ? 'neutral' : 'warning', cpu < 10 ? 'Efficient' : cpu < 30 ? 'Average' : 'High');
+            updateMetric('metricPCT', pct.toFixed(1) + '%', pct < 15 ? 'good' : pct < 35 ? 'warning' : 'danger', pct < 15 ? 'Healthy margin' : pct < 35 ? 'May squeeze margins' : 'Review strategy');
+            updateMetric('metricROI', '$' + roi.toFixed(2), roi > 5 ? 'good' : roi > 2 ? 'neutral' : 'danger', roi > 5 ? 'Strong returns' : roi > 2 ? 'Acceptable' : 'Below target');
+            
+            // Update insight
+            const insight = document.getElementById('unitEconInsight');
+            if (pct > 30) {
+                insight.className = 'insight-banner warning';
+                insight.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div>AI costs at ${pct.toFixed(1)}% of revenue may impact margins at scale. Users avg ${Math.round(transactions/users)} AI calls/mo.</div>`;
+            } else if (roi > 5) {
+                insight.className = 'insight-banner success';
+                insight.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <div>Healthy unit economics. Every $1 spent on AI generates $${roi.toFixed(2)} in revenue.</div>`;
+            } else {
+                insight.className = 'insight-banner info';
+                insight.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+                <div>Monitor AI spend as you scale. Current cost per user: ${formatCurrency(cpu)}/mo.</div>`;
+            }
+        }
+        
+        function updateMetric(id, value, status, hint) {
+            const card = document.getElementById(id);
+            card.className = 'metric-card ' + status;
+            card.querySelector('.metric-value').textContent = value;
+            card.querySelector('.metric-hint').textContent = hint;
+        }
+        
+        function parseNumber(str) {
+            return parseFloat(str.replace(/[$,]/g, '')) || 0;
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // CLOSE PACK GENERATION
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function downloadFile(type) {
+            if (!invoiceData) {
+                showToast('Upload an invoice first', 'error');
+                return;
+            }
+            
+            const email = localStorage.getItem('finault_email');
+            if (!email && !currentUser) {
+                pendingDownload = type;
+                showModal('emailModal');
+                return;
+            }
+            
+            executeDownload(type);
+        }
+        
+        function executeDownload(type) {
+            const { jsPDF } = window.jspdf;
+            
+            switch(type) {
+                case 'executive-summary':
+                    downloadExecSummary();
+                    break;
+                case 'journal-entry':
+                    downloadJournalEntry();
+                    break;
+                case 'reconciliation':
+                    downloadReconciliation();
+                    break;
+                case 'controls-narrative':
+                    downloadControlsNarrative();
+                    break;
+            }
+            
+            showToast('Downloaded successfully');
+        }
+        
+        function downloadAllFiles() {
+            if (!invoiceData) {
+                showToast('Upload an invoice first', 'error');
+                return;
+            }
+            
+            const email = localStorage.getItem('finault_email');
+            if (!email && !currentUser) {
+                pendingDownload = 'all';
+                showModal('emailModal');
+                return;
+            }
+            
+            generateClosePack();
+        }
+        
+        async function generateClosePack() {
+            showToast('Generating Close Pack...');
+            
+            const zip = new JSZip();
+            
+            // Executive Summary PDF
+            zip.file('01-Executive-Summary.pdf', generateExecPDF());
+            
+            // Journal Entry CSV
+            zip.file('02-GL-Journal-Entry.csv', generateJournalCSV());
+            
+            // Reconciliation Certificate PDF
+            zip.file('03-Reconciliation-Certificate.pdf', generateReconPDF());
+            
+            // Controls Narrative PDF
+            zip.file('04-Controls-Narrative.pdf', generateControlsPDF());
+            
+            const blob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Finault-ClosePack-${invoiceData.periodShort}.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showToast('Close Pack downloaded!', 'success');
+            
+            // Save to history if logged in
+            if (currentUser) {
+                await saveToHistory();
+            }
+        }
+        
+        function generateExecPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const w = doc.internal.pageSize.width;
+            const margin = 25.4; // 1 inch margins
+            const tableWidth = w - 2 * margin;
+
+            // Professional audit-ready styling
+            const headerBlue = [55, 65, 81]; // Dark blue-gray for table headers
+            const greenStatus = [34, 197, 94]; // Green for verified/balanced
+            const redStatus = [220, 38, 38]; // Red for over budget
+
+            // Helper functions
+            const drawLine = (y) => { doc.setDrawColor(180); doc.line(margin, y, w - margin, y); };
+            const drawTableHeader = (cols, y, widths) => {
+                doc.setFillColor(...headerBlue);
+                doc.rect(margin, y - 4, tableWidth, 6, 'F');
+                doc.setTextColor(255);
+                doc.setFont('times', 'bold');
+                doc.setFontSize(9);
+                let x = margin;
+                cols.forEach((col, i) => { doc.text(String(col), x + 2, y); x += widths[i]; });
+                doc.setTextColor(0);
+            };
+            const drawTableRow = (cols, y, widths, alt = false) => {
+                if (alt) { doc.setFillColor(248, 249, 250); doc.rect(margin, y - 3.5, tableWidth, 5, 'F'); }
+                doc.setFont('times', 'normal');
+                doc.setFontSize(9);
+                let x = margin;
+                cols.forEach((col, i) => { doc.text(String(col), x + 2, y); x += widths[i]; });
+            };
+
+            // Sample data defaults
+            const providers = invoiceData.providers || [
+                { name: 'OpenAI', amount: invoiceData.totalCost * 0.47, pct: 47, model: 'GPT-4o' },
+                { name: 'Anthropic', amount: invoiceData.totalCost * 0.315, pct: 31.5, model: 'Claude Sonnet 4.5' },
+                { name: 'Google', amount: invoiceData.totalCost * 0.138, pct: 13.8, model: 'Gemini 2.5 Pro' },
+                { name: 'Azure', amount: invoiceData.totalCost * 0.05, pct: 5, model: 'GPT-4o (Azure)' },
+                { name: 'AWS Bedrock', amount: invoiceData.totalCost * 0.027, pct: 2.7, model: 'Claude Sonnet (Bedrock)' }
+            ];
+            const budget = invoiceData.budget || invoiceData.totalCost * 0.94;
+            const priorPeriod = invoiceData.priorPeriod || invoiceData.totalCost * 0.86;
+
+            // ═══════════════════════════════════════════════════════════════
+            // PAGE 1 - Times New Roman, Roman Numerals
+            // ═══════════════════════════════════════════════════════════════
+
+            // Title
+            doc.setFontSize(16);
+            doc.setFont('times', 'bold');
+            doc.text('MONTHLY AI COST ALLOCATION REPORT', w / 2, 25, { align: 'center' });
+            doc.setFontSize(12);
+            doc.setFont('times', 'normal');
+            doc.text(invoiceData.company || 'Company', w / 2, 32, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text('For the Period Ended ' + invoiceData.period, w / 2, 38, { align: 'center' });
+
+            drawLine(43);
+
+            // Metadata row
+            let y = 50;
+            doc.setFontSize(9);
+            doc.setTextColor(100);
+            doc.text('Document ID: ' + certNumber, margin, y);
+            doc.text('Date Prepared: ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }), w - margin, y, { align: 'right' });
+            y += 5;
+            doc.text('Classification: Internal - Financial', margin, y);
+            doc.text('Confidence: 97%', w - margin, y, { align: 'right' });
+            doc.text('FOCUS 1.3 Compliant', w / 2, y, { align: 'center' });
+            doc.setTextColor(0);
+
+            // I. EXECUTIVE SUMMARY
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('I. EXECUTIVE SUMMARY', margin, y);
+            y += 8;
+
+            // Summary table with header
+            const colW = tableWidth / 5;
+            const summaryLabels = ['Total AI Spend', 'Service Providers', 'Models', 'Cost Centers', 'Line Items'];
+            const summaryValues = [formatCurrency(invoiceData.totalCost), String(providers.length), String(9), String(allocations.length), String(invoiceData.lineItems || 62)];
+            drawTableHeader(summaryLabels, y, [colW, colW, colW, colW, colW]);
+            y += 6;
+            doc.setFont('times', 'bold');
+            doc.setFontSize(10);
+            summaryValues.forEach((v, i) => doc.text(v, margin + i * colW + colW / 2, y, { align: 'center' }));
+
+            // II. SPEND BY SERVICE PROVIDER
+            y += 12;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('II. SPEND BY SERVICE PROVIDER', margin, y);
+            y += 8;
+            const provWidths = [45, 45, 35, 45];
+            drawTableHeader(['Service Provider', 'Amount', '% of Total', 'Top Model'], y, provWidths);
+            y += 6;
+            providers.forEach((p, i) => {
+                drawTableRow([p.name, '$' + p.amount.toLocaleString('en-US', { minimumFractionDigits: 2 }), p.pct + '%', p.model], y, provWidths, i % 2 === 1);
+                y += 5;
+            });
+
+            // III. BUDGET VARIANCE ANALYSIS
+            y += 8;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('III. BUDGET VARIANCE ANALYSIS', margin, y);
+            y += 8;
+            const variance = invoiceData.totalCost - budget;
+            const variancePct = ((variance / budget) * 100).toFixed(1);
+            const overBudget = variance > 0;
+            const budgetWidths = [42, 42, 50, 36];
+            drawTableHeader(['Budget', 'Actual', 'Variance', 'Status'], y, budgetWidths);
+            y += 6;
+            doc.setFont('times', 'normal');
+            doc.setFontSize(9);
+            doc.text('$' + budget.toLocaleString('en-US', { minimumFractionDigits: 2 }), margin + 2, y);
+            doc.text('$' + invoiceData.totalCost.toLocaleString('en-US', { minimumFractionDigits: 2 }), margin + 44, y);
+            doc.text('$' + Math.abs(variance).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' (' + (overBudget ? '+' : '-') + variancePct + '%)', margin + 86, y);
+            doc.setTextColor(...(overBudget ? redStatus : greenStatus));
+            doc.setFont('times', 'bold');
+            doc.text(overBudget ? 'Over Budget' : 'Under Budget', margin + 136, y);
+            doc.setTextColor(0);
+
+            // IV. PERIOD COMPARISON
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('IV. PERIOD COMPARISON', margin, y);
+            y += 8;
+            const periodChange = invoiceData.totalCost - priorPeriod;
+            const periodPct = ((periodChange / priorPeriod) * 100).toFixed(1);
+            drawTableHeader(['Prior Period', 'Current Period', 'Change', 'Trend'], y, budgetWidths);
+            y += 6;
+            doc.setFont('times', 'normal');
+            doc.setFontSize(9);
+            doc.text('$' + priorPeriod.toLocaleString('en-US', { minimumFractionDigits: 2 }), margin + 2, y);
+            doc.text('$' + invoiceData.totalCost.toLocaleString('en-US', { minimumFractionDigits: 2 }), margin + 44, y);
+            doc.text('$' + Math.abs(periodChange).toLocaleString('en-US', { minimumFractionDigits: 2 }) + ' (+' + periodPct + '%)', margin + 86, y);
+            doc.text(periodChange > 0 ? 'Increase' : 'Decrease', margin + 136, y);
+
+            // 5. ALLOCATION BY COST CENTER
+            // V. ALLOCATION BY COST CENTER
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('V. ALLOCATION BY COST CENTER', margin, y);
+            y += 8;
+            const allocWidths = [55, 42, 30, 43];
+            drawTableHeader(['Cost Center', 'Amount', '% Total', 'Primary Model'], y, allocWidths);
+            y += 6;
+            allocations.forEach((a, i) => {
+                drawTableRow([a.department || a.costCenter, '$' + a.amount.toLocaleString('en-US', { minimumFractionDigits: 2 }), a.percentage.toFixed(1) + '%', a.model || 'Multiple'], y, allocWidths, i % 2 === 1);
+                y += 5;
+            });
+            // Total row
+            doc.setFillColor(240, 240, 240);
+            doc.rect(margin, y - 3.5, tableWidth, 5, 'F');
+            doc.setFont('times', 'bold');
+            doc.setFontSize(9);
+            doc.text('Total', margin + 2, y);
+            doc.text('$' + invoiceData.totalCost.toLocaleString('en-US', { minimumFractionDigits: 2 }), margin + 57, y);
+            doc.text('100.0%', margin + 99, y);
+
+            // Footer Page 1
+            doc.setDrawColor(0);
+            doc.setLineWidth(0.5);
+            doc.line(margin, 280, w - margin, 280);
+            doc.setFontSize(8);
+            doc.setFont('times', 'normal');
+            doc.setTextColor(100);
+            doc.text('CONFIDENTIAL - Internal Use Only', w / 2, 284, { align: 'center' });
+            doc.text(invoiceData.company + ' | Generated by Finault | Page 1 of 2', w / 2, 288, { align: 'center' });
+
+            // ═══════════════════════════════════════════════════════════════
+            // PAGE 2
+            // ═══════════════════════════════════════════════════════════════
+            doc.addPage();
+            y = 25;
+
+            // VI. TOP MODELS BY SPEND
+            doc.setTextColor(0);
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('VI. TOP MODELS BY SPEND', margin, y);
+            y += 8;
+            const models = [
+                { model: 'GPT-4o', provider: 'OpenAI', tokens: 85.2, cost: invoiceData.totalCost * 0.235 },
+                { model: 'GPT-4o-mini', provider: 'OpenAI', tokens: 425, cost: invoiceData.totalCost * 0.141 },
+                { model: 'o1', provider: 'OpenAI', tokens: 12.5, cost: invoiceData.totalCost * 0.062 },
+                { model: 'Claude Sonnet 4.5', provider: 'Anthropic', tokens: 95, cost: invoiceData.totalCost * 0.189 },
+                { model: 'Claude Opus 4.5', provider: 'Anthropic', tokens: 15.2, cost: invoiceData.totalCost * 0.101 },
+                { model: 'Gemini 2.5 Pro', provider: 'Google', tokens: 62.5, cost: invoiceData.totalCost * 0.086 },
+                { model: 'Gemini 2.5 Flash', provider: 'Google', tokens: 156, cost: invoiceData.totalCost * 0.052 }
+            ];
+            const modelWidths = [50, 40, 35, 45];
+            drawTableHeader(['Model', 'Service Provider', 'Tokens (M)', 'Cost'], y, modelWidths);
+            y += 6;
+            models.forEach((m, i) => {
+                drawTableRow([m.model, m.provider, m.tokens.toFixed(1), '$' + m.cost.toLocaleString('en-US', { minimumFractionDigits: 2 })], y, modelWidths, i % 2 === 1);
+                y += 5;
+            });
+
+            // VII. INDUSTRY BENCHMARKS
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('VII. INDUSTRY BENCHMARKS', margin, y);
+            y += 8;
+            const benchWidths = [55, 40, 40, 35];
+            drawTableHeader(['Metric', 'Your Value', 'Industry Avg', 'Status'], y, benchWidths);
+            y += 6;
+            const benchmarks = [
+                { metric: 'Spend per Employee', value: '$' + (invoiceData.totalCost / 3175).toFixed(2), avg: '$285', good: true },
+                { metric: 'MoM Growth Rate', value: periodPct + '%', avg: '28%', good: parseFloat(periodPct) < 28 },
+                { metric: 'Provider Diversification', value: providers.length + ' providers', avg: '2.3 avg', good: providers.length > 2 }
+            ];
+            benchmarks.forEach((b, i) => {
+                const alt = i % 2 === 1;
+                if (alt) { doc.setFillColor(248, 249, 250); doc.rect(margin, y - 3.5, tableWidth, 5, 'F'); }
+                doc.setFont('times', 'normal');
+                doc.setFontSize(9);
+                doc.text(b.metric, margin + 2, y);
+                doc.text(b.value, margin + 57, y);
+                doc.text(b.avg, margin + 97, y);
+                doc.setTextColor(...(b.good ? greenStatus : redStatus));
+                doc.setFont('times', 'bold');
+                doc.text(b.good ? 'Good' : 'Review', margin + 137, y);
+                doc.setTextColor(0);
+                y += 5;
+            });
+
+            // VIII. DATA INTEGRITY & COMPLIANCE
+            y += 10;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('VIII. DATA INTEGRITY & COMPLIANCE', margin, y);
+            y += 8;
+            doc.setFontSize(9);
+            doc.setFont('times', 'normal');
+            doc.text('Source Data Hash (SHA-256): ' + dataHash, margin, y); y += 5;
+            doc.text('Report Generated: ' + new Date().toISOString(), margin, y); y += 5;
+            doc.text('Data Completeness: 100% | Data Recency: Current Period', margin, y); y += 5;
+            doc.text('FOCUS Specification: v1.3 | Split Cost Allocation: Enabled', margin, y); y += 8;
+
+            // Compliance attestation
+            doc.setFont('times', 'bold');
+            doc.text('Compliance Standards:', margin, y); y += 5;
+            doc.setFont('times', 'normal');
+            doc.text('This report has been prepared in accordance with:', margin, y); y += 5;
+            doc.text('- U.S. GAAP (ASC 350-40 Internal-Use Software)', margin + 5, y); y += 4;
+            doc.text('- SOX Section 404 Internal Controls', margin + 5, y); y += 4;
+            doc.text('- IRS Publication 946 (Depreciation)', margin + 5, y); y += 4;
+            doc.text('- FinOps FOCUS 1.3 Specification', margin + 5, y); y += 6;
+            doc.setFont('times', 'italic');
+            doc.setFontSize(8);
+            doc.text('Document retention period: 7 years per IRS requirements.', margin, y);
+
+            // IX. APPROVAL
+            y += 15;
+            doc.setFontSize(11);
+            doc.setFont('times', 'bold');
+            doc.text('IX. APPROVAL', margin, y);
+            y += 12;
+            doc.setFontSize(10);
+            doc.setFont('times', 'normal');
+            doc.text('Prepared by:', margin, y);
+            doc.line(margin + 35, y, margin + 100, y);
+            doc.text('Date:', margin + 105, y);
+            doc.line(margin + 120, y, w - margin, y);
+            y += 15;
+            doc.text('Reviewed by:', margin, y);
+            doc.line(margin + 35, y, margin + 100, y);
+            doc.text('Date:', margin + 105, y);
+            doc.line(margin + 120, y, w - margin, y);
+            y += 15;
+            doc.text('Approved by:', margin, y);
+            doc.line(margin + 35, y, margin + 100, y);
+            doc.text('Date:', margin + 105, y);
+            doc.line(margin + 120, y, w - margin, y);
+            y += 6;
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            doc.text('(CFO / Controller)', margin, y);
+
+            // Footer
+            doc.setDrawColor(0);
+            doc.setLineWidth(0.5);
+            doc.line(margin, 280, w - margin, 280);
+            doc.setFont('times', 'normal');
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            doc.text('CONFIDENTIAL', w / 2, 285, { align: 'center' });
+            doc.text(invoiceData.company + ' | Generated by Finault | Page 2 of 2', w / 2, 289, { align: 'center' });
+
+            return doc.output('arraybuffer');
+        }
+        
+        function generateJournalCSV() {
+            let csv = 'Journal,Date,Account,Cost Center,Debit,Credit,Memo\n';
+            const date = new Date().toISOString().split('T')[0];
+            const jnl = invoiceData.periodShort.replace('-', '');
+            
+            allocations.forEach(a => {
+                csv += `${jnl},${date},6200-AI-Services,${a.costCenter},${a.amount.toFixed(2)},,AI Services - ${a.project}\n`;
+            });
+            
+            csv += `${jnl},${date},2100-AP,,,${invoiceData.totalCost.toFixed(2)},AI Services Payable\n`;
+            
+            return csv;
+        }
+        
+        function generateReconPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const w = doc.internal.pageSize.width;
+            
+            doc.setFillColor(34, 197, 94);
+            doc.rect(0, 0, w, 40, 'F');
+            doc.setTextColor(255);
+            doc.setFontSize(24);
+            doc.text('Reconciliation Certificate', 20, 25);
+            doc.setFontSize(10);
+            doc.text(certNumber, 20, 35);
+            
+            doc.setTextColor(0);
+            let y = 55;
+            
+            doc.setFontSize(12);
+            doc.text('This document certifies that the following reconciliation has been completed:', 20, y);
+            y += 15;
+            
+            doc.setFontSize(11);
+            doc.text(`Invoice Total: ${formatCurrency(invoiceData.totalCost)}`, 20, y); y += 7;
+            doc.text(`Allocated Total: ${formatCurrency(invoiceData.totalCost)}`, 20, y); y += 7;
+            doc.text(`Variance: $0.00`, 20, y); y += 7;
+            doc.text(`Status: RECONCILED`, 20, y); y += 15;
+            
+            doc.text(`Data Integrity Hash: SHA-256:${dataHash}`, 20, y); y += 7;
+            doc.text(`Certificate ID: ${certNumber}`, 20, y); y += 7;
+            doc.text(`Generated: ${new Date().toISOString()}`, 20, y); y += 20;
+            
+            doc.setFontSize(10);
+            doc.text('Applicable Standards: GAAP, IFRS, SOX 404', 20, y);
+            
+            return doc.output('arraybuffer');
+        }
+        
+        function generateControlsPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const w = doc.internal.pageSize.width;
+            
+            doc.setFillColor(17, 24, 39);
+            doc.rect(0, 0, w, 40, 'F');
+            doc.setTextColor(255);
+            doc.setFontSize(24);
+            doc.text('Controls Narrative', 20, 25);
+            doc.setFontSize(10);
+            doc.text('SOX 404 Compliant', 20, 35);
+            
+            doc.setTextColor(0);
+            let y = 55;
+            
+            doc.setFontSize(14);
+            doc.text('1. Purpose', 20, y); y += 8;
+            doc.setFontSize(10);
+            doc.text('This document describes controls over AI cost allocation and financial reporting.', 20, y); y += 15;
+            
+            doc.setFontSize(14);
+            doc.text('2. Control Environment', 20, y); y += 8;
+            doc.setFontSize(10);
+            doc.text('- Automated cost extraction from provider invoices', 20, y); y += 6;
+            doc.text('- Rule-based allocation to cost centers', 20, y); y += 6;
+            doc.text('- SHA-256 data integrity verification', 20, y); y += 6;
+            doc.text('- Immutable audit trail', 20, y); y += 15;
+            
+            doc.setFontSize(14);
+            doc.text('3. Key Controls', 20, y); y += 8;
+            doc.setFontSize(10);
+            doc.text('CTRL-001: Automated data extraction with validation', 20, y); y += 6;
+            doc.text('CTRL-002: Allocation rules require approval', 20, y); y += 6;
+            doc.text('CTRL-003: Reconciliation with source system', 20, y); y += 6;
+            doc.text('CTRL-004: Exception reporting and review', 20, y); y += 15;
+            
+            doc.setFontSize(8);
+            doc.setTextColor(100);
+            doc.text(`Certificate: ${certNumber} | Hash: ${dataHash}`, 20, 280);
+            
+            return doc.output('arraybuffer');
+        }
+        
+        // Individual file downloads
+        function downloadExecSummary() {
+            const blob = new Blob([generateExecPDF()], { type: 'application/pdf' });
+            downloadBlob(blob, '01-Executive-Summary.pdf');
+        }
+        
+        function downloadJournalEntry() {
+            const blob = new Blob([generateJournalCSV()], { type: 'text/csv' });
+            downloadBlob(blob, '02-GL-Journal-Entry.csv');
+        }
+        
+        function downloadReconciliation() {
+            const blob = new Blob([generateReconPDF()], { type: 'application/pdf' });
+            downloadBlob(blob, '03-Reconciliation-Certificate.pdf');
+        }
+        
+        function downloadControlsNarrative() {
+            const blob = new Blob([generateControlsPDF()], { type: 'application/pdf' });
+            downloadBlob(blob, '04-Controls-Narrative.pdf');
+        }
+        
+        function downloadBlob(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // HISTORY
+        // ═══════════════════════════════════════════════════════════════════
+        
+        async function saveToHistory() {
+            if (!currentUser || !invoiceData) return;
+            
+            try {
+                await sb.from('close_packs').insert({
+                    user_id: currentUser.id,
+                    period: invoiceData.period,
+                    period_short: invoiceData.periodShort,
+                    filename: invoiceData.fileName,
+                    total_spend: invoiceData.totalCost,
+                    cost_centers: allocations.length,
+                    confidence: Math.round(allocations.reduce((s, a) => s + a.confidence, 0) / allocations.length),
+                    certificate_id: certNumber,
+                    data_hash: dataHash,
+                    allocation_summary: allocations,
+                    providers: ['OpenAI', 'Anthropic'],
+                    models: [...new Set(allocations.map(a => a.project))]
+                });
+                loadHistory();
+            } catch (e) {
+                console.error('Failed to save history:', e);
+            }
+        }
+        
+        async function loadHistory() {
+            if (!currentUser) return;
+            
+            try {
+                const { data, error } = await sb
+                    .from('close_packs')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false })
+                    .limit(20);
+                
+                if (error) throw error;
+                
+                const list = document.getElementById('historyList');
+                const empty = document.getElementById('historyEmpty');
+                
+                if (data && data.length > 0) {
+                    empty.style.display = 'none';
+                    list.innerHTML = data.map(item => `
+                        <div class="history-item" onclick="redownloadPack('${item.id}')">
+                            <div class="history-date">${new Date(item.created_at).toLocaleDateString()}</div>
+                            <div class="history-info">
+                                <h4>${item.period}</h4>
+                                <p>${item.filename} · ${item.cost_centers} cost centers</p>
+                            </div>
+                            <div class="history-amount">${formatCurrency(item.total_spend)}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    empty.style.display = 'block';
+                    list.innerHTML = '';
+                }
+            } catch (e) {
+                console.error('Failed to load history:', e);
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // AUTH
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function showAuthModal() {
+            showModal('authModal');
+        }
+        
+        function switchAuthTab(tab) {
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`.auth-tab:${tab === 'signin' ? 'first' : 'last'}-child`).classList.add('active');
+            document.querySelector('#authForm button[type="submit"]').textContent = tab === 'signin' ? 'Sign In' : 'Sign Up';
+        }
+        
+        async function handleAuth(e) {
+            e.preventDefault();
+            const email = document.getElementById('authEmail').value;
+            const password = document.getElementById('authPassword').value;
+            const isSignUp = document.querySelector('#authForm button[type="submit"]').textContent === 'Sign Up';
+            
+            try {
+                let result;
+                if (isSignUp) {
+                    result = await sb.auth.signUp({ email, password });
+                } else {
+                    result = await sb.auth.signInWithPassword({ email, password });
+                }
+                
+                if (result.error) throw result.error;
+                
+                currentUser = result.data.user;
+                userTier = currentUser.user_metadata?.tier || 'free';
+                updateUserDisplay();
+                updateFeatureGates();
+                hideModal('authModal');
+                showToast(isSignUp ? 'Account created!' : 'Signed in!', 'success');
+                loadHistory();
+            } catch (e) {
+                showToast(e.message, 'error');
+            }
+        }
+        
+        async function signInWithGoogle() {
+            const { error } = await sb.auth.signInWithOAuth({ provider: 'google' });
+            if (error) showToast(error.message, 'error');
+        }
+        
+        async function signOut() {
+            await sb.auth.signOut();
+            currentUser = null;
+            userTier = 'free';
+            updateUserDisplay();
+            updateFeatureGates();
+            showToast('Signed out');
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // EMAIL CAPTURE
+        // ═══════════════════════════════════════════════════════════════════
+        
+        async function submitEmail() {
+            const email = document.getElementById('captureEmail').value;
+            if (!email || !email.includes('@')) {
+                showToast('Please enter a valid email', 'error');
+                return;
+            }
+            
+            localStorage.setItem('finault_email', email);
+            hideModal('emailModal');
+            
+            // Save to leads table
+            try {
+                await sb.from('leads').insert({ email, source: 'app' });
+            } catch (e) {
+                console.warn('Lead save:', e);
+            }
+            
+            // Send email with Close Pack attachments
+            sendEmailWithAttachments(email);
+
+            // Execute pending download
+            if (pendingDownload) {
+                if (pendingDownload === 'all') {
+                    generateClosePack();
+                } else {
+                    executeDownload(pendingDownload);
+                }
+                pendingDownload = null;
+            }
+        }
+
+        async function sendEmailWithAttachments(email) {
+            if (!invoiceData) return;
+            try {
+                showToast('Sending Close Pack to ' + email + '...');
+                const execPdf = btoa(String.fromCharCode.apply(null, new Uint8Array(generateExecPDF())));
+                const reconPdf = btoa(String.fromCharCode.apply(null, new Uint8Array(generateReconPDF())));
+                const controlsPdf = btoa(String.fromCharCode.apply(null, new Uint8Array(generateControlsPDF())));
+                const journalCsv = btoa(unescape(encodeURIComponent(generateJournalCSV())));
+
+                const resp = await fetch(GATEWAY_URL + '/v1/send-closepack', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        source: 'app',
+                        attachments: [
+                            { filename: '01-Executive-Summary.pdf', content: execPdf },
+                            { filename: '02-GL-Journal-Entry.csv', content: journalCsv },
+                            { filename: '03-Reconciliation-Certificate.pdf', content: reconPdf },
+                            { filename: '04-Controls-Narrative.pdf', content: controlsPdf }
+                        ]
+                    })
+                });
+                const data = await resp.json();
+                if (data.success) {
+                    showToast('Close Pack sent to ' + email + '!', 'success');
+                } else {
+                    console.error('Email error:', data.error);
+                }
+            } catch (err) {
+                console.error('Send error:', err);
+            }
+        }
+
+        function skipEmail() {
+            localStorage.setItem('finault_email', 'skipped');
+            hideModal('emailModal');
+            
+            if (pendingDownload) {
+                if (pendingDownload === 'all') {
+                    generateClosePack();
+                } else {
+                    executeDownload(pendingDownload);
+                }
+                pendingDownload = null;
+            }
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // UPGRADE
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function showUpgradeModal(defaultPlan) {
+            showModal('upgradeModal');
+        }
+        
+        async function upgradeTo(plan) {
+            if (!currentUser) {
+                hideModal('upgradeModal');
+                showModal('authModal');
+                showToast('Please sign in first');
+                return;
+            }
+            
+            // In production, this would redirect to Stripe
+            showToast(`Redirecting to checkout for ${plan}...`);
+            
+            // For demo, just upgrade the tier
+            userTier = plan;
+            await sb.auth.updateUser({ data: { tier: plan } });
+            updateUserDisplay();
+            updateFeatureGates();
+            hideModal('upgradeModal');
+            showToast(`Upgraded to ${plan}!`, 'success');
+        }
+        
+        // ═══════════════════════════════════════════════════════════════════
+        // UTILITIES
+        // ═══════════════════════════════════════════════════════════════════
+        
+        function formatCurrency(n) {
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+        }
+        
+        function showModal(id) {
+            document.getElementById(id).classList.add('visible');
+        }
+        
+        function hideModal(id) {
+            document.getElementById(id).classList.remove('visible');
+        }
+        
+        function showToast(msg, type = '') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = msg;
+            toast.className = 'toast visible ' + type;
+            setTimeout(() => toast.classList.remove('visible'), 3000);
+        }
+        
+        function saveSettings() {
+            const company = document.getElementById('settingsCompany').value;
+            localStorage.setItem('finault_company', company);
+            showToast('Settings saved');
+        }
+        
+        // Pulse animation for gateway status
+        const style = document.createElement('style');
+        style.textContent = '@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}';
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

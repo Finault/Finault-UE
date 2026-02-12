@@ -1,0 +1,4618 @@
+{
+  "total_tables": 70,
+  "used_tables": 70,
+  "unused_tables": 0,
+  "unused_table_list": [],
+  "used_table_list": [
+    "alert_configs",
+    "alert_history",
+    "allocation_rules",
+    "allocations",
+    "anchors",
+    "anomalies",
+    "anomaly_baselines",
+    "anomaly_detections",
+    "api_keys",
+    "audit_trail",
+    "autonomous_settings",
+    "baselines",
+    "benchmark_data_points",
+    "benchmark_positions",
+    "billing_anomalies",
+    "blockchain_anchors",
+    "budget_configs",
+    "budget_tracking",
+    "budgets",
+    "close_lineage",
+    "close_pack_details",
+    "close_packs",
+    "collective_intelligence",
+    "cost_allocation_summary",
+    "cost_center_learnings",
+    "cost_center_structures",
+    "crypto_proofs",
+    "customer_journeys",
+    "discrepancy_patterns",
+    "dispute_predictions",
+    "disputes",
+    "drift_events",
+    "erp_post_attempts",
+    "erp_post_receipts",
+    "erp_posting_policies",
+    "fcs_snapshots",
+    "for",
+    "gateway_logs",
+    "goals",
+    "ingestion_log",
+    "invoice_line_items",
+    "invoices",
+    "magic_sessions",
+    "model_usage_events",
+    "model_usage_profiles",
+    "organizations",
+    "pack_type_registry",
+    "pricing_rules",
+    "pricing_rulesets",
+    "proof_registry",
+    "provider_patterns",
+    "provider_relationships",
+    "real_time_recommendations",
+    "recommendation_confidence",
+    "reconciliation_certificates",
+    "reconciliation_confidence",
+    "reconciliation_reports",
+    "reconciliation_training_data",
+    "reconciliations",
+    "savings_implementations",
+    "savings_recommendations",
+    "savings_tracking",
+    "scheduled_actions",
+    "seasonality_profiles",
+    "sessions",
+    "spending_patterns",
+    "usage",
+    "users",
+    "value_tracking",
+    "verification_records"
+  ],
+  "detailed_usage": {
+    "alert_configs": {
+      "count": 16,
+      "references": [
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9099,
+          "pattern": "\\.from\\(['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9126,
+          "pattern": "\\.from\\(['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9099,
+          "pattern": "\\.from\\(\\s*['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9126,
+          "pattern": "\\.from\\(\\s*['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11259,
+          "pattern": "\\.from\\(['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11286,
+          "pattern": "\\.from\\(['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11259,
+          "pattern": "\\.from\\(\\s*['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11286,
+          "pattern": "\\.from\\(\\s*['\\\"](alert_configs)['\\\"]",
+          "match": ".from('alert_configs'"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3406,
+          "pattern": "JOIN\\s+(alert_configs)",
+          "match": "JOIN alert_configs"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2973,
+          "pattern": "TABLE\\s+(alert_configs)",
+          "match": "TABLE alert_configs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2998,
+          "pattern": "JOIN\\s+(alert_configs)",
+          "match": "JOIN alert_configs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2624,
+          "pattern": "TABLE\\s+(alert_configs)",
+          "match": "TABLE alert_configs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2825,
+          "pattern": "TABLE\\s+(alert_configs)",
+          "match": "TABLE alert_configs"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 482,
+          "pattern": "JOIN\\s+(alert_configs)",
+          "match": "JOIN alert_configs"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 108,
+          "pattern": "TABLE\\s+(alert_configs)",
+          "match": "TABLE alert_configs"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 309,
+          "pattern": "TABLE\\s+(alert_configs)",
+          "match": "TABLE alert_configs"
+        }
+      ]
+    },
+    "alert_history": {
+      "count": 9,
+      "references": [
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9046,
+          "pattern": "\\.from\\(['\\\"](alert_history)['\\\"]",
+          "match": ".from('alert_history'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9046,
+          "pattern": "\\.from\\(\\s*['\\\"](alert_history)['\\\"]",
+          "match": ".from('alert_history'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11206,
+          "pattern": "\\.from\\(['\\\"](alert_history)['\\\"]",
+          "match": ".from('alert_history'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11206,
+          "pattern": "\\.from\\(\\s*['\\\"](alert_history)['\\\"]",
+          "match": ".from('alert_history'"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3034,
+          "pattern": "TABLE\\s+(alert_history)",
+          "match": "TABLE alert_history"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2672,
+          "pattern": "TABLE\\s+(alert_history)",
+          "match": "TABLE alert_history"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2826,
+          "pattern": "TABLE\\s+(alert_history)",
+          "match": "TABLE alert_history"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 156,
+          "pattern": "TABLE\\s+(alert_history)",
+          "match": "TABLE alert_history"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 310,
+          "pattern": "TABLE\\s+(alert_history)",
+          "match": "TABLE alert_history"
+        }
+      ]
+    },
+    "allocation_rules": {
+      "count": 16,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 1333,
+          "pattern": "\\.from\\(['\\\"](allocation_rules)['\\\"]",
+          "match": ".from('allocation_rules'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1333,
+          "pattern": "\\.from\\(\\s*['\\\"](allocation_rules)['\\\"]",
+          "match": ".from('allocation_rules'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 16,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1260,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 384,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 955,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 309,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(allocation_rules)",
+          "match": "SELECT id, method, target_allocation, allocation_method\n            FROM allocation_rules"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 310,
+          "pattern": "FROM\\s+(allocation_rules)",
+          "match": "FROM allocation_rules"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 129,
+          "pattern": "INSERT\\s+INTO\\s+(allocation_rules)",
+          "match": "INSERT INTO allocation_rules"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 385,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(allocation_rules)",
+          "match": "SELECT 'allocation_rules', COUNT(*) FROM allocation_rules"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 129,
+          "pattern": "INTO\\s+(allocation_rules)",
+          "match": "INTO allocation_rules"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 385,
+          "pattern": "FROM\\s+(allocation_rules)",
+          "match": "FROM allocation_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 384,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 955,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 384,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 955,
+          "pattern": "TABLE\\s+(allocation_rules)",
+          "match": "TABLE allocation_rules"
+        }
+      ]
+    },
+    "allocations": {
+      "count": 28,
+      "references": [
+        {
+          "file": "apps/close-pack/closepack-generator-v2.js",
+          "line": 444,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "from allocations"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 314,
+          "pattern": "UPDATE\\s+(allocations)",
+          "match": "update allocations"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 315,
+          "pattern": "UPDATE\\s+(allocations)",
+          "match": "update allocations"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 17,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1259,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 428,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 954,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 318,
+          "pattern": "INSERT\\s+INTO\\s+(allocations)",
+          "match": "INSERT INTO allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 300,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(allocations)",
+          "match": "SELECT invoice_line_item_id FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 336,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(allocations)",
+          "match": "SELECT 1 FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 157,
+          "pattern": "JOIN\\s+(allocations)",
+          "match": "JOIN allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 318,
+          "pattern": "INTO\\s+(allocations)",
+          "match": "INTO allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 45,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 76,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 92,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 228,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 240,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 300,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 336,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 386,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 533,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 554,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 575,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 665,
+          "pattern": "FROM\\s+(allocations)",
+          "match": "FROM allocations"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 428,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 954,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 428,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 954,
+          "pattern": "TABLE\\s+(allocations)",
+          "match": "TABLE allocations"
+        }
+      ]
+    },
+    "anchors": {
+      "count": 8,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 701,
+          "pattern": "\\.from\\(['\\\"](anchors)['\\\"]",
+          "match": ".from('anchors'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 701,
+          "pattern": "\\.from\\(\\s*['\\\"](anchors)['\\\"]",
+          "match": ".from('anchors'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1082,
+          "pattern": "\\.from\\(['\\\"](anchors)['\\\"]",
+          "match": ".from('anchors'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1082,
+          "pattern": "\\.from\\(\\s*['\\\"](anchors)['\\\"]",
+          "match": ".from('anchors'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1225,
+          "pattern": "FROM\\s+(anchors)",
+          "match": "FROM anchors"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1817,
+          "pattern": "FROM\\s+(anchors)",
+          "match": "FROM anchors"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1468,
+          "pattern": "FROM\\s+(anchors)",
+          "match": "FROM anchors"
+        },
+        {
+          "file": "database/migrations/003_anchors.sql",
+          "line": 197,
+          "pattern": "FROM\\s+(anchors)",
+          "match": "FROM anchors"
+        }
+      ]
+    },
+    "anomalies": {
+      "count": 20,
+      "references": [
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 283,
+          "pattern": "\\.from\\(['\\\"](anomalies)['\\\"]",
+          "match": ".from('anomalies'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 334,
+          "pattern": "\\.from\\(['\\\"](anomalies)['\\\"]",
+          "match": ".from('anomalies'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 283,
+          "pattern": "\\.from\\(\\s*['\\\"](anomalies)['\\\"]",
+          "match": ".from('anomalies'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 334,
+          "pattern": "\\.from\\(\\s*['\\\"](anomalies)['\\\"]",
+          "match": ".from('anomalies'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 379,
+          "pattern": "UPDATE\\s+(anomalies)",
+          "match": "update anomalies"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 387,
+          "pattern": "UPDATE\\s+(anomalies)",
+          "match": "update anomalies"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 20,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1262,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 561,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 957,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 621,
+          "pattern": "DELETE\\s+FROM\\s+(anomalies)",
+          "match": "DELETE FROM anomalies"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 621,
+          "pattern": "FROM\\s+(anomalies)",
+          "match": "FROM anomalies"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 62,
+          "pattern": "INSERT\\s+INTO\\s+(anomalies)",
+          "match": "INSERT INTO anomalies"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 383,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(anomalies)",
+          "match": "SELECT 'anomalies', COUNT(*) FROM anomalies"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 62,
+          "pattern": "INTO\\s+(anomalies)",
+          "match": "INTO anomalies"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 383,
+          "pattern": "FROM\\s+(anomalies)",
+          "match": "FROM anomalies"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 561,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 957,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 561,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 957,
+          "pattern": "TABLE\\s+(anomalies)",
+          "match": "TABLE anomalies"
+        }
+      ]
+    },
+    "anomaly_baselines": {
+      "count": 4,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 146,
+          "pattern": "\\.from\\(['\\\"](anomaly_baselines)['\\\"]",
+          "match": ".from('anomaly_baselines'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1000,
+          "pattern": "\\.from\\(['\\\"](anomaly_baselines)['\\\"]",
+          "match": ".from('anomaly_baselines'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 146,
+          "pattern": "\\.from\\(\\s*['\\\"](anomaly_baselines)['\\\"]",
+          "match": ".from('anomaly_baselines'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1000,
+          "pattern": "\\.from\\(\\s*['\\\"](anomaly_baselines)['\\\"]",
+          "match": ".from('anomaly_baselines'"
+        }
+      ]
+    },
+    "anomaly_detections": {
+      "count": 8,
+      "references": [
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 372,
+          "pattern": "\\.from\\(['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 372,
+          "pattern": "\\.from\\(\\s*['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 627,
+          "pattern": "\\.from\\(['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 627,
+          "pattern": "\\.from\\(\\s*['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 477,
+          "pattern": "\\.from\\(['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1061,
+          "pattern": "\\.from\\(['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 477,
+          "pattern": "\\.from\\(\\s*['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1061,
+          "pattern": "\\.from\\(\\s*['\\\"](anomaly_detections)['\\\"]",
+          "match": ".from('anomaly_detections'"
+        }
+      ]
+    },
+    "api_keys": {
+      "count": 23,
+      "references": [
+        {
+          "file": "apps/gateway/infrastructure.js",
+          "line": 809,
+          "pattern": "\\.from\\(['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/infrastructure.js",
+          "line": 809,
+          "pattern": "\\.from\\(\\s*['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9377,
+          "pattern": "\\.from\\(['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9377,
+          "pattern": "\\.from\\(\\s*['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11537,
+          "pattern": "\\.from\\(['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11601,
+          "pattern": "\\.from\\(['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11537,
+          "pattern": "\\.from\\(\\s*['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11601,
+          "pattern": "\\.from\\(\\s*['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 127,
+          "pattern": "\\.from\\(['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 137,
+          "pattern": "\\.from\\(['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 127,
+          "pattern": "\\.from\\(\\s*['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 137,
+          "pattern": "\\.from\\(\\s*['\\\"](api_keys)['\\\"]",
+          "match": ".from('api_keys'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 11,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3404,
+          "pattern": "JOIN\\s+(api_keys)",
+          "match": "JOIN api_keys"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1265,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 120,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 960,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2996,
+          "pattern": "JOIN\\s+(api_keys)",
+          "match": "JOIN api_keys"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 120,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 960,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 120,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 960,
+          "pattern": "TABLE\\s+(api_keys)",
+          "match": "TABLE api_keys"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 480,
+          "pattern": "JOIN\\s+(api_keys)",
+          "match": "JOIN api_keys"
+        }
+      ]
+    },
+    "audit_trail": {
+      "count": 18,
+      "references": [
+        {
+          "file": "database/rls-policies.sql",
+          "line": 24,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 729,
+          "pattern": "INSERT\\s+INTO\\s+(audit_trail)",
+          "match": "INSERT INTO audit_trail"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 729,
+          "pattern": "INTO\\s+(audit_trail)",
+          "match": "INTO audit_trail"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1189,
+          "pattern": "INSERT\\s+INTO\\s+(audit_trail)",
+          "match": "INSERT INTO audit_trail"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1189,
+          "pattern": "INTO\\s+(audit_trail)",
+          "match": "INTO audit_trail"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1264,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 892,
+          "pattern": "INSERT\\s+INTO\\s+(audit_trail)",
+          "match": "INSERT INTO audit_trail"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 892,
+          "pattern": "INTO\\s+(audit_trail)",
+          "match": "INTO audit_trail"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 744,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 959,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 892,
+          "pattern": "INSERT\\s+INTO\\s+(audit_trail)",
+          "match": "INSERT INTO audit_trail"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 892,
+          "pattern": "INTO\\s+(audit_trail)",
+          "match": "INTO audit_trail"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 744,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 959,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 892,
+          "pattern": "INSERT\\s+INTO\\s+(audit_trail)",
+          "match": "INSERT INTO audit_trail"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 892,
+          "pattern": "INTO\\s+(audit_trail)",
+          "match": "INTO audit_trail"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 744,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 959,
+          "pattern": "TABLE\\s+(audit_trail)",
+          "match": "TABLE audit_trail"
+        }
+      ]
+    },
+    "autonomous_settings": {
+      "count": 16,
+      "references": [
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9279,
+          "pattern": "\\.from\\(['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9332,
+          "pattern": "\\.from\\(['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9279,
+          "pattern": "\\.from\\(\\s*['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 9332,
+          "pattern": "\\.from\\(\\s*['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11439,
+          "pattern": "\\.from\\(['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11492,
+          "pattern": "\\.from\\(['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11439,
+          "pattern": "\\.from\\(\\s*['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 11492,
+          "pattern": "\\.from\\(\\s*['\\\"](autonomous_settings)['\\\"]",
+          "match": ".from('autonomous_settings'"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3405,
+          "pattern": "JOIN\\s+(autonomous_settings)",
+          "match": "JOIN autonomous_settings"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3089,
+          "pattern": "TABLE\\s+(autonomous_settings)",
+          "match": "TABLE autonomous_settings"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2997,
+          "pattern": "JOIN\\s+(autonomous_settings)",
+          "match": "JOIN autonomous_settings"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2728,
+          "pattern": "TABLE\\s+(autonomous_settings)",
+          "match": "TABLE autonomous_settings"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2827,
+          "pattern": "TABLE\\s+(autonomous_settings)",
+          "match": "TABLE autonomous_settings"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 481,
+          "pattern": "JOIN\\s+(autonomous_settings)",
+          "match": "JOIN autonomous_settings"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 212,
+          "pattern": "TABLE\\s+(autonomous_settings)",
+          "match": "TABLE autonomous_settings"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 311,
+          "pattern": "TABLE\\s+(autonomous_settings)",
+          "match": "TABLE autonomous_settings"
+        }
+      ]
+    },
+    "baselines": {
+      "count": 6,
+      "references": [
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1058,
+          "pattern": "FROM\\s+(baselines)",
+          "match": "FROM baselines"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1591,
+          "pattern": "FROM\\s+(baselines)",
+          "match": "FROM baselines"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1043,
+          "pattern": "FROM\\s+(baselines)",
+          "match": "from baselines"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1251,
+          "pattern": "FROM\\s+(baselines)",
+          "match": "FROM baselines"
+        },
+        {
+          "file": "database/migrations/002_lineage_baselines.sql",
+          "line": 72,
+          "pattern": "FROM\\s+(baselines)",
+          "match": "from baselines"
+        },
+        {
+          "file": "database/migrations/002_lineage_baselines.sql",
+          "line": 280,
+          "pattern": "FROM\\s+(baselines)",
+          "match": "FROM baselines"
+        }
+      ]
+    },
+    "benchmark_data_points": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 510,
+          "pattern": "\\.from\\(['\\\"](benchmark_data_points)['\\\"]",
+          "match": ".from('benchmark_data_points'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 510,
+          "pattern": "\\.from\\(\\s*['\\\"](benchmark_data_points)['\\\"]",
+          "match": ".from('benchmark_data_points'"
+        }
+      ]
+    },
+    "benchmark_positions": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 161,
+          "pattern": "\\.from\\(['\\\"](benchmark_positions)['\\\"]",
+          "match": ".from('benchmark_positions'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 161,
+          "pattern": "\\.from\\(\\s*['\\\"](benchmark_positions)['\\\"]",
+          "match": ".from('benchmark_positions'"
+        }
+      ]
+    },
+    "billing_anomalies": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 658,
+          "pattern": "\\.from\\(['\\\"](billing_anomalies)['\\\"]",
+          "match": ".from('billing_anomalies'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 658,
+          "pattern": "\\.from\\(\\s*['\\\"](billing_anomalies)['\\\"]",
+          "match": ".from('billing_anomalies'"
+        }
+      ]
+    },
+    "blockchain_anchors": {
+      "count": 2,
+      "references": [
+        {
+          "file": "database/combined-migration.sql",
+          "line": 3146,
+          "pattern": "TABLE\\s+(blockchain_anchors)",
+          "match": "TABLE blockchain_anchors"
+        },
+        {
+          "file": "database/migrations/007_gateway_compat.sql",
+          "line": 112,
+          "pattern": "TABLE\\s+(blockchain_anchors)",
+          "match": "TABLE blockchain_anchors"
+        }
+      ]
+    },
+    "budget_configs": {
+      "count": 6,
+      "references": [
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 328,
+          "pattern": "\\.from\\(['\\\"](budget_configs)['\\\"]",
+          "match": ".from('budget_configs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 328,
+          "pattern": "\\.from\\(\\s*['\\\"](budget_configs)['\\\"]",
+          "match": ".from('budget_configs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 241,
+          "pattern": "\\.from\\(['\\\"](budget_configs)['\\\"]",
+          "match": ".from('budget_configs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 241,
+          "pattern": "\\.from\\(\\s*['\\\"](budget_configs)['\\\"]",
+          "match": ".from('budget_configs'"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 3149,
+          "pattern": "TABLE\\s+(budget_configs)",
+          "match": "TABLE budget_configs"
+        },
+        {
+          "file": "database/migrations/007_gateway_compat.sql",
+          "line": 115,
+          "pattern": "TABLE\\s+(budget_configs)",
+          "match": "TABLE budget_configs"
+        }
+      ]
+    },
+    "budget_tracking": {
+      "count": 4,
+      "references": [
+        {
+          "file": "database/rls-policies.sql",
+          "line": 19,
+          "pattern": "TABLE\\s+(budget_tracking)",
+          "match": "TABLE budget_tracking"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 528,
+          "pattern": "TABLE\\s+(budget_tracking)",
+          "match": "TABLE budget_tracking"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 528,
+          "pattern": "TABLE\\s+(budget_tracking)",
+          "match": "TABLE budget_tracking"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 528,
+          "pattern": "TABLE\\s+(budget_tracking)",
+          "match": "TABLE budget_tracking"
+        }
+      ]
+    },
+    "budgets": {
+      "count": 21,
+      "references": [
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 524,
+          "pattern": "\\.from\\(['\\\"](budgets)['\\\"]",
+          "match": ".from('budgets'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 545,
+          "pattern": "\\.from\\(['\\\"](budgets)['\\\"]",
+          "match": ".from('budgets'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 567,
+          "pattern": "\\.from\\(['\\\"](budgets)['\\\"]",
+          "match": ".from('budgets'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 524,
+          "pattern": "\\.from\\(\\s*['\\\"](budgets)['\\\"]",
+          "match": ".from('budgets'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 545,
+          "pattern": "\\.from\\(\\s*['\\\"](budgets)['\\\"]",
+          "match": ".from('budgets'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 567,
+          "pattern": "\\.from\\(\\s*['\\\"](budgets)['\\\"]",
+          "match": ".from('budgets'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 341,
+          "pattern": "UPDATE\\s+(budgets)",
+          "match": "update budgets"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 342,
+          "pattern": "UPDATE\\s+(budgets)",
+          "match": "update budgets"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 18,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1261,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 469,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 956,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 156,
+          "pattern": "FROM\\s+(budgets)",
+          "match": "FROM budgets"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 217,
+          "pattern": "INSERT\\s+INTO\\s+(budgets)",
+          "match": "INSERT INTO budgets"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 387,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(budgets)",
+          "match": "SELECT 'budgets', COUNT(*) FROM budgets"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 217,
+          "pattern": "INTO\\s+(budgets)",
+          "match": "INTO budgets"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 387,
+          "pattern": "FROM\\s+(budgets)",
+          "match": "FROM budgets"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 469,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 956,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 469,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 956,
+          "pattern": "TABLE\\s+(budgets)",
+          "match": "TABLE budgets"
+        }
+      ]
+    },
+    "close_lineage": {
+      "count": 12,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 597,
+          "pattern": "\\.from\\(['\\\"](close_lineage)['\\\"]",
+          "match": ".from('close_lineage'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 597,
+          "pattern": "\\.from\\(\\s*['\\\"](close_lineage)['\\\"]",
+          "match": ".from('close_lineage'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1161,
+          "pattern": "\\.from\\(['\\\"](close_lineage)['\\\"]",
+          "match": ".from('close_lineage'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1161,
+          "pattern": "\\.from\\(\\s*['\\\"](close_lineage)['\\\"]",
+          "match": ".from('close_lineage'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1018,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1030,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1547,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1559,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1209,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1222,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/migrations/002_lineage_baselines.sql",
+          "line": 238,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        },
+        {
+          "file": "database/migrations/002_lineage_baselines.sql",
+          "line": 251,
+          "pattern": "FROM\\s+(close_lineage)",
+          "match": "FROM close_lineage"
+        }
+      ]
+    },
+    "close_pack_details": {
+      "count": 5,
+      "references": [
+        {
+          "file": "database/rls-policies.sql",
+          "line": 23,
+          "pattern": "TABLE\\s+(close_pack_details)",
+          "match": "TABLE close_pack_details"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 712,
+          "pattern": "TABLE\\s+(close_pack_details)",
+          "match": "TABLE close_pack_details"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 437,
+          "pattern": "FROM\\s+(close_pack_details)",
+          "match": "FROM close_pack_details"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 712,
+          "pattern": "TABLE\\s+(close_pack_details)",
+          "match": "TABLE close_pack_details"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 712,
+          "pattern": "TABLE\\s+(close_pack_details)",
+          "match": "TABLE close_pack_details"
+        }
+      ]
+    },
+    "close_packs": {
+      "count": 20,
+      "references": [
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 444,
+          "pattern": "\\.from\\(['\\\"](close_packs)['\\\"]",
+          "match": ".from('close_packs'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 491,
+          "pattern": "\\.from\\(['\\\"](close_packs)['\\\"]",
+          "match": ".from('close_packs'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 444,
+          "pattern": "\\.from\\(\\s*['\\\"](close_packs)['\\\"]",
+          "match": ".from('close_packs'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 491,
+          "pattern": "\\.from\\(\\s*['\\\"](close_packs)['\\\"]",
+          "match": ".from('close_packs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1449,
+          "pattern": "\\.from\\(['\\\"](close_packs)['\\\"]",
+          "match": ".from('close_packs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1449,
+          "pattern": "\\.from\\(\\s*['\\\"](close_packs)['\\\"]",
+          "match": ".from('close_packs'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 22,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1263,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 661,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 958,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 452,
+          "pattern": "UPDATE\\s+(close_packs)",
+          "match": "UPDATE close_packs"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 442,
+          "pattern": "FROM\\s+(close_packs)",
+          "match": "FROM close_packs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 347,
+          "pattern": "INSERT\\s+INTO\\s+(close_packs)",
+          "match": "INSERT INTO close_packs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 391,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(close_packs)",
+          "match": "SELECT 'close_packs', COUNT(*) FROM close_packs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 347,
+          "pattern": "INTO\\s+(close_packs)",
+          "match": "INTO close_packs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 391,
+          "pattern": "FROM\\s+(close_packs)",
+          "match": "FROM close_packs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 661,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 958,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 661,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 958,
+          "pattern": "TABLE\\s+(close_packs)",
+          "match": "TABLE close_packs"
+        }
+      ]
+    },
+    "collective_intelligence": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 885,
+          "pattern": "\\.from\\(['\\\"](collective_intelligence)['\\\"]",
+          "match": ".from('collective_intelligence'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 885,
+          "pattern": "\\.from\\(\\s*['\\\"](collective_intelligence)['\\\"]",
+          "match": ".from('collective_intelligence'"
+        }
+      ]
+    },
+    "cost_allocation_summary": {
+      "count": 8,
+      "references": [
+        {
+          "file": "database/rls-policies.sql",
+          "line": 25,
+          "pattern": "TABLE\\s+(cost_allocation_summary)",
+          "match": "TABLE cost_allocation_summary"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 785,
+          "pattern": "TABLE\\s+(cost_allocation_summary)",
+          "match": "TABLE cost_allocation_summary"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 634,
+          "pattern": "INSERT\\s+INTO\\s+(cost_allocation_summary)",
+          "match": "INSERT INTO cost_allocation_summary"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 632,
+          "pattern": "DELETE\\s+FROM\\s+(cost_allocation_summary)",
+          "match": "DELETE FROM cost_allocation_summary"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 634,
+          "pattern": "INTO\\s+(cost_allocation_summary)",
+          "match": "INTO cost_allocation_summary"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 632,
+          "pattern": "FROM\\s+(cost_allocation_summary)",
+          "match": "FROM cost_allocation_summary"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 785,
+          "pattern": "TABLE\\s+(cost_allocation_summary)",
+          "match": "TABLE cost_allocation_summary"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 785,
+          "pattern": "TABLE\\s+(cost_allocation_summary)",
+          "match": "TABLE cost_allocation_summary"
+        }
+      ]
+    },
+    "cost_center_learnings": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 694,
+          "pattern": "\\.from\\(['\\\"](cost_center_learnings)['\\\"]",
+          "match": ".from('cost_center_learnings'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 694,
+          "pattern": "\\.from\\(\\s*['\\\"](cost_center_learnings)['\\\"]",
+          "match": ".from('cost_center_learnings'"
+        }
+      ]
+    },
+    "cost_center_structures": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 113,
+          "pattern": "\\.from\\(['\\\"](cost_center_structures)['\\\"]",
+          "match": ".from('cost_center_structures'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 113,
+          "pattern": "\\.from\\(\\s*['\\\"](cost_center_structures)['\\\"]",
+          "match": ".from('cost_center_structures'"
+        }
+      ]
+    },
+    "crypto_proofs": {
+      "count": 2,
+      "references": [
+        {
+          "file": "database/combined-migration.sql",
+          "line": 3147,
+          "pattern": "TABLE\\s+(crypto_proofs)",
+          "match": "TABLE crypto_proofs"
+        },
+        {
+          "file": "database/migrations/007_gateway_compat.sql",
+          "line": 113,
+          "pattern": "TABLE\\s+(crypto_proofs)",
+          "match": "TABLE crypto_proofs"
+        }
+      ]
+    },
+    "customer_journeys": {
+      "count": 6,
+      "references": [
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1200,
+          "pattern": "\\.from\\(['\\\"](customer_journeys)['\\\"]",
+          "match": ".from('customer_journeys'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1250,
+          "pattern": "\\.from\\(['\\\"](customer_journeys)['\\\"]",
+          "match": ".from('customer_journeys'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1200,
+          "pattern": "\\.from\\(\\s*['\\\"](customer_journeys)['\\\"]",
+          "match": ".from('customer_journeys'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 1250,
+          "pattern": "\\.from\\(\\s*['\\\"](customer_journeys)['\\\"]",
+          "match": ".from('customer_journeys'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1636,
+          "pattern": "\\.from\\(['\\\"](customer_journeys)['\\\"]",
+          "match": ".from('customer_journeys'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1636,
+          "pattern": "\\.from\\(\\s*['\\\"](customer_journeys)['\\\"]",
+          "match": ".from('customer_journeys'"
+        }
+      ]
+    },
+    "discrepancy_patterns": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 725,
+          "pattern": "\\.from\\(['\\\"](discrepancy_patterns)['\\\"]",
+          "match": ".from('discrepancy_patterns'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 725,
+          "pattern": "\\.from\\(\\s*['\\\"](discrepancy_patterns)['\\\"]",
+          "match": ".from('discrepancy_patterns'"
+        }
+      ]
+    },
+    "dispute_predictions": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 766,
+          "pattern": "\\.from\\(['\\\"](dispute_predictions)['\\\"]",
+          "match": ".from('dispute_predictions'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 766,
+          "pattern": "\\.from\\(\\s*['\\\"](dispute_predictions)['\\\"]",
+          "match": ".from('dispute_predictions'"
+        }
+      ]
+    },
+    "disputes": {
+      "count": 10,
+      "references": [
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 389,
+          "pattern": "\\.from\\(['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 395,
+          "pattern": "\\.from\\(['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 389,
+          "pattern": "\\.from\\(\\s*['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 395,
+          "pattern": "\\.from\\(\\s*['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 188,
+          "pattern": "\\.from\\(['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 759,
+          "pattern": "\\.from\\(['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1048,
+          "pattern": "\\.from\\(['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 188,
+          "pattern": "\\.from\\(\\s*['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 759,
+          "pattern": "\\.from\\(\\s*['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1048,
+          "pattern": "\\.from\\(\\s*['\\\"](disputes)['\\\"]",
+          "match": ".from('disputes'"
+        }
+      ]
+    },
+    "drift_events": {
+      "count": 2,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 639,
+          "pattern": "\\.from\\(['\\\"](drift_events)['\\\"]",
+          "match": ".from('drift_events'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 639,
+          "pattern": "\\.from\\(\\s*['\\\"](drift_events)['\\\"]",
+          "match": ".from('drift_events'"
+        }
+      ]
+    },
+    "erp_post_attempts": {
+      "count": 12,
+      "references": [
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1483,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(erp_post_attempts)",
+          "match": "SELECT 1\n    FROM erp_post_attempts"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1474,
+          "pattern": "JOIN\\s+(erp_post_attempts)",
+          "match": "JOIN erp_post_attempts"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1484,
+          "pattern": "FROM\\s+(erp_post_attempts)",
+          "match": "FROM erp_post_attempts"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2180,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(erp_post_attempts)",
+          "match": "SELECT 1\n    FROM erp_post_attempts"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2167,
+          "pattern": "JOIN\\s+(erp_post_attempts)",
+          "match": "JOIN erp_post_attempts"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2181,
+          "pattern": "FROM\\s+(erp_post_attempts)",
+          "match": "FROM erp_post_attempts"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1813,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(erp_post_attempts)",
+          "match": "SELECT 1\n    FROM erp_post_attempts"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1803,
+          "pattern": "JOIN\\s+(erp_post_attempts)",
+          "match": "JOIN erp_post_attempts"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1814,
+          "pattern": "FROM\\s+(erp_post_attempts)",
+          "match": "FROM erp_post_attempts"
+        },
+        {
+          "file": "database/migrations/004_erp_posting.sql",
+          "line": 301,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(erp_post_attempts)",
+          "match": "SELECT 1\n    FROM erp_post_attempts"
+        },
+        {
+          "file": "database/migrations/004_erp_posting.sql",
+          "line": 291,
+          "pattern": "JOIN\\s+(erp_post_attempts)",
+          "match": "JOIN erp_post_attempts"
+        },
+        {
+          "file": "database/migrations/004_erp_posting.sql",
+          "line": 302,
+          "pattern": "FROM\\s+(erp_post_attempts)",
+          "match": "FROM erp_post_attempts"
+        }
+      ]
+    },
+    "erp_post_receipts": {
+      "count": 6,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 554,
+          "pattern": "\\.from\\(['\\\"](erp_post_receipts)['\\\"]",
+          "match": ".from('erp_post_receipts'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 554,
+          "pattern": "\\.from\\(\\s*['\\\"](erp_post_receipts)['\\\"]",
+          "match": ".from('erp_post_receipts'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1473,
+          "pattern": "FROM\\s+(erp_post_receipts)",
+          "match": "FROM erp_post_receipts"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2166,
+          "pattern": "FROM\\s+(erp_post_receipts)",
+          "match": "FROM erp_post_receipts"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1802,
+          "pattern": "FROM\\s+(erp_post_receipts)",
+          "match": "FROM erp_post_receipts"
+        },
+        {
+          "file": "database/migrations/004_erp_posting.sql",
+          "line": 290,
+          "pattern": "FROM\\s+(erp_post_receipts)",
+          "match": "FROM erp_post_receipts"
+        }
+      ]
+    },
+    "erp_posting_policies": {
+      "count": 6,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 542,
+          "pattern": "\\.from\\(['\\\"](erp_posting_policies)['\\\"]",
+          "match": ".from('erp_posting_policies'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 542,
+          "pattern": "\\.from\\(\\s*['\\\"](erp_posting_policies)['\\\"]",
+          "match": ".from('erp_posting_policies'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1511,
+          "pattern": "FROM\\s+(erp_posting_policies)",
+          "match": "FROM erp_posting_policies"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2212,
+          "pattern": "FROM\\s+(erp_posting_policies)",
+          "match": "FROM erp_posting_policies"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1842,
+          "pattern": "FROM\\s+(erp_posting_policies)",
+          "match": "FROM erp_posting_policies"
+        },
+        {
+          "file": "database/migrations/004_erp_posting.sql",
+          "line": 330,
+          "pattern": "FROM\\s+(erp_posting_policies)",
+          "match": "FROM erp_posting_policies"
+        }
+      ]
+    },
+    "fcs_snapshots": {
+      "count": 2,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 650,
+          "pattern": "\\.from\\(['\\\"](fcs_snapshots)['\\\"]",
+          "match": ".from('fcs_snapshots'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 650,
+          "pattern": "\\.from\\(\\s*['\\\"](fcs_snapshots)['\\\"]",
+          "match": ".from('fcs_snapshots'"
+        }
+      ]
+    },
+    "for": {
+      "count": 3,
+      "references": [
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 6624,
+          "pattern": "TABLE\\s+(for)",
+          "match": "table for"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 7040,
+          "pattern": "TABLE\\s+(for)",
+          "match": "table for"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 7230,
+          "pattern": "TABLE\\s+(for)",
+          "match": "table for"
+        }
+      ]
+    },
+    "gateway_logs": {
+      "count": 38,
+      "references": [
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 296,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 316,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 450,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 465,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 480,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 495,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 296,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 316,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 450,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 465,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 480,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 495,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/model-recommendation.js",
+          "line": 194,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "apps/gateway/model-recommendation.js",
+          "line": 194,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 221,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 967,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1073,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1360,
+          "pattern": "\\.from\\(['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 221,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 967,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1073,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1360,
+          "pattern": "\\.from\\(\\s*['\\\"](gateway_logs)['\\\"]",
+          "match": ".from('gateway_logs'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 13,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1267,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 231,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 962,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 606,
+          "pattern": "DELETE\\s+FROM\\s+(gateway_logs)",
+          "match": "DELETE FROM gateway_logs"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 606,
+          "pattern": "FROM\\s+(gateway_logs)",
+          "match": "FROM gateway_logs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 20,
+          "pattern": "INSERT\\s+INTO\\s+(gateway_logs)",
+          "match": "INSERT INTO gateway_logs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 47,
+          "pattern": "INSERT\\s+INTO\\s+(gateway_logs)",
+          "match": "INSERT INTO gateway_logs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 381,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(gateway_logs)",
+          "match": "SELECT 'gateway_logs' as table_name, COUNT(*) as row_count FROM gateway_logs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 20,
+          "pattern": "INTO\\s+(gateway_logs)",
+          "match": "INTO gateway_logs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 47,
+          "pattern": "INTO\\s+(gateway_logs)",
+          "match": "INTO gateway_logs"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 381,
+          "pattern": "FROM\\s+(gateway_logs)",
+          "match": "FROM gateway_logs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 231,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 962,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 231,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 962,
+          "pattern": "TABLE\\s+(gateway_logs)",
+          "match": "TABLE gateway_logs"
+        }
+      ]
+    },
+    "goals": {
+      "count": 11,
+      "references": [
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3335,
+          "pattern": "UPDATE\\s+(goals)",
+          "match": "update goals"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3336,
+          "pattern": "UPDATE\\s+(goals)",
+          "match": "update goals"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3170,
+          "pattern": "TABLE\\s+(goals)",
+          "match": "TABLE goals"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2927,
+          "pattern": "UPDATE\\s+(goals)",
+          "match": "update goals"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2928,
+          "pattern": "UPDATE\\s+(goals)",
+          "match": "update goals"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2794,
+          "pattern": "TABLE\\s+(goals)",
+          "match": "TABLE goals"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2828,
+          "pattern": "TABLE\\s+(goals)",
+          "match": "TABLE goals"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 411,
+          "pattern": "UPDATE\\s+(goals)",
+          "match": "update goals"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 412,
+          "pattern": "UPDATE\\s+(goals)",
+          "match": "update goals"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 278,
+          "pattern": "TABLE\\s+(goals)",
+          "match": "TABLE goals"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 312,
+          "pattern": "TABLE\\s+(goals)",
+          "match": "TABLE goals"
+        }
+      ]
+    },
+    "ingestion_log": {
+      "count": 4,
+      "references": [
+        {
+          "file": "platform/finault-platform.js",
+          "line": 162,
+          "pattern": "\\.from\\(['\\\"](ingestion_log)['\\\"]",
+          "match": ".from('ingestion_log'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 195,
+          "pattern": "\\.from\\(['\\\"](ingestion_log)['\\\"]",
+          "match": ".from('ingestion_log'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 162,
+          "pattern": "\\.from\\(\\s*['\\\"](ingestion_log)['\\\"]",
+          "match": ".from('ingestion_log'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 195,
+          "pattern": "\\.from\\(\\s*['\\\"](ingestion_log)['\\\"]",
+          "match": ".from('ingestion_log'"
+        }
+      ]
+    },
+    "invoice_line_items": {
+      "count": 17,
+      "references": [
+        {
+          "file": "database/rls-policies.sql",
+          "line": 15,
+          "pattern": "TABLE\\s+(invoice_line_items)",
+          "match": "TABLE invoice_line_items"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 342,
+          "pattern": "TABLE\\s+(invoice_line_items)",
+          "match": "TABLE invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 295,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(invoice_line_items)",
+          "match": "SELECT id, service_name, total_price, tags\n        FROM invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 46,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 77,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 93,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 159,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 229,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 241,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 387,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 534,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 555,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 576,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 666,
+          "pattern": "JOIN\\s+(invoice_line_items)",
+          "match": "JOIN invoice_line_items"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 296,
+          "pattern": "FROM\\s+(invoice_line_items)",
+          "match": "FROM invoice_line_items"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 342,
+          "pattern": "TABLE\\s+(invoice_line_items)",
+          "match": "TABLE invoice_line_items"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 342,
+          "pattern": "TABLE\\s+(invoice_line_items)",
+          "match": "TABLE invoice_line_items"
+        }
+      ]
+    },
+    "invoices": {
+      "count": 43,
+      "references": [
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 163,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 186,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 163,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "apps/dashboard/finault-api.ts",
+          "line": 186,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 98,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 98,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 230,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 646,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 975,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1261,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1293,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1303,
+          "pattern": "\\.from\\(['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 230,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 646,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 975,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1261,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1293,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1303,
+          "pattern": "\\.from\\(\\s*['\\\"](invoices)['\\\"]",
+          "match": ".from('invoices'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 221,
+          "pattern": "UPDATE\\s+(invoices)",
+          "match": "update invoices"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 222,
+          "pattern": "UPDATE\\s+(invoices)",
+          "match": "update invoices"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 14,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1258,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 282,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 953,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 47,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 78,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 94,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 160,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 230,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 242,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 388,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 535,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 556,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 577,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 667,
+          "pattern": "JOIN\\s+(invoices)",
+          "match": "JOIN invoices"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 299,
+          "pattern": "INSERT\\s+INTO\\s+(invoices)",
+          "match": "INSERT INTO invoices"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 389,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(invoices)",
+          "match": "SELECT 'invoices', COUNT(*) FROM invoices"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 299,
+          "pattern": "INTO\\s+(invoices)",
+          "match": "INTO invoices"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 389,
+          "pattern": "FROM\\s+(invoices)",
+          "match": "FROM invoices"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 282,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 953,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 282,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 953,
+          "pattern": "TABLE\\s+(invoices)",
+          "match": "TABLE invoices"
+        }
+      ]
+    },
+    "magic_sessions": {
+      "count": 13,
+      "references": [
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 40,
+          "pattern": "\\.from\\(['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 59,
+          "pattern": "\\.from\\(['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 74,
+          "pattern": "\\.from\\(['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 116,
+          "pattern": "\\.from\\(['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 40,
+          "pattern": "\\.from\\(\\s*['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 59,
+          "pattern": "\\.from\\(\\s*['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 74,
+          "pattern": "\\.from\\(\\s*['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 116,
+          "pattern": "\\.from\\(\\s*['\\\"](magic_sessions)['\\\"]",
+          "match": ".from('magic_sessions'"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2921,
+          "pattern": "TABLE\\s+(magic_sessions)",
+          "match": "TABLE magic_sessions"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2571,
+          "pattern": "TABLE\\s+(magic_sessions)",
+          "match": "TABLE magic_sessions"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2824,
+          "pattern": "TABLE\\s+(magic_sessions)",
+          "match": "TABLE magic_sessions"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 55,
+          "pattern": "TABLE\\s+(magic_sessions)",
+          "match": "TABLE magic_sessions"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 308,
+          "pattern": "TABLE\\s+(magic_sessions)",
+          "match": "TABLE magic_sessions"
+        }
+      ]
+    },
+    "model_usage_events": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 442,
+          "pattern": "\\.from\\(['\\\"](model_usage_events)['\\\"]",
+          "match": ".from('model_usage_events'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 442,
+          "pattern": "\\.from\\(\\s*['\\\"](model_usage_events)['\\\"]",
+          "match": ".from('model_usage_events'"
+        }
+      ]
+    },
+    "model_usage_profiles": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 104,
+          "pattern": "\\.from\\(['\\\"](model_usage_profiles)['\\\"]",
+          "match": ".from('model_usage_profiles'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 104,
+          "pattern": "\\.from\\(\\s*['\\\"](model_usage_profiles)['\\\"]",
+          "match": ".from('model_usage_profiles'"
+        }
+      ]
+    },
+    "organizations": {
+      "count": 31,
+      "references": [
+        {
+          "file": "apps/gateway/space-apple-dashboard.js",
+          "line": 45,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/space-apple-dashboard.js",
+          "line": 467,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/space-apple-dashboard.js",
+          "line": 795,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/space-apple-dashboard.js",
+          "line": 45,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/space-apple-dashboard.js",
+          "line": 467,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/space-apple-dashboard.js",
+          "line": 795,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 1264,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 1264,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 1622,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 1622,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 439,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 449,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 439,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 449,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 78,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1468,
+          "pattern": "\\.from\\(['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 78,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1468,
+          "pattern": "\\.from\\(\\s*['\\\"](organizations)['\\\"]",
+          "match": ".from('organizations'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 9,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3401,
+          "pattern": "FROM\\s+(organizations)",
+          "match": "FROM organizations"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1256,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 20,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 951,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 7,
+          "pattern": "INSERT\\s+INTO\\s+(organizations)",
+          "match": "INSERT INTO organizations"
+        },
+        {
+          "file": "database/seed-demo-data.sql",
+          "line": 7,
+          "pattern": "INTO\\s+(organizations)",
+          "match": "INTO organizations"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2993,
+          "pattern": "FROM\\s+(organizations)",
+          "match": "FROM organizations"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 20,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 951,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 20,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 951,
+          "pattern": "TABLE\\s+(organizations)",
+          "match": "TABLE organizations"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 477,
+          "pattern": "FROM\\s+(organizations)",
+          "match": "FROM organizations"
+        }
+      ]
+    },
+    "pack_type_registry": {
+      "count": 8,
+      "references": [
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1683,
+          "pattern": "INSERT\\s+INTO\\s+(pack_type_registry)",
+          "match": "INSERT INTO pack_type_registry"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1683,
+          "pattern": "INTO\\s+(pack_type_registry)",
+          "match": "INTO pack_type_registry"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2394,
+          "pattern": "INSERT\\s+INTO\\s+(pack_type_registry)",
+          "match": "INSERT INTO pack_type_registry"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2394,
+          "pattern": "INTO\\s+(pack_type_registry)",
+          "match": "INTO pack_type_registry"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2046,
+          "pattern": "INSERT\\s+INTO\\s+(pack_type_registry)",
+          "match": "INSERT INTO pack_type_registry"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2046,
+          "pattern": "INTO\\s+(pack_type_registry)",
+          "match": "INTO pack_type_registry"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 186,
+          "pattern": "INSERT\\s+INTO\\s+(pack_type_registry)",
+          "match": "INSERT INTO pack_type_registry"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 186,
+          "pattern": "INTO\\s+(pack_type_registry)",
+          "match": "INTO pack_type_registry"
+        }
+      ]
+    },
+    "pricing_rules": {
+      "count": 26,
+      "references": [
+        {
+          "file": "platform/finault-platform.js",
+          "line": 301,
+          "pattern": "\\.from\\(['\\\"](pricing_rules)['\\\"]",
+          "match": ".from('pricing_rules'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 301,
+          "pattern": "\\.from\\(\\s*['\\\"](pricing_rules)['\\\"]",
+          "match": ".from('pricing_rules'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1552,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT status FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2018,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.rule_id, pr.price_per_unit, pr.unit_type, pr.currency\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2068,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1552,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2019,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2069,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2258,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT status FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2730,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.rule_id, pr.price_per_unit, pr.unit_type, pr.currency\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2788,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2258,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2731,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2789,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1908,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT status FROM pricing_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2416,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.rule_id, pr.price_per_unit, pr.unit_type, pr.currency\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2469,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1908,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2417,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2470,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 48,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT status FROM pricing_rules"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 556,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.rule_id, pr.price_per_unit, pr.unit_type, pr.currency\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 609,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rules)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rules"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 48,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 557,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 610,
+          "pattern": "FROM\\s+(pricing_rules)",
+          "match": "FROM pricing_rules"
+        }
+      ]
+    },
+    "pricing_rulesets": {
+      "count": 18,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 607,
+          "pattern": "\\.from\\(['\\\"](pricing_rulesets)['\\\"]",
+          "match": ".from('pricing_rulesets'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 607,
+          "pattern": "\\.from\\(\\s*['\\\"](pricing_rulesets)['\\\"]",
+          "match": ".from('pricing_rulesets'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1552,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT status FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2068,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 1552,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2069,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2258,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT status FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2788,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2258,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2789,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1908,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT status FROM pricing_rulesets"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2469,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rulesets"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 1908,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2470,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 48,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT status FROM pricing_rulesets"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 609,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(pricing_rulesets)",
+          "match": "SELECT pr.ruleset_id, pr.version, pr.name, pr.sealed_at\n    FROM pricing_rulesets"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 48,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 610,
+          "pattern": "FROM\\s+(pricing_rulesets)",
+          "match": "FROM pricing_rulesets"
+        }
+      ]
+    },
+    "proof_registry": {
+      "count": 2,
+      "references": [
+        {
+          "file": "database/combined-migration.sql",
+          "line": 3148,
+          "pattern": "TABLE\\s+(proof_registry)",
+          "match": "TABLE proof_registry"
+        },
+        {
+          "file": "database/migrations/007_gateway_compat.sql",
+          "line": 114,
+          "pattern": "TABLE\\s+(proof_registry)",
+          "match": "TABLE proof_registry"
+        }
+      ]
+    },
+    "provider_patterns": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 574,
+          "pattern": "\\.from\\(['\\\"](provider_patterns)['\\\"]",
+          "match": ".from('provider_patterns'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 574,
+          "pattern": "\\.from\\(\\s*['\\\"](provider_patterns)['\\\"]",
+          "match": ".from('provider_patterns'"
+        }
+      ]
+    },
+    "provider_relationships": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 122,
+          "pattern": "\\.from\\(['\\\"](provider_relationships)['\\\"]",
+          "match": ".from('provider_relationships'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 122,
+          "pattern": "\\.from\\(\\s*['\\\"](provider_relationships)['\\\"]",
+          "match": ".from('provider_relationships'"
+        }
+      ]
+    },
+    "real_time_recommendations": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 543,
+          "pattern": "\\.from\\(['\\\"](real_time_recommendations)['\\\"]",
+          "match": ".from('real_time_recommendations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 543,
+          "pattern": "\\.from\\(\\s*['\\\"](real_time_recommendations)['\\\"]",
+          "match": ".from('real_time_recommendations'"
+        }
+      ]
+    },
+    "recommendation_confidence": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 857,
+          "pattern": "\\.from\\(['\\\"](recommendation_confidence)['\\\"]",
+          "match": ".from('recommendation_confidence'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 857,
+          "pattern": "\\.from\\(\\s*['\\\"](recommendation_confidence)['\\\"]",
+          "match": ".from('recommendation_confidence'"
+        }
+      ]
+    },
+    "reconciliation_certificates": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/finault-platform.js",
+          "line": 377,
+          "pattern": "\\.from\\(['\\\"](reconciliation_certificates)['\\\"]",
+          "match": ".from('reconciliation_certificates'"
+        },
+        {
+          "file": "platform/finault-platform.js",
+          "line": 377,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliation_certificates)['\\\"]",
+          "match": ".from('reconciliation_certificates'"
+        }
+      ]
+    },
+    "reconciliation_confidence": {
+      "count": 4,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 605,
+          "pattern": "\\.from\\(['\\\"](reconciliation_confidence)['\\\"]",
+          "match": ".from('reconciliation_confidence'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 615,
+          "pattern": "\\.from\\(['\\\"](reconciliation_confidence)['\\\"]",
+          "match": ".from('reconciliation_confidence'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 605,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliation_confidence)['\\\"]",
+          "match": ".from('reconciliation_confidence'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 615,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliation_confidence)['\\\"]",
+          "match": ".from('reconciliation_confidence'"
+        }
+      ]
+    },
+    "reconciliation_reports": {
+      "count": 2,
+      "references": [
+        {
+          "file": "database/combined-migration.sql",
+          "line": 3150,
+          "pattern": "TABLE\\s+(reconciliation_reports)",
+          "match": "TABLE reconciliation_reports"
+        },
+        {
+          "file": "database/migrations/007_gateway_compat.sql",
+          "line": 116,
+          "pattern": "TABLE\\s+(reconciliation_reports)",
+          "match": "TABLE reconciliation_reports"
+        }
+      ]
+    },
+    "reconciliation_training_data": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 797,
+          "pattern": "\\.from\\(['\\\"](reconciliation_training_data)['\\\"]",
+          "match": ".from('reconciliation_training_data'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 797,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliation_training_data)['\\\"]",
+          "match": ".from('reconciliation_training_data'"
+        }
+      ]
+    },
+    "reconciliations": {
+      "count": 6,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 983,
+          "pattern": "\\.from\\(['\\\"](reconciliations)['\\\"]",
+          "match": ".from('reconciliations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1009,
+          "pattern": "\\.from\\(['\\\"](reconciliations)['\\\"]",
+          "match": ".from('reconciliations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1370,
+          "pattern": "\\.from\\(['\\\"](reconciliations)['\\\"]",
+          "match": ".from('reconciliations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 983,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliations)['\\\"]",
+          "match": ".from('reconciliations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1009,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliations)['\\\"]",
+          "match": ".from('reconciliations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1370,
+          "pattern": "\\.from\\(\\s*['\\\"](reconciliations)['\\\"]",
+          "match": ".from('reconciliations'"
+        }
+      ]
+    },
+    "savings_implementations": {
+      "count": 6,
+      "references": [
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 338,
+          "pattern": "\\.from\\(['\\\"](savings_implementations)['\\\"]",
+          "match": ".from('savings_implementations'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 338,
+          "pattern": "\\.from\\(\\s*['\\\"](savings_implementations)['\\\"]",
+          "match": ".from('savings_implementations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 175,
+          "pattern": "\\.from\\(['\\\"](savings_implementations)['\\\"]",
+          "match": ".from('savings_implementations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1039,
+          "pattern": "\\.from\\(['\\\"](savings_implementations)['\\\"]",
+          "match": ".from('savings_implementations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 175,
+          "pattern": "\\.from\\(\\s*['\\\"](savings_implementations)['\\\"]",
+          "match": ".from('savings_implementations'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1039,
+          "pattern": "\\.from\\(\\s*['\\\"](savings_implementations)['\\\"]",
+          "match": ".from('savings_implementations'"
+        }
+      ]
+    },
+    "savings_recommendations": {
+      "count": 7,
+      "references": [
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 349,
+          "pattern": "\\.from\\(['\\\"](savings_recommendations)['\\\"]",
+          "match": ".from('savings_recommendations'"
+        },
+        {
+          "file": "apps/gateway/dashboard-diamond.js",
+          "line": 349,
+          "pattern": "\\.from\\(\\s*['\\\"](savings_recommendations)['\\\"]",
+          "match": ".from('savings_recommendations'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 21,
+          "pattern": "TABLE\\s+(savings_recommendations)",
+          "match": "TABLE savings_recommendations"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 610,
+          "pattern": "TABLE\\s+(savings_recommendations)",
+          "match": "TABLE savings_recommendations"
+        },
+        {
+          "file": "database/functions.sql",
+          "line": 484,
+          "pattern": "FROM\\s+(savings_recommendations)",
+          "match": "FROM savings_recommendations"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 610,
+          "pattern": "TABLE\\s+(savings_recommendations)",
+          "match": "TABLE savings_recommendations"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 610,
+          "pattern": "TABLE\\s+(savings_recommendations)",
+          "match": "TABLE savings_recommendations"
+        }
+      ]
+    },
+    "savings_tracking": {
+      "count": 4,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 827,
+          "pattern": "\\.from\\(['\\\"](savings_tracking)['\\\"]",
+          "match": ".from('savings_tracking'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1021,
+          "pattern": "\\.from\\(['\\\"](savings_tracking)['\\\"]",
+          "match": ".from('savings_tracking'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 827,
+          "pattern": "\\.from\\(\\s*['\\\"](savings_tracking)['\\\"]",
+          "match": ".from('savings_tracking'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1021,
+          "pattern": "\\.from\\(\\s*['\\\"](savings_tracking)['\\\"]",
+          "match": ".from('savings_tracking'"
+        }
+      ]
+    },
+    "scheduled_actions": {
+      "count": 2,
+      "references": [
+        {
+          "file": "database/combined-migration.sql",
+          "line": 3151,
+          "pattern": "TABLE\\s+(scheduled_actions)",
+          "match": "TABLE scheduled_actions"
+        },
+        {
+          "file": "database/migrations/007_gateway_compat.sql",
+          "line": 117,
+          "pattern": "TABLE\\s+(scheduled_actions)",
+          "match": "TABLE scheduled_actions"
+        }
+      ]
+    },
+    "seasonality_profiles": {
+      "count": 2,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 131,
+          "pattern": "\\.from\\(['\\\"](seasonality_profiles)['\\\"]",
+          "match": ".from('seasonality_profiles'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 131,
+          "pattern": "\\.from\\(\\s*['\\\"](seasonality_profiles)['\\\"]",
+          "match": ".from('seasonality_profiles'"
+        }
+      ]
+    },
+    "sessions": {
+      "count": 13,
+      "references": [
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 476,
+          "pattern": "\\.from\\(['\\\"](sessions)['\\\"]",
+          "match": ".from('sessions'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 476,
+          "pattern": "\\.from\\(\\s*['\\\"](sessions)['\\\"]",
+          "match": ".from('sessions'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 12,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3403,
+          "pattern": "JOIN\\s+(sessions)",
+          "match": "JOIN sessions"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1266,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 153,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 961,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2995,
+          "pattern": "JOIN\\s+(sessions)",
+          "match": "JOIN sessions"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 153,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 961,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 153,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 961,
+          "pattern": "TABLE\\s+(sessions)",
+          "match": "TABLE sessions"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 479,
+          "pattern": "JOIN\\s+(sessions)",
+          "match": "JOIN sessions"
+        }
+      ]
+    },
+    "spending_patterns": {
+      "count": 24,
+      "references": [
+        {
+          "file": "platform/flywheel.js",
+          "line": 88,
+          "pattern": "\\.from\\(['\\\"](spending_patterns)['\\\"]",
+          "match": ".from('spending_patterns'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 991,
+          "pattern": "\\.from\\(['\\\"](spending_patterns)['\\\"]",
+          "match": ".from('spending_patterns'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 88,
+          "pattern": "\\.from\\(\\s*['\\\"](spending_patterns)['\\\"]",
+          "match": ".from('spending_patterns'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 991,
+          "pattern": "\\.from\\(\\s*['\\\"](spending_patterns)['\\\"]",
+          "match": ".from('spending_patterns'"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2046,
+          "pattern": "INSERT\\s+INTO\\s+(spending_patterns)",
+          "match": "INSERT INTO spending_patterns"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2049,
+          "pattern": "UPDATE\\s+(spending_patterns)",
+          "match": "UPDATE spending_patterns"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2043,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(spending_patterns)",
+          "match": "SELECT * INTO v_pattern FROM spending_patterns"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2046,
+          "pattern": "INTO\\s+(spending_patterns)",
+          "match": "INTO spending_patterns"
+        },
+        {
+          "file": "database/safe-full-migration.sql",
+          "line": 2043,
+          "pattern": "FROM\\s+(spending_patterns)",
+          "match": "FROM spending_patterns"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2762,
+          "pattern": "INSERT\\s+INTO\\s+(spending_patterns)",
+          "match": "INSERT INTO spending_patterns"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2765,
+          "pattern": "UPDATE\\s+(spending_patterns)",
+          "match": "UPDATE spending_patterns"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2759,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(spending_patterns)",
+          "match": "SELECT * INTO v_pattern FROM spending_patterns"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2762,
+          "pattern": "INTO\\s+(spending_patterns)",
+          "match": "INTO spending_patterns"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 2759,
+          "pattern": "FROM\\s+(spending_patterns)",
+          "match": "FROM spending_patterns"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2445,
+          "pattern": "INSERT\\s+INTO\\s+(spending_patterns)",
+          "match": "INSERT INTO spending_patterns"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2449,
+          "pattern": "UPDATE\\s+(spending_patterns)",
+          "match": "UPDATE spending_patterns"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2442,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(spending_patterns)",
+          "match": "SELECT * INTO v_pattern FROM spending_patterns"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2445,
+          "pattern": "INTO\\s+(spending_patterns)",
+          "match": "INTO spending_patterns"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2442,
+          "pattern": "FROM\\s+(spending_patterns)",
+          "match": "FROM spending_patterns"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 585,
+          "pattern": "INSERT\\s+INTO\\s+(spending_patterns)",
+          "match": "INSERT INTO spending_patterns"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 589,
+          "pattern": "UPDATE\\s+(spending_patterns)",
+          "match": "UPDATE spending_patterns"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 582,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(spending_patterns)",
+          "match": "SELECT * INTO v_pattern FROM spending_patterns"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 585,
+          "pattern": "INTO\\s+(spending_patterns)",
+          "match": "INTO spending_patterns"
+        },
+        {
+          "file": "database/migrations/005_platform_flywheel.sql",
+          "line": 582,
+          "pattern": "FROM\\s+(spending_patterns)",
+          "match": "FROM spending_patterns"
+        }
+      ]
+    },
+    "usage": {
+      "count": 13,
+      "references": [
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 1904,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 3092,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "apps/gateway/gateway.js",
+          "line": 5481,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 833,
+          "pattern": "\\.from\\(['\\\"](usage)['\\\"]",
+          "match": ".from('usage'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 833,
+          "pattern": "\\.from\\(\\s*['\\\"](usage)['\\\"]",
+          "match": ".from('usage'"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 2082,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 3618,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "apps/gateway/gateway-wired.js",
+          "line": 5912,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "platform/pricing-ruleset.js",
+          "line": 239,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "platform/savings-intelligence.js",
+          "line": 658,
+          "pattern": "FROM\\s+(usage)",
+          "match": "from usage"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 187,
+          "pattern": "TABLE\\s+(usage)",
+          "match": "TABLE usage"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 187,
+          "pattern": "TABLE\\s+(usage)",
+          "match": "TABLE usage"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 187,
+          "pattern": "TABLE\\s+(usage)",
+          "match": "TABLE usage"
+        }
+      ]
+    },
+    "users": {
+      "count": 67,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 97,
+          "pattern": "\\.from\\(['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 203,
+          "pattern": "\\.from\\(['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 304,
+          "pattern": "\\.from\\(['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 670,
+          "pattern": "\\.from\\(['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 97,
+          "pattern": "\\.from\\(\\s*['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 203,
+          "pattern": "\\.from\\(\\s*['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 304,
+          "pattern": "\\.from\\(\\s*['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 670,
+          "pattern": "\\.from\\(\\s*['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 405,
+          "pattern": "\\.from\\(['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 414,
+          "pattern": "\\.from\\(['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 405,
+          "pattern": "\\.from\\(\\s*['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "apps/gateway/magic-onboarding.js",
+          "line": 414,
+          "pattern": "\\.from\\(\\s*['\\\"](users)['\\\"]",
+          "match": ".from('users'"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 35,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT organization_id FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 43,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT role FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 51,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT role = 'admin' FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 59,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT role = 'auditor' FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 129,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT id FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 145,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT id FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 153,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT id FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 173,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT id FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 35,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 43,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 51,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 59,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 129,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 145,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 153,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 173,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/rls-policies.sql",
+          "line": 10,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3225,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT user_id::TEXT FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3237,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT organization_id FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3246,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT role::TEXT FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3255,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT role = 'admin' FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3402,
+          "pattern": "JOIN\\s+(users)",
+          "match": "JOIN users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3225,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3237,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3246,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 3255,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/safe-migration.sql",
+          "line": 1257,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 65,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/schema.sql",
+          "line": 952,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2846,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT user_id::TEXT FROM users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2934,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT id FROM users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2994,
+          "pattern": "JOIN\\s+(users)",
+          "match": "JOIN users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2846,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 2934,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 65,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/combined-migration.sql",
+          "line": 952,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 65,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/migrations/001_core_schema.sql",
+          "line": 952,
+          "pattern": "TABLE\\s+(users)",
+          "match": "TABLE users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking.sql",
+          "line": 61,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT 1 FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking.sql",
+          "line": 73,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT 1 FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking.sql",
+          "line": 89,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT 1 FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking.sql",
+          "line": 61,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking.sql",
+          "line": 73,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking.sql",
+          "line": 89,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 330,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT user_id::TEXT FROM users"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 418,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT id FROM users"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 478,
+          "pattern": "JOIN\\s+(users)",
+          "match": "JOIN users"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 330,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/006_auth_rbac.sql",
+          "line": 418,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking-FIXED.sql",
+          "line": 67,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT 1 FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking-FIXED.sql",
+          "line": 79,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT 1 FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking-FIXED.sql",
+          "line": 95,
+          "pattern": "SELECT\\s+.*\\s+FROM\\s+(users)",
+          "match": "SELECT 1 FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking-FIXED.sql",
+          "line": 67,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking-FIXED.sql",
+          "line": 79,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        },
+        {
+          "file": "database/migrations/002-error-tracking-FIXED.sql",
+          "line": 95,
+          "pattern": "FROM\\s+(users)",
+          "match": "FROM users"
+        }
+      ]
+    },
+    "value_tracking": {
+      "count": 4,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 615,
+          "pattern": "\\.from\\(['\\\"](value_tracking)['\\\"]",
+          "match": ".from('value_tracking'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 615,
+          "pattern": "\\.from\\(\\s*['\\\"](value_tracking)['\\\"]",
+          "match": ".from('value_tracking'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1500,
+          "pattern": "\\.from\\(['\\\"](value_tracking)['\\\"]",
+          "match": ".from('value_tracking'"
+        },
+        {
+          "file": "platform/flywheel.js",
+          "line": 1500,
+          "pattern": "\\.from\\(\\s*['\\\"](value_tracking)['\\\"]",
+          "match": ".from('value_tracking'"
+        }
+      ]
+    },
+    "verification_records": {
+      "count": 2,
+      "references": [
+        {
+          "file": "apps/gateway/index.js",
+          "line": 565,
+          "pattern": "\\.from\\(['\\\"](verification_records)['\\\"]",
+          "match": ".from('verification_records'"
+        },
+        {
+          "file": "apps/gateway/index.js",
+          "line": 565,
+          "pattern": "\\.from\\(\\s*['\\\"](verification_records)['\\\"]",
+          "match": ".from('verification_records'"
+        }
+      ]
+    }
+  }
+}

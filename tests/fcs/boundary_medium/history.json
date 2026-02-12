@@ -1,0 +1,9 @@
+{
+  "close_id": "FIN-CL-TEST-MEDIUM",
+  "artifact_type": "invoice_close",
+  "prior_close_id": "FIN-CL-2024-11",
+  "history_depth": 2,
+  "chain": [
+    { "close_id": "FIN-CL-2024-11", "period_start": "2024-11-01", "period_end": "2024-11-30" }
+  ]
+}

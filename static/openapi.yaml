@@ -1,0 +1,3386 @@
+openapi: 3.1.0
+info:
+  title: Finault Gateway API
+  version: 1.0.0
+  description: |
+    Comprehensive API for invoice processing, cost allocation, financial reconciliation,
+    and intelligent expense management. Supports 47+ invoice formats, multi-cloud ERP integration,
+    cryptographic proof verification, and AI-powered savings intelligence.
+  contact:
+    name: Finault Support
+    url: https://finault.com
+    email: support@finault.com
+  license:
+    name: Proprietary
+    url: https://finault.com/license
+
+servers:
+  - url: https://api.finault.com
+    description: Production environment
+  - url: http://localhost:8787
+    description: Development environment
+
+security:
+  - bearerAuth: []
+  - apiKeyHeader: []
+  - finaultKeyHeader: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token in Authorization header
+    apiKeyHeader:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: API key for authentication
+    finaultKeyHeader:
+      type: apiKey
+      in: header
+      name: x-finault-key
+      description: Finault API key for authentication
+
+  schemas:
+    # Error Schemas
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Error code identifier
+        message:
+          type: string
+          description: Human-readable error message
+        details:
+          type: object
+          description: Additional error details
+      required:
+        - code
+        - message
+
+    ValidationError:
+      type: object
+      properties:
+        code:
+          type: string
+          enum: [VALIDATION_ERROR]
+        message:
+          type: string
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+      required:
+        - code
+        - message
+        - errors
+
+    UnauthorizedError:
+      type: object
+      properties:
+        code:
+          type: string
+          enum: [UNAUTHORIZED]
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    NotFoundError:
+      type: object
+      properties:
+        code:
+          type: string
+          enum: [NOT_FOUND]
+        message:
+          type: string
+      required:
+        - code
+        - message
+
+    # Health & Status
+    HealthResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok, degraded, down]
+        timestamp:
+          type: string
+          format: date-time
+        version:
+          type: string
+        modules:
+          type: object
+          properties:
+            parser:
+              type: object
+              properties:
+                status:
+                  type: string
+                formats_supported:
+                  type: integer
+            allocation:
+              type: object
+              properties:
+                status:
+                  type: string
+            erp:
+              type: object
+              properties:
+                status:
+                  type: string
+                integrations:
+                  type: array
+                  items:
+                    type: string
+        uptime_seconds:
+          type: number
+      required:
+        - status
+        - timestamp
+        - version
+        - modules
+
+    SystemStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [healthy, degraded, down]
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              status:
+                type: string
+              latency_ms:
+                type: number
+        database:
+          type: object
+          properties:
+            connected:
+              type: boolean
+            latency_ms:
+              type: number
+        cache:
+          type: object
+          properties:
+            connected:
+              type: boolean
+            memory_used_mb:
+              type: number
+
+    # Invoice Parsing
+    ParseRequest:
+      type: object
+      properties:
+        document:
+          type: string
+          format: binary
+          description: Invoice document (PDF, image, etc.)
+        format:
+          type: string
+          description: Explicit format hint (optional)
+        metadata:
+          type: object
+          properties:
+            supplier_id:
+              type: string
+            cost_center:
+              type: string
+            department:
+              type: string
+        options:
+          type: object
+          properties:
+            extract_tables:
+              type: boolean
+            include_ocr:
+              type: boolean
+            confidence_threshold:
+              type: number
+              minimum: 0
+              maximum: 1
+
+    ParseResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        invoice_number:
+          type: string
+        supplier:
+          type: object
+          properties:
+            name:
+              type: string
+            tax_id:
+              type: string
+            address:
+              type: string
+        invoice_date:
+          type: string
+          format: date
+        due_date:
+          type: string
+          format: date
+        total_amount:
+          type: number
+        currency:
+          type: string
+        line_items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              description:
+                type: string
+              quantity:
+                type: number
+              unit_price:
+                type: number
+              total:
+                type: number
+              cost_center:
+                type: string
+              category:
+                type: string
+              tax_amount:
+                type: number
+        tax_total:
+          type: number
+        confidence_score:
+          type: number
+          minimum: 0
+          maximum: 100
+        parsing_errors:
+          type: array
+          items:
+            type: object
+            properties:
+              field:
+                type: string
+              message:
+                type: string
+              severity:
+                type: string
+                enum: [warning, error]
+        processed_at:
+          type: string
+          format: date-time
+      required:
+        - id
+        - status
+        - invoice_number
+        - supplier
+        - total_amount
+        - currency
+
+    InvoiceListResponse:
+      type: object
+      properties:
+        invoices:
+          type: array
+          items:
+            $ref: '#/components/schemas/ParseResponse'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+            limit:
+              type: integer
+            total:
+              type: integer
+            has_next:
+              type: boolean
+
+    ParseEditRequest:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        line_items:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              description:
+                type: string
+              quantity:
+                type: number
+              unit_price:
+                type: number
+              cost_center:
+                type: string
+              category:
+                type: string
+
+    ParseMergeRequest:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        line_item_ids:
+          type: array
+          items:
+            type: string
+
+    ParseSplitRequest:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        line_item_id:
+          type: string
+        portions:
+          type: array
+          items:
+            type: object
+            properties:
+              description:
+                type: string
+              amount:
+                type: number
+              cost_center:
+                type: string
+
+    # Cost Allocation
+    AllocationRequest:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        rules:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              condition:
+                type: object
+              allocation_targets:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    cost_center:
+                      type: string
+                    percentage:
+                      type: number
+      required:
+        - invoice_id
+
+    AllocationResponse:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        allocations:
+          type: array
+          items:
+            type: object
+            properties:
+              line_item_id:
+                type: string
+              cost_center:
+                type: string
+              amount:
+                type: number
+              percentage:
+                type: number
+              rule_applied:
+                type: string
+        total_allocated:
+          type: number
+        unallocated:
+          type: number
+
+    AllocationRule:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        priority:
+          type: integer
+        conditions:
+          type: object
+          properties:
+            supplier_ids:
+              type: array
+              items:
+                type: string
+            categories:
+              type: array
+              items:
+                type: string
+            amount_range:
+              type: object
+              properties:
+                min:
+                  type: number
+                max:
+                  type: number
+        allocation_targets:
+          type: array
+          items:
+            type: object
+            properties:
+              cost_center:
+                type: string
+              percentage:
+                type: number
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AllocationRuleCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        priority:
+          type: integer
+        conditions:
+          type: object
+        allocation_targets:
+          type: array
+          items:
+            type: object
+      required:
+        - name
+        - conditions
+        - allocation_targets
+
+    # Close Pack
+    ClosePackGenerateRequest:
+      type: object
+      properties:
+        invoice_ids:
+          type: array
+          items:
+            type: string
+        period_start:
+          type: string
+          format: date
+        period_end:
+          type: string
+          format: date
+        include_reconciliation:
+          type: boolean
+          default: true
+        include_analysis:
+          type: boolean
+          default: true
+        breakdown_by:
+          type: array
+          items:
+            type: string
+            enum: [cost_center, department, supplier, category]
+      required:
+        - invoice_ids
+        - period_start
+        - period_end
+
+    ClosePackResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [generating, ready, processing, delivered]
+        invoice_count:
+          type: integer
+        total_amount:
+          type: number
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+        contents:
+          type: object
+          properties:
+            invoices_csv_url:
+              type: string
+              format: uri
+            summary_pdf_url:
+              type: string
+              format: uri
+            allocations_csv_url:
+              type: string
+              format: uri
+            manifest_json_url:
+              type: string
+              format: uri
+        file_size_mb:
+          type: number
+        download_url:
+          type: string
+          format: uri
+        expires_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+
+    ClosePackEmailRequest:
+      type: object
+      properties:
+        close_pack_id:
+          type: string
+        recipients:
+          type: array
+          items:
+            type: string
+            format: email
+        subject:
+          type: string
+        message:
+          type: string
+      required:
+        - close_pack_id
+        - recipients
+
+    # Reconciliation
+    ReconciliationRequest:
+      type: object
+      properties:
+        invoice_ids:
+          type: array
+          items:
+            type: string
+        usage_logs:
+          type: array
+          items:
+            type: object
+            properties:
+              service:
+                type: string
+              units:
+                type: number
+              cost:
+                type: number
+              timestamp:
+                type: string
+                format: date-time
+        tolerance_percentage:
+          type: number
+          default: 5
+      required:
+        - invoice_ids
+
+    ReconciliationResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [matched, discrepancies, pending]
+        invoiced_total:
+          type: number
+        actual_usage_cost:
+          type: number
+        variance:
+          type: number
+        variance_percentage:
+          type: number
+        discrepancies:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [overage, undercharge, duplicate, missing]
+              invoice_id:
+                type: string
+              amount:
+                type: number
+              description:
+                type: string
+        adjustments:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+              amount:
+                type: number
+              justification:
+                type: string
+        reconciliation_date:
+          type: string
+          format: date-time
+
+    UsageLog:
+      type: object
+      properties:
+        id:
+          type: string
+        service:
+          type: string
+        resource:
+          type: string
+        units:
+          type: number
+        unit_type:
+          type: string
+        cost:
+          type: number
+        currency:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        metadata:
+          type: object
+
+    # Anomaly Detection
+    AnomalyDetectionRequest:
+      type: object
+      properties:
+        invoice_ids:
+          type: array
+          items:
+            type: string
+        analysis_period_days:
+          type: integer
+          default: 90
+        sensitivity:
+          type: string
+          enum: [low, medium, high]
+          default: medium
+
+    AnomalyDetectionResponse:
+      type: object
+      properties:
+        anomalies:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              type:
+                type: string
+                enum: [price_spike, duplicate, fraud_indicator, unusual_pattern]
+              severity:
+                type: string
+                enum: [low, medium, high, critical]
+              invoice_id:
+                type: string
+              description:
+                type: string
+              confidence_score:
+                type: number
+              affected_amount:
+                type: number
+              recommendation:
+                type: string
+              detected_at:
+                type: string
+                format: date-time
+        summary:
+          type: object
+          properties:
+            total_anomalies:
+              type: integer
+            total_affected_amount:
+              type: number
+            critical_count:
+              type: integer
+
+    AnomalyConfigRequest:
+      type: object
+      properties:
+        price_spike_threshold_percentage:
+          type: number
+        duplicate_tolerance_minutes:
+          type: integer
+        fraud_confidence_threshold:
+          type: number
+        enable_ml_detection:
+          type: boolean
+
+    # Budget Management
+    Budget:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        cost_center:
+          type: string
+        total_amount:
+          type: number
+        period:
+          type: string
+          enum: [monthly, quarterly, yearly]
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        spent:
+          type: number
+        remaining:
+          type: number
+        alerts_enabled:
+          type: boolean
+        alert_thresholds:
+          type: object
+          properties:
+            warning_percentage:
+              type: number
+            critical_percentage:
+              type: number
+        created_at:
+          type: string
+          format: date-time
+
+    BudgetCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        cost_center:
+          type: string
+        total_amount:
+          type: number
+        period:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        alert_thresholds:
+          type: object
+      required:
+        - name
+        - cost_center
+        - total_amount
+        - period
+
+    BudgetCheckRequest:
+      type: object
+      properties:
+        budget_id:
+          type: string
+        amount:
+          type: number
+
+    BudgetCheckResponse:
+      type: object
+      properties:
+        budget_id:
+          type: string
+        current_spent:
+          type: number
+        requested_amount:
+          type: number
+        total_budget:
+          type: number
+        would_exceed:
+          type: boolean
+        remaining_after:
+          type: number
+        status:
+          type: string
+          enum: [ok, warning, critical, exceeded]
+
+    # Savings Intelligence
+    SavingsAnalysis:
+      type: object
+      properties:
+        analysis_id:
+          type: string
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+        total_spend:
+          type: number
+        identified_savings:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              category:
+                type: string
+              current_spend:
+                type: number
+              potential_savings:
+                type: number
+              opportunity_type:
+                type: string
+                enum: [volume_discount, contract_renegotiation, duplicate_elimination, vendor_consolidation]
+              confidence:
+                type: number
+              implementation_effort:
+                type: string
+                enum: [low, medium, high]
+        total_potential_savings:
+          type: number
+        savings_percentage:
+          type: number
+        roi_months:
+          type: number
+
+    SavingsRecommendation:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        category:
+          type: string
+        estimated_savings:
+          type: number
+        implementation_steps:
+          type: array
+          items:
+            type: string
+        timeframe_weeks:
+          type: integer
+        priority:
+          type: string
+          enum: [low, medium, high]
+
+    SavingsImplementation:
+      type: object
+      properties:
+        recommendation_id:
+          type: string
+        status:
+          type: string
+          enum: [planned, in_progress, completed, failed]
+        actual_savings:
+          type: number
+        completion_percentage:
+          type: number
+        completion_date:
+          type: string
+          format: date-time
+
+    # ERP Integration
+    ERPConnectRequest:
+      type: object
+      properties:
+        erp_type:
+          type: string
+          enum: [quickbooks, netsuite, xero, sap]
+        credentials:
+          type: object
+          properties:
+            client_id:
+              type: string
+            client_secret:
+              type: string
+            realm_id:
+              type: string
+        tenant_id:
+          type: string
+      required:
+        - erp_type
+        - credentials
+
+    ERPConnection:
+      type: object
+      properties:
+        id:
+          type: string
+        erp_type:
+          type: string
+        tenant_id:
+          type: string
+        status:
+          type: string
+          enum: [connected, disconnected, error]
+        last_sync:
+          type: string
+          format: date-time
+        sync_status:
+          type: string
+          enum: [idle, syncing, success, error]
+        error_message:
+          type: string
+
+    JournalEntryPushRequest:
+      type: object
+      properties:
+        erp_connection_id:
+          type: string
+        entries:
+          type: array
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date
+              reference:
+                type: string
+              memo:
+                type: string
+              lines:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    account_number:
+                      type: string
+                    amount:
+                      type: number
+                    debit_credit:
+                      type: string
+                      enum: [debit, credit]
+                    description:
+                      type: string
+      required:
+        - erp_connection_id
+        - entries
+
+    GLAccount:
+      type: object
+      properties:
+        id:
+          type: string
+        account_number:
+          type: string
+        account_name:
+          type: string
+        account_type:
+          type: string
+        mapped_cost_center:
+          type: string
+        is_active:
+          type: boolean
+
+    # SSO & Auth
+    SAMLInitRequest:
+      type: object
+      properties:
+        relay_state:
+          type: string
+
+    SAMLCallbackRequest:
+      type: object
+      properties:
+        SAMLResponse:
+          type: string
+        RelayState:
+          type: string
+
+    OIDCInitRequest:
+      type: object
+      properties:
+        provider:
+          type: string
+        redirect_uri:
+          type: string
+
+    OIDCCallbackRequest:
+      type: object
+      properties:
+        code:
+          type: string
+        state:
+          type: string
+
+    MFASetupRequest:
+      type: object
+      properties:
+        method:
+          type: string
+          enum: [totp, sms, email]
+
+    MFASetupResponse:
+      type: object
+      properties:
+        secret:
+          type: string
+        qr_code_url:
+          type: string
+        backup_codes:
+          type: array
+          items:
+            type: string
+
+    MFAVerifyRequest:
+      type: object
+      properties:
+        code:
+          type: string
+
+    # Audit & Compliance
+    AuditEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        event_type:
+          type: string
+        user_id:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        action:
+          type: string
+        changes:
+          type: object
+        ip_address:
+          type: string
+        user_agent:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [success, failure]
+
+    AuditLogRequest:
+      type: object
+      properties:
+        event_type:
+          type: string
+        resource_type:
+          type: string
+        resource_id:
+          type: string
+        action:
+          type: string
+        changes:
+          type: object
+      required:
+        - event_type
+        - action
+
+    AuditExportRequest:
+      type: object
+      properties:
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        event_types:
+          type: array
+          items:
+            type: string
+        format:
+          type: string
+          enum: [csv, json]
+          default: json
+
+    # AI Proxy
+    ChatCompletionRequest:
+      type: object
+      properties:
+        model:
+          type: string
+        messages:
+          type: array
+          items:
+            type: object
+            properties:
+              role:
+                type: string
+                enum: [system, user, assistant]
+              content:
+                type: string
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        max_tokens:
+          type: integer
+        top_p:
+          type: number
+
+    ChatCompletionResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        object:
+          type: string
+        created:
+          type: integer
+        model:
+          type: string
+        choices:
+          type: array
+          items:
+            type: object
+            properties:
+              index:
+                type: integer
+              message:
+                type: object
+                properties:
+                  role:
+                    type: string
+                  content:
+                    type: string
+              finish_reason:
+                type: string
+        usage:
+          type: object
+          properties:
+            prompt_tokens:
+              type: integer
+            completion_tokens:
+              type: integer
+            total_tokens:
+              type: integer
+
+    # Dashboard
+    DashboardData:
+      type: object
+      properties:
+        period:
+          type: object
+          properties:
+            start:
+              type: string
+              format: date
+            end:
+              type: string
+              format: date
+        total_spend:
+          type: number
+        monthly_trend:
+          type: array
+          items:
+            type: object
+            properties:
+              month:
+                type: string
+              amount:
+                type: number
+        by_category:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              amount:
+                type: number
+              percentage:
+                type: number
+        by_cost_center:
+          type: array
+          items:
+            type: object
+            properties:
+              cost_center:
+                type: string
+              amount:
+                type: number
+              budget:
+                type: number
+              remaining:
+                type: number
+        top_suppliers:
+          type: array
+          items:
+            type: object
+            properties:
+              supplier:
+                type: string
+              amount:
+                type: number
+              invoice_count:
+                type: integer
+        anomalies_detected:
+          type: integer
+        pending_invoices:
+          type: integer
+        audit_compliance_score:
+          type: number
+
+    DashboardDrillDown:
+      type: object
+      properties:
+        dimension:
+          type: string
+        values:
+          type: array
+          items:
+            type: object
+            properties:
+              label:
+                type: string
+              amount:
+                type: number
+              children:
+                type: array
+        total:
+          type: number
+
+    DashboardAlert:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+          enum: [budget_exceeded, anomaly_detected, policy_violation, reconciliation_issue]
+        severity:
+          type: string
+          enum: [info, warning, critical]
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        read:
+          type: boolean
+
+    DashboardGoal:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        target_amount:
+          type: number
+        current_progress:
+          type: number
+        progress_percentage:
+          type: number
+        period:
+          type: string
+        status:
+          type: string
+          enum: [on_track, at_risk, failed, completed]
+
+    DashboardGoalCreateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        target_amount:
+          type: number
+        period:
+          type: string
+        cost_centers:
+          type: array
+          items:
+            type: string
+
+    DashboardWhatIfRequest:
+      type: object
+      properties:
+        scenarios:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              changes:
+                type: object
+                properties:
+                  cost_center_id:
+                    type: object
+                    additionalProperties:
+                      type: number
+
+    DashboardWhatIfResponse:
+      type: object
+      properties:
+        scenarios:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              total_spend:
+                type: number
+              by_category:
+                type: array
+              variance_from_baseline:
+                type: number
+
+    # Cryptographic Proof
+    ProofGenerateRequest:
+      type: object
+      properties:
+        invoice_id:
+          type: string
+        include_blockchain_anchor:
+          type: boolean
+          default: true
+
+    ProofGenerateResponse:
+      type: object
+      properties:
+        proof_id:
+          type: string
+        invoice_id:
+          type: string
+        proof_hash:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+        blockchain_txn_id:
+          type: string
+        verification_url:
+          type: string
+          format: uri
+        proof_data:
+          type: object
+
+    ProofVerifyRequest:
+      type: object
+      properties:
+        proof_id:
+          type: string
+        proof_data:
+          type: object
+
+    ProofVerifyResponse:
+      type: object
+      properties:
+        valid:
+          type: boolean
+        invoice_id:
+          type: string
+        verified_at:
+          type: string
+          format: date-time
+        blockchain_confirmed:
+          type: boolean
+        proof_details:
+          type: object
+
+    ProofDisputeRequest:
+      type: object
+      properties:
+        proof_id:
+          type: string
+        reason:
+          type: string
+        evidence:
+          type: object
+
+    # Onboarding
+    OnboardingStartRequest:
+      type: object
+      properties:
+        company_name:
+          type: string
+        industry:
+          type: string
+        annual_spend_estimate:
+          type: number
+
+    OnboardingStartResponse:
+      type: object
+      properties:
+        onboarding_id:
+          type: string
+        step:
+          type: string
+        next_steps:
+          type: array
+          items:
+            type: string
+
+    MagicUploadRequest:
+      type: object
+      properties:
+        file:
+          type: string
+          format: binary
+
+    MagicSessionRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+
+    MagicSessionResponse:
+      type: object
+      properties:
+        session_id:
+          type: string
+        magic_link:
+          type: string
+          format: uri
+        expires_in_seconds:
+          type: integer
+
+    # Platform
+    PlatformIntelligenceScore:
+      type: object
+      properties:
+        score:
+          type: number
+          minimum: 0
+          maximum: 100
+        components:
+          type: object
+          properties:
+            policy_adoption:
+              type: number
+            audit_compliance:
+              type: number
+            savings_realization:
+              type: number
+            process_automation:
+              type: number
+        recommendations:
+          type: array
+          items:
+            type: string
+
+    PlatformJourney:
+      type: object
+      properties:
+        stage:
+          type: string
+          enum: [onboarding, active, optimization, mature]
+        days_since_onboarding:
+          type: integer
+        milestones_completed:
+          type: array
+          items:
+            type: string
+        next_milestone:
+          type: string
+
+    CompoundLearning:
+      type: object
+      properties:
+        learning_rate:
+          type: number
+        accuracy_improvement_percentage:
+          type: number
+        invoice_patterns_learned:
+          type: integer
+        supplier_profiles_built:
+          type: integer
+
+    # Billing
+    CheckoutRequest:
+      type: object
+      properties:
+        plan:
+          type: string
+          enum: [starter, professional, enterprise]
+        billing_cycle:
+          type: string
+          enum: [monthly, annual]
+        quantity:
+          type: integer
+
+    CheckoutResponse:
+      type: object
+      properties:
+        checkout_url:
+          type: string
+          format: uri
+        session_id:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
+
+    StripeWebhookEvent:
+      type: object
+      properties:
+        id:
+          type: string
+        type:
+          type: string
+        data:
+          type: object
+        timestamp:
+          type: integer
+
+paths:
+  # Health & Info
+  /health:
+    get:
+      tags:
+        - Health & Info
+      summary: Health check with module info
+      description: Returns overall system health and status of all modules
+      security: []
+      responses:
+        '200':
+          description: System is healthy
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+        '503':
+          description: System degraded or down
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /v1/status:
+    get:
+      tags:
+        - Health & Info
+      summary: Detailed system status
+      description: Get detailed status of all services and dependencies
+      security: []
+      responses:
+        '200':
+          description: System status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SystemStatus'
+
+  # Invoice Parsing
+  /v1/parse:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Parse an invoice
+      description: Upload and parse an invoice document (supports 47+ formats)
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: string
+                  format: binary
+                metadata:
+                  type: object
+                options:
+                  type: object
+              required:
+                - document
+      responses:
+        '200':
+          description: Invoice parsed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationError'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+
+  /v1/invoices:
+    get:
+      tags:
+        - Invoice Parsing
+      summary: List invoices
+      description: Get paginated list of parsed invoices
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of invoices
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvoiceListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedError'
+
+  /v1/invoices/{id}:
+    get:
+      tags:
+        - Invoice Parsing
+      summary: Get single invoice
+      description: Retrieve detailed information for a specific invoice
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Invoice details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+        '404':
+          description: Invoice not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundError'
+
+  /v1/parse/streaming:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Streaming parse with progress
+      description: Parse invoice with streaming progress updates
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                document:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: Streaming parse initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  parse_id:
+                    type: string
+                  status_url:
+                    type: string
+
+  /v1/parse/result:
+    get:
+      tags:
+        - Invoice Parsing
+      summary: Get parse result
+      description: Retrieve results from a streaming parse operation
+      parameters:
+        - name: parse_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Parse result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+
+  /v1/parse/edit:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Edit parsed line items
+      description: Modify line items after parsing
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseEditRequest'
+      responses:
+        '200':
+          description: Invoice updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+
+  /v1/parse/merge:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Merge line items
+      description: Combine multiple line items into one
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseMergeRequest'
+      responses:
+        '200':
+          description: Line items merged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+
+  /v1/parse/split:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Split line item
+      description: Split a line item into multiple portions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ParseSplitRequest'
+      responses:
+        '200':
+          description: Line item split
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+
+  /v1/parse/reassign:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Reassign cost center
+      description: Change cost center assignment for items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoice_id:
+                  type: string
+                line_item_ids:
+                  type: array
+                  items:
+                    type: string
+                new_cost_center:
+                  type: string
+      responses:
+        '200':
+          description: Cost center reassigned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+
+  /v1/parse/finalize:
+    post:
+      tags:
+        - Invoice Parsing
+      summary: Finalize parsed invoice
+      description: Mark invoice as final after all edits
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoice_id:
+                  type: string
+      responses:
+        '200':
+          description: Invoice finalized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParseResponse'
+
+  # Cost Allocation
+  /v1/allocate:
+    post:
+      tags:
+        - Cost Allocation
+      summary: Allocate costs by rules
+      description: Apply allocation rules to invoice line items
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRequest'
+      responses:
+        '200':
+          description: Costs allocated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationResponse'
+
+  /v1/rules:
+    get:
+      tags:
+        - Cost Allocation
+      summary: Get allocation rules
+      description: List all defined allocation rules
+      responses:
+        '200':
+          description: List of rules
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  rules:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AllocationRule'
+    post:
+      tags:
+        - Cost Allocation
+      summary: Create allocation rule
+      description: Define a new cost allocation rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AllocationRuleCreateRequest'
+      responses:
+        '201':
+          description: Rule created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AllocationRule'
+
+  /v1/rules/simulate:
+    post:
+      tags:
+        - Cost Allocation
+      summary: Simulate rule impact
+      description: Preview the impact of applying a rule
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                invoice_ids:
+                  type: array
+                  items:
+                    type: string
+                rule:
+                  $ref: '#/components/schemas/AllocationRule'
+      responses:
+        '200':
+          description: Simulation results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  simulated_allocations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AllocationResponse'
+
+  # Close Pack
+  /v1/close-pack/generate:
+    post:
+      tags:
+        - Close Pack
+      summary: Generate a Close Pack
+      description: Generate a complete Close Pack with invoices, allocations, and manifests
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClosePackGenerateRequest'
+      responses:
+        '202':
+          description: Close Pack generation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClosePackResponse'
+
+  /v1/close-pack/email:
+    post:
+      tags:
+        - Close Pack
+      summary: Email a Close Pack
+      description: Send a generated Close Pack to recipients
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClosePackEmailRequest'
+      responses:
+        '200':
+          description: Email sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                  recipients_count:
+                    type: integer
+
+  /v1/close-pack/{id}:
+    get:
+      tags:
+        - Close Pack
+      summary: Retrieve a Close Pack
+      description: Get details and download links for a Close Pack
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Close Pack details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClosePackResponse'
+
+  # Reconciliation
+  /v1/reconcile:
+    post:
+      tags:
+        - Reconciliation
+      summary: Reconcile invoices against usage
+      description: Match invoices to actual usage and identify discrepancies
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReconciliationRequest'
+      responses:
+        '200':
+          description: Reconciliation results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReconciliationResponse'
+
+  /v1/usage-logs:
+    get:
+      tags:
+        - Reconciliation
+      summary: Get usage logs
+      description: Retrieve usage logs for reconciliation
+      parameters:
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: service
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Usage logs
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  logs:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UsageLog'
+
+  /v1/reconcile/consolidated:
+    post:
+      tags:
+        - Reconciliation
+      summary: Generate consolidated close pack
+      description: Create a reconciliation-ready consolidated close pack
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClosePackGenerateRequest'
+      responses:
+        '202':
+          description: Consolidated close pack generation started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClosePackResponse'
+
+  # Anomaly Detection
+  /v1/anomalies/detect:
+    post:
+      tags:
+        - Anomaly Detection
+      summary: Run anomaly detection
+      description: Analyze invoices for anomalies and suspicious patterns
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnomalyDetectionRequest'
+      responses:
+        '200':
+          description: Anomaly detection results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AnomalyDetectionResponse'
+
+  /v1/anomalies:
+    get:
+      tags:
+        - Anomaly Detection
+      summary: List detected anomalies
+      description: Get list of detected anomalies
+      parameters:
+        - name: severity
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: List of anomalies
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  anomalies:
+                    type: array
+                    items:
+                      type: object
+
+  /v1/anomalies/configure:
+    put:
+      tags:
+        - Anomaly Detection
+      summary: Configure anomaly thresholds
+      description: Adjust sensitivity and thresholds for anomaly detection
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AnomalyConfigRequest'
+      responses:
+        '200':
+          description: Configuration updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # Budget Management
+  /v1/budgets:
+    get:
+      tags:
+        - Budget Management
+      summary: List budgets
+      description: Get all defined budgets
+      responses:
+        '200':
+          description: List of budgets
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  budgets:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Budget'
+    post:
+      tags:
+        - Budget Management
+      summary: Create budget
+      description: Define a new budget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetCreateRequest'
+      responses:
+        '201':
+          description: Budget created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Budget'
+
+  /v1/budgets/check:
+    post:
+      tags:
+        - Budget Management
+      summary: Check budget against spend
+      description: Verify if a transaction would exceed budget limits
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BudgetCheckRequest'
+      responses:
+        '200':
+          description: Budget check result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BudgetCheckResponse'
+
+  /v1/budgets/alerts:
+    get:
+      tags:
+        - Budget Management
+      summary: Get budget alerts
+      description: List budget alert history
+      parameters:
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Budget alerts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      type: object
+
+  # Savings Intelligence
+  /v1/savings/analyze:
+    get:
+      tags:
+        - Savings Intelligence
+      summary: Analyze savings opportunities
+      description: Identify cost reduction opportunities
+      parameters:
+        - name: period_days
+          in: query
+          schema:
+            type: integer
+            default: 90
+      responses:
+        '200':
+          description: Savings analysis
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsAnalysis'
+
+  /v1/savings/recommendations:
+    get:
+      tags:
+        - Savings Intelligence
+      summary: Get optimization recommendations
+      description: Receive AI-generated savings recommendations
+      responses:
+        '200':
+          description: Recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SavingsRecommendation'
+
+  /v1/savings/implement:
+    post:
+      tags:
+        - Savings Intelligence
+      summary: Track implementation
+      description: Log implementation of a savings recommendation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavingsImplementation'
+      responses:
+        '200':
+          description: Implementation tracked
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavingsImplementation'
+
+  /v1/savings/roi:
+    get:
+      tags:
+        - Savings Intelligence
+      summary: Get savings ROI
+      description: Calculate return on investment for implemented savings
+      responses:
+        '200':
+          description: ROI metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total_realized_savings:
+                    type: number
+                  roi_percentage:
+                    type: number
+                  payback_period_months:
+                    type: number
+
+  # ERP Integration
+  /v1/erp/connect:
+    post:
+      tags:
+        - ERP Integration
+      summary: Connect ERP system
+      description: Establish connection to ERP system (QuickBooks, NetSuite, Xero, SAP)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ERPConnectRequest'
+      responses:
+        '200':
+          description: ERP connected
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ERPConnection'
+
+  /v1/erp/push:
+    post:
+      tags:
+        - ERP Integration
+      summary: Push journal entries to ERP
+      description: Send journal entries to connected ERP system
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JournalEntryPushRequest'
+      responses:
+        '200':
+          description: Journal entries pushed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entries_pushed:
+                    type: integer
+                  sync_id:
+                    type: string
+
+  /v1/erp/accounts:
+    get:
+      tags:
+        - ERP Integration
+      summary: List mapped GL accounts
+      description: Get all mapped general ledger accounts
+      parameters:
+        - name: erp_connection_id
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: GL accounts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accounts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/GLAccount'
+
+  # Auth & SSO
+  /v1/sso/saml/init:
+    post:
+      tags:
+        - Auth & SSO
+      summary: Initiate SAML SSO
+      description: Start SAML single sign-on flow
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SAMLInitRequest'
+      responses:
+        '302':
+          description: Redirect to identity provider
+
+  /v1/sso/saml/callback:
+    post:
+      tags:
+        - Auth & SSO
+      summary: SAML callback endpoint
+      description: Receive SAML response from identity provider
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/SAMLCallbackRequest'
+      responses:
+        '302':
+          description: Redirect to application
+
+  /v1/sso/oidc/init:
+    post:
+      tags:
+        - Auth & SSO
+      summary: Initiate OIDC SSO
+      description: Start OpenID Connect single sign-on flow
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OIDCInitRequest'
+      responses:
+        '302':
+          description: Redirect to identity provider
+
+  /v1/sso/oidc/callback:
+    post:
+      tags:
+        - Auth & SSO
+      summary: OIDC callback endpoint
+      description: Receive OIDC authorization code
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OIDCCallbackRequest'
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token:
+                    type: string
+                  token_type:
+                    type: string
+
+  /v1/auth/mfa/setup:
+    post:
+      tags:
+        - Auth & SSO
+      summary: Setup MFA
+      description: Initialize multi-factor authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MFASetupRequest'
+      responses:
+        '200':
+          description: MFA setup initialized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MFASetupResponse'
+
+  /v1/auth/mfa/verify:
+    post:
+      tags:
+        - Auth & SSO
+      summary: Verify MFA code
+      description: Verify multi-factor authentication code
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MFAVerifyRequest'
+      responses:
+        '200':
+          description: MFA verified
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valid:
+                    type: boolean
+
+  # Audit & Compliance
+  /v1/audit/log:
+    post:
+      tags:
+        - Audit & Compliance
+      summary: Log audit event
+      description: Record an audit event for compliance tracking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuditLogRequest'
+      responses:
+        '201':
+          description: Event logged
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuditEvent'
+
+  /v1/audit/export:
+    get:
+      tags:
+        - Audit & Compliance
+      summary: Export audit trail
+      description: Export audit trail for SOX/SOC2 compliance
+      parameters:
+        - name: start_date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: true
+          schema:
+            type: string
+            format: date
+        - name: format
+          in: query
+          schema:
+            type: string
+            enum: [csv, json]
+      responses:
+        '200':
+          description: Audit trail export
+          content:
+            application/json:
+              schema:
+                type: object
+            text/csv:
+              schema:
+                type: string
+
+  # AI Proxy
+  /v1/chat/completions:
+    post:
+      tags:
+        - AI Proxy
+      summary: OpenAI-compatible chat proxy
+      description: OpenAI-compatible endpoint for chat completions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatCompletionRequest'
+      responses:
+        '200':
+          description: Chat completion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatCompletionResponse'
+
+  /anthropic/{path}:
+    post:
+      tags:
+        - AI Proxy
+      summary: Anthropic API proxy
+      description: Transparent proxy to Anthropic APIs
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Anthropic API response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /azure/{path}:
+    post:
+      tags:
+        - AI Proxy
+      summary: Azure OpenAI proxy
+      description: Transparent proxy to Azure OpenAI APIs
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Azure OpenAI response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /vertex/{path}:
+    post:
+      tags:
+        - AI Proxy
+      summary: Google Vertex AI proxy
+      description: Transparent proxy to Google Vertex AI APIs
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Vertex AI response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /bedrock/{path}:
+    post:
+      tags:
+        - AI Proxy
+      summary: AWS Bedrock proxy
+      description: Transparent proxy to AWS Bedrock APIs
+      parameters:
+        - name: path
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Bedrock response
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # Dashboard
+  /v1/dashboard:
+    get:
+      tags:
+        - Dashboard
+      summary: Full dashboard data
+      description: Get comprehensive dashboard with all key metrics
+      parameters:
+        - name: period_days
+          in: query
+          schema:
+            type: integer
+            default: 30
+      responses:
+        '200':
+          description: Dashboard data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
+
+  /v1/dashboard/drill-down:
+    get:
+      tags:
+        - Dashboard
+      summary: Infinite drill-down analytics
+      description: Drill down into specific dimensions for detailed analysis
+      parameters:
+        - name: dimension
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: parent_id
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Drill-down data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardDrillDown'
+
+  /v1/dashboard/alerts:
+    get:
+      tags:
+        - Dashboard
+      summary: Alert history
+      description: Get history of generated alerts
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+      responses:
+        '200':
+          description: Alert history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DashboardAlert'
+
+  /v1/dashboard/alerts/check:
+    post:
+      tags:
+        - Dashboard
+      summary: Fire proactive alerts
+      description: Manually trigger alert checking
+      responses:
+        '200':
+          description: Alert check completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  alerts_triggered:
+                    type: integer
+
+  /v1/dashboard/alerts/config:
+    get:
+      tags:
+        - Dashboard
+      summary: Get alert configuration
+      description: Retrieve alert configuration settings
+      responses:
+        '200':
+          description: Alert configuration
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+        - Dashboard
+      summary: Update alert configuration
+      description: Modify alert configuration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Configuration updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /v1/dashboard/goals:
+    get:
+      tags:
+        - Dashboard
+      summary: Goal progress
+      description: Get progress on defined goals
+      responses:
+        '200':
+          description: Goals and progress
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  goals:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DashboardGoal'
+    post:
+      tags:
+        - Dashboard
+      summary: Create goal
+      description: Define a new spending goal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardGoalCreateRequest'
+      responses:
+        '201':
+          description: Goal created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardGoal'
+
+  /v1/dashboard/benchmarks:
+    get:
+      tags:
+        - Dashboard
+      summary: Industry benchmarks
+      description: Compare spend against industry benchmarks
+      parameters:
+        - name: industry
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Benchmark data
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /v1/dashboard/insights:
+    get:
+      tags:
+        - Dashboard
+      summary: Natural language insights
+      description: Get AI-generated natural language insights
+      responses:
+        '200':
+          description: Insights
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  insights:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        description:
+                          type: string
+                        impact:
+                          type: string
+
+  /v1/dashboard/what-if:
+    post:
+      tags:
+        - Dashboard
+      summary: What-if scenario simulation
+      description: Simulate different spending scenarios
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DashboardWhatIfRequest'
+      responses:
+        '200':
+          description: Scenario results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardWhatIfResponse'
+
+  /v1/dashboard/money-machine:
+    get:
+      tags:
+        - Dashboard
+      summary: Money machine stats
+      description: Get automated savings engine statistics
+      responses:
+        '200':
+          description: Money machine metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  automated_savings_this_month:
+                    type: number
+                  automated_savings_ytd:
+                    type: number
+                  optimization_actions_executed:
+                    type: integer
+
+  /v1/dashboard/autonomous:
+    get:
+      tags:
+        - Dashboard
+      summary: Autonomous savings engine status
+      description: Get status of autonomous savings optimization
+      responses:
+        '200':
+          description: Autonomous engine status
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      tags:
+        - Dashboard
+      summary: Execute autonomous action
+      description: Trigger autonomous savings action
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Action executed
+          content:
+            application/json:
+              schema:
+                type: object
+    put:
+      tags:
+        - Dashboard
+      summary: Configure autonomous settings
+      description: Update autonomous engine settings
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: Settings updated
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # Cryptographic Proof
+  /v1/proof/generate:
+    post:
+      tags:
+        - Cryptographic Proof
+      summary: Generate cryptographic proof
+      description: Create cryptographic proof for invoice verification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProofGenerateRequest'
+      responses:
+        '200':
+          description: Proof generated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofGenerateResponse'
+
+  /v1/proof/verify:
+    post:
+      tags:
+        - Cryptographic Proof
+      summary: Verify a proof
+      description: Verify the validity of a cryptographic proof
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProofVerifyRequest'
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProofVerifyResponse'
+
+  /v1/proof/dispute:
+    post:
+      tags:
+        - Cryptographic Proof
+      summary: Initiate dispute
+      description: Challenge a proof and initiate dispute resolution
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProofDisputeRequest'
+      responses:
+        '200':
+          description: Dispute initiated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dispute_id:
+                    type: string
+                  status:
+                    type: string
+
+  /v1/proof/blockchain/{id}:
+    get:
+      tags:
+        - Cryptographic Proof
+      summary: Get blockchain anchor
+      description: Retrieve blockchain anchoring details for a proof
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Blockchain anchor data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  proof_id:
+                    type: string
+                  blockchain:
+                    type: string
+                  transaction_id:
+                    type: string
+                  block_number:
+                    type: integer
+                  timestamp:
+                    type: string
+                    format: date-time
+                  verified:
+                    type: boolean
+
+  # Public Verification
+  /v1/verify/{id}:
+    get:
+      tags:
+        - Public Verification
+      summary: Public verification portal
+      description: Publicly verify invoice without authentication
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Verification result
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /v1/registry/{id}:
+    get:
+      tags:
+        - Public Verification
+      summary: Public registry lookup
+      description: Look up invoice in public registry
+      security: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Registry entry
+          content:
+            application/json:
+              schema:
+                type: object
+
+  # Onboarding
+  /v1/onboard:
+    post:
+      tags:
+        - Onboarding
+      summary: Start onboarding flow
+      description: Initiate customer onboarding
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardingStartRequest'
+      responses:
+        '200':
+          description: Onboarding started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnboardingStartResponse'
+
+  /v1/demo:
+    get:
+      tags:
+        - Onboarding
+      summary: Get demo dashboard data
+      description: Get sample dashboard data for demo
+      security: []
+      responses:
+        '200':
+          description: Demo dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
+
+  /v1/demo/close-pack:
+    get:
+      tags:
+        - Onboarding
+      summary: Demo close pack
+      description: Get sample close pack
+      security: []
+      responses:
+        '200':
+          description: Demo close pack
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClosePackResponse'
+
+  /v1/magic/upload:
+    post:
+      tags:
+        - Onboarding
+      summary: Magic upload (pre-signup)
+      description: Upload invoice without signing up
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/MagicUploadRequest'
+      responses:
+        '200':
+          description: Upload processed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session_id:
+                    type: string
+                  preview_url:
+                    type: string
+
+  /v1/magic/session:
+    post:
+      tags:
+        - Onboarding
+      summary: Create magic session
+      description: Create a magic link session for pre-signup access
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MagicSessionRequest'
+      responses:
+        '200':
+          description: Magic session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MagicSessionResponse'
+
+  # Platform Flywheel
+  /v1/platform/intelligence:
+    get:
+      tags:
+        - Platform Flywheel
+      summary: Intelligence score
+      description: Get platform intelligence and maturity score
+      responses:
+        '200':
+          description: Intelligence metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformIntelligenceScore'
+
+  /v1/platform/journey:
+    get:
+      tags:
+        - Platform Flywheel
+      summary: Customer journey
+      description: Get customer journey stage and progress
+      responses:
+        '200':
+          description: Journey data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformJourney'
+
+  /v1/platform/compound:
+    get:
+      tags:
+        - Platform Flywheel
+      summary: Compound learning metrics
+      description: Get compound learning and model improvement metrics
+      responses:
+        '200':
+          description: Learning metrics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CompoundLearning'
+
+  /v1/platform/recommendations:
+    get:
+      tags:
+        - Platform Flywheel
+      summary: Cross-feature recommendations
+      description: Get personalized cross-feature recommendations
+      responses:
+        '200':
+          description: Recommendations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  recommendations:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        feature:
+                          type: string
+                        recommendation:
+                          type: string
+                        value:
+                          type: string
+
+  # Billing
+  /v1/billing/checkout:
+    post:
+      tags:
+        - Billing
+      summary: Create Stripe checkout
+      description: Create a Stripe checkout session
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckoutRequest'
+      responses:
+        '200':
+          description: Checkout session created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CheckoutResponse'
+
+  /v1/billing/webhook:
+    post:
+      tags:
+        - Billing
+      summary: Stripe webhook endpoint
+      description: Receive Stripe webhook events
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StripeWebhookEvent'
+      responses:
+        '200':
+          description: Webhook received
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  received:
+                    type: boolean
+
+tags:
+  - name: Health & Info
+    description: System health and status endpoints
+  - name: Invoice Parsing
+    description: Invoice document parsing and editing (47+ formats)
+  - name: Cost Allocation
+    description: Cost allocation rules and policy engine
+  - name: Close Pack
+    description: Close pack generation and distribution
+  - name: Reconciliation
+    description: Invoice reconciliation against usage
+  - name: Anomaly Detection
+    description: Anomaly and fraud detection
+  - name: Budget Management
+    description: Budget definition and monitoring
+  - name: Savings Intelligence
+    description: Savings analysis and recommendations
+  - name: ERP Integration
+    description: ERP system integration (QuickBooks, NetSuite, Xero, SAP)
+  - name: Auth & SSO
+    description: Authentication and single sign-on
+  - name: Audit & Compliance
+    description: Audit logging and compliance exports
+  - name: AI Proxy
+    description: Multi-provider AI/LLM proxy endpoints
+  - name: Dashboard
+    description: Analytics dashboard and metrics
+  - name: Cryptographic Proof
+    description: Cryptographic proof generation and verification
+  - name: Public Verification
+    description: Public invoice verification and registry
+  - name: Onboarding
+    description: Customer onboarding and demos
+  - name: Platform Flywheel
+    description: Platform maturity and learning metrics
+  - name: Billing
+    description: Billing and payment processing

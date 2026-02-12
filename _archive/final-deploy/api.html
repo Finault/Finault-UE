@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Reference | Finault</title>
+  <meta name="description" content="Finault API documentation. Programmatically allocate AI costs and generate Close Packs.">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; color: #fafafa; }
+    
+    .layout { display: flex; min-height: 100vh; }
+    
+    .sidebar { width: 280px; background: #111; border-right: 1px solid #262626; padding: 24px; position: fixed; height: 100vh; overflow-y: auto; }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 32px; text-decoration: none; color: #fff; }
+    .sidebar-logo svg { width: 28px; height: 28px; }
+    .sidebar-logo span { font-size: 18px; font-weight: 600; }
+    
+    .sidebar-section { margin-bottom: 24px; }
+    .sidebar-label { font-size: 11px; font-weight: 600; color: #737373; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; }
+    .sidebar-link { display: block; padding: 8px 12px; color: #a3a3a3; text-decoration: none; font-size: 14px; border-radius: 6px; margin-bottom: 2px; }
+    .sidebar-link:hover { background: #1a1a1a; color: #fff; }
+    .sidebar-link.active { background: #22c55e20; color: #22c55e; }
+    
+    .main { flex: 1; margin-left: 280px; }
+    
+    .header { padding: 20px 40px; border-bottom: 1px solid #262626; display: flex; align-items: center; justify-content: space-between; }
+    .header h1 { font-size: 20px; font-weight: 600; }
+    .header-badge { padding: 4px 10px; background: #22c55e20; color: #22c55e; font-size: 12px; font-weight: 500; border-radius: 100px; }
+    
+    .content { padding: 40px; max-width: 900px; }
+    
+    h2 { font-size: 24px; font-weight: 600; margin-bottom: 16px; margin-top: 48px; padding-top: 24px; border-top: 1px solid #262626; }
+    h2:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+    h3 { font-size: 18px; font-weight: 600; margin-top: 32px; margin-bottom: 12px; }
+    
+    p { color: #a3a3a3; line-height: 1.7; margin-bottom: 16px; }
+    
+    .endpoint { background: #111; border: 1px solid #262626; border-radius: 12px; margin: 24px 0; overflow: hidden; }
+    .endpoint-header { display: flex; align-items: center; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #262626; }
+    .endpoint-method { padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; font-family: 'JetBrains Mono', monospace; }
+    .endpoint-method.post { background: #22c55e; color: #000; }
+    .endpoint-method.get { background: #3b82f6; color: #fff; }
+    .endpoint-method.delete { background: #ef4444; color: #fff; }
+    .endpoint-path { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #fff; }
+    .endpoint-body { padding: 20px; }
+    
+    .code-block { background: #0d0d0d; border: 1px solid #262626; border-radius: 8px; padding: 16px; overflow-x: auto; margin: 16px 0; }
+    .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; color: #e5e5e5; margin: 0; }
+    .code-block .comment { color: #737373; }
+    .code-block .string { color: #22c55e; }
+    .code-block .number { color: #f59e0b; }
+    .code-block .key { color: #60a5fa; }
+    
+    .param-table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+    .param-table th, .param-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #262626; }
+    .param-table th { font-size: 12px; font-weight: 600; color: #737373; text-transform: uppercase; letter-spacing: 0.05em; }
+    .param-table td { font-size: 14px; }
+    .param-table code { background: #262626; padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+    .param-required { color: #ef4444; font-size: 11px; font-weight: 500; }
+    .param-optional { color: #737373; font-size: 11px; }
+    
+    .callout { background: #1a1a1a; border-left: 3px solid #22c55e; padding: 16px 20px; margin: 24px 0; border-radius: 0 8px 8px 0; }
+    .callout.warning { border-color: #f59e0b; }
+    .callout-title { font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .callout p { margin: 0; font-size: 14px; }
+    
+    .tabs { display: flex; gap: 4px; margin-bottom: -1px; }
+    .tab { padding: 10px 16px; background: transparent; border: 1px solid transparent; border-bottom: none; color: #737373; font-size: 13px; cursor: pointer; border-radius: 8px 8px 0 0; }
+    .tab.active { background: #0d0d0d; border-color: #262626; color: #fff; }
+    
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; }
+      .content { padding: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#171717"/><path d="M9 8H23V11H12V14H21V17H12V24H9V8Z" fill="#22C55E"/></svg>
+        <span>Finault</span>
+      </a>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Getting Started</div>
+        <a href="#introduction" class="sidebar-link active">Introduction</a>
+        <a href="#authentication" class="sidebar-link">Authentication</a>
+        <a href="#rate-limits" class="sidebar-link">Rate Limits</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Endpoints</div>
+        <a href="#allocate" class="sidebar-link">Allocate Invoice</a>
+        <a href="#close-pack" class="sidebar-link">Generate Close Pack</a>
+        <a href="#rules" class="sidebar-link">Allocation Rules</a>
+        <a href="#history" class="sidebar-link">Upload History</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Webhooks</div>
+        <a href="webhooks.html" class="sidebar-link">Webhook Events</a>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="sidebar-label">Resources</div>
+        <a href="docs.html" class="sidebar-link">User Guide</a>
+        <a href="changelog.html" class="sidebar-link">Changelog</a>
+      </div>
+    </aside>
+    
+    <main class="main">
+      <header class="header">
+        <h1>API Reference</h1>
+        <span class="header-badge">v1.0 Beta</span>
+      </header>
+      
+      <div class="content">
+        <h2 id="introduction">Introduction</h2>
+        <p>The Finault API allows you to programmatically allocate AI invoices, generate Close Packs, and manage allocation rules. Use it to integrate Finault into your existing FinOps workflows.</p>
+        
+        <div class="callout">
+          <div class="callout-title">📍 Base URL</div>
+          <p><code>https://api.finault.ai/v1</code></p>
+        </div>
+        
+        <p>All API requests must be made over HTTPS. Requests made over HTTP will be rejected.</p>
+        
+        <h2 id="authentication">Authentication</h2>
+        <p>Authenticate your API requests by including your API key in the <code>Authorization</code> header:</p>
+        
+        <div class="code-block">
+          <pre>Authorization: Bearer fsk_live_xxxxxxxxxxxxxxxxxxxx</pre>
+        </div>
+        
+        <p>You can generate API keys from your <a href="#" style="color:#22c55e">dashboard settings</a>. Keep your API keys secure and never expose them in client-side code.</p>
+        
+        <div class="callout warning">
+          <div class="callout-title">⚠️ Security</div>
+          <p>Never commit API keys to version control or expose them in browser-side JavaScript.</p>
+        </div>
+        
+        <h2 id="rate-limits">Rate Limits</h2>
+        <p>API requests are rate limited based on your plan:</p>
+        
+        <table class="param-table">
+          <tr>
+            <th>Plan</th>
+            <th>Requests/Minute</th>
+            <th>Requests/Day</th>
+          </tr>
+          <tr>
+            <td>Pro</td>
+            <td>60</td>
+            <td>1,000</td>
+          </tr>
+          <tr>
+            <td>Business</td>
+            <td>300</td>
+            <td>10,000</td>
+          </tr>
+          <tr>
+            <td>Enterprise</td>
+            <td>Custom</td>
+            <td>Custom</td>
+          </tr>
+        </table>
+        
+        <p>Rate limit headers are included in every response:</p>
+        <div class="code-block">
+          <pre>X-RateLimit-Limit: 60
+X-RateLimit-Remaining: 58
+X-RateLimit-Reset: 1706299200</pre>
+        </div>
+        
+        <h2 id="allocate">Allocate Invoice</h2>
+        <p>Upload an AI provider invoice and receive allocated cost data.</p>
+        
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="endpoint-method post">POST</span>
+            <span class="endpoint-path">/v1/allocate</span>
+          </div>
+          <div class="endpoint-body">
+            <h3>Request Body</h3>
+            <table class="param-table">
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>file</code> <span class="param-required">required</span></td>
+                <td>file</td>
+                <td>CSV invoice file from OpenAI, Anthropic, Azure, or Google</td>
+              </tr>
+              <tr>
+                <td><code>provider</code> <span class="param-optional">optional</span></td>
+                <td>string</td>
+                <td>Provider hint: <code>openai</code>, <code>anthropic</code>, <code>azure</code>, <code>google</code>. Auto-detected if not provided.</td>
+              </tr>
+              <tr>
+                <td><code>period</code> <span class="param-optional">optional</span></td>
+                <td>string</td>
+                <td>Period in YYYY-MM format. Defaults to current month.</td>
+              </tr>
+            </table>
+            
+            <h3>Example Request</h3>
+            <div class="code-block">
+              <pre><span class="comment"># Upload and allocate an invoice</span>
+curl -X POST https://api.finault.ai/v1/allocate \
+  -H <span class="string">"Authorization: Bearer fsk_live_xxx"</span> \
+  -F <span class="string">"file=@openai-invoice-2026-01.csv"</span> \
+  -F <span class="string">"period=2026-01"</span></pre>
+            </div>
+            
+            <h3>Response</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"id"</span>: <span class="string">"alloc_abc123"</span>,
+  <span class="key">"status"</span>: <span class="string">"complete"</span>,
+  <span class="key">"provider"</span>: <span class="string">"openai"</span>,
+  <span class="key">"period"</span>: <span class="string">"2026-01"</span>,
+  <span class="key">"total_spend"</span>: <span class="number">156057.70</span>,
+  <span class="key">"currency"</span>: <span class="string">"USD"</span>,
+  <span class="key">"confidence_score"</span>: <span class="number">97.3</span>,
+  <span class="key">"allocations"</span>: [
+    {
+      <span class="key">"cost_center_code"</span>: <span class="string">"ENG-001"</span>,
+      <span class="key">"cost_center_name"</span>: <span class="string">"Platform Engineering"</span>,
+      <span class="key">"amount"</span>: <span class="number">86189.15</span>,
+      <span class="key">"percentage"</span>: <span class="number">55.2</span>,
+      <span class="key">"line_items"</span>: <span class="number">4523</span>
+    },
+    <span class="comment">// ... more allocations</span>
+  ],
+  <span class="key">"created_at"</span>: <span class="string">"2026-01-26T20:34:02.067Z"</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <h2 id="close-pack">Generate Close Pack</h2>
+        <p>Generate a complete Close Pack (Executive Summary, Journal Entry, Certificate) from an allocation.</p>
+        
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="endpoint-method post">POST</span>
+            <span class="endpoint-path">/v1/close-pack</span>
+          </div>
+          <div class="endpoint-body">
+            <h3>Request Body</h3>
+            <table class="param-table">
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>allocation_id</code> <span class="param-required">required</span></td>
+                <td>string</td>
+                <td>The allocation ID from a previous /allocate call</td>
+              </tr>
+              <tr>
+                <td><code>format</code> <span class="param-optional">optional</span></td>
+                <td>string</td>
+                <td>Export format: <code>zip</code> (default), <code>pdf</code>, <code>json</code></td>
+              </tr>
+              <tr>
+                <td><code>journal_format</code> <span class="param-optional">optional</span></td>
+                <td>string</td>
+                <td>Journal entry format: <code>netsuite</code>, <code>quickbooks</code>, <code>xero</code>, <code>generic</code></td>
+              </tr>
+            </table>
+            
+            <h3>Example Request</h3>
+            <div class="code-block">
+              <pre>curl -X POST https://api.finault.ai/v1/close-pack \
+  -H <span class="string">"Authorization: Bearer fsk_live_xxx"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"allocation_id": "alloc_abc123", "journal_format": "netsuite"}'</span></pre>
+            </div>
+            
+            <h3>Response</h3>
+            <p>Returns a ZIP file containing:</p>
+            <ul style="color:#a3a3a3;margin-left:20px;line-height:2;">
+              <li><code>00-EXECUTIVE-SUMMARY.pdf</code></li>
+              <li><code>01-JOURNAL-ENTRY.csv</code></li>
+              <li><code>02-RECONCILIATION-CERTIFICATE.txt</code></li>
+              <li><code>03-EXCEPTIONS-LOG.csv</code></li>
+            </ul>
+          </div>
+        </div>
+        
+        <h2 id="rules">Allocation Rules</h2>
+        <p>Manage your allocation rules programmatically.</p>
+        
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="endpoint-method get">GET</span>
+            <span class="endpoint-path">/v1/rules</span>
+          </div>
+          <div class="endpoint-body">
+            <p>List all allocation rules for your organization.</p>
+          </div>
+        </div>
+        
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="endpoint-method post">POST</span>
+            <span class="endpoint-path">/v1/rules</span>
+          </div>
+          <div class="endpoint-body">
+            <h3>Request Body</h3>
+            <div class="code-block">
+              <pre>{
+  <span class="key">"name"</span>: <span class="string">"Platform Team API Keys"</span>,
+  <span class="key">"match_type"</span>: <span class="string">"prefix"</span>,
+  <span class="key">"match_field"</span>: <span class="string">"api_key_id"</span>,
+  <span class="key">"match_pattern"</span>: <span class="string">"sk-proj-platform"</span>,
+  <span class="key">"cost_center_code"</span>: <span class="string">"ENG-001"</span>,
+  <span class="key">"priority"</span>: <span class="number">10</span>
+}</pre>
+            </div>
+          </div>
+        </div>
+        
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="endpoint-method delete">DELETE</span>
+            <span class="endpoint-path">/v1/rules/{rule_id}</span>
+          </div>
+          <div class="endpoint-body">
+            <p>Delete an allocation rule.</p>
+          </div>
+        </div>
+        
+        <h2 id="history">Upload History</h2>
+        <p>Retrieve your allocation history.</p>
+        
+        <div class="endpoint">
+          <div class="endpoint-header">
+            <span class="endpoint-method get">GET</span>
+            <span class="endpoint-path">/v1/history</span>
+          </div>
+          <div class="endpoint-body">
+            <h3>Query Parameters</h3>
+            <table class="param-table">
+              <tr>
+                <th>Parameter</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+              <tr>
+                <td><code>limit</code></td>
+                <td>integer</td>
+                <td>Number of results (default: 20, max: 100)</td>
+              </tr>
+              <tr>
+                <td><code>offset</code></td>
+                <td>integer</td>
+                <td>Pagination offset</td>
+              </tr>
+              <tr>
+                <td><code>period</code></td>
+                <td>string</td>
+                <td>Filter by period (YYYY-MM)</td>
+              </tr>
+              <tr>
+                <td><code>provider</code></td>
+                <td>string</td>
+                <td>Filter by provider</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        
+        <div style="margin-top:60px;padding:32px;background:#111;border-radius:12px;text-align:center;">
+          <h3 style="margin-bottom:12px;">Need Help?</h3>
+          <p style="margin-bottom:20px;">Our team is here to help you integrate.</p>
+          <a href="mailto:api@finault.ai" style="display:inline-block;padding:12px 24px;background:#22c55e;color:#000;text-decoration:none;border-radius:8px;font-weight:500;">Contact API Support</a>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Close Pack History - Finault</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        :root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--gray-900:#111827;--gray-800:#1f2937;--gray-700:#374151;--gray-600:#4b5563;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-300:#d1d5db;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff;--red:#ef4444}
+        body{font-family:'Inter',-apple-system,sans-serif;background:var(--gray-50);color:var(--gray-900);line-height:1.6}
+
+        /* Navigation */
+        nav{padding:1rem 2rem;background:var(--white);border-bottom:1px solid var(--gray-200)}
+        .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+        .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.25rem;color:var(--gray-900);text-decoration:none}
+        .logo-icon{width:32px;height:32px;background:var(--gray-900);border-radius:8px;display:flex;align-items:center;justify-content:center}
+        .logo-icon svg{width:18px;height:18px}
+        .nav-links{display:flex;align-items:center;gap:1.5rem}
+        .nav-links a{color:var(--gray-600);text-decoration:none;font-size:.9375rem;font-weight:500}
+        .nav-links a:hover{color:var(--gray-900)}
+        .nav-links a.active{color:var(--gray-900);font-weight:600}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem 1.25rem;border-radius:.5rem;font-size:.875rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .15s}
+        .btn-primary{background:var(--gray-900);color:var(--white)}
+        .btn-primary:hover{background:#000}
+        .btn-outline{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-300)}
+        .btn-outline:hover{background:var(--gray-50);border-color:var(--gray-400)}
+
+        /* Page Header */
+        .page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:1.5rem 2rem}
+        .page-header-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
+        .page-title{font-size:1.5rem;font-weight:700}
+        .page-meta{display:flex;align-items:center;gap:1rem}
+        .live-badge{display:flex;align-items:center;gap:.375rem;font-size:.875rem;color:var(--green);font-weight:500}
+        .live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+        /* Main Content */
+        .main{max-width:1200px;margin:0 auto;padding:2rem}
+
+        /* Alert Banner */
+        .alert{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-radius:.75rem;margin-bottom:2rem;gap:1rem}
+        .alert-error{background:#fee2e2;border:1px solid #fecaca}
+        .alert-content{display:flex;align-items:flex-start;gap:.75rem}
+        .alert-icon{width:20px;height:20px;flex-shrink:0;color:#dc2626}
+        .alert-text h4{font-size:.9375rem;font-weight:600;color:var(--gray-900);margin-bottom:.125rem}
+        .alert-text p{font-size:.875rem;color:var(--gray-600)}
+        .alert-close{background:none;border:none;color:var(--gray-600);cursor:pointer;font-size:1.25rem}
+        .alert-close:hover{color:var(--gray-900)}
+
+        /* Stats Grid */
+        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
+        @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
+        @media(max-width:640px){.stats-grid{grid-template-columns:1fr}}
+        .stat-card{background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;padding:1.5rem;text-align:center}
+        .stat-value{font-size:2.25rem;font-weight:700;color:var(--gray-900);margin-bottom:.25rem}
+        .stat-label{font-size:.875rem;color:var(--gray-500)}
+        .stat-skeleton{height:2.5rem;background:var(--gray-200);border-radius:.25rem;margin-bottom:.25rem;animation:skeleton-load 1s infinite}
+        @keyframes skeleton-load{0%,100%{opacity:.5}50%{opacity:1}}
+
+        /* Table */
+        .table-card{background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;overflow:hidden;margin-bottom:2rem}
+        .table-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--gray-200)}
+        .table-title{font-size:1rem;font-weight:600}
+        .table-wrapper{overflow-x:auto}
+        table{width:100%;border-collapse:collapse}
+        th,td{padding:.875rem 1.5rem;text-align:left}
+        th{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
+        td{font-size:.875rem;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
+        tr:last-child td{border-bottom:none}
+        tr:hover td{background:var(--gray-50)}
+        .type-badge{display:inline-flex;padding:.25rem .75rem;border-radius:.25rem;font-size:.75rem;font-weight:500;background:var(--gray-100);color:var(--gray-700)}
+        .badge-invoice{background:var(--gray-100);color:var(--gray-700)}
+        .badge-urs{background:var(--gray-100);color:var(--gray-700)}
+        .download-link{color:var(--gray-900);font-weight:500;text-decoration:none;border-bottom:1px solid var(--gray-300)}
+        .download-link:hover{border-bottom-color:var(--gray-900)}
+
+        /* Empty State */
+        .empty-state{text-align:center;padding:3rem 1.5rem;color:var(--gray-500)}
+        .empty-state-icon{font-size:3rem;margin-bottom:1rem}
+        .empty-state h3{font-size:1.125rem;font-weight:600;color:var(--gray-900);margin-bottom:.5rem}
+        .empty-state p{font-size:.875rem}
+
+        /* User Bar */
+        .user-bar{background:var(--white);border-bottom:1px solid var(--gray-200);padding:.5rem 2rem;display:flex;justify-content:space-between;align-items:center;font-size:.8125rem}
+        .user-info{display:flex;align-items:center;gap:1rem;color:var(--gray-600)}
+        .user-tier{display:inline-flex;padding:.125rem .5rem;border-radius:1rem;font-size:.6875rem;font-weight:600;background:var(--gray-900);color:var(--white);text-transform:uppercase;letter-spacing:.03em}
+        .btn-sm{padding:.375rem .75rem;font-size:.8125rem}
+        .btn-ghost{background:none;border:none;color:var(--gray-500);cursor:pointer;font-size:.8125rem;font-family:inherit}
+        .btn-ghost:hover{color:var(--gray-900)}
+
+        /* Footer */
+        footer{padding:2rem;text-align:center;color:var(--gray-400);font-size:.8125rem;background:var(--white);border-top:1px solid var(--gray-200);margin-top:3rem}
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
+                </span>
+                Finault
+            </a>
+            <div class="nav-links">
+                <a href="/demo.html">Demo</a>
+                <a href="/docs.html">Docs</a>
+                <a href="/pricing.html">Pricing</a>
+                <a href="/dashboard.html" class="active">Dashboard</a>
+                <a href="/app.html" class="btn btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <div id="userBar" class="user-bar" style="display:none">
+        <div class="user-info">
+            <span id="userEmail"></span>
+            <span id="userTier" class="user-tier"></span>
+        </div>
+        <button class="btn-ghost" onclick="signOut()">Sign Out</button>
+    </div>
+
+    <div class="page-header">
+        <div class="page-header-inner">
+            <h1 class="page-title">Close Pack History</h1>
+            <div class="page-meta">
+                <span class="live-badge"><span class="live-dot"></span> Live</span>
+            </div>
+        </div>
+    </div>
+
+    <main class="main">
+        <!-- Configuration Alert -->
+        <div id="configAlert" class="alert alert-error" style="display:none">
+            <div class="alert-content">
+                <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                <div class="alert-text">
+                    <h4>Connect to Supabase</h4>
+                    <p>Set your anon key in the dashboard configuration to view close pack history.</p>
+                </div>
+            </div>
+            <button class="alert-close" onclick="document.getElementById('configAlert').style.display='none'">&times;</button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div id="stat1-value" class="stat-value stat-skeleton"></div>
+                <div class="stat-label">Total Invoice Closes</div>
+            </div>
+            <div class="stat-card">
+                <div id="stat2-value" class="stat-value stat-skeleton"></div>
+                <div class="stat-label">Total URS Closes</div>
+            </div>
+            <div class="stat-card">
+                <div id="stat3-value" class="stat-value stat-skeleton"></div>
+                <div class="stat-label">Total Spend Reconciled</div>
+            </div>
+            <div class="stat-card">
+                <div id="stat4-value" class="stat-value stat-skeleton"></div>
+                <div class="stat-label">Average Confidence</div>
+            </div>
+        </div>
+
+        <!-- Close Pack History Table -->
+        <div id="historyTable" class="table-card">
+            <div class="table-header">
+                <span class="table-title">Close Pack History</span>
+            </div>
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Close ID</th>
+                            <th>Type</th>
+                            <th>Period</th>
+                            <th>Total</th>
+                            <th>Confidence / Ruleset</th>
+                            <th>Sealed At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--gray-400)">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="table-card" style="display:none">
+            <div class="empty-state">
+                <div class="empty-state-icon">📦</div>
+                <h3>No close packs yet</h3>
+                <p>Upload an invoice or usage CSV on the <a href="/demo.html" style="color:var(--gray-900);text-decoration:underline">Demo page</a> to create your first close.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        © 2026 Finault. The AI Cost Governance Standard.
+    </footer>
+
+    <script>
+        // Configuration
+        var SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
+        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
+
+        // Format currency
+        function formatCurrency(value) {
+            if (!value) return '$0';
+            return '$' + parseFloat(value).toLocaleString('en-US', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' +
+                   date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
+        }
+
+        // Format period for display
+        function formatPeriod(startDate, endDate) {
+            if (!startDate) return '-';
+            const start = new Date(startDate);
+            if (!endDate) {
+                return start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            }
+            const end = new Date(endDate);
+            return start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' - ' +
+                   end.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+        }
+
+        // Fetch closes from Supabase
+        async function fetchCloses() {
+            if (!SUPABASE_ANON_KEY) {
+                document.getElementById('configAlert').style.display = 'flex';
+                document.getElementById('emptyState').style.display = 'block';
+                document.getElementById('historyTable').style.display = 'none';
+                resetStats();
+                return;
+            }
+
+            try {
+                // Fetch invoice closes
+                const invoicesResponse = await fetch(
+                    `${SUPABASE_URL}/rest/v1/closes?select=close_id,period,sealed_at,total,confidence,r2_key&order=sealed_at.desc&limit=50`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+
+                // Fetch URS closes
+                const ursResponse = await fetch(
+                    `${SUPABASE_URL}/rest/v1/usage_reconciliations?select=close_id,period_start,period_end,sealed_at,total,pricing_ruleset_id,pricing_ruleset_version,r2_key&order=sealed_at.desc&limit=50`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                );
+
+                const invoices = await invoicesResponse.json();
+                const urs = await ursResponse.json();
+
+                // Combine and sort
+                const combined = [];
+
+                if (Array.isArray(invoices)) {
+                    invoices.forEach(inv => {
+                        combined.push({
+                            type: 'Invoice',
+                            close_id: inv.close_id,
+                            period: inv.period,
+                            period_start: null,
+                            period_end: null,
+                            total: inv.total,
+                            confidence: inv.confidence,
+                            ruleset: null,
+                            sealed_at: inv.sealed_at,
+                            download_id: inv.close_id,
+                            download_type: 'invoice',
+                            r2_key: inv.r2_key
+                        });
+                    });
+                }
+
+                if (Array.isArray(urs)) {
+                    urs.forEach(u => {
+                        combined.push({
+                            type: 'URS',
+                            close_id: u.close_id,
+                            period: null,
+                            period_start: u.period_start,
+                            period_end: u.period_end,
+                            total: u.total,
+                            confidence: null,
+                            ruleset: u.pricing_ruleset_id,
+                            sealed_at: u.sealed_at,
+                            download_id: u.close_id,
+                            download_type: 'urs',
+                            r2_key: u.r2_key
+                        });
+                    });
+                }
+
+                // Sort by sealed_at descending
+                combined.sort((a, b) => {
+                    const dateA = new Date(a.sealed_at || 0);
+                    const dateB = new Date(b.sealed_at || 0);
+                    return dateB - dateA;
+                });
+
+                // Update table
+                renderTable(combined);
+
+                // Update stats
+                updateStats(combined, invoices, urs);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('configAlert').style.display = 'flex';
+                resetStats();
+            }
+        }
+
+        function renderTable(data) {
+            const tbody = document.getElementById('tableBody');
+
+            if (!data || data.length === 0) {
+                document.getElementById('historyTable').style.display = 'none';
+                document.getElementById('emptyState').style.display = 'block';
+                return;
+            }
+
+            document.getElementById('historyTable').style.display = 'block';
+            document.getElementById('emptyState').style.display = 'none';
+
+            tbody.innerHTML = data.map(row => {
+                const downloadUrl = row.download_type === 'invoice'
+                    ? `https://closepack.finault.ai/closepack/${row.download_id}`
+                    : `https://closepack.finault.ai/reconcilepack/${row.download_id}`;
+
+                const periodDisplay = row.type === 'Invoice'
+                    ? row.period
+                    : formatPeriod(row.period_start, row.period_end);
+
+                const metaDisplay = row.type === 'Invoice'
+                    ? `${Math.round(row.confidence || 0)}%`
+                    : (row.ruleset || '-');
+
+                return `
+                    <tr>
+                        <td><strong>${row.close_id || '-'}</strong></td>
+                        <td><span class="type-badge badge-${row.type.toLowerCase()}">${row.type}</span></td>
+                        <td>${periodDisplay || '-'}</td>
+                        <td>${formatCurrency(row.total)}</td>
+                        <td>${metaDisplay}</td>
+                        <td>${formatDate(row.sealed_at)}</td>
+                        <td><a href="${downloadUrl}" class="download-link" target="_blank">Download</a></td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function updateStats(combined, invoices, urs) {
+            // Total Invoice Closes
+            const invoiceCount = Array.isArray(invoices) ? invoices.length : 0;
+            document.getElementById('stat1-value').innerHTML = invoiceCount.toString();
+            document.getElementById('stat1-value').classList.remove('stat-skeleton');
+
+            // Total URS Closes
+            const ursCount = Array.isArray(urs) ? urs.length : 0;
+            document.getElementById('stat2-value').innerHTML = ursCount.toString();
+            document.getElementById('stat2-value').classList.remove('stat-skeleton');
+
+            // Total Spend Reconciled
+            let totalSpend = 0;
+            combined.forEach(item => {
+                if (item.total) totalSpend += parseFloat(item.total);
+            });
+            document.getElementById('stat3-value').innerHTML = formatCurrency(totalSpend);
+            document.getElementById('stat3-value').classList.remove('stat-skeleton');
+
+            // Average Confidence
+            let confidenceSum = 0;
+            let confidenceCount = 0;
+            if (Array.isArray(invoices)) {
+                invoices.forEach(inv => {
+                    if (inv.confidence) {
+                        confidenceSum += parseFloat(inv.confidence);
+                        confidenceCount++;
+                    }
+                });
+            }
+            const avgConfidence = confidenceCount > 0 ? Math.round(confidenceSum / confidenceCount) : 0;
+            document.getElementById('stat4-value').innerHTML = avgConfidence.toString() + '%';
+            document.getElementById('stat4-value').classList.remove('stat-skeleton');
+        }
+
+        function resetStats() {
+            document.getElementById('stat1-value').innerHTML = '0';
+            document.getElementById('stat1-value').classList.remove('stat-skeleton');
+            document.getElementById('stat2-value').innerHTML = '0';
+            document.getElementById('stat2-value').classList.remove('stat-skeleton');
+            document.getElementById('stat3-value').innerHTML = '$0.00';
+            document.getElementById('stat3-value').classList.remove('stat-skeleton');
+            document.getElementById('stat4-value').innerHTML = '0%';
+            document.getElementById('stat4-value').classList.remove('stat-skeleton');
+        }
+
+        // Auth: check session and show user bar
+        function checkAuth() {
+            var token = localStorage.getItem('finault_token');
+            var userStr = localStorage.getItem('finault_user');
+            if (token && userStr) {
+                try {
+                    var user = JSON.parse(userStr);
+                    document.getElementById('userEmail').textContent = user.email || '';
+                    var tier = (user.user_metadata && user.user_metadata.tier) || 'free';
+                    document.getElementById('userTier').textContent = tier;
+                    document.getElementById('userBar').style.display = 'flex';
+                } catch(e) {}
+            }
+        }
+
+        function signOut() {
+            localStorage.removeItem('finault_token');
+            localStorage.removeItem('finault_user');
+            window.location.href = '/login.html';
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
+            fetchCloses();
+        });
+    </script>
+</body>
+</html>

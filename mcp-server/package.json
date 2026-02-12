@@ -1,0 +1,51 @@
+{
+  "name": "@finault/mcp-server",
+  "version": "2.0.0",
+  "description": "Finault MCP Server - Financial Intelligence for AI Spend. Let Claude answer questions like 'What did engineering spend on AI?' and 'Generate the January Close Pack.'",
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "finops",
+    "ai-costs",
+    "llm-costs",
+    "financial-intelligence",
+    "cost-management",
+    "claude",
+    "anthropic"
+  ],
+  "author": "Finault <hello@finault.ai>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Finault/Finault.git"
+  },
+  "homepage": "https://finault.ai",
+  "bugs": {
+    "url": "https://github.com/Finault/Finault/issues"
+  },
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "finault-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.6.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

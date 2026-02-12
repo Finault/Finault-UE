@@ -1,0 +1,56 @@
+name = "finault-gateway"
+main = "dist/gateway.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# Custom domain
+routes = [
+  { pattern = "api.finault.ai/*", zone_name = "finault.ai" }
+]
+
+[vars]
+ENVIRONMENT = "production"
+# SUPABASE_URL and SUPABASE_KEY are now set via `wrangler secret put`
+
+# R2 Storage for Close Packs (immutable)
+[[r2_buckets]]
+binding = "CLOSEPACKS"
+bucket_name = "finault-closepacks"
+
+# KV for rate limiting and sessions
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "d13878b328ce4836a0256687146a895b"
+
+# Secrets (set via `wrangler secret put` for production)
+# wrangler secret put JWT_SECRET
+# wrangler secret put STRIPE_SECRET_KEY
+# wrangler secret put STRIPE_WEBHOOK_SECRET
+# wrangler secret put ANCHOR_PRIVATE_KEY
+# wrangler secret put INFURA_API_KEY
+# wrangler secret put ALCHEMY_API_KEY
+# wrangler secret put OPENAI_API_KEY
+# wrangler secret put ANTHROPIC_API_KEY
+
+[env.development]
+name = "finault-gateway-dev"
+[env.development.vars]
+ENVIRONMENT = "development"
+SUPABASE_URL = "https://bejoptgsrhmklmllkobu.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU"
+ENABLE_DEMO_MODE = "true"
+ALLOW_QUERY_ORG_ID = "true"
+
+[[env.development.r2_buckets]]
+binding = "CLOSEPACKS"
+bucket_name = "finault-closepacks-dev"
+
+[[env.development.kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "00000000000000000000000000000000"
+preview_id = "00000000000000000000000000000001"
+
+[env.staging]
+name = "finault-gateway-staging"
+[env.staging.vars]
+ENVIRONMENT = "staging"
