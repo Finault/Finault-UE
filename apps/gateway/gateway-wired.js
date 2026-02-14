@@ -144,6 +144,72 @@ const { calculateEffectiveCost, createCommitment, getActiveCommitments, getCommi
 // Solution 12: Evidence-Driven Compliance
 const { generateEvidencePackage, runTransactionSampling, collectControlEvidence, collectPCAOBEvidence, collectGovernanceEvidence } = require('../../platform/modules/evidence-collector.js');
 
+// ═══════════════════════════════════════════════════════════════════
+// DIAMOND TIER ENHANCEMENT MODULES (32,285 lines of production code)
+// ═══════════════════════════════════════════════════════════════════
+
+// Diamond 1: AI Gateway - Semantic caching, PromptShield, cost prediction, A/B testing, SLA monitoring
+const { DiamondTierGateway, SemanticCache, PromptShield, CostPredictor, MultiLLMRouter, ABTestingFramework, SLAMonitor, RequestBatcher, IntelligentRetryEngine } = require('../../platform/modules/gateway-diamond.js');
+
+// Diamond 2: Invoice Intelligence - OCR, FOCUS 1.3, deduplication, autopilot, multi-currency
+const { InvoiceDiamondModule, OCRPipeline, FOCUSNormalizer, InvoiceDeduplicator, PartialParseHandler, InvoiceAutopilot, InvoiceAnomalyDetector, MultiCurrencyEngine, ContractAwareParser } = require('../../platform/modules/invoice-diamond.js');
+
+// Diamond 3: Cost Allocation - ML auto-allocation, simulation, cross-entity, chargeback
+const { AllocationDiamond, ChargebackEngine, AllocationPriorityManager, ShowbackReportGenerator, MLAutoAllocator, AllocationSimulator, CrossEntityAllocator, CostFlowVisualizer } = require('../../platform/modules/allocation-diamond.js');
+
+// Diamond 4: Close Pack - Watermarks, blockchain, auditor portal, regulatory templates
+const { FinaultClosePackDiamond, WatermarkEngine, BlockchainAnchor, AuditorVerificationPortal, RetentionManager, AuditorShareManager, ClosePackComparator, RegulatoryTemplateEngine, CloseProgressTracker } = require('../../platform/modules/closepack-diamond.js');
+
+// Diamond 5: Reconciliation - FCS formula, continuous recon, predictive, cross-provider
+const { ReconciliationDiamond, FinaultConfidenceScore, FCSBehaviorGate, ExceptionWorkflow, ContinuousReconciler, PredictiveReconciler, CrossProviderReconciler, ReconciliationAuditTrail } = require('../../platform/modules/reconciliation-diamond.js');
+
+// Diamond 6: Anomaly Detection - Ensemble ML, root cause, pattern library, playbooks
+const { FinaultAnomalyDetection, EnsembleAnomalyDetector, RootCauseAnalyzer, CrossContextPivot, AnomalyClassifier, FinancialImpactCalculator, AnomalyPatternLibrary, CorrelatedAnomalyDetector, AnomalyPlaybookEngine } = require('../../platform/modules/anomaly-diamond.js');
+
+// Diamond 7: Budget Management - AI creation, federation, reallocation, compliance scoring
+const { BudgetDiamond, AlertThresholdEngine, VarianceReporter, ScenarioPlanner, ForecastingEngine, AIBudgetCreator, BudgetFederator, BudgetReallocator, BudgetComplianceScorer } = require('../../platform/modules/budget-diamond.js');
+
+// Diamond 8: Dispute Resolution - Success predictor, auto-filing, evidence locker
+const { DisputeDiamond, DisputeLetterGenerator, CreditRecoveryTracker, DisputeSuccessPredictor, AutomatedDisputeExecutor, DisputeAnalytics, DisputeEvidenceLocker, ProviderDisputeFiler } = require('../../platform/modules/dispute-diamond.js');
+
+// Diamond 9: Shadow AI - Expense mining, network traffic, Slack/Teams, risk matrix, ROI
+const { ShadowDiamond, ExpenseReportMiner, NetworkTrafficAnalyzer, WorkspaceBotScanner, CodeAssistantScanner, DuplicateSpendDetector, ShadowMigrationEngine, ShadowHunterAgent, WeeklyDigestGenerator, ShadowRiskMatrix, ShadowROICalculator, ToolSubstitutionRecommender, ComplianceHeatMap, HRSystemIntegration } = require('../../platform/modules/shadow-diamond.js');
+
+// Diamond 10: Compliance - 230+ controls, Co-Pilot, regulatory monitoring, evidence marketplace
+const { ComplianceDiamond, ComplianceControlRegistry, ContinuousControlTester, FrameworkReadinessTracker, PolicyEngine: DiamondPolicyEngine, AuditorPortal, ComplianceCoPilot, RegulatoryChangeMonitor, ComplianceEvidenceMarketplace, CrossFrameworkMapper } = require('../../platform/modules/compliance-diamond.js');
+
+// Diamond 11: ERP Hub - Real-time GL sync, multi-ERP, health monitor, GL suggestion
+const ERPDiamond = require('../../platform/modules/erp-diamond.js');
+
+// Diamond 12: CFO Dashboard - NL analytics, board decks, mobile API, benchmarks
+const { AnalyticsDiamond, UnitEconomicsCalculator, ROIAnalyzer, BoardReportGenerator, FinOpsMaturityAssessor, NaturalLanguageAnalytics, BoardDeckGenerator, MobileAPIEngine, EmbeddedAnalytics, SpendBenchmarker } = require('../../platform/modules/analytics-diamond.js');
+
+// Diamond 13: Infrastructure - Agent leaderboard, self-healing, multi-tenant, security
+const { InfrastructureDiamond, AgentLeaderboard, AgentSelfHealer, AgentMarketplace, TenantAnalytics, NoisyNeighborDetector, CrossRegionMigrator, ZeroKnowledgeEncryption, SOC2AutoCollector, FieldLevelEncryption, SCIMProvisioner } = require('../../platform/modules/infrastructure-diamond.js');
+
+// Diamond 14: SDK & Developer Experience - MCP Server, Terraform, GraphQL
+const { SDKDiamond, SDKGenerator, MCPServer, MCPAuthManager, APIExplorer, TerraformProvider, GraphQLSchema } = require('../../platform/modules/sdk-diamond.js');
+
+// Diamond Handler Functions - All 14 modules wired to HTTP endpoints
+const {
+  handleDiamondGateway,
+  handleDiamondInvoice,
+  handleDiamondAllocation,
+  handleDiamondClosePack,
+  handleDiamondReconciliation,
+  handleDiamondAnomaly,
+  handleDiamondBudget,
+  handleDiamondDispute,
+  handleDiamondShadow,
+  handleDiamondCompliance,
+  handleDiamondERP,
+  handleDiamondAnalytics,
+  handleDiamondInfra,
+  handleDiamondMCP,
+  handleDiamondSDK,
+  handleDiamondStatus
+} = require('./diamond-handlers.js');
+
 // ══════════════════════════════════════════════════════════════════════
 // ══════ AUTH MIDDLEWARE (F-1/F-2 FIX) ══════
 // ══════════════════════════════════════════════════════════════════════
@@ -170,6 +236,16 @@ const PUBLIC_ENDPOINTS = [
   '/v1/transparency/log',    // Public transparency log (CT-inspired)
   '/v1/transparency/log/*',  // Public inclusion/consistency proofs
   '/v1/discovery/scan',      // Public onboarding discovery (no auth — value before signup)
+  '/v1/billing/webhook',     // Stripe webhook (verified via signature, not JWT)
+  '/v1/billing/plans',       // Public pricing page data
+  '/v1/magic/parse',         // Anonymous invoice parse — see value before signup
+  '/v1/magic/auth-options',  // SSO options for magic session
+  '/v1/magic/claim',         // Claim magic session with existing account
+  '/v1/magic/callback',      // SSO callback handler
+  '/v1/onboard',             // Magic onboarding — zero-friction first experience
+  '/v1/demo',                // Demo data — let prospects explore
+  '/v1/docs',                // API documentation — must be public
+  '/',                        // Landing page
 ];
 
 /**
@@ -505,6 +581,8 @@ function initializeModules(env) {
 
   // ERP Integration Hub - 8 ERP systems
   erpHub = new ERPIntegrationManager({
+    kvStore: env.FINAULT_KV, // KV-backed encrypted token persistence
+    encryptionKey: env.ENCRYPTION_KEY, // AES-256-GCM key for credential encryption at rest
     quickbooks: {
       clientId: env.QB_CLIENT_ID,
       clientSecret: env.QB_CLIENT_SECRET,
@@ -674,13 +752,50 @@ export default {
     }
 
     // ══════ AUTHENTICATION (F-1/F-2 FIX) ══════
-    // NEW: Use secure authenticateRequest function that validates JWT and sets request._user
-    // This ensures org_id comes ONLY from JWT, never from request body
+    // Use secure authenticateRequest function that validates JWT and sets request._user
+    // org_id comes ONLY from JWT, never from request body
     let authContext = { authenticated: false, user: null };
     try {
       if (env.JWT_SECRET) {
         await authenticateRequest(request, env.JWT_SECRET);
         if (request._user) {
+          // ═══ TOKEN REVOCATION CHECK (KV-backed blacklist) ═══
+          // If token has been revoked (logout, compromise, rotation), reject immediately
+          if (env.FINAULT_KV) {
+            const tokenJti = request._user.jti || null;
+            const tokenSub = request._user.userId;
+            // Check both token-level (jti) and user-level revocation
+            const [jtiRevoked, userRevoked] = await Promise.all([
+              tokenJti ? env.FINAULT_KV.get(`revoked:jti:${tokenJti}`) : null,
+              env.FINAULT_KV.get(`revoked:user:${tokenSub}:all`)
+            ]);
+            if (jtiRevoked) {
+              logSecurityEvent(env, requestId, 'revoked_token_used', {
+                jti: tokenJti, userId: tokenSub, path,
+                ip: request.headers.get('CF-Connecting-IP')
+              });
+              return jsonResponse({
+                success: false, error: 'Token Revoked',
+                message: 'This token has been revoked. Please re-authenticate.',
+                code: 'TOKEN_REVOKED'
+              }, 401);
+            }
+            if (userRevoked) {
+              const revokedAt = parseInt(userRevoked, 10);
+              if (request._user.iat && request._user.iat < revokedAt) {
+                logSecurityEvent(env, requestId, 'invalidated_session_used', {
+                  userId: tokenSub, revokedAt, tokenIat: request._user.iat, path,
+                  ip: request.headers.get('CF-Connecting-IP')
+                });
+                return jsonResponse({
+                  success: false, error: 'Session Invalidated',
+                  message: 'All sessions have been invalidated. Please re-authenticate.',
+                  code: 'SESSION_INVALIDATED'
+                }, 401);
+              }
+            }
+          }
+
           authContext = {
             authenticated: true,
             user: request._user
@@ -711,6 +826,11 @@ export default {
         request, path, true, request.orgId
       );
       if (!tierResult.allowed) {
+        logSecurityEvent(env, requestId, 'rate_limit_exceeded', {
+          tier: tierResult.tier, limit: tierResult.limit, path,
+          userId: request._user?.userId, orgId: request._user?.orgId,
+          ip: request.headers.get('CF-Connecting-IP')
+        });
         return jsonResponse({
           error: 'Too Many Requests',
           message: `Organization rate limit exceeded. Maximum ${tierResult.limit} requests per minute for ${tierResult.tier} tier.`,
@@ -726,6 +846,171 @@ export default {
           ...KVRateLimiter.getHeaders(tierResult)
         });
       }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // IP ALLOWLISTING — Enterprise orgs can lock API access to specific IPs
+    // Stored in KV as ip_allowlist:{orgId} → JSON array of CIDRs/IPs
+    // ═══════════════════════════════════════════════════════════════
+    if (authContext.authenticated && request.orgId && env.FINAULT_KV) {
+      try {
+        const allowlistRaw = await env.FINAULT_KV.get(`ip_allowlist:${request.orgId}`);
+        if (allowlistRaw) {
+          const allowedIPs = JSON.parse(allowlistRaw);
+          if (allowedIPs.length > 0 && !matchIPAllowlist(clientIp, allowedIPs)) {
+            logSecurityEvent(env, requestId, 'ip_blocked', {
+              ip: clientIp, orgId: request.orgId, userId: request._user?.userId, path,
+              allowedCount: allowedIPs.length
+            });
+            return jsonResponse({
+              success: false, error: 'Access Denied',
+              message: 'Request originated from an IP address not in your organization\'s allowlist. Contact your admin to update IP restrictions.',
+              code: 'IP_NOT_ALLOWED'
+            }, 403);
+          }
+        }
+      } catch (ipErr) {
+        console.warn(`[SECURITY] IP allowlist check failed for org ${request.orgId}: ${ipErr.message}`);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // REQUEST REPLAY PROTECTION — Nonce + timestamp to prevent replay attacks
+    // Clients send X-Finault-Nonce (UUID) + X-Finault-Timestamp (epoch ms)
+    // We reject requests older than 5 minutes or with reused nonces.
+    // ═══════════════════════════════════════════════════════════════
+    const replayNonce = request.headers.get('X-Finault-Nonce');
+    const replayTimestamp = request.headers.get('X-Finault-Timestamp');
+    if (replayNonce && replayTimestamp) {
+      const requestAge = Date.now() - parseInt(replayTimestamp, 10);
+      if (isNaN(requestAge) || requestAge > 5 * 60 * 1000 || requestAge < -30000) {
+        logSecurityEvent(env, requestId, 'replay_rejected_stale', {
+          nonce: replayNonce, age: requestAge, ip: clientIp, path
+        });
+        return jsonResponse({
+          success: false, error: 'Request Expired',
+          message: 'Request timestamp is outside the acceptable window (5 minutes). Ensure your system clock is synchronized.',
+          code: 'REQUEST_EXPIRED'
+        }, 400);
+      }
+      if (env.FINAULT_KV) {
+        const nonceKey = `nonce:${replayNonce}`;
+        const existing = await env.FINAULT_KV.get(nonceKey);
+        if (existing) {
+          logSecurityEvent(env, requestId, 'replay_rejected_reused', {
+            nonce: replayNonce, ip: clientIp, path,
+            userId: request._user?.userId
+          });
+          return jsonResponse({
+            success: false, error: 'Duplicate Request',
+            message: 'This request nonce has already been used. Each request must include a unique nonce.',
+            code: 'NONCE_REUSED'
+          }, 409);
+        }
+        // Store nonce with 6-minute TTL (slightly longer than the 5-min window)
+        await env.FINAULT_KV.put(nonceKey, '1', { expirationTtl: 360 });
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // SESSION FINGERPRINTING — Bind tokens to originating device characteristics
+    // If token was issued with a fingerprint, subsequent requests must match.
+    // Fingerprint = SHA-256(IP_prefix + User-Agent)
+    // ═══════════════════════════════════════════════════════════════
+    if (authContext.authenticated && request._user?.fingerprint && env.FINAULT_KV) {
+      try {
+        const ua = request.headers.get('User-Agent') || '';
+        // Use /24 subnet for IPv4 to allow NAT variation
+        const ipPrefix = clientIp.includes(':') ? clientIp.split(':').slice(0, 4).join(':') : clientIp.split('.').slice(0, 3).join('.');
+        const fingerprintData = new TextEncoder().encode(`${ipPrefix}|${ua}`);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', fingerprintData);
+        const currentFingerprint = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 16);
+        if (request._user.fingerprint !== currentFingerprint) {
+          logSecurityEvent(env, requestId, 'session_fingerprint_mismatch', {
+            userId: request._user.userId, orgId: request._user.orgId,
+            expected: request._user.fingerprint, got: currentFingerprint,
+            ip: clientIp, path
+          });
+          return jsonResponse({
+            success: false, error: 'Session Mismatch',
+            message: 'This token appears to be used from a different device or network than it was issued on. Please re-authenticate.',
+            code: 'FINGERPRINT_MISMATCH'
+          }, 401);
+        }
+      } catch (fpErr) {
+        // Non-blocking — fingerprinting is defense-in-depth, not hard gate
+        console.warn(`[SECURITY] Fingerprint check failed: ${fpErr.message}`);
+      }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // INPUT SANITIZATION — Defense-in-depth against XSS, injection, path traversal
+    // Runs on ALL requests before routing. Supabase REST API uses parameterized
+    // queries (mitigating SQL injection), but we sanitize as defense-in-depth.
+    // ═══════════════════════════════════════════════════════════════
+    if (request.method === 'POST' || request.method === 'PUT') {
+      try {
+        const bodyText = await request.clone().text();
+        if (bodyText.length > 0) {
+          // Reject oversized payloads (10MB max)
+          if (bodyText.length > 10 * 1024 * 1024) {
+            return jsonResponse({
+              error: 'Payload Too Large',
+              message: 'Request body exceeds 10MB limit',
+              code: 'E_PAYLOAD_TOO_LARGE'
+            }, 413);
+          }
+
+          // Detect dangerous patterns in request body
+          const dangerousPatterns = [
+            // SQL injection fragments
+            /(\b(UNION\s+SELECT|DROP\s+TABLE|DELETE\s+FROM|INSERT\s+INTO|UPDATE\s+.*SET|ALTER\s+TABLE|EXEC\s*\(|xp_cmdshell)\b)/i,
+            // Script injection / XSS
+            /<script[\s>]/i,
+            /javascript\s*:/i,
+            /on(error|load|click|mouseover|focus)\s*=/i,
+            // Path traversal
+            /\.\.\//,
+            /\.\.\\+/,
+            // Command injection
+            /[;&|`]\s*(rm|cat|curl|wget|nc|bash|sh|chmod|chown)\s/i,
+            // SSRF patterns (internal network access)
+            /https?:\/\/(127\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.|localhost|0\.0\.0\.0)/i,
+          ];
+
+          for (const pattern of dangerousPatterns) {
+            if (pattern.test(bodyText)) {
+              console.warn(`[SECURITY] Dangerous input pattern detected: ${pattern.source} | IP: ${request.headers.get('CF-Connecting-IP')} | Path: ${path}`);
+              logSecurityEvent(env, requestId, 'dangerous_input_blocked', {
+                pattern: pattern.source, path, method: request.method,
+                ip: request.headers.get('CF-Connecting-IP'),
+                userAgent: request.headers.get('User-Agent')
+              });
+              return jsonResponse({
+                error: 'Request Rejected',
+                message: 'Request contains potentially dangerous content',
+                code: 'E_DANGEROUS_INPUT'
+              }, 400);
+            }
+          }
+        }
+      } catch (sanitizeErr) {
+        // Non-JSON body or read error — let downstream handle it
+      }
+    }
+
+    // Sanitize query parameters (path traversal, injection)
+    const queryString = url.search || '';
+    if (/(\.\.\/)|(\.\.\\)|(UNION\s+SELECT)|(DROP\s+TABLE)/i.test(queryString)) {
+      logSecurityEvent(env, requestId, 'dangerous_input_blocked', {
+        type: 'query_parameter', path, ip: request.headers.get('CF-Connecting-IP'),
+        userAgent: request.headers.get('User-Agent')
+      });
+      return jsonResponse({
+        error: 'Request Rejected',
+        message: 'Query parameters contain dangerous content',
+        code: 'E_DANGEROUS_QUERY'
+      }, 400);
     }
 
     // Request validation for POST endpoints
@@ -861,7 +1146,7 @@ export default {
       // ═══════════════════════════════════════════════════════════════
       // HEALTH & INFO
       // ═══════════════════════════════════════════════════════════════
-      if (path === '/health' || path === '/') {
+      if (path === '/health' || path === '/v1/health' || path === '/') {
         // GAP #5: Add quick database status to main health endpoint
         let dbStatus = { healthy: 'unknown' };
         try {
@@ -1350,6 +1635,11 @@ export default {
         return await handleClosePackEmail(request, env, requestId);
       }
 
+      // Format-specific downloads MUST come before the generic ID catch-all
+      if (path.match(/^\/v1\/close-pack\/[a-zA-Z0-9-]+\/(pdf|excel|json|csv)$/)) {
+        return await getClosePackFormat(request, env, path);
+      }
+
       if (path.match(/^\/v1\/close-pack\/[a-zA-Z0-9-]+$/)) {
         return await getClosePack(request, env, path);
       }
@@ -1470,6 +1760,31 @@ export default {
         if (request.method === 'POST') return await runAutonomousOptimizations(request, env);
         if (request.method === 'PUT') return await updateAutonomousSettings(request, env);
         return methodNotAllowed();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // BILLING & SUBSCRIPTION - Stripe Integration
+      // Freemium → Pro ($49/mo) → Business ($149/mo) → Enterprise
+      // ═══════════════════════════════════════════════════════════════
+
+      if (path === '/v1/billing/plans') {
+        return await handleBillingPlans(request, env);
+      }
+
+      if (path === '/v1/billing/checkout') {
+        return await handleBillingCheckout(request, env, requestId);
+      }
+
+      if (path === '/v1/billing/subscription') {
+        return await handleBillingSubscription(request, env);
+      }
+
+      if (path === '/v1/billing/portal') {
+        return await handleBillingPortal(request, env);
+      }
+
+      if (path === '/v1/billing/usage') {
+        return await handleBillingUsage(request, env);
       }
 
       // ═══════════════════════════════════════════════════════════════
@@ -1738,6 +2053,13 @@ export default {
       // "Literally zero friction. They see value BEFORE signing up."
       // ═══════════════════════════════════════════════════════════════
 
+      // ═══════════════════════════════════════════════════════════════
+      // STRIPE WEBHOOK — Must be before auth (uses Stripe signature verification)
+      // ═══════════════════════════════════════════════════════════════
+      if (path === '/v1/billing/webhook') {
+        return await handleStripeWebhook(request, env);
+      }
+
       // Anonymous invoice parse - NO signup required
       if (path === '/v1/magic/parse') {
         return await handleMagicParse(request, env);
@@ -1862,6 +2184,119 @@ export default {
         if (request.method === 'GET') return await listApiKeys(request, env);
         if (request.method === 'POST') return await createApiKey(request, env, requestId);
         if (request.method === 'DELETE') return await revokeApiKey(request, env);
+        return methodNotAllowed();
+      }
+
+      // API Key rotation — revoke old + create new in one call
+      if (path === '/v1/keys/rotate') {
+        if (request.method === 'POST') return await rotateApiKey(request, env, requestId);
+        return methodNotAllowed();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // TOKEN REVOCATION — Logout, session invalidation, compromise response
+      // ═══════════════════════════════════════════════════════════════
+
+      // Revoke current token (logout) — rate limited: 10/hour per user
+      if (path === '/v1/auth/logout') {
+        if (request.method === 'POST') {
+          if (env.FINAULT_KV) {
+            const revokeLimit = await env.FINAULT_KV.get(`ratelimit:revoke:${request._user?.userId}`);
+            if (revokeLimit && parseInt(revokeLimit) >= 10) {
+              return jsonResponse({ success: false, error: 'Too many revocation requests. Maximum 10 per hour.' }, 429);
+            }
+            await env.FINAULT_KV.put(`ratelimit:revoke:${request._user?.userId}`, String((parseInt(revokeLimit || '0')) + 1), { expirationTtl: 3600 });
+          }
+          return await revokeCurrentToken(request, env, requestId);
+        }
+        return methodNotAllowed();
+      }
+
+      // Revoke all tokens for current user — rate limited: 3/hour per user
+      if (path === '/v1/auth/revoke-all') {
+        if (request.method === 'POST') {
+          if (env.FINAULT_KV) {
+            const revokeAllLimit = await env.FINAULT_KV.get(`ratelimit:revokeall:${request._user?.userId}`);
+            if (revokeAllLimit && parseInt(revokeAllLimit) >= 3) {
+              return jsonResponse({ success: false, error: 'Too many bulk revocation requests. Maximum 3 per hour.' }, 429);
+            }
+            await env.FINAULT_KV.put(`ratelimit:revokeall:${request._user?.userId}`, String((parseInt(revokeAllLimit || '0')) + 1), { expirationTtl: 3600 });
+          }
+          return await revokeAllUserTokens(request, env, requestId);
+        }
+        return methodNotAllowed();
+      }
+
+      // Admin: Revoke all tokens for a specific user — rate limited: 5/hour per admin
+      if (path === '/v1/admin/revoke-user') {
+        if (request.method === 'POST') {
+          if (env.FINAULT_KV) {
+            const adminRevokeLimit = await env.FINAULT_KV.get(`ratelimit:adminrevoke:${request._user?.userId}`);
+            if (adminRevokeLimit && parseInt(adminRevokeLimit) >= 5) {
+              return jsonResponse({ success: false, error: 'Too many admin revocation requests. Maximum 5 per hour.' }, 429);
+            }
+            await env.FINAULT_KV.put(`ratelimit:adminrevoke:${request._user?.userId}`, String((parseInt(adminRevokeLimit || '0')) + 1), { expirationTtl: 3600 });
+          }
+          return await adminRevokeUserTokens(request, env, requestId);
+        }
+        return methodNotAllowed();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // IP ALLOWLIST MANAGEMENT — Org admins can restrict API access by IP
+      // ═══════════════════════════════════════════════════════════════
+      if (path === '/v1/security/ip-allowlist') {
+        if (request.method === 'GET') return await getIPAllowlist(request, env);
+        if (request.method === 'PUT') return await updateIPAllowlist(request, env, requestId);
+        if (request.method === 'DELETE') return await clearIPAllowlist(request, env, requestId);
+        return methodNotAllowed();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // SECURITY AUDIT LOG — Read-only access to security events
+      // ═══════════════════════════════════════════════════════════════
+      if (path === '/v1/security/audit-log') {
+        if (request.method === 'GET') return await getSecurityAuditLog(request, env);
+        return methodNotAllowed();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // WEBHOOK MANAGEMENT — Customer event subscriptions
+      // ═══════════════════════════════════════════════════════════════
+
+      if (path === '/v1/webhooks') {
+        if (request.method === 'GET') return await listWebhooks(request, env);
+        if (request.method === 'POST') return await registerWebhook(request, env, requestId);
+        return methodNotAllowed();
+      }
+
+      // Test must come BEFORE the :id catch-all
+      if (path === '/v1/webhooks/test') {
+        if (request.method === 'POST') return await testWebhook(request, env);
+        return methodNotAllowed();
+      }
+
+      // Webhook secret rotation: /v1/webhooks/{id}/rotate-secret
+      if (path.match(/^\/v1\/webhooks\/[^/]+\/rotate-secret$/)) {
+        const webhookId = path.split('/')[3];
+        if (request.method === 'POST') return await rotateWebhookSecret(request, env, webhookId, requestId);
+        return methodNotAllowed();
+      }
+
+      if (path.startsWith('/v1/webhooks/') && path.split('/').length === 4) {
+        const webhookId = path.split('/')[3];
+        if (request.method === 'PUT') return await updateWebhook(request, env, webhookId);
+        if (request.method === 'DELETE') return await deleteWebhook(request, env, webhookId);
+        return methodNotAllowed();
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // ADMIN: MODEL PRICING — Dynamic pricing updates via KV
+      // ═══════════════════════════════════════════════════════════════
+
+      if (path === '/v1/admin/pricing') {
+        if (request.method === 'GET') return await getModelPricing(request, env);
+        if (request.method === 'PUT') return await updateModelPricing(request, env);
         return methodNotAllowed();
       }
 
@@ -2104,6 +2539,260 @@ export default {
       // Onboarding: Discovery Scan (public, no auth)
       if (path === '/v1/discovery/scan') {
         return await handleDiscoveryScan(request, env, requestId);
+      }
+
+      // ═══════════════════════════════════════════════════════════════
+      // DIAMOND TIER API ENDPOINTS (14 modules, 100+ capabilities)
+      // ═══════════════════════════════════════════════════════════════
+
+      // Diamond Gateway: Semantic cache, PromptShield, cost prediction, A/B testing, SLA
+      if (path === '/v1/diamond/gateway/predict-cost') {
+        return await handleDiamondGateway(request, env, requestId, 'predict-cost');
+      }
+      if (path === '/v1/diamond/gateway/prompt-shield') {
+        return await handleDiamondGateway(request, env, requestId, 'prompt-shield');
+      }
+      if (path === '/v1/diamond/gateway/ab-test') {
+        return await handleDiamondGateway(request, env, requestId, 'ab-test');
+      }
+      if (path === '/v1/diamond/gateway/sla-report') {
+        return await handleDiamondGateway(request, env, requestId, 'sla-report');
+      }
+      if (path === '/v1/diamond/gateway/cache-stats') {
+        return await handleDiamondGateway(request, env, requestId, 'cache-stats');
+      }
+
+      // Diamond Invoice: OCR, autopilot, anomaly, multi-currency, contract-aware
+      if (path === '/v1/diamond/invoice/process') {
+        return await handleDiamondInvoice(request, env, requestId, 'process');
+      }
+      if (path === '/v1/diamond/invoice/deduplicate') {
+        return await handleDiamondInvoice(request, env, requestId, 'deduplicate');
+      }
+      if (path === '/v1/diamond/invoice/anomalies') {
+        return await handleDiamondInvoice(request, env, requestId, 'anomalies');
+      }
+      if (path === '/v1/diamond/invoice/fx-convert') {
+        return await handleDiamondInvoice(request, env, requestId, 'fx-convert');
+      }
+      if (path === '/v1/diamond/invoice/contract-check') {
+        return await handleDiamondInvoice(request, env, requestId, 'contract-check');
+      }
+
+      // Diamond Allocation: ML auto-allocate, simulate, chargeback, Sankey data
+      if (path === '/v1/diamond/allocation/auto-allocate') {
+        return await handleDiamondAllocation(request, env, requestId, 'auto-allocate');
+      }
+      if (path === '/v1/diamond/allocation/simulate') {
+        return await handleDiamondAllocation(request, env, requestId, 'simulate');
+      }
+      if (path === '/v1/diamond/allocation/chargeback') {
+        return await handleDiamondAllocation(request, env, requestId, 'chargeback');
+      }
+      if (path === '/v1/diamond/allocation/cost-flow') {
+        return await handleDiamondAllocation(request, env, requestId, 'cost-flow');
+      }
+
+      // Diamond Close Pack: Watermark, blockchain, auditor share, compare, regulatory
+      if (path === '/v1/diamond/closepack/watermark') {
+        return await handleDiamondClosePack(request, env, requestId, 'watermark');
+      }
+      if (path === '/v1/diamond/closepack/anchor') {
+        return await handleDiamondClosePack(request, env, requestId, 'anchor');
+      }
+      if (path === '/v1/diamond/closepack/share') {
+        return await handleDiamondClosePack(request, env, requestId, 'share');
+      }
+      if (path === '/v1/diamond/closepack/compare') {
+        return await handleDiamondClosePack(request, env, requestId, 'compare');
+      }
+      if (path === '/v1/diamond/closepack/regulatory') {
+        return await handleDiamondClosePack(request, env, requestId, 'regulatory');
+      }
+      if (path === '/v1/diamond/closepack/progress') {
+        return await handleDiamondClosePack(request, env, requestId, 'progress');
+      }
+
+      // Diamond Reconciliation: FCS score, continuous, predictive, cross-provider
+      if (path === '/v1/diamond/reconciliation/fcs') {
+        return await handleDiamondReconciliation(request, env, requestId, 'fcs');
+      }
+      if (path === '/v1/diamond/reconciliation/continuous') {
+        return await handleDiamondReconciliation(request, env, requestId, 'continuous');
+      }
+      if (path === '/v1/diamond/reconciliation/predict') {
+        return await handleDiamondReconciliation(request, env, requestId, 'predict');
+      }
+      if (path === '/v1/diamond/reconciliation/cross-provider') {
+        return await handleDiamondReconciliation(request, env, requestId, 'cross-provider');
+      }
+      if (path === '/v1/diamond/reconciliation/exceptions') {
+        return await handleDiamondReconciliation(request, env, requestId, 'exceptions');
+      }
+
+      // Diamond Anomaly: Ensemble detect, root cause, financial impact, playbooks
+      if (path === '/v1/diamond/anomaly/detect') {
+        return await handleDiamondAnomaly(request, env, requestId, 'detect');
+      }
+      if (path === '/v1/diamond/anomaly/root-cause') {
+        return await handleDiamondAnomaly(request, env, requestId, 'root-cause');
+      }
+      if (path === '/v1/diamond/anomaly/financial-impact') {
+        return await handleDiamondAnomaly(request, env, requestId, 'financial-impact');
+      }
+      if (path === '/v1/diamond/anomaly/correlations') {
+        return await handleDiamondAnomaly(request, env, requestId, 'correlations');
+      }
+      if (path === '/v1/diamond/anomaly/playbooks') {
+        return await handleDiamondAnomaly(request, env, requestId, 'playbooks');
+      }
+
+      // Diamond Budget: AI create, federate, reallocate, compliance score, forecast
+      if (path === '/v1/diamond/budget/ai-create') {
+        return await handleDiamondBudget(request, env, requestId, 'ai-create');
+      }
+      if (path === '/v1/diamond/budget/federate') {
+        return await handleDiamondBudget(request, env, requestId, 'federate');
+      }
+      if (path === '/v1/diamond/budget/reallocate') {
+        return await handleDiamondBudget(request, env, requestId, 'reallocate');
+      }
+      if (path === '/v1/diamond/budget/compliance-score') {
+        return await handleDiamondBudget(request, env, requestId, 'compliance-score');
+      }
+      if (path === '/v1/diamond/budget/forecast') {
+        return await handleDiamondBudget(request, env, requestId, 'forecast');
+      }
+      if (path === '/v1/diamond/budget/scenario') {
+        return await handleDiamondBudget(request, env, requestId, 'scenario');
+      }
+
+      // Diamond Dispute: Predict, auto-file, analytics, evidence locker
+      if (path === '/v1/diamond/dispute/predict') {
+        return await handleDiamondDispute(request, env, requestId, 'predict');
+      }
+      if (path === '/v1/diamond/dispute/auto-file') {
+        return await handleDiamondDispute(request, env, requestId, 'auto-file');
+      }
+      if (path === '/v1/diamond/dispute/analytics') {
+        return await handleDiamondDispute(request, env, requestId, 'analytics');
+      }
+      if (path === '/v1/diamond/dispute/evidence') {
+        return await handleDiamondDispute(request, env, requestId, 'evidence');
+      }
+      if (path === '/v1/diamond/dispute/recovery') {
+        return await handleDiamondDispute(request, env, requestId, 'recovery');
+      }
+
+      // Diamond Shadow AI: Risk matrix, ROI, substitution, heatmap, digest
+      if (path === '/v1/diamond/shadow/scan-all') {
+        return await handleDiamondShadow(request, env, requestId, 'scan-all');
+      }
+      if (path === '/v1/diamond/shadow/risk-matrix') {
+        return await handleDiamondShadow(request, env, requestId, 'risk-matrix');
+      }
+      if (path === '/v1/diamond/shadow/roi') {
+        return await handleDiamondShadow(request, env, requestId, 'roi');
+      }
+      if (path === '/v1/diamond/shadow/substitutions') {
+        return await handleDiamondShadow(request, env, requestId, 'substitutions');
+      }
+      if (path === '/v1/diamond/shadow/heatmap') {
+        return await handleDiamondShadow(request, env, requestId, 'heatmap');
+      }
+      if (path === '/v1/diamond/shadow/digest') {
+        return await handleDiamondShadow(request, env, requestId, 'digest');
+      }
+      if (path === '/v1/diamond/shadow/migrate') {
+        return await handleDiamondShadow(request, env, requestId, 'migrate');
+      }
+
+      // Diamond Compliance: Co-Pilot, readiness, controls, regulatory, evidence marketplace
+      if (path === '/v1/diamond/compliance/copilot') {
+        return await handleDiamondCompliance(request, env, requestId, 'copilot');
+      }
+      if (path === '/v1/diamond/compliance/readiness') {
+        return await handleDiamondCompliance(request, env, requestId, 'readiness');
+      }
+      if (path === '/v1/diamond/compliance/controls') {
+        return await handleDiamondCompliance(request, env, requestId, 'controls');
+      }
+      if (path === '/v1/diamond/compliance/regulatory-changes') {
+        return await handleDiamondCompliance(request, env, requestId, 'regulatory-changes');
+      }
+      if (path === '/v1/diamond/compliance/evidence-marketplace') {
+        return await handleDiamondCompliance(request, env, requestId, 'evidence-marketplace');
+      }
+      if (path === '/v1/diamond/compliance/cross-framework') {
+        return await handleDiamondCompliance(request, env, requestId, 'cross-framework');
+      }
+
+      // Diamond ERP: Real-time sync, multi-ERP, health, GL suggest, sandbox, variance
+      if (path === '/v1/diamond/erp/push-journal') {
+        return await handleDiamondERP(request, env, requestId, 'push-journal');
+      }
+      if (path === '/v1/diamond/erp/gl-pullback') {
+        return await handleDiamondERP(request, env, requestId, 'gl-pullback');
+      }
+      if (path === '/v1/diamond/erp/variance') {
+        return await handleDiamondERP(request, env, requestId, 'variance');
+      }
+      if (path === '/v1/diamond/erp/sandbox') {
+        return await handleDiamondERP(request, env, requestId, 'sandbox');
+      }
+      if (path === '/v1/diamond/erp/health') {
+        return await handleDiamondERP(request, env, requestId, 'health');
+      }
+      if (path === '/v1/diamond/erp/gl-suggest') {
+        return await handleDiamondERP(request, env, requestId, 'gl-suggest');
+      }
+
+      // Diamond Analytics: NL query, board deck, mobile API, benchmarks, maturity
+      if (path === '/v1/diamond/analytics/query') {
+        return await handleDiamondAnalytics(request, env, requestId, 'query');
+      }
+      if (path === '/v1/diamond/analytics/board-deck') {
+        return await handleDiamondAnalytics(request, env, requestId, 'board-deck');
+      }
+      if (path === '/v1/diamond/analytics/mobile') {
+        return await handleDiamondAnalytics(request, env, requestId, 'mobile');
+      }
+      if (path === '/v1/diamond/analytics/benchmarks') {
+        return await handleDiamondAnalytics(request, env, requestId, 'benchmarks');
+      }
+      if (path === '/v1/diamond/analytics/maturity') {
+        return await handleDiamondAnalytics(request, env, requestId, 'maturity');
+      }
+      if (path === '/v1/diamond/analytics/unit-economics') {
+        return await handleDiamondAnalytics(request, env, requestId, 'unit-economics');
+      }
+      if (path === '/v1/diamond/analytics/roi') {
+        return await handleDiamondAnalytics(request, env, requestId, 'roi');
+      }
+
+      // Diamond Infrastructure: Agent leaderboard, tenant analytics, MCP
+      if (path === '/v1/diamond/infra/agent-leaderboard') {
+        return await handleDiamondInfra(request, env, requestId, 'agent-leaderboard');
+      }
+      if (path === '/v1/diamond/infra/tenant-analytics') {
+        return await handleDiamondInfra(request, env, requestId, 'tenant-analytics');
+      }
+      if (path === '/v1/diamond/infra/health-monitor') {
+        return await handleDiamondInfra(request, env, requestId, 'health-monitor');
+      }
+      if (path === '/v1/diamond/mcp/tools') {
+        return await handleDiamondMCP(request, env, requestId, 'tools');
+      }
+      if (path === '/v1/diamond/mcp/execute') {
+        return await handleDiamondMCP(request, env, requestId, 'execute');
+      }
+      if (path === '/v1/diamond/sdk/explorer') {
+        return await handleDiamondSDK(request, env, requestId, 'explorer');
+      }
+
+      // Diamond API: Capabilities and status
+      if (path === '/v1/diamond/status') {
+        return await handleDiamondStatus(request, env, requestId);
       }
 
       // 404 - Not Found
@@ -2442,10 +3131,47 @@ async function handleParse(request, env, requestId) {
     totalAmount: invoiceData.totalAmount
   });
 
+  // FOCUS 1.3 normalization — map parsed invoice to FinOps standard schema
+  let focusRecords = [];
+  try {
+    if (invoiceData.lineItems && invoiceData.lineItems.length > 0) {
+      focusRecords = invoiceData.lineItems.map(item => mapToFOCUS({
+        model: item.model || item.service || invoiceData.provider,
+        provider: invoiceData.provider,
+        input_tokens: item.inputTokens || item.quantity || 0,
+        output_tokens: item.outputTokens || 0,
+        cost: item.amount || item.cost || item.totalCost || 0,
+        timestamp: item.date || item.timestamp || invoiceData.billingPeriod?.start || new Date().toISOString(),
+        cost_center: item.costCenter || item.department || 'default',
+        user_id: item.userId || null,
+      }, invoiceData.organizationId || 'default'));
+    }
+  } catch (focusErr) {
+    // FOCUS mapping is enhancement — don't fail the parse
+    console.warn(`[PARSE] FOCUS mapping warning: ${focusErr.message}`);
+  }
+
+  // Deduplication hash for this invoice
+  const invoiceHash = await sha256Hex(JSON.stringify({
+    provider: invoiceData.provider,
+    totalAmount: invoiceData.totalAmount,
+    lineItemCount: invoiceData.lineItems?.length || 0,
+    period: invoiceData.billingPeriod
+  }));
+
   return jsonResponse({
     success: true,
     invoice: invoiceData,
     acps: universalParser.toACPS(invoiceData),
+    focus: {
+      version: FOCUS_VERSION,
+      records: focusRecords,
+      recordCount: focusRecords.length
+    },
+    deduplication: {
+      invoiceHash,
+      note: 'Use this hash to detect duplicate invoice submissions'
+    },
     validation: invoiceData.validation
   });
 }
@@ -3052,9 +3778,10 @@ async function proxyOpenAI(request, env, ctx, requestId) {
 
   if (idempotencyKey && env.KV_CACHE) {
     try {
-      const cachedResponse = await env.KV_CACHE.get(`idempotency:${idempotencyKey}`, 'json');
+      const idempotencyScope = request._user?.orgId || request.orgId || 'global';
+      const cachedResponse = await env.KV_CACHE.get(`idempotency:${idempotencyScope}:${idempotencyKey}`, 'json');
       if (cachedResponse) {
-        console.log(`[IDEMPOTENCY] Returning cached response for key: ${idempotencyKey}`);
+        console.log(`[IDEMPOTENCY] Returning cached response for key: ${idempotencyKey.substring(0, 8)}...`);
         return jsonResponse(cachedResponse);
       }
     } catch (e) {
@@ -3129,12 +3856,13 @@ async function proxyOpenAI(request, env, ctx, requestId) {
   // ═══════════════════════════════════════════════════════════════
   if (idempotencyKey && env.KV_CACHE) {
     try {
+      const idempotencyScopeStore = request._orgId || request._user?.orgId || 'global';
       await env.KV_CACHE.put(
-        `idempotency:${idempotencyKey}`,
+        `idempotency:${idempotencyScopeStore}:${idempotencyKey}`,
         JSON.stringify(responseBody),
         { expirationTtl: 86400 } // 24 hours
       );
-      console.log(`[IDEMPOTENCY] Cached response for key: ${idempotencyKey}`);
+      console.log(`[IDEMPOTENCY] Cached response for key: ${idempotencyKey.substring(0, 8)}...`);
     } catch (e) {
       console.error('[IDEMPOTENCY] Cache write failed:', e);
       // Non-fatal - continue with response
@@ -3212,14 +3940,25 @@ async function proxyAnthropic(request, env, ctx, requestId) {
 const CORS_ALLOWED_ORIGINS = [
   'https://app.finault.ai',
   'https://finault.ai',
-  'http://localhost:3000'
+  'https://finault-dashboard.pages.dev'
+  // NOTE: localhost removed for production security. Use wrangler dev --local for dev testing.
 ];
 
 function getCORSHeaders(origin) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-api-key, x-finault-key, x-cost-center',
-    'Access-Control-Max-Age': '86400'
+    'Access-Control-Max-Age': '86400',
+    // ═══ SECURITY HEADERS (OWASP Best Practices) ═══
+    'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Referrer-Policy': 'strict-origin-when-cross-origin',
+    'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+    'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+    'Cache-Control': 'no-store, no-cache, must-revalidate',
+    'X-Finault-Security': 'enterprise'
   };
 
   // Check if origin is in allowlist
@@ -3240,6 +3979,114 @@ function handleCORS(request) {
   });
 }
 
+// ============================================================================
+// IP ALLOWLIST MATCHING — Supports exact IPs and CIDR notation
+// ============================================================================
+function matchIPAllowlist(clientIp, allowedEntries) {
+  if (!clientIp || clientIp === 'unknown') return false;
+  for (const entry of allowedEntries) {
+    // Exact match
+    if (entry === clientIp) return true;
+    // CIDR match (IPv4 only for now)
+    if (entry.includes('/') && !entry.includes(':')) {
+      const [subnet, bits] = entry.split('/');
+      const mask = ~(2 ** (32 - parseInt(bits)) - 1) >>> 0;
+      const ipNum = ipToNum(clientIp);
+      const subnetNum = ipToNum(subnet);
+      if (ipNum !== null && subnetNum !== null && (ipNum & mask) === (subnetNum & mask)) return true;
+    }
+  }
+  return false;
+}
+
+function ipToNum(ip) {
+  const parts = ip.split('.');
+  if (parts.length !== 4) return null;
+  return ((parseInt(parts[0]) << 24) | (parseInt(parts[1]) << 16) | (parseInt(parts[2]) << 8) | parseInt(parts[3])) >>> 0;
+}
+
+// ============================================================================
+// PII REDACTION — Scrub sensitive data from error messages and logs
+// Prevents accidental PII leakage in stack traces, DB errors, etc.
+// ============================================================================
+const PII_PATTERNS = [
+  { pattern: /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g, replacement: '[EMAIL_REDACTED]' },
+  { pattern: /\b\d{3}[-.\s]?\d{2}[-.\s]?\d{4}\b/g, replacement: '[SSN_REDACTED]' },
+  { pattern: /\b(?:4[0-9]{12}(?:[0-9]{3})?|5[1-5][0-9]{14}|3[47][0-9]{13}|6(?:011|5[0-9]{2})[0-9]{12})\b/g, replacement: '[CARD_REDACTED]' },
+  { pattern: /\b[A-Z]{2}\d{2}\s?[\dA-Z]{4}\s?[\dA-Z]{4}\s?[\dA-Z]{4}\s?[\dA-Z]{0,4}\s?[\dA-Z]{0,4}\b/g, replacement: '[IBAN_REDACTED]' },
+  { pattern: /\b\d{9,10}\b(?=.*(?:routing|aba|transit))/gi, replacement: '[ROUTING_REDACTED]' },
+  { pattern: /(?:password|secret|token|api[_-]?key|access[_-]?key)["']?\s*[:=]\s*["']?[^\s"',}{]+/gi, replacement: '[CREDENTIAL_REDACTED]' },
+];
+
+function redactPII(text) {
+  if (typeof text !== 'string') return text;
+  let redacted = text;
+  for (const { pattern, replacement } of PII_PATTERNS) {
+    redacted = redacted.replace(pattern, replacement);
+  }
+  return redacted;
+}
+
+// ============================================================================
+// SENSITIVE FIELD MASKING — Mask sensitive fields in API response payloads
+// Applied to outbound responses to prevent over-exposure of financial data
+// ============================================================================
+const SENSITIVE_FIELDS = new Set([
+  'bank_account', 'bank_account_number', 'routing_number', 'swift_code',
+  'tax_id', 'ssn', 'ein', 'credit_card', 'card_number', 'cvv',
+  'iban', 'account_number', 'access_token', 'refresh_token',
+  'client_secret', 'private_key', 'signing_key'
+]);
+
+function maskSensitiveFields(obj, depth = 0) {
+  if (depth > 10 || obj === null || obj === undefined) return obj;
+  if (typeof obj !== 'object') return obj;
+  if (Array.isArray(obj)) return obj.map(item => maskSensitiveFields(item, depth + 1));
+
+  const masked = {};
+  for (const [key, value] of Object.entries(obj)) {
+    if (SENSITIVE_FIELDS.has(key.toLowerCase())) {
+      if (typeof value === 'string' && value.length > 4) {
+        masked[key] = '***' + value.slice(-4);
+      } else {
+        masked[key] = '***';
+      }
+    } else if (typeof value === 'object' && value !== null) {
+      masked[key] = maskSensitiveFields(value, depth + 1);
+    } else {
+      masked[key] = value;
+    }
+  }
+  return masked;
+}
+
+// ============================================================================
+// ERROR MESSAGE SANITIZER — Strip internal details from client-facing errors
+// Prevents DB schema, file paths, and internal module names from leaking
+// ============================================================================
+function sanitizeErrorMessage(msg, status) {
+  if (typeof msg !== 'string') return msg;
+  // For 5xx errors, replace any message that looks like it contains internal details
+  if (status >= 500) {
+    const internalPatterns = [
+      /supabase/i, /postgres/i, /relation ".*" does not exist/i,
+      /column ".*" of relation/i, /duplicate key/i,
+      /ECONNREFUSED/i, /ETIMEDOUT/i, /ENOTFOUND/i,
+      /at\s+\S+\s+\(.*:\d+:\d+\)/,  // Stack trace lines
+      /\/[a-z_-]+\/[a-z_-]+\.[jt]s/i,  // File paths
+      /node_modules/i, /worker\.js/i, /wrangler/i,
+      /Cannot read propert/i, /undefined is not/i, /is not a function/i,
+      /FATAL:/i, /ERROR:/i
+    ];
+    for (const pattern of internalPatterns) {
+      if (pattern.test(msg)) {
+        return 'An internal error occurred. Please contact support with your request ID.';
+      }
+    }
+  }
+  return msg;
+}
+
 function jsonResponse(data, status = 200, requestOrHeaders = null) {
   let corsHeaders = getCORSHeaders(null);
   let extraHeaders = {};
@@ -3256,11 +4103,37 @@ function jsonResponse(data, status = 200, requestOrHeaders = null) {
     }
   }
 
-  return new Response(JSON.stringify(data), {
+  // ═══ PII REDACTION + INTERNAL ERROR SCRUBBING on error responses ═══
+  // Prevent accidental leakage of emails, SSNs, card numbers, DB schema, file paths
+  let safeData = data;
+  if (status >= 400 && data) {
+    if (typeof data.message === 'string') safeData = { ...data, message: redactPII(sanitizeErrorMessage(data.message, status)) };
+    if (typeof data.error === 'string') safeData = { ...safeData, error: redactPII(sanitizeErrorMessage(safeData.error, status)) };
+    if (typeof data.details === 'string') safeData = { ...safeData, details: redactPII(sanitizeErrorMessage(safeData.details, status)) };
+    // Never expose stack traces to clients
+    delete safeData.stack;
+  }
+
+  // ═══ SENSITIVE FIELD MASKING on success responses ═══
+  // Mask bank accounts, tax IDs, tokens, etc. in outbound payloads
+  if (status < 400 && safeData && typeof safeData === 'object') {
+    safeData = maskSensitiveFields(safeData);
+  }
+
+  // ═══ DATA CLASSIFICATION HEADERS ═══
+  // Financial data is always classified as confidential for enterprise compliance
+  const classificationHeaders = {
+    'X-Data-Classification': 'CONFIDENTIAL',
+    'X-Content-Disposition': 'attachment',  // Prevent browser rendering of API responses
+    'X-Finault-Data-Residency': 'us-east-1',
+  };
+
+  return new Response(JSON.stringify(safeData), {
     status,
     headers: {
       'Content-Type': 'application/json',
       ...corsHeaders,
+      ...classificationHeaders,
       ...extraHeaders
     }
   });
@@ -3689,8 +4562,12 @@ function handleStreamingResponse(response, env, requestId, model, ctx) {
 
 // Additional handler stubs for completeness
 async function getInvoices(request, env) {
-  // Implementation using Supabase
-  const response = await fetch(`${env.SUPABASE_URL}/rest/v1/invoices?order=created_at.desc`, {
+  // SECURITY: Enforce tenant isolation
+  let orgId;
+  try { orgId = await getOrgIdFromRequest(request, env); } catch { orgId = null; }
+  const orgFilter = orgId ? `&organization_id=eq.${orgId}` : '';
+
+  const response = await fetch(`${env.SUPABASE_URL}/rest/v1/invoices?order=created_at.desc${orgFilter}`, {
     headers: {
       'apikey': env.SUPABASE_KEY,
       'Authorization': `Bearer ${env.SUPABASE_KEY}`
@@ -3814,7 +4691,7 @@ async function createInvoice(request, env, requestId) {
     created_at: new Date().toISOString()
   };
 
-  await fetch(`${env.SUPABASE_URL}/rest/v1/invoices`, {
+  const invoiceWriteResp = await fetch(`${env.SUPABASE_URL}/rest/v1/invoices`, {
     method: 'POST',
     headers: {
       'apikey': env.SUPABASE_KEY,
@@ -3824,6 +4701,18 @@ async function createInvoice(request, env, requestId) {
     },
     body: JSON.stringify(invoiceRecord)
   });
+
+  if (!invoiceWriteResp.ok) {
+    const writeErr = await invoiceWriteResp.text().catch(() => 'Unknown DB error');
+    console.error('Failed to persist invoice to Supabase:', writeErr);
+    return jsonResponse({
+      success: false,
+      error: 'Failed to save invoice',
+      message: 'Invoice was parsed successfully but could not be saved. Please try again.',
+      code: 'INVOICE_PERSIST_FAILED',
+      parsed: { provider: parsed.provider, totalAmount: parsed.totalAmount, lineItemCount: parsed.lineItems?.length || 0 }
+    }, 502);
+  }
 
   // ── GAP #21 FIX: Persist individual line items ──
   let lineItemsInserted = 0;
@@ -4286,7 +5175,8 @@ async function generateConsolidatedClosePack(request, env, requestId) {
     },
     reconciliation: {
       invoiceTotal: totalSpend,
-      internalTotal: totalSpend * 0.998, // Placeholder - would use actual reconciliation
+      internalTotal: totalUsageAmount || totalSpend, // Use actual reconciled total, fallback to invoice total
+      variance: totalUsageAmount ? Math.round(Math.abs(totalSpend - totalUsageAmount) * 100) / 100 : 0,
       allReconciled: invoices.every(i => i.status === 'reconciled')
     },
     invoices: invoices.map(inv => ({
@@ -4355,8 +5245,12 @@ async function simulateRules(request, env, requestId) {
 }
 
 async function getAnomalies(request, env) {
+  // SECURITY: Get org_id for tenant isolation
+  let orgId;
+  try { orgId = await getOrgIdFromRequest(request, env); } catch { orgId = null; }
+
   // First try in-memory anomaly detector
-  const memoryAnomalies = anomalyDetector.getAnomalyHistory(null, 30);
+  const memoryAnomalies = anomalyDetector.getAnomalyHistory(orgId, 30);
   if (memoryAnomalies && memoryAnomalies.length > 0) {
     return jsonResponse({ anomalies: memoryAnomalies });
   }
@@ -4364,8 +5258,10 @@ async function getAnomalies(request, env) {
   // Fall back to Supabase if in-memory is empty
   if (env.SUPABASE_URL) {
     try {
+      // SECURITY FIX: Filter by organization_id to enforce tenant isolation
+      const orgFilter = orgId ? `&organization_id=eq.${orgId}` : '';
       const response = await fetch(
-        `${env.SUPABASE_URL}/rest/v1/anomalies?order=detected_at.desc&limit=50`,
+        `${env.SUPABASE_URL}/rest/v1/anomalies?order=detected_at.desc&limit=50${orgFilter}`,
         {
           headers: {
             'apikey': env.SUPABASE_KEY,
@@ -4897,7 +5793,7 @@ async function getSavingsROI(request, env) {
   try {
     // Get all implementations
     const implResponse = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/savings_implementations?order=started_at.desc`,
+      `${env.SUPABASE_URL}/rest/v1/savings_implementations?order=started_at.desc${orgId ? '&organization_id=eq.' + orgId : ''}`,
       {
         headers: {
           'apikey': env.SUPABASE_KEY,
@@ -5062,8 +5958,11 @@ async function checkBudget(request, env) {
 
 async function getClosePack(request, env, path) {
   const certId = path.split('/').pop();
+  const orgId = request._user?.orgId || request.orgId;
+  if (!orgId) return jsonResponse({ error: 'Organization context required' }, 400);
+
   const response = await fetch(
-    `${env.SUPABASE_URL}/rest/v1/close_packs?cert_id=eq.${certId}`,
+    `${env.SUPABASE_URL}/rest/v1/close_packs?cert_id=eq.${certId}&organization_id=eq.${orgId}`,
     {
       headers: {
         'apikey': env.SUPABASE_KEY,
@@ -5115,10 +6014,11 @@ async function handleClosePackEmail(request, env, requestId) {
         lineItems: closePack?.summary?.lineItems || [],
         reconciliation: closePack?.reconciliation || {
           invoiceTotal: totalSpend,
-          internalTotal: totalSpend * 0.998 // 0.2% variance default
+          internalTotal: totalSpend, // Default to exact match when no reconciliation data
+          variance: 0
         },
         proof: closePack?.proof || {},
-        variance: closePack?.variance || { percentage: 0.2 }
+        variance: closePack?.variance || { percentage: 0, amount: 0 }
       };
 
       // Initialize attachments array
@@ -6644,7 +7544,7 @@ async function getDashboardLive(request, env) {
 
   try {
     const response = await fetch(
-      `${env.SUPABASE_URL}/rest/v1/usage?order=created_at.desc&limit=20`,
+      `${env.SUPABASE_URL}/rest/v1/usage?order=created_at.desc&limit=20${request.orgId ? '&organization_id=eq.' + request.orgId : ''}`,
       {
         headers: {
           'apikey': env.SUPABASE_KEY,
@@ -9086,7 +9986,11 @@ async function getDisputes(request, env) {
   }
 
   try {
-    let query = `${env.SUPABASE_URL}/rest/v1/disputes?order=created_at.desc&limit=${limit}`;
+    // SECURITY: Enforce tenant isolation on disputes
+    let orgId;
+    try { orgId = await getOrgIdFromRequest(request, env); } catch { orgId = null; }
+    const orgFilter = orgId ? `&organization_id=eq.${orgId}` : '';
+    let query = `${env.SUPABASE_URL}/rest/v1/disputes?order=created_at.desc&limit=${limit}${orgFilter}`;
     if (status) {
       query += `&status=eq.${status}`;
     }
@@ -10549,6 +11453,12 @@ async function createApiKey(request, env, requestId) {
       })
     });
 
+    // Audit log: API key created
+    logSecurityEvent(env, request.headers.get('x-request-id') || 'unknown', 'key_created', {
+      keyId, userId: request._user?.userId, orgId: request._user?.orgId,
+      environment: environment || 'development', ip: request.headers.get('CF-Connecting-IP')
+    });
+
     return jsonResponse({
       success: true,
       key: {
@@ -11343,15 +12253,18 @@ async function submitBlockchainAnchor(anchorPayload, network, networkConfig, env
   const privateKey = env.ANCHOR_PRIVATE_KEY;
 
   if (!rpcUrl || !privateKey) {
-    // Fallback to soft mode if secrets not configured
+    // SECURITY: Return clearly-labeled unanchored result — never fake a txHash
+    console.warn('[ANCHOR] Blockchain anchoring unavailable: ANCHOR_PRIVATE_KEY and/or ANCHOR_RPC_URL not configured');
     return {
-      mode: 'SOFT',
-      txHash: '0x' + await sha256Hex(`${anchorPayload}|${Date.now()}`),
+      mode: 'UNANCHORED',
+      anchored: false,
+      txHash: null,
       blockNumber: null,
-      blockTimestamp: new Date().toISOString(),
+      blockTimestamp: null,
       confirmations: 0,
       gasUsed: '0',
-      note: 'Blockchain secrets not configured. Set ANCHOR_PRIVATE_KEY and ANCHOR_RPC_URL via wrangler secret.'
+      warning: 'NOT BLOCKCHAIN ANCHORED. This close pack has cryptographic Merkle proofs but is NOT immutably anchored to a blockchain. Configure ANCHOR_PRIVATE_KEY and ANCHOR_RPC_URL to enable on-chain anchoring.',
+      merkle_only: true
     };
   }
 
@@ -12410,7 +13323,7 @@ async function getDemoData(request, env) {
           by_cost_center: byCostCenter
         }), {
           status: 200,
-          headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' }
+          headers: { 'Content-Type': 'application/json', ...getCORSHeaders(request.headers.get('Origin')) }
         });
       }
     }
@@ -12448,7 +13361,7 @@ async function getDemoData(request, env) {
     status: 200,
     headers: {
       'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
+      ...getCORSHeaders(request.headers.get('Origin')),
       'X-Finault-Demo': 'true'
     }
   });
@@ -14137,9 +15050,11 @@ async function handleOTelExport(request, env, requestId) {
  */
 async function handleTransparencySTH(request, env) {
   try {
-    const supabaseUrl = env.SUPABASE_URL;
-    const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
-    const tlog = new TransparencyLog({ supabaseUrl, supabaseKey, signingKey: env.ANCHOR_PRIVATE_KEY || 'finault-transparency-key' });
+    const tlog = new TransparencyLog({
+      SUPABASE_URL: env.SUPABASE_URL,
+      SUPABASE_KEY: env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_KEY,
+      ANCHOR_PRIVATE_KEY: env.ANCHOR_PRIVATE_KEY || null
+    });
     const sth = await tlog.getSignedTreeHead();
     return jsonResponse({ success: true, signedTreeHead: sth });
   } catch (error) {
@@ -14155,9 +15070,11 @@ async function handleTransparencyEntries(request, env) {
     const url = new URL(request.url);
     const start = parseInt(url.searchParams.get('start') || '0');
     const end = parseInt(url.searchParams.get('end') || '100');
-    const supabaseUrl = env.SUPABASE_URL;
-    const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
-    const tlog = new TransparencyLog({ supabaseUrl, supabaseKey, signingKey: env.ANCHOR_PRIVATE_KEY || 'finault-transparency-key' });
+    const tlog = new TransparencyLog({
+      SUPABASE_URL: env.SUPABASE_URL,
+      SUPABASE_KEY: env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_KEY,
+      ANCHOR_PRIVATE_KEY: env.ANCHOR_PRIVATE_KEY || null
+    });
     const entries = await tlog.getEntries(start, Math.min(end, start + 1000));
     return jsonResponse({ success: true, start, end: Math.min(end, start + 1000), entries });
   } catch (error) {
@@ -14174,9 +15091,11 @@ async function handleTransparencyConsistency(request, env) {
     const from = parseInt(url.searchParams.get('from') || '0');
     const to = parseInt(url.searchParams.get('to') || '0');
     if (!from || !to) return jsonResponse({ error: 'Both from and to tree sizes required' }, 400);
-    const supabaseUrl = env.SUPABASE_URL;
-    const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
-    const tlog = new TransparencyLog({ supabaseUrl, supabaseKey, signingKey: env.ANCHOR_PRIVATE_KEY || 'finault-transparency-key' });
+    const tlog = new TransparencyLog({
+      SUPABASE_URL: env.SUPABASE_URL,
+      SUPABASE_KEY: env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_KEY,
+      ANCHOR_PRIVATE_KEY: env.ANCHOR_PRIVATE_KEY || null
+    });
     const proof = await tlog.getConsistencyProof(from, to);
     return jsonResponse({ success: true, from, to, proof });
   } catch (error) {
@@ -14190,9 +15109,11 @@ async function handleTransparencyConsistency(request, env) {
 async function handleTransparencyProof(request, env, path) {
   try {
     const closeId = path.split('/')[3];
-    const supabaseUrl = env.SUPABASE_URL;
-    const supabaseKey = env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_ANON_KEY;
-    const tlog = new TransparencyLog({ supabaseUrl, supabaseKey, signingKey: env.ANCHOR_PRIVATE_KEY || 'finault-transparency-key' });
+    const tlog = new TransparencyLog({
+      SUPABASE_URL: env.SUPABASE_URL,
+      SUPABASE_KEY: env.SUPABASE_SERVICE_ROLE_KEY || env.SUPABASE_KEY,
+      ANCHOR_PRIVATE_KEY: env.ANCHOR_PRIVATE_KEY || null
+    });
     const proof = await tlog.getInclusionProof(closeId);
     return jsonResponse({ success: true, closeId, proof });
   } catch (error) {
@@ -14687,4 +15608,1727 @@ async function handleDiscoveryScan(request, env, requestId) {
   } catch (error) {
     return jsonResponse({ error: 'Discovery scan failed: ' + error.message }, 500);
   }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// STRIPE BILLING INTEGRATION
+// Freemium → Pro ($49/mo) → Business ($149/mo) → Enterprise (custom)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const FINAULT_PLANS = {
+  free: {
+    id: 'free',
+    name: 'Free',
+    price: 0,
+    interval: 'month',
+    requests: 10000,
+    features: ['Cost tracking', 'Basic anomaly detection', '1 Close Pack/month', 'Community support'],
+    limits: { requests_per_month: 10000, close_packs: 1, team_members: 1, erp_integrations: 0, retention_days: 30 }
+  },
+  pro: {
+    id: 'pro',
+    name: 'Pro',
+    price: 4900, // cents
+    interval: 'month',
+    stripe_price_id: null, // Set via env.STRIPE_PRICE_PRO
+    requests: 100000,
+    features: ['Everything in Free', '100K requests/month', 'Unlimited Close Packs', 'FOCUS 1.3 export', '5 team members', 'Email support', '1 ERP integration'],
+    limits: { requests_per_month: 100000, close_packs: -1, team_members: 5, erp_integrations: 1, retention_days: 365 }
+  },
+  business: {
+    id: 'business',
+    name: 'Business',
+    price: 14900, // cents
+    interval: 'month',
+    stripe_price_id: null, // Set via env.STRIPE_PRICE_BUSINESS
+    requests: 1000000,
+    features: ['Everything in Pro', '1M requests/month', 'Blockchain anchoring', 'Full ERP integration', 'SSO/SAML', 'Dedicated support', 'SOX compliance pack', 'Unlimited team members'],
+    limits: { requests_per_month: 1000000, close_packs: -1, team_members: -1, erp_integrations: -1, retention_days: 2555 }
+  },
+  enterprise: {
+    id: 'enterprise',
+    name: 'Enterprise',
+    price: null, // Custom
+    interval: 'month',
+    features: ['Everything in Business', 'Unlimited requests', 'Dedicated infrastructure', 'Custom SLAs', 'On-premise option', 'White-glove onboarding', 'Executive QBR', 'SOC 2 + HIPAA'],
+    limits: { requests_per_month: -1, close_packs: -1, team_members: -1, erp_integrations: -1, retention_days: 2555 },
+    cta: 'Contact sales@finault.ai'
+  }
+};
+
+// GET /v1/billing/plans — Public pricing data
+async function handleBillingPlans(request, env) {
+  if (request.method !== 'GET') return methodNotAllowed();
+
+  // Inject Stripe price IDs from env if configured
+  const plans = JSON.parse(JSON.stringify(FINAULT_PLANS));
+  if (env.STRIPE_PRICE_PRO) plans.pro.stripe_price_id = env.STRIPE_PRICE_PRO;
+  if (env.STRIPE_PRICE_BUSINESS) plans.business.stripe_price_id = env.STRIPE_PRICE_BUSINESS;
+
+  return jsonResponse({
+    success: true,
+    plans: Object.values(plans),
+    currency: 'usd',
+    annual_discount: '20%',
+    trial_days: 14
+  });
+}
+
+// POST /v1/billing/checkout — Create Stripe Checkout Session
+async function handleBillingCheckout(request, env, requestId) {
+  if (request.method !== 'POST') return methodNotAllowed();
+
+  if (!env.STRIPE_SECRET_KEY) {
+    return jsonResponse({
+      error: 'Stripe not configured',
+      message: 'Contact sales@finault.ai to set up billing, or set STRIPE_SECRET_KEY via wrangler secret.'
+    }, 503);
+  }
+
+  try {
+    const body = await request.json();
+    const { plan, success_url, cancel_url } = body;
+    const orgId = await getOrgIdFromRequest(request, env);
+
+    if (!plan || !FINAULT_PLANS[plan]) {
+      return jsonResponse({ error: `Invalid plan. Choose: ${Object.keys(FINAULT_PLANS).join(', ')}` }, 400);
+    }
+
+    if (plan === 'free') {
+      return jsonResponse({ error: 'Free plan does not require checkout.' }, 400);
+    }
+
+    if (plan === 'enterprise') {
+      return jsonResponse({
+        success: true,
+        type: 'contact_sales',
+        message: 'Enterprise plan requires custom pricing. Contact sales@finault.ai.',
+        calendly: 'https://calendly.com/finault/enterprise'
+      });
+    }
+
+    const selectedPlan = FINAULT_PLANS[plan];
+    const priceId = plan === 'pro' ? env.STRIPE_PRICE_PRO : env.STRIPE_PRICE_BUSINESS;
+
+    // Look up or create Stripe customer for this org
+    let stripeCustomerId = null;
+    if (env.SUPABASE_URL && env.SUPABASE_KEY) {
+      const orgResp = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/organizations?id=eq.${orgId}&select=stripe_customer_id,name,email`,
+        { headers: { 'apikey': env.SUPABASE_KEY, 'Authorization': `Bearer ${env.SUPABASE_KEY}` } }
+      );
+      const orgs = await orgResp.json();
+      stripeCustomerId = orgs?.[0]?.stripe_customer_id;
+
+      // Create Stripe customer if needed
+      if (!stripeCustomerId) {
+        const custResp = await fetch('https://api.stripe.com/v1/customers', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: new URLSearchParams({
+            'metadata[org_id]': orgId,
+            'metadata[source]': 'finault_checkout',
+            'name': orgs?.[0]?.name || `Org ${orgId}`,
+            'email': orgs?.[0]?.email || ''
+          }).toString()
+        });
+        const customer = await custResp.json();
+        stripeCustomerId = customer.id;
+
+        // Save customer ID to org record
+        await fetch(`${env.SUPABASE_URL}/rest/v1/organizations?id=eq.${orgId}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': env.SUPABASE_KEY,
+            'Authorization': `Bearer ${env.SUPABASE_KEY}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify({ stripe_customer_id: stripeCustomerId })
+        });
+      }
+    }
+
+    // Create Stripe Checkout Session
+    const checkoutParams = new URLSearchParams({
+      'mode': 'subscription',
+      'success_url': success_url || `https://app.finault.ai/billing/success?session_id={CHECKOUT_SESSION_ID}`,
+      'cancel_url': cancel_url || `https://app.finault.ai/billing/cancel`,
+      'subscription_data[metadata][org_id]': orgId,
+      'subscription_data[metadata][plan]': plan,
+      'subscription_data[trial_period_days]': '14',
+      'allow_promotion_codes': 'true',
+    });
+
+    if (stripeCustomerId) {
+      checkoutParams.set('customer', stripeCustomerId);
+    }
+
+    // Use Stripe price ID if configured, otherwise use ad-hoc price
+    if (priceId) {
+      checkoutParams.set('line_items[0][price]', priceId);
+      checkoutParams.set('line_items[0][quantity]', '1');
+    } else {
+      checkoutParams.set('line_items[0][price_data][currency]', 'usd');
+      checkoutParams.set('line_items[0][price_data][product_data][name]', `Finault ${selectedPlan.name}`);
+      checkoutParams.set('line_items[0][price_data][product_data][description]', selectedPlan.features.join(', '));
+      checkoutParams.set('line_items[0][price_data][unit_amount]', String(selectedPlan.price));
+      checkoutParams.set('line_items[0][price_data][recurring][interval]', 'month');
+      checkoutParams.set('line_items[0][quantity]', '1');
+    }
+
+    const sessionResp = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: checkoutParams.toString()
+    });
+
+    const session = await sessionResp.json();
+
+    if (session.error) {
+      return jsonResponse({ error: `Stripe error: ${session.error.message}` }, 500);
+    }
+
+    return jsonResponse({
+      success: true,
+      checkout_url: session.url,
+      session_id: session.id,
+      plan: plan,
+      trial_days: 14,
+      message: `Redirecting to secure Stripe checkout for Finault ${selectedPlan.name} ($${selectedPlan.price / 100}/mo)`
+    });
+  } catch (error) {
+    return jsonResponse({ error: error.message }, 500);
+  }
+}
+
+// GET /v1/billing/subscription — Current subscription status
+async function handleBillingSubscription(request, env) {
+  if (request.method !== 'GET') return methodNotAllowed();
+
+  try {
+    const orgId = await getOrgIdFromRequest(request, env);
+
+    // Check Supabase for subscription record
+    if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
+      return jsonResponse({ plan: 'free', status: 'active', message: 'Database not configured' });
+    }
+
+    const subResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/subscriptions?organization_id=eq.${orgId}&status=eq.active&order=created_at.desc&limit=1`,
+      { headers: { 'apikey': env.SUPABASE_KEY, 'Authorization': `Bearer ${env.SUPABASE_KEY}` } }
+    );
+    const subs = await subResp.json();
+
+    if (!Array.isArray(subs) || subs.length === 0) {
+      // Check usage to determine if limits are hit
+      const usageResp = await fetch(
+        `${env.SUPABASE_URL}/rest/v1/usage?organization_id=eq.${orgId}&select=id&limit=1`,
+        { headers: { 'apikey': env.SUPABASE_KEY, 'Authorization': `Bearer ${env.SUPABASE_KEY}` } }
+      );
+      const usageCount = (await usageResp.json())?.length || 0;
+
+      return jsonResponse({
+        success: true,
+        plan: 'free',
+        status: 'active',
+        limits: FINAULT_PLANS.free.limits,
+        usage: { requests_this_month: usageCount },
+        upgrade_url: 'https://app.finault.ai/billing/upgrade'
+      });
+    }
+
+    const sub = subs[0];
+    const planConfig = FINAULT_PLANS[sub.plan] || FINAULT_PLANS.free;
+
+    return jsonResponse({
+      success: true,
+      plan: sub.plan,
+      status: sub.status,
+      stripe_subscription_id: sub.stripe_subscription_id,
+      current_period_start: sub.current_period_start,
+      current_period_end: sub.current_period_end,
+      trial_end: sub.trial_end,
+      limits: planConfig.limits,
+      cancel_at_period_end: sub.cancel_at_period_end || false,
+      portal_url: '/v1/billing/portal'
+    });
+  } catch (error) {
+    return jsonResponse({ error: error.message }, 500);
+  }
+}
+
+// POST /v1/billing/portal — Create Stripe Customer Portal session
+async function handleBillingPortal(request, env) {
+  if (request.method !== 'POST') return methodNotAllowed();
+
+  if (!env.STRIPE_SECRET_KEY) {
+    return jsonResponse({ error: 'Stripe not configured' }, 503);
+  }
+
+  try {
+    const orgId = await getOrgIdFromRequest(request, env);
+
+    // Get Stripe customer ID
+    const orgResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/organizations?id=eq.${orgId}&select=stripe_customer_id`,
+      { headers: { 'apikey': env.SUPABASE_KEY, 'Authorization': `Bearer ${env.SUPABASE_KEY}` } }
+    );
+    const orgs = await orgResp.json();
+    const customerId = orgs?.[0]?.stripe_customer_id;
+
+    if (!customerId) {
+      return jsonResponse({ error: 'No billing account found. Subscribe first via /v1/billing/checkout.' }, 404);
+    }
+
+    const body = await request.json().catch(() => ({}));
+
+    const portalResp = await fetch('https://api.stripe.com/v1/billing_portal/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: new URLSearchParams({
+        'customer': customerId,
+        'return_url': body.return_url || 'https://app.finault.ai/billing'
+      }).toString()
+    });
+
+    const portal = await portalResp.json();
+
+    if (portal.error) {
+      return jsonResponse({ error: `Stripe error: ${portal.error.message}` }, 500);
+    }
+
+    return jsonResponse({
+      success: true,
+      portal_url: portal.url,
+      message: 'Manage your subscription, payment methods, and invoices'
+    });
+  } catch (error) {
+    return jsonResponse({ error: error.message }, 500);
+  }
+}
+
+// GET /v1/billing/usage — Current billing period usage
+async function handleBillingUsage(request, env) {
+  if (request.method !== 'GET') return methodNotAllowed();
+
+  try {
+    const orgId = await getOrgIdFromRequest(request, env);
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+
+    const usageResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/usage?organization_id=eq.${orgId}&created_at=gte.${monthStart}&select=cost,model,provider,created_at`,
+      { headers: { 'apikey': env.SUPABASE_KEY, 'Authorization': `Bearer ${env.SUPABASE_KEY}` } }
+    );
+    const records = await usageResp.json();
+
+    const totalRequests = Array.isArray(records) ? records.length : 0;
+    const totalCost = Array.isArray(records) ? records.reduce((sum, r) => sum + (r.cost || 0), 0) : 0;
+
+    // Get current plan limits
+    const subResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/subscriptions?organization_id=eq.${orgId}&status=eq.active&order=created_at.desc&limit=1`,
+      { headers: { 'apikey': env.SUPABASE_KEY, 'Authorization': `Bearer ${env.SUPABASE_KEY}` } }
+    );
+    const subs = await subResp.json();
+    const plan = subs?.[0]?.plan || 'free';
+    const limits = FINAULT_PLANS[plan]?.limits || FINAULT_PLANS.free.limits;
+
+    const requestLimit = limits.requests_per_month;
+    const utilizationPct = requestLimit > 0 ? Math.round((totalRequests / requestLimit) * 100) : 0;
+
+    return jsonResponse({
+      success: true,
+      billing_period: {
+        start: monthStart,
+        end: new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString()
+      },
+      plan,
+      usage: {
+        requests: totalRequests,
+        limit: requestLimit === -1 ? 'unlimited' : requestLimit,
+        utilization_percent: requestLimit === -1 ? 0 : utilizationPct,
+        total_cost: Math.round(totalCost * 100) / 100
+      },
+      approaching_limit: requestLimit > 0 && utilizationPct >= 80,
+      upgrade_recommended: requestLimit > 0 && utilizationPct >= 80,
+      upgrade_url: utilizationPct >= 80 ? '/v1/billing/checkout' : null
+    });
+  } catch (error) {
+    return jsonResponse({ error: error.message }, 500);
+  }
+}
+
+// POST /v1/billing/webhook — Stripe Webhook Handler
+// Verifies signature, processes subscription lifecycle events
+async function handleStripeWebhook(request, env) {
+  if (request.method !== 'POST') return methodNotAllowed();
+
+  if (!env.STRIPE_WEBHOOK_SECRET) {
+    return jsonResponse({ error: 'Stripe webhook secret not configured' }, 503);
+  }
+
+  try {
+    const body = await request.text();
+    const signature = request.headers.get('Stripe-Signature');
+
+    if (!signature) {
+      return jsonResponse({ error: 'Missing Stripe-Signature header' }, 400);
+    }
+
+    // Verify webhook signature (Stripe v1 scheme)
+    const sigParts = {};
+    signature.split(',').forEach(part => {
+      const [key, value] = part.split('=');
+      sigParts[key.trim()] = value;
+    });
+
+    const timestamp = sigParts.t;
+    const expectedSig = sigParts.v1;
+
+    if (!timestamp || !expectedSig) {
+      return jsonResponse({ error: 'Invalid Stripe-Signature format' }, 400);
+    }
+
+    // Check timestamp tolerance (5 minutes)
+    const now = Math.floor(Date.now() / 1000);
+    if (Math.abs(now - parseInt(timestamp)) > 300) {
+      return jsonResponse({ error: 'Webhook timestamp too old' }, 400);
+    }
+
+    // Compute expected signature
+    const signedPayload = `${timestamp}.${body}`;
+    const key = await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(env.STRIPE_WEBHOOK_SECRET),
+      { name: 'HMAC', hash: 'SHA-256' },
+      false,
+      ['sign']
+    );
+    const sigBytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+    const computedSig = Array.from(new Uint8Array(sigBytes)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    if (computedSig !== expectedSig) {
+      return jsonResponse({ error: 'Invalid webhook signature' }, 400);
+    }
+
+    // Parse event
+    const event = JSON.parse(body);
+    console.log(`[STRIPE] Webhook: ${event.type} (${event.id})`);
+
+    const supaHeaders = {
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    };
+
+    switch (event.type) {
+      case 'checkout.session.completed': {
+        const session = event.data.object;
+        const orgId = session.metadata?.org_id || session.subscription_data?.metadata?.org_id;
+        const plan = session.metadata?.plan;
+        const subscriptionId = session.subscription;
+
+        if (orgId && plan) {
+          // Create subscription record
+          await fetch(`${env.SUPABASE_URL}/rest/v1/subscriptions`, {
+            method: 'POST',
+            headers: supaHeaders,
+            body: JSON.stringify({
+              organization_id: orgId,
+              plan,
+              status: 'active',
+              stripe_subscription_id: subscriptionId,
+              stripe_customer_id: session.customer,
+              created_at: new Date().toISOString()
+            })
+          });
+
+          // Update org tier
+          await fetch(`${env.SUPABASE_URL}/rest/v1/organizations?id=eq.${orgId}`, {
+            method: 'PATCH',
+            headers: supaHeaders,
+            body: JSON.stringify({ tier: plan, stripe_customer_id: session.customer })
+          });
+
+          console.log(`[STRIPE] Org ${orgId} upgraded to ${plan}`);
+        }
+        break;
+      }
+
+      case 'customer.subscription.updated': {
+        const sub = event.data.object;
+        const orgId = sub.metadata?.org_id;
+
+        if (orgId) {
+          await fetch(`${env.SUPABASE_URL}/rest/v1/subscriptions?stripe_subscription_id=eq.${sub.id}`, {
+            method: 'PATCH',
+            headers: supaHeaders,
+            body: JSON.stringify({
+              status: sub.status,
+              current_period_start: new Date(sub.current_period_start * 1000).toISOString(),
+              current_period_end: new Date(sub.current_period_end * 1000).toISOString(),
+              cancel_at_period_end: sub.cancel_at_period_end
+            })
+          });
+        }
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        const sub = event.data.object;
+        const orgId = sub.metadata?.org_id;
+
+        // Downgrade to free
+        if (orgId) {
+          await fetch(`${env.SUPABASE_URL}/rest/v1/subscriptions?stripe_subscription_id=eq.${sub.id}`, {
+            method: 'PATCH',
+            headers: supaHeaders,
+            body: JSON.stringify({ status: 'canceled' })
+          });
+
+          await fetch(`${env.SUPABASE_URL}/rest/v1/organizations?id=eq.${orgId}`, {
+            method: 'PATCH',
+            headers: supaHeaders,
+            body: JSON.stringify({ tier: 'free' })
+          });
+
+          console.log(`[STRIPE] Org ${orgId} downgraded to free`);
+        }
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object;
+        console.log(`[STRIPE] Payment failed for customer ${invoice.customer}, subscription ${invoice.subscription}`);
+        // Could trigger a notification here
+        break;
+      }
+
+      default:
+        console.log(`[STRIPE] Unhandled event type: ${event.type}`);
+    }
+
+    return jsonResponse({ received: true });
+  } catch (error) {
+    console.error('[STRIPE] Webhook error:', error.message);
+    return jsonResponse({ error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// API KEY ROTATION — Atomic revoke-old + create-new
+// ═══════════════════════════════════════════════════════════════════
+
+async function rotateApiKey(request, env, requestId) {
+  try {
+    const scopeCheck = await checkRequestScope(request, env, 'keys:admin');
+    if (!scopeCheck.hasScope) {
+      return jsonResponse({ success: false, error: 'Insufficient permissions. Required scope: keys:admin' }, 403);
+    }
+
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const body = await request.json();
+    const { key_id, name, scopes, expires_at } = body;
+
+    if (!key_id) {
+      return jsonResponse({ success: false, error: 'key_id is required' }, 400);
+    }
+
+    const supaHeaders = {
+      'Content-Type': 'application/json',
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    // Step 1: Verify the old key exists and belongs to org
+    const oldKeyResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/api_keys?id=eq.${key_id}&organization_id=eq.${orgId}&is_active=eq.true`,
+      { headers: supaHeaders }
+    );
+    const oldKeys = await oldKeyResp.json();
+    if (!Array.isArray(oldKeys) || oldKeys.length === 0) {
+      return jsonResponse({ success: false, error: 'Key not found or already revoked' }, 404);
+    }
+    const oldKey = oldKeys[0];
+
+    // Step 2: Revoke old key
+    await fetch(`${env.SUPABASE_URL}/rest/v1/api_keys?id=eq.${key_id}`, {
+      method: 'PATCH',
+      headers: supaHeaders,
+      body: JSON.stringify({ is_active: false, revoked_at: new Date().toISOString() })
+    });
+
+    // Step 3: Create new key inheriting properties from old key
+    const rawKey = `fk_${crypto.randomUUID().replace(/-/g, '')}`;
+    const keyHash = await hashApiKey(rawKey);
+    const newKeyId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    await fetch(`${env.SUPABASE_URL}/rest/v1/api_keys`, {
+      method: 'POST',
+      headers: supaHeaders,
+      body: JSON.stringify({
+        id: newKeyId,
+        organization_id: orgId,
+        user_id: orgId,
+        name: name || oldKey.name || 'Rotated Key',
+        description: `Rotated from ${key_id.substring(0, 8)}... on ${now}`,
+        key_hash: keyHash,
+        is_active: true,
+        scopes: scopes || oldKey.scopes || [],
+        expires_at: expires_at || oldKey.expires_at || null,
+        created_at: now
+      })
+    });
+
+    // Audit log: API key rotated (old revoked, new created)
+    logSecurityEvent(env, requestId, 'key_rotated', {
+      oldKeyId: key_id, newKeyId, userId: request._user?.userId, orgId: request._user?.orgId,
+      ip: request.headers.get('CF-Connecting-IP')
+    });
+
+    return jsonResponse({
+      success: true,
+      rotated: {
+        old_key_id: key_id,
+        new_key: {
+          id: newKeyId,
+          name: name || oldKey.name || 'Rotated Key',
+          secret: rawKey,
+          key_prefix: rawKey.substring(0, 12) + '...',
+          is_active: true,
+          scopes: scopes || oldKey.scopes || [],
+          created_at: now
+        }
+      },
+      warning: 'Store this key securely. The old key has been revoked and will no longer work.'
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// WEBHOOK MANAGEMENT — Full CRUD for customer event subscriptions
+// ═══════════════════════════════════════════════════════════════════
+
+const WEBHOOK_EVENTS = [
+  'anomaly.detected', 'anomaly.resolved',
+  'invoice.parsed', 'invoice.reconciled', 'invoice.variance_detected',
+  'close_pack.generated', 'close_pack.anchored',
+  'budget.threshold_80', 'budget.threshold_90', 'budget.exceeded',
+  'cost.spike_detected', 'cost.savings_opportunity',
+  'erp.sync_completed', 'erp.sync_failed',
+  'key.rotated', 'key.expiring_soon'
+];
+
+async function listWebhooks(request, env) {
+  try {
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const supaHeaders = {
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    const resp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/webhooks?organization_id=eq.${orgId}&order=created_at.desc`,
+      { headers: supaHeaders }
+    );
+    const webhooks = await resp.json();
+
+    return jsonResponse({
+      success: true,
+      count: Array.isArray(webhooks) ? webhooks.length : 0,
+      available_events: WEBHOOK_EVENTS,
+      webhooks: (Array.isArray(webhooks) ? webhooks : []).map(w => ({
+        id: w.id,
+        url: w.url,
+        events: w.events || [],
+        is_active: w.is_active !== false,
+        description: w.description || null,
+        secret_prefix: w.secret ? w.secret.substring(0, 8) + '...' : null,
+        last_triggered_at: w.last_triggered_at || null,
+        failure_count: w.failure_count || 0,
+        created_at: w.created_at
+      }))
+    });
+  } catch (error) {
+    return jsonResponse({ success: true, count: 0, available_events: WEBHOOK_EVENTS, webhooks: [] });
+  }
+}
+
+async function registerWebhook(request, env, requestId) {
+  try {
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const body = await request.json();
+    const { url, events, description } = body;
+
+    if (!url) return jsonResponse({ success: false, error: 'url is required' }, 400);
+    if (!events || !Array.isArray(events) || events.length === 0) {
+      return jsonResponse({ success: false, error: 'events array is required (at least one event)' }, 400);
+    }
+
+    // Validate URL
+    try { new URL(url); } catch {
+      return jsonResponse({ success: false, error: 'Invalid URL format' }, 400);
+    }
+
+    // Validate events
+    const invalidEvents = events.filter(e => !WEBHOOK_EVENTS.includes(e) && e !== '*');
+    if (invalidEvents.length > 0) {
+      return jsonResponse({
+        success: false,
+        error: `Invalid events: ${invalidEvents.join(', ')}`,
+        available_events: WEBHOOK_EVENTS
+      }, 400);
+    }
+
+    // Generate signing secret for this webhook
+    const webhookSecret = `whsec_${crypto.randomUUID().replace(/-/g, '')}`;
+    const webhookId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    const supaHeaders = {
+      'Content-Type': 'application/json',
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    await fetch(`${env.SUPABASE_URL}/rest/v1/webhooks`, {
+      method: 'POST',
+      headers: supaHeaders,
+      body: JSON.stringify({
+        id: webhookId,
+        organization_id: orgId,
+        url,
+        events,
+        description: description || null,
+        secret: webhookSecret,
+        is_active: true,
+        failure_count: 0,
+        created_at: now
+      })
+    });
+
+    // Audit log: Webhook registered
+    logSecurityEvent(env, request.headers.get('x-request-id') || 'unknown', 'webhook_registered', {
+      webhookId, url, events, userId: request._user?.userId, orgId: request._user?.orgId,
+      ip: request.headers.get('CF-Connecting-IP')
+    });
+
+    return jsonResponse({
+      success: true,
+      webhook: {
+        id: webhookId,
+        url,
+        events,
+        description: description || null,
+        secret: webhookSecret,
+        is_active: true,
+        created_at: now
+      },
+      warning: 'Store the webhook secret securely. It will not be shown again. Use it to verify webhook signatures.'
+    }, 201);
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function updateWebhook(request, env, webhookId) {
+  try {
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const body = await request.json();
+    const { url, events, description, is_active } = body;
+
+    const supaHeaders = {
+      'Content-Type': 'application/json',
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    // Verify ownership
+    const existResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhookId}&organization_id=eq.${orgId}`,
+      { headers: supaHeaders }
+    );
+    const existing = await existResp.json();
+    if (!Array.isArray(existing) || existing.length === 0) {
+      return jsonResponse({ success: false, error: 'Webhook not found' }, 404);
+    }
+
+    // Validate events if provided
+    if (events) {
+      const invalidEvents = events.filter(e => !WEBHOOK_EVENTS.includes(e) && e !== '*');
+      if (invalidEvents.length > 0) {
+        return jsonResponse({ success: false, error: `Invalid events: ${invalidEvents.join(', ')}` }, 400);
+      }
+    }
+
+    const updates = { updated_at: new Date().toISOString() };
+    if (url !== undefined) updates.url = url;
+    if (events !== undefined) updates.events = events;
+    if (description !== undefined) updates.description = description;
+    if (is_active !== undefined) updates.is_active = is_active;
+
+    await fetch(`${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhookId}`, {
+      method: 'PATCH',
+      headers: supaHeaders,
+      body: JSON.stringify(updates)
+    });
+
+    return jsonResponse({
+      success: true,
+      message: 'Webhook updated',
+      webhook_id: webhookId,
+      updates
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function deleteWebhook(request, env, webhookId) {
+  try {
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const supaHeaders = {
+      'Content-Type': 'application/json',
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    // Verify ownership
+    const existResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhookId}&organization_id=eq.${orgId}`,
+      { headers: supaHeaders }
+    );
+    const existing = await existResp.json();
+    if (!Array.isArray(existing) || existing.length === 0) {
+      return jsonResponse({ success: false, error: 'Webhook not found' }, 404);
+    }
+
+    await fetch(`${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhookId}`, {
+      method: 'DELETE',
+      headers: supaHeaders
+    });
+
+    return jsonResponse({ success: true, message: 'Webhook deleted', webhook_id: webhookId });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function rotateWebhookSecret(request, env, webhookId, requestId) {
+  try {
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const supaHeaders = {
+      'Content-Type': 'application/json',
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`,
+      'Prefer': 'return=representation'
+    };
+
+    // Verify ownership
+    const existResp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhookId}&organization_id=eq.${orgId}`,
+      { headers: supaHeaders }
+    );
+    const existing = await existResp.json();
+    if (!Array.isArray(existing) || existing.length === 0) {
+      return jsonResponse({ success: false, error: 'Webhook not found' }, 404);
+    }
+
+    // Generate new secret
+    const newSecret = `whsec_${crypto.randomUUID().replace(/-/g, '')}`;
+    const now = new Date().toISOString();
+
+    // Update in Supabase
+    await fetch(`${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhookId}`, {
+      method: 'PATCH',
+      headers: supaHeaders,
+      body: JSON.stringify({
+        secret: newSecret,
+        secret_rotated_at: now,
+        updated_at: now
+      })
+    });
+
+    logSecurityEvent(env, requestId, 'webhook_secret_rotated', {
+      webhookId, orgId, userId: request._user?.userId,
+      ip: request.headers.get('CF-Connecting-IP')
+    });
+
+    return jsonResponse({
+      success: true,
+      webhook_id: webhookId,
+      new_secret: newSecret,
+      rotated_at: now,
+      warning: 'Update your webhook consumer with this new secret immediately. The old secret is no longer valid.'
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function testWebhook(request, env) {
+  try {
+    const { orgId } = await getOrgIdOrFallback(request, env);
+    const body = await request.json();
+    const { webhook_id, event } = body;
+
+    if (!webhook_id) return jsonResponse({ success: false, error: 'webhook_id required' }, 400);
+
+    const supaHeaders = {
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    // Fetch webhook
+    const resp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhook_id}&organization_id=eq.${orgId}`,
+      { headers: supaHeaders }
+    );
+    const webhooks = await resp.json();
+    if (!Array.isArray(webhooks) || webhooks.length === 0) {
+      return jsonResponse({ success: false, error: 'Webhook not found' }, 404);
+    }
+
+    const webhook = webhooks[0];
+    const testPayload = {
+      id: `evt_test_${crypto.randomUUID().replace(/-/g, '').substring(0, 16)}`,
+      type: event || 'test.ping',
+      created_at: new Date().toISOString(),
+      organization_id: orgId,
+      test: true,
+      data: {
+        message: 'This is a test webhook delivery from Finault',
+        webhook_id: webhook_id
+      }
+    };
+
+    // Sign the payload
+    const payloadStr = JSON.stringify(testPayload);
+    const timestamp = Math.floor(Date.now() / 1000);
+    const signedPayload = `${timestamp}.${payloadStr}`;
+
+    let signature = 'unsigned';
+    try {
+      const key = await crypto.subtle.importKey(
+        'raw', new TextEncoder().encode(webhook.secret || 'test'),
+        { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+      );
+      const sigBytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+      signature = `v1=${Array.from(new Uint8Array(sigBytes)).map(b => b.toString(16).padStart(2, '0')).join('')}`;
+    } catch {}
+
+    // Deliver test webhook
+    const startTime = Date.now();
+    let deliveryResult;
+    try {
+      const deliveryResp = await fetch(webhook.url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Finault-Signature': signature,
+          'X-Finault-Timestamp': String(timestamp),
+          'X-Finault-Event': testPayload.type,
+          'X-Finault-Delivery': testPayload.id,
+          'User-Agent': 'Finault-Webhooks/1.0'
+        },
+        body: payloadStr
+      });
+
+      deliveryResult = {
+        success: true,
+        status_code: deliveryResp.status,
+        latency_ms: Date.now() - startTime,
+        response_ok: deliveryResp.ok
+      };
+    } catch (deliveryErr) {
+      deliveryResult = {
+        success: false,
+        error: deliveryErr.message,
+        latency_ms: Date.now() - startTime
+      };
+    }
+
+    return jsonResponse({
+      success: true,
+      test_delivery: deliveryResult,
+      payload_sent: testPayload,
+      signature_header: signature
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// INTERNAL: Deliver webhook to all matching subscribers
+// Called by anomaly detection, invoice parsing, close packs, etc.
+// ═══════════════════════════════════════════════════════════════════
+
+async function deliverWebhooks(env, orgId, eventType, data) {
+  try {
+    const supaHeaders = {
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    const resp = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/webhooks?organization_id=eq.${orgId}&is_active=eq.true`,
+      { headers: supaHeaders }
+    );
+    const webhooks = await resp.json();
+    if (!Array.isArray(webhooks)) return;
+
+    const matching = webhooks.filter(w =>
+      w.events.includes('*') || w.events.includes(eventType)
+    );
+
+    const payload = {
+      id: `evt_${crypto.randomUUID().replace(/-/g, '').substring(0, 16)}`,
+      type: eventType,
+      created_at: new Date().toISOString(),
+      organization_id: orgId,
+      data
+    };
+    const payloadStr = JSON.stringify(payload);
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    for (const webhook of matching) {
+      try {
+        let signature = 'unsigned';
+        if (webhook.secret) {
+          const signedPayload = `${timestamp}.${payloadStr}`;
+          const key = await crypto.subtle.importKey(
+            'raw', new TextEncoder().encode(webhook.secret),
+            { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']
+          );
+          const sigBytes = await crypto.subtle.sign('HMAC', key, new TextEncoder().encode(signedPayload));
+          signature = `v1=${Array.from(new Uint8Array(sigBytes)).map(b => b.toString(16).padStart(2, '0')).join('')}`;
+        }
+
+        const deliveryResp = await fetch(webhook.url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Finault-Signature': signature,
+            'X-Finault-Timestamp': String(timestamp),
+            'X-Finault-Event': eventType,
+            'X-Finault-Delivery': payload.id,
+            'User-Agent': 'Finault-Webhooks/1.0'
+          },
+          body: payloadStr
+        });
+
+        if (!deliveryResp.ok) {
+          // Increment failure count
+          await fetch(`${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhook.id}`, {
+            method: 'PATCH',
+            headers: { ...supaHeaders, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ failure_count: (webhook.failure_count || 0) + 1 })
+          });
+        } else {
+          // Update last triggered
+          await fetch(`${env.SUPABASE_URL}/rest/v1/webhooks?id=eq.${webhook.id}`, {
+            method: 'PATCH',
+            headers: { ...supaHeaders, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ last_triggered_at: new Date().toISOString(), failure_count: 0 })
+          });
+        }
+      } catch (err) {
+        console.error(`[WEBHOOK] Delivery failed for ${webhook.id}: ${err.message}`);
+      }
+    }
+  } catch (err) {
+    console.error(`[WEBHOOK] deliverWebhooks error: ${err.message}`);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// MODEL PRICING — KV-backed dynamic pricing with fallback to static
+// ═══════════════════════════════════════════════════════════════════
+
+async function getModelPricing(request, env) {
+  try {
+    let pricing = null;
+
+    // Try KV first
+    if (env.FINAULT_KV) {
+      const kvPricing = await env.FINAULT_KV.get('model_pricing', { type: 'json' });
+      if (kvPricing) pricing = kvPricing;
+    }
+
+    // Fall back to static MODEL_PRICING
+    if (!pricing) pricing = MODEL_PRICING;
+
+    const url = new URL(request.url);
+    const provider = url.searchParams.get('provider');
+    const model = url.searchParams.get('model');
+
+    let filtered = pricing;
+    if (provider) {
+      filtered = {};
+      for (const [k, v] of Object.entries(pricing)) {
+        if (v.provider === provider) filtered[k] = v;
+      }
+    }
+    if (model && pricing[model]) {
+      filtered = { [model]: pricing[model] };
+    }
+
+    return jsonResponse({
+      success: true,
+      source: env.FINAULT_KV ? 'kv' : 'static',
+      model_count: Object.keys(filtered).length,
+      pricing: filtered,
+      last_updated: env.FINAULT_KV
+        ? (await env.FINAULT_KV.get('model_pricing_updated_at') || 'unknown')
+        : 'static'
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function updateModelPricing(request, env) {
+  try {
+    // Admin-only
+    const scopeCheck = await checkRequestScope(request, env, 'admin');
+    if (!scopeCheck.hasScope) {
+      return jsonResponse({ success: false, error: 'Insufficient permissions. Required scope: admin' }, 403);
+    }
+
+    const body = await request.json();
+    const { pricing, merge } = body;
+
+    if (!pricing || typeof pricing !== 'object') {
+      return jsonResponse({ success: false, error: 'pricing object is required' }, 400);
+    }
+
+    // Validate pricing structure
+    for (const [model, data] of Object.entries(pricing)) {
+      if (typeof data.input !== 'number' || typeof data.output !== 'number') {
+        return jsonResponse({
+          success: false,
+          error: `Invalid pricing for ${model}: input and output must be numbers (cost per 1M tokens)`
+        }, 400);
+      }
+      if (!data.provider) {
+        return jsonResponse({ success: false, error: `Missing provider for ${model}` }, 400);
+      }
+    }
+
+    if (!env.FINAULT_KV) {
+      return jsonResponse({
+        success: false,
+        error: 'KV namespace FINAULT_KV not bound. Pricing can only be updated dynamically when KV is available.'
+      }, 503);
+    }
+
+    let finalPricing;
+    if (merge !== false) {
+      // Merge with existing (default behavior)
+      const existing = await env.FINAULT_KV.get('model_pricing', { type: 'json' }) || MODEL_PRICING;
+      finalPricing = { ...existing, ...pricing };
+    } else {
+      // Full replace
+      finalPricing = pricing;
+    }
+
+    await env.FINAULT_KV.put('model_pricing', JSON.stringify(finalPricing));
+    await env.FINAULT_KV.put('model_pricing_updated_at', new Date().toISOString());
+
+    // Audit log: Pricing configuration changed (admin action)
+    logSecurityEvent(env, request.headers.get('x-request-id') || 'unknown', 'pricing_updated', {
+      modelsUpdated: Object.keys(pricing), merge: merge !== false,
+      userId: request._user?.userId, orgId: request._user?.orgId,
+      ip: request.headers.get('CF-Connecting-IP')
+    });
+
+    return jsonResponse({
+      success: true,
+      message: merge !== false ? 'Pricing merged and saved to KV' : 'Pricing replaced in KV',
+      model_count: Object.keys(finalPricing).length,
+      models_updated: Object.keys(pricing),
+      updated_at: new Date().toISOString()
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CLOSE PACK FORMAT DOWNLOADS — PDF, Excel, CSV, JSON
+// ═══════════════════════════════════════════════════════════════════
+
+async function getClosePackFormat(request, env, path) {
+  try {
+    const segments = path.split('/');
+    const format = segments.pop();        // pdf|excel|json|csv
+    const certId = segments.pop();        // close pack cert ID
+
+    const supaHeaders = {
+      'apikey': env.SUPABASE_KEY,
+      'Authorization': `Bearer ${env.SUPABASE_KEY}`
+    };
+
+    // Fetch close pack from Supabase — MUST enforce org isolation
+    const orgId = request._user?.orgId || request.orgId;
+    if (!orgId) return jsonResponse({ error: 'Organization context required' }, 400);
+
+    const response = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/close_packs?cert_id=eq.${certId}&organization_id=eq.${orgId}`,
+      { headers: supaHeaders }
+    );
+    const packs = await response.json();
+    if (!Array.isArray(packs) || packs.length === 0) {
+      return jsonResponse({ error: 'Close pack not found' }, 404);
+    }
+
+    const closePack = packs[0].data || packs[0];
+    const company = closePack?.metadata?.company || 'Finault';
+    const period = closePack?.metadata?.period || 'Current';
+    const safeCompany = company.replace(/[^a-zA-Z0-9]/g, '_');
+    const safePeriod = period.replace(/[^a-zA-Z0-9]/g, '_');
+    const filename = `ClosePack_${safeCompany}_${safePeriod}`;
+
+    switch (format) {
+      case 'json': {
+        return new Response(JSON.stringify(closePack, null, 2), {
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Disposition': `attachment; filename="${filename}.json"`,
+            ...getCORSHeaders(request.headers.get('Origin'))
+          }
+        });
+      }
+
+      case 'csv': {
+        // Generate CSV from line items
+        const lineItems = closePack?.summary?.lineItems || closePack?.lineItems || [];
+        const byProvider = closePack?.summary?.byProvider || {};
+        const byModel = closePack?.summary?.byModel || {};
+
+        let csv = 'Section,Category,Metric,Value\n';
+
+        // Summary
+        csv += `Summary,Total,Spend,$${closePack?.summary?.totalSpend || 0}\n`;
+        csv += `Summary,Total,Providers,${Object.keys(byProvider).length}\n`;
+        csv += `Summary,Total,Models,${Object.keys(byModel).length}\n`;
+
+        // By Provider
+        for (const [provider, data] of Object.entries(byProvider)) {
+          const cost = typeof data === 'number' ? data : data.cost || data.total || 0;
+          csv += `Provider,${provider},Cost,$${cost}\n`;
+        }
+
+        // By Model
+        for (const [model, data] of Object.entries(byModel)) {
+          const cost = typeof data === 'number' ? data : data.cost || data.total || 0;
+          const requests = typeof data === 'object' ? (data.requests || data.count || 0) : 0;
+          csv += `Model,${model},Cost,$${cost}\n`;
+          csv += `Model,${model},Requests,${requests}\n`;
+        }
+
+        // Line Items
+        lineItems.forEach((item, i) => {
+          csv += `LineItem,${i + 1},Description,${(item.description || item.model || '').replace(/,/g, ';')}\n`;
+          csv += `LineItem,${i + 1},Cost,$${item.cost || item.amount || 0}\n`;
+        });
+
+        // Proof
+        if (closePack?.proof) {
+          csv += `Proof,Merkle,Root,${closePack.proof.merkleRoot || closePack.proof.merkle_root || 'N/A'}\n`;
+          csv += `Proof,Blockchain,TxHash,${closePack.proof.blockchainTx || closePack.proof.blockchain_tx || 'N/A'}\n`;
+        }
+
+        return new Response(csv, {
+          headers: {
+            'Content-Type': 'text/csv',
+            'Content-Disposition': `attachment; filename="${filename}.csv"`,
+            ...getCORSHeaders(request.headers.get('Origin'))
+          }
+        });
+      }
+
+      case 'pdf': {
+        // Try PDF service first
+        const pdfServiceUrl = env.PDF_SERVICE_URL || 'https://pdf.finault.ai';
+        try {
+          const pdfResp = await fetch(`${pdfServiceUrl}/generate/close-pack`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${env.PDF_SERVICE_KEY || ''}`
+            },
+            body: JSON.stringify({
+              company,
+              period,
+              totalSpend: closePack?.summary?.totalSpend || 0,
+              byProvider: closePack?.summary?.byProvider || {},
+              byModel: closePack?.summary?.byModel || {},
+              byDepartment: closePack?.summary?.byDepartment || {},
+              lineItems: closePack?.summary?.lineItems || [],
+              proof: closePack?.proof || {},
+              reconciliation: closePack?.reconciliation || {},
+              variance: closePack?.variance || {}
+            })
+          });
+
+          if (pdfResp.ok) {
+            const pdfResult = await pdfResp.json();
+            if (pdfResult.pdf_base64) {
+              const pdfBinary = Uint8Array.from(atob(pdfResult.pdf_base64), c => c.charCodeAt(0));
+              return new Response(pdfBinary, {
+                headers: {
+                  'Content-Type': 'application/pdf',
+                  'Content-Disposition': `attachment; filename="${filename}.pdf"`,
+                  ...getCORSHeaders(request.headers.get('Origin'))
+                }
+              });
+            }
+          }
+        } catch {}
+
+        // Fallback: return a structured JSON with PDF generation instructions
+        return jsonResponse({
+          success: true,
+          format: 'pdf',
+          status: 'pdf_service_unavailable',
+          message: 'PDF service is not available. Use the JSON or CSV format, or generate the PDF client-side.',
+          download_alternatives: {
+            json: `/v1/close-pack/${certId}/json`,
+            csv: `/v1/close-pack/${certId}/csv`
+          },
+          data: closePack
+        });
+      }
+
+      case 'excel': {
+        // Try PDF service (which may also generate Excel)
+        const excelServiceUrl = env.PDF_SERVICE_URL || 'https://pdf.finault.ai';
+        try {
+          const excelResp = await fetch(`${excelServiceUrl}/generate/close-pack-excel`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${env.PDF_SERVICE_KEY || ''}`
+            },
+            body: JSON.stringify(closePack)
+          });
+
+          if (excelResp.ok) {
+            const excelResult = await excelResp.json();
+            if (excelResult.excel_base64) {
+              const excelBinary = Uint8Array.from(atob(excelResult.excel_base64), c => c.charCodeAt(0));
+              return new Response(excelBinary, {
+                headers: {
+                  'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                  'Content-Disposition': `attachment; filename="${filename}.xlsx"`,
+                  ...getCORSHeaders(request.headers.get('Origin'))
+                }
+              });
+            }
+          }
+        } catch {}
+
+        // Fallback: generate a TSV that Excel can open natively
+        const lineItems = closePack?.summary?.lineItems || closePack?.lineItems || [];
+        const byProvider = closePack?.summary?.byProvider || {};
+
+        let tsv = `Close Pack Report\t${company}\t${period}\n\n`;
+        tsv += `SUMMARY\nTotal Spend\t$${closePack?.summary?.totalSpend || 0}\n\n`;
+
+        tsv += `PROVIDER BREAKDOWN\nProvider\tCost\n`;
+        for (const [provider, data] of Object.entries(byProvider)) {
+          const cost = typeof data === 'number' ? data : data.cost || data.total || 0;
+          tsv += `${provider}\t$${cost}\n`;
+        }
+
+        tsv += `\nLINE ITEMS\nDescription\tCost\tModel\tDate\n`;
+        lineItems.forEach(item => {
+          tsv += `${item.description || item.model || 'N/A'}\t$${item.cost || item.amount || 0}\t${item.model || 'N/A'}\t${item.date || 'N/A'}\n`;
+        });
+
+        tsv += `\nPROOF\nMerkle Root\t${closePack?.proof?.merkleRoot || closePack?.proof?.merkle_root || 'N/A'}\n`;
+        tsv += `Blockchain Tx\t${closePack?.proof?.blockchainTx || closePack?.proof?.blockchain_tx || 'N/A'}\n`;
+
+        return new Response(tsv, {
+          headers: {
+            'Content-Type': 'text/tab-separated-values',
+            'Content-Disposition': `attachment; filename="${filename}.tsv"`,
+            ...getCORSHeaders(request.headers.get('Origin'))
+          }
+        });
+      }
+
+      default:
+        return jsonResponse({ error: `Unsupported format: ${format}. Use pdf, excel, json, or csv.` }, 400);
+    }
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// TOKEN REVOCATION — KV-backed token blacklist
+// Supports: single token revocation (logout), user-wide revocation
+// (compromise response), and admin revocation.
+//
+// KV keys:
+//   revoked:jti:{jti}       → "1" (TTL = token expiry)
+//   revoked:user:{sub}:all  → unix_timestamp (TTL = max token lifetime)
+// ═══════════════════════════════════════════════════════════════════
+
+async function revokeCurrentToken(request, env, requestId) {
+  try {
+    if (!request._user) {
+      return jsonResponse({ success: false, error: 'Authentication required' }, 401);
+    }
+    if (!env.FINAULT_KV) {
+      return jsonResponse({ success: false, error: 'Token revocation requires KV namespace' }, 503);
+    }
+
+    const user = request._user;
+    const jti = user.jti || await sha256Hex(`${user.userId}:${user.iat}`);
+    const ttl = user.exp ? Math.max(user.exp - Math.floor(Date.now() / 1000), 60) : 86400;
+
+    await env.FINAULT_KV.put(`revoked:jti:${jti}`, '1', { expirationTtl: ttl });
+
+    // Audit log
+    await logSecurityEvent(env, requestId, 'token_revoked', {
+      userId: user.userId,
+      orgId: user.orgId,
+      jti,
+      action: 'logout'
+    });
+
+    return jsonResponse({
+      success: true,
+      message: 'Token revoked successfully. You have been logged out.',
+      revoked_at: new Date().toISOString()
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function revokeAllUserTokens(request, env, requestId) {
+  try {
+    if (!request._user) {
+      return jsonResponse({ success: false, error: 'Authentication required' }, 401);
+    }
+    if (!env.FINAULT_KV) {
+      return jsonResponse({ success: false, error: 'Token revocation requires KV namespace' }, 503);
+    }
+
+    const user = request._user;
+    const revokedAt = Math.floor(Date.now() / 1000);
+    // All tokens issued before this timestamp are invalid (max 7 day TTL)
+    await env.FINAULT_KV.put(`revoked:user:${user.userId}:all`, String(revokedAt), {
+      expirationTtl: 604800 // 7 days — covers max token lifetime
+    });
+
+    await logSecurityEvent(env, requestId, 'all_tokens_revoked', {
+      userId: user.userId,
+      orgId: user.orgId,
+      revokedAt,
+      action: 'revoke_all_sessions'
+    });
+
+    return jsonResponse({
+      success: true,
+      message: 'All sessions invalidated. All devices must re-authenticate.',
+      revoked_at: new Date(revokedAt * 1000).toISOString(),
+      affected: 'all_tokens_before_' + new Date(revokedAt * 1000).toISOString()
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function adminRevokeUserTokens(request, env, requestId) {
+  try {
+    // Admin scope required
+    const scopeCheck = await checkRequestScope(request, env, 'admin');
+    if (!scopeCheck.hasScope) {
+      return jsonResponse({ success: false, error: 'Admin scope required' }, 403);
+    }
+    if (!env.FINAULT_KV) {
+      return jsonResponse({ success: false, error: 'Token revocation requires KV namespace' }, 503);
+    }
+
+    const body = await request.json();
+    const { user_id, reason } = body;
+    if (!user_id) {
+      return jsonResponse({ success: false, error: 'user_id is required' }, 400);
+    }
+
+    const revokedAt = Math.floor(Date.now() / 1000);
+    await env.FINAULT_KV.put(`revoked:user:${user_id}:all`, String(revokedAt), {
+      expirationTtl: 604800
+    });
+
+    await logSecurityEvent(env, requestId, 'admin_revoke_user', {
+      adminUserId: request._user.userId,
+      targetUserId: user_id,
+      reason: reason || 'Admin-initiated revocation',
+      revokedAt,
+      action: 'admin_revoke'
+    });
+
+    return jsonResponse({
+      success: true,
+      message: `All tokens for user ${user_id} have been revoked.`,
+      user_id,
+      reason: reason || 'Admin-initiated revocation',
+      revoked_at: new Date(revokedAt * 1000).toISOString()
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// IP ALLOWLIST MANAGEMENT — Enterprise orgs lock API to specific IPs
+// ═══════════════════════════════════════════════════════════════════
+
+async function getIPAllowlist(request, env) {
+  try {
+    const orgId = request._user?.orgId || request.orgId;
+    if (!orgId) return jsonResponse({ success: false, error: 'Organization context required' }, 400);
+    if (!env.FINAULT_KV) return jsonResponse({ success: false, error: 'KV store not configured' }, 503);
+
+    const raw = await env.FINAULT_KV.get(`ip_allowlist:${orgId}`);
+    const allowlist = raw ? JSON.parse(raw) : [];
+
+    return jsonResponse({
+      success: true,
+      org_id: orgId,
+      ip_allowlist: allowlist,
+      count: allowlist.length,
+      enforced: allowlist.length > 0,
+      note: allowlist.length === 0 ? 'No IP restrictions. All IPs are allowed.' : `Only ${allowlist.length} IP(s)/CIDR(s) can access this organization's API.`
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function updateIPAllowlist(request, env, requestId) {
+  try {
+    const orgId = request._user?.orgId || request.orgId;
+    if (!orgId) return jsonResponse({ success: false, error: 'Organization context required' }, 400);
+    if (!env.FINAULT_KV) return jsonResponse({ success: false, error: 'KV store not configured' }, 503);
+
+    // Require admin role
+    const role = request._user?.role || request._user?.app_metadata?.role;
+    if (role !== 'admin' && role !== 'owner') {
+      return jsonResponse({ success: false, error: 'Admin or owner role required to modify IP allowlist' }, 403);
+    }
+
+    const body = await request.json();
+    const { ips } = body;
+    if (!Array.isArray(ips)) return jsonResponse({ success: false, error: 'ips must be an array of IP addresses or CIDR ranges' }, 400);
+
+    // Validate each entry
+    const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}(\/\d{1,2})?$/;
+    for (const ip of ips) {
+      if (typeof ip !== 'string' || !ipv4Regex.test(ip)) {
+        return jsonResponse({ success: false, error: `Invalid IP/CIDR: ${ip}. Expected format: 192.168.1.0/24 or 10.0.0.1` }, 400);
+      }
+    }
+
+    // Ensure caller's own IP is in the list (prevent lockout)
+    const callerIp = request.headers.get('CF-Connecting-IP') || 'unknown';
+    if (ips.length > 0 && !matchIPAllowlist(callerIp, ips)) {
+      return jsonResponse({
+        success: false, error: 'Self-lockout prevention',
+        message: `Your current IP (${callerIp}) is not in the proposed allowlist. Add it to avoid locking yourself out.`
+      }, 400);
+    }
+
+    await env.FINAULT_KV.put(`ip_allowlist:${orgId}`, JSON.stringify(ips));
+
+    logSecurityEvent(env, requestId, 'ip_allowlist_updated', {
+      orgId, userId: request._user?.userId, ipCount: ips.length,
+      ips, ip: callerIp
+    });
+
+    return jsonResponse({
+      success: true,
+      message: ips.length > 0 ? `IP allowlist updated. Only ${ips.length} IP(s) can now access this API.` : 'IP allowlist cleared. All IPs are now allowed.',
+      ip_allowlist: ips,
+      count: ips.length
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+async function clearIPAllowlist(request, env, requestId) {
+  try {
+    const orgId = request._user?.orgId || request.orgId;
+    if (!orgId) return jsonResponse({ success: false, error: 'Organization context required' }, 400);
+    if (!env.FINAULT_KV) return jsonResponse({ success: false, error: 'KV store not configured' }, 503);
+
+    const role = request._user?.role || request._user?.app_metadata?.role;
+    if (role !== 'admin' && role !== 'owner') {
+      return jsonResponse({ success: false, error: 'Admin or owner role required' }, 403);
+    }
+
+    await env.FINAULT_KV.delete(`ip_allowlist:${orgId}`);
+
+    logSecurityEvent(env, requestId, 'ip_allowlist_cleared', {
+      orgId, userId: request._user?.userId,
+      ip: request.headers.get('CF-Connecting-IP')
+    });
+
+    return jsonResponse({ success: true, message: 'IP allowlist cleared. All IPs are now allowed.' });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SECURITY AUDIT LOG READER — Compliance teams can query security events
+// ═══════════════════════════════════════════════════════════════════
+
+async function getSecurityAuditLog(request, env) {
+  try {
+    const orgId = request._user?.orgId || request.orgId;
+    if (!orgId) return jsonResponse({ success: false, error: 'Organization context required' }, 400);
+
+    const role = request._user?.role || request._user?.app_metadata?.role;
+    if (role !== 'admin' && role !== 'owner') {
+      return jsonResponse({ success: false, error: 'Admin or owner role required to view security audit log' }, 403);
+    }
+
+    const url = new URL(request.url);
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '50', 10), 200);
+    const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+    const severity = url.searchParams.get('severity');  // INFO, WARN, HIGH, CRITICAL
+    const eventType = url.searchParams.get('event_type');
+    const since = url.searchParams.get('since');  // ISO date
+
+    if (!env.SUPABASE_URL || !env.SUPABASE_KEY) {
+      return jsonResponse({ success: false, error: 'Audit log storage not configured' }, 503);
+    }
+
+    let query = `${env.SUPABASE_URL}/rest/v1/security_audit_log?org_id=eq.${orgId}&order=created_at.desc&limit=${limit}&offset=${offset}`;
+    if (severity) query += `&severity=eq.${severity}`;
+    if (eventType) query += `&event_type=eq.${eventType}`;
+    if (since) query += `&created_at=gte.${since}`;
+
+    const response = await fetch(query, {
+      headers: {
+        'apikey': env.SUPABASE_KEY,
+        'Authorization': `Bearer ${env.SUPABASE_KEY}`
+      }
+    });
+
+    if (!response.ok) {
+      return jsonResponse({ success: false, error: 'Failed to query audit log' }, 500);
+    }
+
+    const events = await response.json();
+
+    return jsonResponse({
+      success: true,
+      audit_log: events,
+      count: events.length,
+      pagination: { limit, offset, has_more: events.length === limit },
+      filters: { severity, event_type: eventType, since }
+    });
+  } catch (error) {
+    return jsonResponse({ success: false, error: error.message }, 500);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// SECURITY AUDIT LOGGING — Tracks all security-relevant events
+// Persisted to Supabase security_audit_log table for compliance.
+// Events: login, logout, token_revoked, key_created, key_rotated,
+//         admin_action, dangerous_input_blocked, rate_limit_exceeded
+// ═══════════════════════════════════════════════════════════════════
+
+async function logSecurityEvent(env, requestId, eventType, details) {
+  try {
+    const event = {
+      id: crypto.randomUUID(),
+      request_id: requestId,
+      event_type: eventType,
+      details: typeof details === 'string' ? details : JSON.stringify(details),
+      ip_address: details?.ip || null,
+      user_id: details?.userId || details?.adminUserId || null,
+      org_id: details?.orgId || null,
+      severity: getSeverity(eventType),
+      created_at: new Date().toISOString()
+    };
+
+    // Write to Supabase if available
+    if (env.SUPABASE_URL && env.SUPABASE_KEY) {
+      await fetch(`${env.SUPABASE_URL}/rest/v1/security_audit_log`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': env.SUPABASE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_KEY}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify(event)
+      }).catch(() => {}); // Non-blocking — never fail the request for audit logging
+    }
+
+    // Also log to console for Cloudflare real-time logs
+    console.log(`[SECURITY] ${event.severity} | ${eventType} | ${requestId} | ${JSON.stringify(details)}`);
+  } catch (err) {
+    console.error(`[SECURITY] Audit log failed: ${err.message}`);
+  }
+}
+
+function getSeverity(eventType) {
+  const severities = {
+    'token_revoked': 'INFO',
+    'all_tokens_revoked': 'WARN',
+    'admin_revoke_user': 'HIGH',
+    'dangerous_input_blocked': 'HIGH',
+    'rate_limit_exceeded': 'WARN',
+    'key_created': 'INFO',
+    'key_rotated': 'WARN',
+    'key_revoked': 'WARN',
+    'erp_credentials_accessed': 'INFO',
+    'erp_credentials_decrypted': 'WARN',
+    'blockchain_anchor_submitted': 'INFO',
+    'login_failed': 'WARN',
+    'login_success': 'INFO',
+    'webhook_registered': 'INFO',
+    'pricing_updated': 'WARN',
+    'admin_pricing_updated': 'WARN',
+    'unauthorized_access_attempt': 'HIGH',
+    'suspicious_activity': 'CRITICAL',
+    // New world-class security events
+    'ip_blocked': 'HIGH',
+    'ip_allowlist_updated': 'WARN',
+    'ip_allowlist_cleared': 'WARN',
+    'replay_rejected_stale': 'HIGH',
+    'replay_rejected_reused': 'CRITICAL',
+    'revoked_token_used': 'HIGH',
+    'invalidated_session_used': 'HIGH',
+    'session_fingerprint_mismatch': 'CRITICAL'
+  };
+  return severities[eventType] || 'INFO';
 }

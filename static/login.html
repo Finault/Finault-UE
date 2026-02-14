@@ -589,11 +589,21 @@
         var SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
         var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
 
+        // Determine post-login redirect
+        function getRedirectUrl() {
+            const params = new URLSearchParams(window.location.search);
+            const redirect = params.get('redirect');
+            if (redirect === 'pricing') return '/pricing';
+            if (redirect === 'app') return '/app.html';
+            if (redirect && redirect.startsWith('/')) return redirect;
+            return '/dashboard.html';
+        }
+
         // Check if already logged in
         window.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('finault_token');
             if (token) {
-                window.location.href = '/dashboard.html';
+                window.location.href = getRedirectUrl();
                 return;
             }
 
@@ -736,8 +746,8 @@
                     localStorage.setItem('finault_user', JSON.stringify(data.user));
                 }
 
-                // Redirect to dashboard
-                window.location.href = '/dashboard.html';
+                // Redirect to intended page or dashboard
+                window.location.href = getRedirectUrl();
             } catch (err) {
                 showError(errorEl, 'An error occurred. Please try again.');
                 console.error('Sign in error:', err);

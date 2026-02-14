@@ -19,7 +19,7 @@
     </style>
 </head>
 <body>
-    <header><div class="header-container"><a href="/" class="logo"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#111827"/><path d="M8 10h16M8 16h12M8 22h8" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>Finault</a><nav><a href="/">Home</a><a href="/docs.html">Docs</a><a href="/pricing.html">Pricing</a><a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a><button class="btn btn-primary" id="authBtn" onclick="location.href='/app.html'">Sign In</button></nav></div></header>
+    <header><div class="header-container"><a href="/" class="logo"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#111827"/><path d="M8 10h16M8 16h12M8 22h8" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>Finault</a><nav><a href="/">Home</a><a href="/docs">Docs</a><a href="/security">Security</a><a href="/pricing">Pricing</a><a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a><button class="btn btn-primary" id="authBtn" onclick="location.href='/login'">Sign In</button></nav></div></header>
     <div class="user-bar hidden" id="userBar"><span class="user-email" id="userEmail"></span><a href="/dashboard.html" class="user-link">View Close Pack History</a><button class="btn btn-secondary" onclick="signOut()" style="margin-left:auto">Sign Out</button></div>
     <main>
         <div class="page-header"><h1>See Your AI Spend Allocated</h1><p>Upload invoices or usage data. Get your Close Pack in 60 seconds.</p></div>
@@ -90,7 +90,7 @@
             </div>
         </section>
     </main>
-    <footer><p>&copy; 2026 Finault. The AI Cost Governance Standard.</p></footer>
+    <footer><p>&copy; 2026 Finault, Inc. &middot; <a href="/docs">Docs</a> &middot; <a href="/security">Security</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="mailto:hello@finault.ai">Contact</a></p></footer>
     <div class="modal" id="emailModal"><div class="modal-content"><h3>Get your Close Pack</h3><p>Enter your email to download. We'll also send you a copy.</p><input type="email" id="emailInput" placeholder="finance@company.com"><button class="btn btn-green" onclick="submitEmail()">Download Close Pack</button><button class="btn btn-secondary" onclick="skipEmail()">Skip for now</button></div></div>
     <div class="toast" id="toast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span id="toastMessage">Done!</span></div>
 <script>
