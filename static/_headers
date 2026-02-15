@@ -15,10 +15,10 @@
 
 # Cache control for static assets
 /index.html
-  Cache-Control: public, max-age=3600
+  Cache-Control: public, max-age=60, must-revalidate
 
 /*.html
-  Cache-Control: public, max-age=7200
+  Cache-Control: public, max-age=60, must-revalidate
 
 /blog/*.html
   Cache-Control: public, max-age=604800
