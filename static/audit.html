@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Shared Audit</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <style>
+        :root {
+            --gray-50: #fafafa; --gray-100: #f5f5f5; --gray-200: #e5e5e5;
+            --gray-300: #d4d4d4; --gray-400: #a3a3a3; --gray-500: #737373;
+            --gray-600: #525252; --gray-700: #404040; --gray-900: #171717;
+            --green: #16a34a; --green-light: #f0fdf4; --green-border: #bbf7d0;
+            --red: #ef4444; --amber: #f59e0b; --blue: #3b82f6;
+            --white: #fff; --border: #e5e5e5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--gray-50); color: var(--gray-900); }
+        .page { max-width: 720px; margin: 0 auto; padding: 40px 24px; }
+        .header { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; }
+        .header img { height: 28px; width: 28px; border-radius: 6px; }
+        .header h1 { font-size: 18px; font-weight: 700; }
+        .header .sep { color: var(--gray-300); }
+        .header .sub { font-size: 14px; color: var(--gray-500); font-weight: 400; }
+        .ribbon { display: flex; align-items: center; gap: 10px; padding: 12px 18px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px; color: var(--gray-500); margin-bottom: 20px; }
+        .ribbon svg { flex-shrink: 0; color: var(--green); }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .hero { padding: 28px; border-radius: 14px; }
+        .hero.dark { background: var(--gray-900); }
+        .hero.savings { background: var(--white); border: 2px solid var(--green-border); }
+        .hero .label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 6px; }
+        .hero.dark .value { font-size: 36px; font-weight: 800; color: var(--white); }
+        .hero.savings .value { font-size: 30px; font-weight: 800; color: var(--green); }
+        .summary { font-size: 14px; line-height: 1.6; color: var(--gray-700); padding: 14px 18px; background: var(--white); border-left: 3px solid var(--green); border-radius: 8px; margin-bottom: 24px; }
+        .section-title { font-size: 10px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content: ''; width: 3px; height: 12px; background: var(--green); border-radius: 2px; }
+        .models { margin-bottom: 24px; }
+        .model-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .model-name { width: 200px; font-size: 13px; font-weight: 500; color: var(--gray-600); text-align: right; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .model-bar { flex: 1; height: 24px; background: var(--gray-100); border-radius: 5px; overflow: hidden; }
+        .model-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--gray-900), #1e3a2f); display: flex; align-items: center; padding-left: 8px; font-size: 10px; font-weight: 600; color: white; min-width: 36px; }
+        .model-amount { width: 80px; font-size: 13px; font-weight: 600; text-align: right; }
+        .anomalies { margin-bottom: 24px; }
+        .anomaly { padding: 12px 16px; background: var(--white); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 4px; display: flex; align-items: flex-start; gap: 10px; font-size: 13px; line-height: 1.5; color: var(--gray-600); }
+        .anomaly .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; margin-top: 7px; }
+        .anomaly .dot.critical { background: var(--red); }
+        .anomaly .dot.warn { background: var(--amber); }
+        .anomaly .dot.info { background: var(--blue); }
+        .cta { text-align: center; padding: 32px; background: var(--white); border-radius: 12px; border: 1px solid var(--border); }
+        .cta h3 { font-size: 16px; margin-bottom: 6px; }
+        .cta p { font-size: 13px; color: var(--gray-500); margin-bottom: 16px; }
+        .cta a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--green); color: white; border-radius: 8px; font-size: 14px; font-weight: 600; text-decoration: none; }
+        .empty { text-align: center; padding: 80px 24px; color: var(--gray-500); }
+        .empty h2 { font-size: 20px; color: var(--gray-900); margin-bottom: 8px; }
+        @media (max-width: 600px) { .hero-grid { grid-template-columns: 1fr; } .model-name { width: 120px; font-size: 12px; } }
+    </style>
+</head>
+<body>
+    <div class="page" id="page">
+        <div class="empty" id="emptyState">
+            <h2>No audit data found</h2>
+            <p>This link may have expired or is invalid.</p>
+            <a href="/demo" style="color:var(--green);text-decoration:none;font-weight:600;">Run your own free audit &rarr;</a>
+        </div>
+    </div>
+    <script>
+    function fmtK(n) { return n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(1)+'K' : n.toFixed(0); }
+    try {
+        var hash = window.location.hash;
+        if (!hash || hash.indexOf('#d=') < 0) throw new Error('no data');
+        var b64 = hash.slice(3);
+        var json = decodeURIComponent(escape(atob(b64)));
+        var d = JSON.parse(json);
+        if (!d.t || !d.m) throw new Error('invalid');
+
+        document.getElementById('emptyState').style.display = 'none';
+        var page = document.getElementById('page');
+        var h = '';
+
+        // Header
+        h += '<div class="header"><img src="/logo.svg" alt="Finault"><h1>Finault</h1><span class="sep">|</span><span class="sub">Shared Audit</span></div>';
+
+        // Verification ribbon
+        h += '<div class="ribbon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>';
+        h += '<span>Audit <strong style="color:var(--gray-700);">#' + (d.id||'—') + '</strong> &middot; ' + (d.ts||'') + ' &middot; ' + (d.items||0) + ' rows &middot; ' + (d.pr||'Multi-provider') + '</span></div>';
+
+        // Hero numbers
+        h += '<div class="hero-grid"><div class="hero dark"><div class="label">Total AI Spend</div><div class="value">$' + fmtK(d.t) + '</div></div>';
+        if (d.sv > 0) h += '<div class="hero savings"><div class="label">Optimization Opportunity</div><div class="value">$' + fmtK(d.sv) + '</div></div>';
+        h += '</div>';
+
+        // Models
+        if (d.m && d.m.length > 0) {
+            h += '<div class="models"><div class="section-title">Spend by Model</div>';
+            d.m.forEach(function(m) {
+                var pct = Math.max((m.c / d.t) * 100, 3);
+                h += '<div class="model-row"><span class="model-name">' + m.n + '</span><div class="model-bar"><div class="model-fill" style="width:' + pct + '%">' + ((m.c/d.t)*100).toFixed(1) + '%</div></div><span class="model-amount">$' + fmtK(m.c) + '</span></div>';
+            });
+            h += '</div>';
+        }
+
+        // Anomalies
+        if (d.a && d.a.length > 0) {
+            h += '<div class="anomalies"><div class="section-title">Anomalies (' + d.a.length + ')</div>';
+            d.a.forEach(function(a) {
+                h += '<div class="anomaly"><div class="dot ' + a.t + '"></div><div>' + a.x + '</div></div>';
+            });
+            h += '</div>';
+        }
+
+        // How You Compare (computed from model data in snapshot)
+        if (d.m && d.m.length >= 2) {
+            h += '<div style="margin-bottom:24px;"><div class="section-title">How You Compare</div>';
+            h += '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">';
+            // HHI
+            var hhi=0; d.m.forEach(function(m){var s=m.c/d.t*100;hhi+=s*s;}); hhi=Math.round(hhi);
+            var hhiLabel=hhi>7000?'Concentrated':hhi>4000?'Moderate':'Diversified';
+            var hhiColor=hhi>6000?'var(--amber)':'var(--green)';
+            h+='<div style="padding:14px;background:var(--white);border:1px solid var(--border);border-radius:8px;text-align:center;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-400);margin-bottom:4px;">Model Diversity</div><div style="font-size:20px;font-weight:800;color:'+hhiColor+';">'+hhiLabel+'</div><div style="font-size:11px;color:var(--gray-500);">HHI '+hhi+'</div></div>';
+            // Efficiency ratio
+            var eff=['mini','flash','haiku','embed']; var effS=0;
+            d.m.forEach(function(m){var mn=m.n.toLowerCase();if(eff.some(function(e){return mn.indexOf(e)>=0}))effS+=m.c;});
+            var effPct=((effS/d.t)*100).toFixed(0);
+            var effColor=effPct>=15?'var(--green)':'var(--amber)';
+            h+='<div style="padding:14px;background:var(--white);border:1px solid var(--border);border-radius:8px;text-align:center;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-400);margin-bottom:4px;">Efficiency Tier</div><div style="font-size:20px;font-weight:800;color:'+effColor+';">'+effPct+'%</div><div style="font-size:11px;color:var(--gray-500);">of spend on low-cost models</div></div>';
+            // Model count
+            h+='<div style="padding:14px;background:var(--white);border:1px solid var(--border);border-radius:8px;text-align:center;"><div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--gray-400);margin-bottom:4px;">Models Used</div><div style="font-size:20px;font-weight:800;color:var(--gray-900);">'+d.m.length+'</div><div style="font-size:11px;color:var(--gray-500);">across this billing period</div></div>';
+            h+='</div></div>';
+        }
+
+        // What to Do Monday (from snapshot savings lines)
+        if ((d.sl && d.sl.length > 0) || d.t > 10000) {
+            h += '<div style="margin-bottom:24px;"><div class="section-title">What to Do Monday</div>';
+            h += '<div style="display:flex;flex-direction:column;gap:8px;">';
+            var step = 1;
+            if (d.sl && d.sl.length > 0) {
+                var ts = d.sl[0];
+                h += '<div style="display:flex;gap:12px;padding:14px;background:var(--white);border:1px solid var(--border);border-radius:8px;">';
+                h += '<div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">' + step + '</div>';
+                h += '<div><div style="font-size:13px;font-weight:600;color:var(--gray-900);">Route classification workloads from ' + ts.f + ' to ' + ts.to + '</div>';
+                h += '<div style="font-size:12px;color:var(--gray-500);margin-top:2px;">Potential savings: $' + (ts.amt >= 1000 ? Math.round(ts.amt/1000) + 'K' : ts.amt) + '/mo</div></div></div>';
+                step++;
+            }
+            if (d.t > 10000) {
+                var threshold = Math.round(d.t * 1.15 / 1000) * 1000;
+                var threshStr = threshold >= 1000 ? Math.round(threshold/1000) + 'K' : threshold;
+                h += '<div style="display:flex;gap:12px;padding:14px;background:var(--white);border:1px solid var(--border);border-radius:8px;">';
+                h += '<div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--amber);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">' + step + '</div>';
+                h += '<div><div style="font-size:13px;font-weight:600;color:var(--gray-900);">Set a spend alert at $' + threshStr + '/mo</div>';
+                h += '<div style="font-size:12px;color:var(--gray-500);margin-top:2px;">15% above current spend — takes 2 minutes in your provider portal</div></div></div>';
+            }
+            h += '</div></div>';
+        }
+
+        // CTA
+        h += '<div class="cta"><h3>Upload your own invoice</h3><p>Drop a billing CSV and get your spend breakdown in 60 seconds. Data never leaves your browser.</p><a href="/demo">Run free audit &rarr;</a></div>';
+
+        page.innerHTML = h;
+    } catch(e) {
+        // Show empty state — already visible by default
+    }
+    </script>
+</body>
+</html>

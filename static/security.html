@@ -1,454 +1,461 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Security | Finault</title>
-  <meta name="description" content="Finault security practices and data handling policies.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --white: #FFFFFF;
-      --gray-50: #FAFAFA;
-      --gray-100: #F5F5F5;
-      --gray-200: #E5E5E5;
-      --gray-300: #D4D4D4;
-      --gray-400: #A3A3A3;
-      --gray-500: #737373;
-      --gray-600: #525252;
-      --gray-700: #404040;
-      --gray-800: #262626;
-      --gray-900: #171717;
-      --black: #0A0A0A;
-      --green-500: #22C55E;
-      --font-sans: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      --font-mono: 'JetBrains Mono', monospace;
-    }
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & Trust - Finault</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        :root {
+            --green: #16a34a;
+            --black: #111;
+            --text-secondary: #666;
+            --border: #e5e5e5;
+            --bg-light: #f9f9f9;
+        }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: var(--font-sans);
-      background: var(--white);
-      color: var(--gray-900);
-      -webkit-font-smoothing: antialiased;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .nav {
-      padding: 14px 40px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid var(--gray-200);
-    }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--black);
+            background: #fff;
+            line-height: 1.6;
+        }
 
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--gray-900);
-    }
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+        }
 
-    .logo svg { width: 32px; height: 32px; }
-    .logo span { font-size: 20px; font-weight: 600; }
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 60px 24px;
-    }
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+            text-decoration: none;
+        }
 
-    h1 {
-      font-size: 36px;
-      font-weight: 600;
-      margin-bottom: 12px;
-      letter-spacing: -0.02em;
-    }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
 
-    .subtitle {
-      font-size: 18px;
-      color: var(--gray-500);
-      margin-bottom: 48px;
-    }
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
 
-    .section {
-      margin-bottom: 48px;
-    }
+        .nav-links a:hover {
+            color: var(--green);
+        }
 
-    .section h2 {
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+        .nav-cta {
+            background: var(--green);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
 
-    .section h2 .icon {
-      width: 32px;
-      height: 32px;
-      background: var(--gray-100);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .nav-cta:hover {
+            background: #15803d;
+        }
 
-    .section h2 svg {
-      width: 18px;
-      height: 18px;
-      color: var(--gray-700);
-    }
+        /* Main content */
+        main {
+            margin-top: 80px;
+        }
 
-    .section p {
-      font-size: 15px;
-      line-height: 1.7;
-      color: var(--gray-600);
-      margin-bottom: 16px;
-    }
+        /* Hero section */
+        .hero {
+            padding: 4rem 2rem;
+            text-align: center;
+            background: linear-gradient(135deg, #f9f9f9 0%, #fafafa 100%);
+        }
 
-    .highlight-box {
-      background: var(--gray-50);
-      border: 1px solid var(--gray-200);
-      border-radius: 12px;
-      padding: 20px;
-      margin: 20px 0;
-    }
+        .hero-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
 
-    .highlight-box.green {
-      background: rgba(34, 197, 94, 0.05);
-      border-color: rgba(34, 197, 94, 0.2);
-    }
+        .hero-label {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(22, 163, 74, 0.1);
+            color: var(--green);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
 
-    .highlight-box h3 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
+        .hero-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
 
-    .highlight-box p {
-      margin-bottom: 0;
-      font-size: 14px;
-    }
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 0;
+            line-height: 1.6;
+        }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 100px;
-      font-size: 12px;
-      font-weight: 500;
-    }
+        /* Grid sections */
+        .section {
+            padding: 4rem 2rem;
+        }
 
-    .status-badge.green {
-      background: rgba(34, 197, 94, 0.1);
-      color: #16a34a;
-    }
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
-    .status-badge.yellow {
-      background: rgba(245, 158, 11, 0.1);
-      color: #d97706;
-    }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
 
-    .status-badge .dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: currentColor;
-    }
+        .card {
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
+            transition: all 0.3s;
+        }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 14px;
-    }
+        .card:hover {
+            border-color: var(--green);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.1);
+        }
 
-    th, td {
-      padding: 12px 16px;
-      text-align: left;
-      border-bottom: 1px solid var(--gray-200);
-    }
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 1rem;
+        }
 
-    th {
-      font-weight: 600;
-      background: var(--gray-50);
-    }
+        .card-text {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            font-size: 0.95rem;
+        }
 
-    .footer {
-      border-top: 1px solid var(--gray-200);
-      padding: 40px 24px;
-      text-align: center;
-    }
+        /* Compliance section */
+        .compliance-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
 
-    .footer p {
-      font-size: 14px;
-      color: var(--gray-500);
-    }
+        .compliance-item {
+            padding: 1.5rem;
+            text-align: center;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: #fff;
+        }
 
-    .footer a {
-      color: var(--gray-700);
-    }
+        .compliance-item strong {
+            display: block;
+            font-size: 1rem;
+            color: var(--black);
+            margin-bottom: 0.5rem;
+        }
 
-    @media (max-width: 600px) {
-      .nav { padding: 14px 20px; }
-      .container { padding: 40px 20px; }
-      h1 { font-size: 28px; }
-    }
-  </style>
+        .compliance-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* CTA section */
+        .cta-section {
+            padding: 3rem 2rem;
+            text-align: center;
+            background: #f9f9f9;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .cta-text {
+            font-size: 1.1rem;
+            color: var(--black);
+            margin-bottom: 1rem;
+        }
+
+        .cta-link {
+            color: var(--green);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .cta-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Footer */
+        footer {
+            background: #f0f0f0;
+            padding: 3rem 2rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.7rem;
+        }
+
+        .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--green);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding-top: 2rem;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .hero {
+                padding: 3rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .compliance-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+
+            .section {
+                padding: 2rem 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <nav class="nav">
-    <a href="/" class="logo">
-      <svg viewBox="0 0 32 32" fill="none">
-        <rect width="32" height="32" rx="8" fill="#171717"/>
-        <path d="M9 8H23V11H12V14H21V17H12V24H9V8Z" fill="#22C55E"/>
-      </svg>
-      <span>Finault</span>
-    </a>
-  </nav>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+            <ul class="nav-links">
+                <li><a href="/pricing">Pricing</a></li>
+                <li><a href="/security">Security</a></li>
+                <li><a href="/verify">Verify a Pack</a></li>
+                <li><a href="/audit" class="nav-cta">Free Audit</a></li>
+            </ul>
+        </div>
+    </nav>
 
-  <div class="container">
-    <h1>Security at Finault</h1>
-    <p class="subtitle">How we protect your data and maintain trust.</p>
+    <!-- Main content -->
+    <main>
+        <!-- Hero section -->
+        <section class="hero">
+            <div class="hero-container">
+                <div class="hero-label">Security & Trust</div>
+                <h1 class="hero-title">Enterprise-grade security. Zero-trust architecture.</h1>
+                <p class="hero-subtitle">Your financial data never touches a centralized server. Every artifact is cryptographically signed and independently verifiable.</p>
+            </div>
+        </section>
 
-    <!-- Data Processing -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </span>
-        Data Processing
-      </h2>
-      
-      <div class="highlight-box green">
-        <h3>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:#16a34a">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-          Client-Side Processing
-        </h3>
-        <p>Your invoice data never leaves your browser. All processing happens locally on your device. We cannot see your data even if we wanted to.</p>
-      </div>
+        <!-- Security features grid -->
+        <section class="section">
+            <div class="section-container">
+                <div class="grid-2">
+                    <div class="card">
+                        <h2 class="card-title">Edge-First Architecture</h2>
+                        <p class="card-text">All processing runs on Cloudflare Workers — 300+ global edge locations. Your CSV is parsed, reconciled, and packaged at the nearest edge node. Sub-100ms response times worldwide. No centralized server. No data at rest.</p>
+                    </div>
 
-      <p>When you upload an invoice to Finault's analyzer:</p>
-      <ul style="margin-left: 20px; margin-bottom: 16px; color: var(--gray-600); line-height: 1.8;">
-        <li>The file is processed entirely in your browser using JavaScript</li>
-        <li>No invoice data is transmitted to our servers</li>
-        <li>The Close Pack is generated locally and downloaded directly to your device</li>
-        <li>We only collect anonymous usage metrics (page views, feature usage)</li>
-      </ul>
-    </div>
+                    <div class="card">
+                        <h2 class="card-title">Cryptographic Integrity</h2>
+                        <p class="card-text">Every close pack includes an HMAC-SHA256 signed manifest with SHA-256 hashes per artifact. Signing uses Web Crypto API with server-side secrets. Manifests use sorted keys for deterministic output. Any file modification breaks the signature chain.</p>
+                    </div>
 
-    <!-- Encryption -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-        </span>
-        Encryption
-      </h2>
-      
-      <table>
-        <tr>
-          <th>Layer</th>
-          <th>Standard</th>
-          <th>Status</th>
-        </tr>
-        <tr>
-          <td>In Transit</td>
-          <td>TLS 1.3</td>
-          <td><span class="status-badge green"><span class="dot"></span>Active</span></td>
-        </tr>
-        <tr>
-          <td>At Rest</td>
-          <td>AES-256 (when applicable)</td>
-          <td><span class="status-badge green"><span class="dot"></span>Active</span></td>
-        </tr>
-        <tr>
-          <td>Gateway Traffic</td>
-          <td>TLS 1.3 + Certificate Pinning</td>
-          <td><span class="status-badge green"><span class="dot"></span>Active</span></td>
-        </tr>
-      </table>
-    </div>
+                    <div class="card">
+                        <h2 class="card-title">Data Handling</h2>
+                        <p class="card-text">CSVs are processed in-memory during the request lifecycle. No billing data is persisted after the close pack is generated. Close packs are stored in Cloudflare R2 as sealed, write-once objects. No delete operations — immutable by design.</p>
+                    </div>
 
-    <!-- Gateway Security -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
-            <path d="M2 17l10 5 10-5"/>
-            <path d="M2 12l10 5 10-5"/>
-          </svg>
-        </span>
-        Gateway Security
-      </h2>
-      
-      <p>For customers using the Finault Gateway (real-time proxy):</p>
-      
-      <table>
-        <tr>
-          <th>Feature</th>
-          <th>Description</th>
-        </tr>
-        <tr>
-          <td>API Key Management</td>
-          <td>Your provider API keys are encrypted and never logged</td>
-        </tr>
-        <tr>
-          <td>Request Logging</td>
-          <td>Metadata only by default; prompt logging is opt-in</td>
-        </tr>
-        <tr>
-          <td>Data Retention</td>
-          <td>Configurable: 30, 90, or 365 days</td>
-        </tr>
-        <tr>
-          <td>Access Controls</td>
-          <td>Role-based access with audit logging</td>
-        </tr>
-      </table>
-    </div>
+                    <div class="card">
+                        <h2 class="card-title">Verification</h2>
+                        <p class="card-text">Every close pack can be independently verified at finault.ai/verify. Upload your close pack ZIP — we recompute all SHA-256 hashes and validate the HMAC signature against our public verification endpoint. No trust required — verify yourself.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-    <!-- Compliance -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-            <polyline points="22 4 12 14.01 9 11.01"/>
-          </svg>
-        </span>
-        Compliance Roadmap
-      </h2>
-      
-      <table>
-        <tr>
-          <th>Certification</th>
-          <th>Status</th>
-          <th>Timeline</th>
-        </tr>
-        <tr>
-          <td>SOC 2 Type I</td>
-          <td><span class="status-badge yellow"><span class="dot"></span>Planned</span></td>
-          <td>Q3 2026</td>
-        </tr>
-        <tr>
-          <td>SOC 2 Type II</td>
-          <td><span class="status-badge yellow"><span class="dot"></span>Planned</span></td>
-          <td>Q1 2027</td>
-        </tr>
-        <tr>
-          <td>GDPR Compliance</td>
-          <td><span class="status-badge green"><span class="dot"></span>Active</span></td>
-          <td>Current</td>
-        </tr>
-        <tr>
-          <td>CCPA Compliance</td>
-          <td><span class="status-badge green"><span class="dot"></span>Active</span></td>
-          <td>Current</td>
-        </tr>
-      </table>
-      
-      <div class="highlight-box">
-        <h3>Note on Compliance Claims</h3>
-        <p>Finault provides documentation and audit trails to support your compliance programs. We do not claim to be a certification body. Please consult your legal and compliance teams for specific requirements.</p>
-      </div>
-    </div>
+        <!-- Compliance section -->
+        <section class="section">
+            <div class="section-container">
+                <h2 style="font-size: 1.8rem; margin-bottom: 2rem; font-weight: 700;">Compliance & Standards</h2>
+                <div class="compliance-grid">
+                    <div class="compliance-item">
+                        <strong>FOCUS 1.3 Aligned</strong>
+                        <p>FinOps Foundation standard for cloud billing</p>
+                    </div>
 
-    <!-- Infrastructure -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="2" width="20" height="8" rx="2" ry="2"/>
-            <rect x="2" y="14" width="20" height="8" rx="2" ry="2"/>
-            <line x1="6" y1="6" x2="6.01" y2="6"/>
-            <line x1="6" y1="18" x2="6.01" y2="18"/>
-          </svg>
-        </span>
-        Infrastructure
-      </h2>
-      
-      <table>
-        <tr>
-          <th>Component</th>
-          <th>Provider</th>
-          <th>Location</th>
-        </tr>
-        <tr>
-          <td>Website</td>
-          <td>Vercel</td>
-          <td>Global CDN</td>
-        </tr>
-        <tr>
-          <td>Gateway API</td>
-          <td>Railway</td>
-          <td>US-West</td>
-        </tr>
-        <tr>
-          <td>Database</td>
-          <td>Supabase (PostgreSQL)</td>
-          <td>US-East</td>
-        </tr>
-      </table>
-    </div>
+                    <div class="compliance-item">
+                        <strong>SOC 2 Type II</strong>
+                        <p>In progress — targeting Q3 2026</p>
+                    </div>
 
-    <!-- Vulnerability Disclosure -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <circle cx="12" cy="12" r="10"/>
-            <line x1="12" y1="8" x2="12" y2="12"/>
-            <line x1="12" y1="16" x2="12.01" y2="16"/>
-          </svg>
-        </span>
-        Vulnerability Disclosure
-      </h2>
-      
-      <p>We take security seriously. If you discover a vulnerability, please report it responsibly:</p>
-      
-      <div class="highlight-box">
-        <h3>Security Contact</h3>
-        <p><strong>Email:</strong> security@finault.ai</p>
-        <p style="margin-top: 8px;"><strong>Response Time:</strong> We aim to respond within 24 hours and provide a fix timeline within 72 hours.</p>
-      </div>
-    </div>
+                    <div class="compliance-item">
+                        <strong>GDPR Compliant</strong>
+                        <p>No PII collection, no tracking, no cookies</p>
+                    </div>
 
-    <!-- Questions -->
-    <div class="section">
-      <h2>
-        <span class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-          </svg>
-        </span>
-        Questions?
-      </h2>
-      
-      <p>For security-related questions or to request a security review document, contact us at <a href="mailto:security@finault.ai">security@finault.ai</a>.</p>
-      
-      <p>For general support, visit our <a href="support.html">Support page</a>.</p>
-    </div>
-  </div>
+                    <div class="compliance-item">
+                        <strong>Open Audit Trail</strong>
+                        <p>Every close pack is its own audit trail</p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-  <footer class="footer">
-    <p>© 2026 Finault. <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a> · <a href="security.html">Security</a></p>
-  </footer>
+        <!-- CTA section -->
+        <section class="cta-section">
+            <div class="section-container">
+                <p class="cta-text">Questions about our security practices?</p>
+                <a href="mailto:security@finault.ai" class="cta-link">Contact our security team</a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <ul>
+                        <li><a href="/pricing">Pricing</a></li>
+                        <li><a href="/security">Security</a></li>
+                        <li><a href="/verify">Verify a Pack</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="mailto:hello@finault.ai">Contact</a></li>
+                        <li><a href="/privacy">Privacy</a></li>
+                        <li><a href="/terms">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                © 2026 Finault. AI spend audit and close pack platform.
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
