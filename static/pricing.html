@@ -3,322 +3,503 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pricing - Finault | AI Cost Governance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Pricing — Finault | AI Spend Audit & Close Pack Platform</title>
+    <meta name="description" content="Simple, transparent pricing for AI spend audits and close packs. Start free. Upgrade when you're ready. From $0 to $399/month.">
+    <meta property="og:title" content="Pricing — Finault">
+    <meta property="og:description" content="Simple, transparent pricing for AI spend audits and close packs.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://finault.ai/pricing">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *{box-sizing:border-box;margin:0;padding:0}
-        :root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}
-        body{font-family:'Inter',-apple-system,sans-serif;background:var(--white);color:var(--gray-900);line-height:1.6}
-        
-        nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1rem 2rem;background:rgba(255,255,255,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--gray-200)}
-        .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-        .logo{display:flex;align-items:center;gap:.625rem;font-weight:700;font-size:1.375rem;color:var(--gray-900);text-decoration:none}
-        .logo-icon{width:32px;height:32px;background:var(--gray-900);border-radius:8px;display:flex;align-items:center;justify-content:center}
-        .logo-icon svg{width:20px;height:20px}
-        .nav-links{display:flex;align-items:center;gap:2rem}
-        .nav-links a{color:var(--gray-600);text-decoration:none;font-size:.9375rem;font-weight:500}
-        .nav-links a:hover{color:var(--black)}
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:.5rem;font-size:.9375rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .15s}
-        .btn-primary{background:var(--black);color:var(--white)}
-        .btn-green{background:var(--green);color:var(--white)}
-        .btn-green:hover{background:var(--green-dark)}
-        .btn-secondary{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-200)}
-        .btn-lg{padding:1rem 2rem;font-size:1rem}
-        
-        .hero{padding:8rem 2rem 4rem;text-align:center}
-        .hero h1{font-size:3rem;font-weight:800;letter-spacing:-0.03em;margin-bottom:1rem}
-        .hero p{font-size:1.25rem;color:var(--gray-500);max-width:600px;margin:0 auto}
-        
-        .toggle{display:flex;justify-content:center;gap:.5rem;margin:2rem 0;padding:.25rem;background:var(--gray-100);border-radius:.5rem;width:fit-content;margin-left:auto;margin-right:auto}
-        .toggle button{padding:.625rem 1.5rem;border:none;background:transparent;border-radius:.375rem;font-size:.9375rem;font-weight:500;cursor:pointer;color:var(--gray-600)}
-        .toggle button.active{background:var(--white);color:var(--gray-900);box-shadow:0 1px 3px rgba(0,0,0,.1)}
-        .savings-badge{display:inline-flex;padding:.25rem .5rem;background:var(--green-light);color:var(--green-dark);border-radius:1rem;font-size:.75rem;font-weight:600;margin-left:.5rem}
-        
-        .pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1200px;margin:0 auto;padding:0 2rem}
-        @media(max-width:1024px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:640px){.pricing-grid{grid-template-columns:1fr}}
-        
-        .pricing-card{background:var(--white);border:1px solid var(--gray-200);border-radius:1rem;padding:2rem;display:flex;flex-direction:column}
-        .pricing-card.featured{border:2px solid var(--green);position:relative}
-        .pricing-card.featured::before{content:'Most Popular';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--green);color:var(--white);padding:.25rem 1rem;border-radius:1rem;font-size:.75rem;font-weight:600}
-        .plan-name{font-size:1.25rem;font-weight:600;margin-bottom:.25rem}
-        .plan-desc{font-size:.875rem;color:var(--gray-500);margin-bottom:1rem}
-        .plan-price{margin-bottom:1.5rem}
-        .plan-price .amount{font-size:3rem;font-weight:700;letter-spacing:-0.02em}
-        .plan-price .period{font-size:1rem;color:var(--gray-500)}
-        .plan-price .annual{font-size:.8125rem;color:var(--gray-400);margin-top:.25rem}
-        .plan-features{list-style:none;flex:1;margin-bottom:1.5rem}
-        .plan-features li{display:flex;align-items:flex-start;gap:.5rem;font-size:.9375rem;margin-bottom:.75rem;color:var(--gray-700)}
-        .plan-features li svg{flex-shrink:0;margin-top:.125rem}
-        .plan-features li.disabled{color:var(--gray-400)}
-        .plan-features li.disabled svg{color:var(--gray-300)}
-        .check{color:var(--green)}
-        .plan-cta{width:100%}
-        
-        .enterprise-section{max-width:900px;margin:4rem auto;padding:0 2rem}
-        .enterprise-card{background:var(--gray-900);color:var(--white);border-radius:1rem;padding:3rem;display:flex;justify-content:space-between;align-items:center;gap:2rem}
-        .enterprise-card h3{font-size:1.5rem;font-weight:600;margin-bottom:.5rem}
-        .enterprise-card p{color:var(--gray-400);max-width:500px}
-        .enterprise-card .btn{background:var(--green);color:var(--white)}
-        
-        .faq{max-width:700px;margin:4rem auto;padding:0 2rem 4rem}
-        .faq h2{font-size:2rem;font-weight:700;text-align:center;margin-bottom:2rem}
-        .faq-item{border-bottom:1px solid var(--gray-200);padding:1.5rem 0}
-        .faq-q{font-weight:600;margin-bottom:.5rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center}
-        .faq-a{color:var(--gray-600);font-size:.9375rem}
-        
-        .guarantee{max-width:600px;margin:0 auto 4rem;padding:2rem;background:var(--green-light);border-radius:1rem;text-align:center}
-        .guarantee h3{font-size:1.25rem;font-weight:600;color:var(--green-dark);margin-bottom:.5rem}
-        .guarantee p{color:var(--gray-700);font-size:.9375rem}
-        
-        footer{padding:3rem 2rem;border-top:1px solid var(--gray-200);text-align:center;color:var(--gray-500);font-size:.875rem}
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #111;
+            --dark: #1a1a1a;
+            --white: #fff;
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --green-border: #bbf7d0;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-900: #171717;
+            --border: #e5e5e5;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--gray-900);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 64px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-cta {
+            padding: 8px 20px; color: var(--white); text-decoration: none;
+            font-size: 14px; font-weight: 600; border-radius: 8px;
+            background: var(--green); transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 140px 24px 80px;
+            text-align: center;
+            max-width: 820px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-size: clamp(40px, 6.5vw, 68px);
+            font-weight: 700; letter-spacing: -0.04em;
+            line-height: 1.05; color: var(--gray-900);
+            margin-bottom: 24px;
+        }
+        .hero-sub {
+            font-size: 19px; color: var(--gray-500);
+            max-width: 580px; margin: 0 auto 40px; line-height: 1.65;
+        }
+
+        /* ===== PRICING CARDS ===== */
+        .pricing-section {
+            padding: 60px 24px; border-bottom: 1px solid var(--border);
+        }
+        .pricing-inner { max-width: 1120px; margin: 0 auto; }
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 28px; margin-top: 40px;
+        }
+        .pricing-card {
+            padding: 36px 28px; border-radius: 12px; border: 1px solid var(--gray-200);
+            background: var(--white); position: relative;
+            transition: all 0.2s;
+        }
+        .pricing-card:hover { border-color: var(--green-border); }
+        .pricing-card.featured {
+            border: 2px solid var(--green); transform: scale(1.04);
+            box-shadow: 0 8px 24px rgba(22,163,74,0.12);
+        }
+        .pricing-card.featured:hover { transform: scale(1.04); }
+        .pricing-badge {
+            position: absolute; top: -12px; left: 20px;
+            padding: 4px 12px; border-radius: 16px;
+            background: var(--green); color: var(--white);
+            font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+        .plan-name {
+            font-size: 18px; font-weight: 600; color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+        .plan-price {
+            font-size: 48px; font-weight: 700; color: var(--gray-900);
+            letter-spacing: -0.03em; margin-bottom: 4px;
+        }
+        .plan-price .period {
+            font-size: 18px; color: var(--gray-500); font-weight: 500;
+        }
+        .plan-desc {
+            font-size: 13px; color: var(--gray-500); margin-bottom: 28px; height: 40px;
+        }
+        .plan-features {
+            list-style: none; margin-bottom: 28px;
+        }
+        .plan-features li {
+            font-size: 14px; color: var(--gray-600); padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100); display: flex; align-items: flex-start;
+            gap: 10px;
+        }
+        .plan-features li:last-child { border-bottom: none; }
+        .feature-icon {
+            width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0;
+            color: var(--green); font-weight: 700;
+        }
+        .plan-cta {
+            width: 100%; padding: 12px 20px;
+            border-radius: 8px; font-size: 15px; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+            border: none; cursor: pointer;
+            text-align: center; display: inline-block;
+        }
+        .plan-cta-primary {
+            background: var(--green); color: var(--white);
+        }
+        .plan-cta-primary:hover { opacity: 0.9; }
+        .plan-cta-secondary {
+            background: transparent; color: var(--green);
+            border: 1px solid var(--green);
+        }
+        .plan-cta-secondary:hover { background: var(--green-light); }
+        .plan-note {
+            font-size: 12px; color: var(--gray-400); margin-top: 12px; line-height: 1.4;
+        }
+
+        /* ===== FAQ ===== */
+        .faq-section {
+            padding: 100px 24px; background: var(--gray-50);
+            border-bottom: 1px solid var(--border);
+        }
+        .faq-inner { max-width: 760px; margin: 0 auto; }
+        .section-label {
+            font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
+            text-transform: uppercase; color: var(--green); margin-bottom: 12px;
+            text-align: center;
+        }
+        .section-title {
+            font-size: clamp(28px, 4.5vw, 40px); font-weight: 700;
+            letter-spacing: -0.03em; line-height: 1.15;
+            color: var(--gray-900); margin-bottom: 48px; text-align: center;
+        }
+        .faq-item {
+            margin-bottom: 16px;
+        }
+        .faq-question {
+            padding: 20px 24px; background: var(--white);
+            border: 1px solid var(--gray-200); border-radius: 10px;
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; transition: all 0.2s;
+            font-size: 15px; font-weight: 600; color: var(--gray-900);
+        }
+        .faq-question:hover { border-color: var(--green-border); background: #fafbf9); }
+        .faq-toggle {
+            width: 20px; height: 20px; display: flex; align-items: center;
+            justify-content: center; font-size: 18px; color: var(--green);
+            transition: transform 0.3s ease;
+        }
+        .faq-question.open .faq-toggle { transform: rotate(180deg); }
+        .faq-answer {
+            max-height: 0; overflow: hidden; transition: max-height 0.3s ease;
+            background: var(--white); border: 1px solid var(--gray-200);
+            border-top: none; border-radius: 0 0 10px 10px;
+        }
+        .faq-answer.open { max-height: 400px; }
+        .faq-content {
+            padding: 20px 24px; font-size: 14px;
+            line-height: 1.65; color: var(--gray-600);
+        }
+
+        /* ===== CTA ===== */
+        .cta {
+            padding: 120px 24px; text-align: center;
+            background: var(--gray-900);
+        }
+        .cta h2 {
+            font-size: clamp(32px, 5.5vw, 48px); font-weight: 700;
+            letter-spacing: -0.03em; color: var(--white); margin-bottom: 16px;
+        }
+        .cta-sub { font-size: 17px; color: var(--gray-400); margin-bottom: 36px; }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--green); color: var(--white);
+            text-decoration: none; font-size: 16px; font-weight: 600;
+            border-radius: 10px; transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+        }
+        .btn-primary:hover { opacity: 0.9; box-shadow: 0 4px 16px rgba(22,163,74,0.3); }
+        .btn-arrow { width: 16px; height: 16px; }
+        .hero-proof { font-size: 13px; color: var(--gray-400); margin-top: 20px; }
+        .hero-proof strong { color: var(--gray-500); }
+        .cta .hero-proof { color: var(--gray-500); }
+        .cta .hero-proof strong { color: var(--gray-400); }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 36px 24px; border-top: 1px solid var(--border);
+        }
+        .footer-inner {
+            max-width: 960px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-copy { font-size: 13px; color: var(--gray-400); }
+        .footer-links { display: flex; gap: 28px; }
+        .footer-links a { color: var(--gray-400); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--gray-900); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-link { display: none; }
+            .hero { padding: 120px 20px 60px; }
+            .pricing-grid { grid-template-columns: 1fr; gap: 24px; }
+            .pricing-card.featured { transform: scale(1); }
+            .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+            .plan-features { margin-bottom: 20px; }
+            .faq-answer.open { max-height: 600px; }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Nav -->
     <nav>
-        <div class="nav-container">
-            <a href="/" class="logo">
-                <span class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
-                </span>
-                Finault
-            </a>
-            <div class="nav-links">
-                <a href="/demo">Demo</a>
-                <a href="/docs">Docs</a>
-                <a href="/pricing" style="color:var(--gray-900);font-weight:600">Pricing</a>
-                <a href="/security">Security</a>
-                <a href="/demo" class="btn btn-primary">Get Started</a>
-            </div>
+        <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+        <div class="nav-right">
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/security" class="nav-link">Security</a>
+            <a href="/verify" class="nav-link">Verify a Pack</a>
+            <a href="/audit" class="nav-cta">Free Audit</a>
         </div>
     </nav>
-    
+
+    <!-- Hero -->
     <section class="hero">
         <h1>Simple, transparent pricing</h1>
-        <p>Start free. Upgrade when you need more control over your AI spend.</p>
+        <p class="hero-sub">Start free. Upgrade when you're ready.</p>
     </section>
-    
-    <div class="toggle">
-        <button class="active" onclick="setBilling('monthly')">Monthly</button>
-        <button onclick="setBilling('annual')">Annual<span class="savings-badge">Save 20%</span></button>
-    </div>
-    
-    <div class="pricing-grid">
-        <div class="pricing-card">
-            <div class="plan-name">Free</div>
-            <div class="plan-desc">For trying out Finault</div>
-            <div class="plan-price">
-                <span class="amount">$0</span>
-                <div class="annual">Forever free</div>
-            </div>
-            <ul class="plan-features">
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Unlimited invoice uploads</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Auto-allocation</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Close Pack download</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> SHA-256 attestation</li>
-                <li class="disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Unit Economics</li>
-                <li class="disabled"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg> Saved rules</li>
-            </ul>
-            <a href="/demo" class="btn btn-secondary plan-cta">Get Started</a>
-        </div>
 
-        <div class="pricing-card featured">
-            <div class="plan-name">Pro</div>
-            <div class="plan-desc">For finance teams</div>
-            <div class="plan-price">
-                <span class="amount" id="pro-price">$49</span><span class="period">/mo</span>
-                <div class="annual" id="pro-annual">Billed monthly</div>
+    <!-- Pricing Cards -->
+    <section class="pricing-section">
+        <div class="pricing-inner">
+            <div class="pricing-grid">
+                <!-- FREE Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">FREE</div>
+                    <div class="plan-price">$0<span class="period">/forever</span></div>
+                    <p class="plan-desc">Everything you need to start</p>
+                    <ul class="plan-features">
+                        <li><span class="feature-icon">✓</span> 1 CSV audit per month</li>
+                        <li><span class="feature-icon">✓</span> In-browser results & anomaly flags</li>
+                        <li><span class="feature-icon">✓</span> FOCUS 1.3 compliance score</li>
+                        <li><span class="feature-icon">✓</span> Download close pack (ZIP)</li>
+                        <li><span class="feature-icon">✓</span> PDF audit report</li>
+                    </ul>
+                    <a href="/audit" class="plan-cta plan-cta-secondary">Start Free</a>
+                </div>
+
+                <!-- PRO Plan (Featured) -->
+                <div class="pricing-card featured">
+                    <div class="pricing-badge">Most Popular</div>
+                    <div class="plan-name">PRO</div>
+                    <div class="plan-price">$149<span class="period">/month</span></div>
+                    <p class="plan-desc">For growing teams</p>
+                    <ul class="plan-features">
+                        <li><span class="feature-icon">✓</span> Everything in Free</li>
+                        <li><span class="feature-icon">✓</span> Unlimited CSV audits</li>
+                        <li><span class="feature-icon">✓</span> HMAC-SHA256 signed manifests</li>
+                        <li><span class="feature-icon">✓</span> Cryptographic close certificate</li>
+                        <li><span class="feature-icon">✓</span> GL journal entries (NetSuite/QB/Xero)</li>
+                        <li><span class="feature-icon">✓</span> Priority email support</li>
+                    </ul>
+                    <button onclick="checkout('pro')" class="plan-cta plan-cta-primary" id="proCta">Get Started</button>
+                    <p class="plan-note">14-day free trial &middot; Cancel anytime</p>
+                </div>
+
+                <!-- TEAM Plan -->
+                <div class="pricing-card">
+                    <div class="plan-name">TEAM</div>
+                    <div class="plan-price">$399<span class="period">/month</span></div>
+                    <p class="plan-desc">For enterprises</p>
+                    <ul class="plan-features">
+                        <li><span class="feature-icon">✓</span> Everything in Pro</li>
+                        <li><span class="feature-icon">✓</span> Up to 10 users</li>
+                        <li><span class="feature-icon">✓</span> Multi-provider consolidation</li>
+                        <li><span class="feature-icon">✓</span> Custom cost center mapping</li>
+                        <li><span class="feature-icon">✓</span> Dedicated Slack channel</li>
+                        <li><span class="feature-icon">✓</span> SSO & audit log access</li>
+                    </ul>
+                    <button onclick="checkout('team')" class="plan-cta plan-cta-secondary" id="teamCta">Get Started</button>
+                    <p class="plan-note">14-day free trial &middot; Cancel anytime</p>
+                </div>
             </div>
-            <ul class="plan-features">
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Everything in Free</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Unit Economics calculator</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Saved GL & CC rules</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Close Pack history (90 days)</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> QuickBooks export</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Email support (24hr)</li>
-            </ul>
-            <a href="/demo" class="btn btn-green plan-cta">Start 14-Day Trial</a>
-        </div>
-        
-        <div class="pricing-card">
-            <div class="plan-name">Business</div>
-            <div class="plan-desc">For teams needing control</div>
-            <div class="plan-price">
-                <span class="amount" id="biz-price">$149</span><span class="period">/mo</span>
-                <div class="annual" id="biz-annual">Billed monthly</div>
-            </div>
-            <ul class="plan-features">
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Everything in Pro</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Real-time Gateway</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Budget enforcement</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> API access</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> History (2 years)</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Priority support (4hr)</li>
-            </ul>
-            <a href="/demo" class="btn btn-secondary plan-cta">Start 14-Day Trial</a>
-        </div>
-        
-        <div class="pricing-card">
-            <div class="plan-name">Enterprise</div>
-            <div class="plan-desc">For large organizations</div>
-            <div class="plan-price">
-                <span class="amount">Custom</span>
-                <div class="annual">Contact for pricing</div>
-            </div>
-            <ul class="plan-features">
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Everything in Business</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> SSO / SAML</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Audit logging</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Custom SLA</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> Dedicated support</li>
-                <li><svg class="check" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/></svg> On-prem option</li>
-            </ul>
-            <a href="mailto:enterprise@finault.ai" class="btn btn-secondary plan-cta">Contact Sales</a>
-        </div>
-    </div>
-    
-    <div class="guarantee">
-        <h3>14-Day Money-Back Guarantee</h3>
-        <p>Try Pro or Business risk-free. If you don't see value within 14 days, email us for a full refund. No questions asked.</p>
-    </div>
-    
-    <section class="faq">
-        <h2>Frequently Asked Questions</h2>
-        
-        <div class="faq-item">
-            <div class="faq-q">Can I switch plans anytime?</div>
-            <div class="faq-a">Yes. Upgrade or downgrade anytime. When upgrading, you'll be charged the prorated difference. When downgrading, the change takes effect at your next billing cycle.</div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-q">What payment methods do you accept?</div>
-            <div class="faq-a">We accept all major credit cards (Visa, Mastercard, Amex) through Stripe. Enterprise customers can pay via invoice.</div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-q">Is there a free trial?</div>
-            <div class="faq-a">Yes! Pro and Business plans include a 14-day free trial. No credit card required to start.</div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-q">What's included in the Gateway?</div>
-            <div class="faq-a">The Gateway is a real-time proxy that sits between your code and AI providers. It enables budget enforcement, automatic cost tagging, and usage tracking without code changes.</div>
-        </div>
-        
-        <div class="faq-item">
-            <div class="faq-q">Do you offer discounts for startups?</div>
-            <div class="faq-a">Yes! We offer 50% off for early-stage startups (pre-Series A). Contact us at startups@finault.ai.</div>
         </div>
     </section>
-    
+
+    <!-- FAQ -->
+    <section class="faq-section">
+        <div class="faq-inner">
+            <p class="section-label">Frequently Asked Questions</p>
+            <h2 class="section-title">Questions? We have answers.</h2>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What file formats do you support?</span>
+                    <div class="faq-toggle">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-content">
+                        AWS Bedrock, Azure OpenAI, and OpenAI billing CSVs. Automatic format detection handles column order variations, different date formats, and provider-specific SKU naming conventions.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What's included in the free tier?</span>
+                    <div class="faq-toggle">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-content">
+                        Full audit with anomaly detection, FOCUS compliance scoring, spend-by-model breakdown, and downloadable close pack. No signup required. Just upload your CSV and download your results.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What's in a close pack?</span>
+                    <div class="faq-toggle">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-content">
+                        Reconciliation statement, GL journal entry, close certificate, and cryptographic manifest. All SHA-256 hashed and HMAC-signed. You get a sealed ZIP archive that's tamper-evident and independently verifiable by your auditor.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Is my data secure?</span>
+                    <div class="faq-toggle">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-content">
+                        Your CSVs are processed on Cloudflare Workers at the edge. No data is stored on centralized servers. Close packs are sealed in R2 with no delete operations, ensuring immutability and compliance with audit requirements.
+                    </div>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I cancel anytime?</span>
+                    <div class="faq-toggle">▼</div>
+                </div>
+                <div class="faq-answer">
+                    <div class="faq-content">
+                        Yes. No contracts, no commitments. Cancel your plan anytime from your dashboard. Your close packs remain permanently sealed and verifiable.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta">
+        <h2>Ready to close your books?</h2>
+        <p class="cta-sub">Start with a free audit. Upgrade when you need more.</p>
+        <a href="/audit" class="btn-primary">
+            Run Your Free AI Spend Audit
+            <svg class="btn-arrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+        </a>
+        <p class="hero-proof">No credit card. No signup. <strong>Results in 60 seconds.</strong></p>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        <p>&copy; 2026 Finault, Inc. &middot; <a href="/docs" style="color:var(--gray-500);text-decoration:none">Docs</a> &middot; <a href="/security" style="color:var(--gray-500);text-decoration:none">Security</a> &middot; <a href="/privacy" style="color:var(--gray-500);text-decoration:none">Privacy</a> &middot; <a href="/terms" style="color:var(--gray-500);text-decoration:none">Terms</a> &middot; <a href="mailto:hello@finault.ai" style="color:var(--gray-500);text-decoration:none">Contact</a></p>
+        <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 Finault. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="/pricing">Pricing</a>
+                <a href="/security">Security</a>
+                <a href="/verify">Verify a Pack</a>
+                <a href="mailto:hello@finault.ai">Contact</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+            </div>
+        </div>
     </footer>
-    
+
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
-        // Stripe price IDs (configure these in your Stripe Dashboard)
-        // These should match your actual Stripe price IDs
-        const STRIPE_PRICES = {
-            pro_monthly: 'price_pro_monthly',      // Update with your actual Stripe price ID
-            pro_annual: 'price_pro_annual',        // Update with your actual Stripe price ID
-            business_monthly: 'price_business_monthly',    // Update with your actual Stripe price ID
-            business_annual: 'price_business_annual'       // Update with your actual Stripe price ID
+        // ═══════════════════════════════════════════════════════════
+        // STRIPE CONFIGURATION
+        // Replace with your live Stripe publishable key and price IDs
+        // after creating products in the Stripe Dashboard.
+        // ═══════════════════════════════════════════════════════════
+        var STRIPE_CONFIG = {
+            publishableKey: '', // pk_live_... or pk_test_...
+            prices: {
+                pro:  '', // price_... ($149/mo)
+                team: ''  // price_... ($399/mo)
+            }
         };
 
-        let currentBillingType = 'monthly';
+        // Pre-built Stripe Payment Links (alternative — no backend needed)
+        // Create these at https://dashboard.stripe.com/payment-links
+        var PAYMENT_LINKS = {
+            pro:  'https://buy.stripe.com/5kQ3co3m51AagyNaiw8so07',
+            team: 'https://buy.stripe.com/9B6dR27Cl2Eeaap1M08so08'
+        };
 
-        function setBilling(type) {
-            document.querySelectorAll('.toggle button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            currentBillingType = type;
+        // ═══════════════════════════════════════════════════════════
 
-            if (type === 'annual') {
-                document.getElementById('pro-price').textContent = '$39';
-                document.getElementById('pro-annual').textContent = 'Billed annually ($468/yr)';
-                document.getElementById('biz-price').textContent = '$119';
-                document.getElementById('biz-annual').textContent = 'Billed annually ($1,428/yr)';
-            } else {
-                document.getElementById('pro-price').textContent = '$49';
-                document.getElementById('pro-annual').textContent = 'Billed monthly';
-                document.getElementById('biz-price').textContent = '$149';
-                document.getElementById('biz-annual').textContent = 'Billed monthly';
-            }
-        }
+        function checkout(plan) {
+            var btn = document.getElementById(plan === 'pro' ? 'proCta' : 'teamCta');
+            var orig = btn.textContent;
 
-        async function startCheckout(plan) {
-            const token = localStorage.getItem('token');
-            const priceId = currentBillingType === 'annual'
-                ? STRIPE_PRICES[`${plan}_annual`]
-                : STRIPE_PRICES[`${plan}_monthly`];
-
-            if (!priceId) {
-                alert('Plan not configured. Please contact support.');
+            // 1. If payment links are configured, use those (simplest)
+            if (PAYMENT_LINKS[plan]) {
+                btn.textContent = 'Redirecting...';
+                window.location.href = PAYMENT_LINKS[plan];
                 return;
             }
 
-            if (!token) {
-                // Redirect to login if not authenticated
-                window.location.href = '/login?redirect=pricing';
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/v1/stripe/checkout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({
-                        price_id: priceId,
-                        success_url: `${window.location.origin}/app.html?checkout=success`,
-                        cancel_url: `${window.location.origin}/pricing.html?checkout=cancelled`
-                    })
-                });
-
-                const data = await response.json();
-
-                if (data.success && data.url) {
-                    // Redirect to Stripe Checkout
-                    window.location.href = data.url;
-                } else {
-                    alert(`Error: ${data.error || 'Failed to create checkout session'}`);
-                }
-            } catch (error) {
-                console.error('Checkout error:', error);
-                alert('Checkout failed. Please try again.');
-            }
-        }
-
-        // Update all CTA buttons to use Stripe
-        document.addEventListener('DOMContentLoaded', function() {
-            // Pro plan buttons
-            const proButtons = document.querySelectorAll('.pricing-card.featured .plan-cta');
-            proButtons.forEach(btn => {
-                if (btn.textContent.includes('Start')) {
-                    btn.onclick = (e) => {
-                        e.preventDefault();
-                        startCheckout('pro');
-                    };
-                    btn.style.cursor = 'pointer';
-                }
-            });
-
-            // Business plan buttons
-            const bizCards = document.querySelectorAll('.pricing-card');
-            bizCards.forEach(card => {
-                if (card.querySelector('.plan-name')?.textContent.includes('Business')) {
-                    const btn = card.querySelector('.plan-cta');
-                    if (btn && btn.textContent.includes('Start')) {
-                        btn.onclick = (e) => {
-                            e.preventDefault();
-                            startCheckout('business');
-                        };
-                        btn.style.cursor = 'pointer';
+            // 2. If Stripe.js is configured, use Checkout Sessions
+            if (STRIPE_CONFIG.publishableKey && STRIPE_CONFIG.prices[plan]) {
+                btn.textContent = 'Redirecting...';
+                btn.disabled = true;
+                var stripe = Stripe(STRIPE_CONFIG.publishableKey);
+                stripe.redirectToCheckout({
+                    lineItems: [{ price: STRIPE_CONFIG.prices[plan], quantity: 1 }],
+                    mode: 'subscription',
+                    successUrl: window.location.origin + '/audit?upgraded=' + plan,
+                    cancelUrl: window.location.origin + '/pricing'
+                }).then(function(result) {
+                    if (result.error) {
+                        btn.textContent = orig;
+                        btn.disabled = false;
+                        alert(result.error.message);
                     }
+                });
+                return;
+            }
+
+            // 3. Fallback: email (before Stripe is configured)
+            btn.textContent = 'Opening email...';
+            var subject = encodeURIComponent(plan === 'pro' ? 'Pro Plan Interest' : 'Team Plan Interest');
+            window.location.href = 'mailto:hello@finault.ai?subject=' + subject + '&body=' + encodeURIComponent('Hi, I\'d like to sign up for the ' + plan.charAt(0).toUpperCase() + plan.slice(1) + ' plan.');
+            setTimeout(function() { btn.textContent = orig; }, 2000);
+        }
+
+        function toggleFAQ(element) {
+            var question = element;
+            var answer = element.nextElementSibling;
+            document.querySelectorAll('.faq-question').forEach(function(q) {
+                if (q !== question) {
+                    q.classList.remove('open');
+                    q.nextElementSibling.classList.remove('open');
                 }
             });
-        });
+            question.classList.toggle('open');
+            answer.classList.toggle('open');
+        }
     </script>
+
 </body>
 </html>

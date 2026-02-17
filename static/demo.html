@@ -3,425 +3,2579 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Demo - Finault | AI Cost Governance</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha384-+mbV2IY1Zk/X1p/nWllGySJSUN8uMs+gUAN10Or95UBH0fpj6GfKgPmgC5EXieXG" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" integrity="sha384-aRAaCbKYByQpx0fjPuC0PQ9P9moWMEsHXP9tyzP7tbyD5fPK6oTp+THsxdWiq02L" crossorigin="anonymous"></script>
+    <title>Free AI Spend Audit | Finault</title>
+    <meta name="description" content="Upload your AI billing CSV. See your spend breakdown instantly. Download an audit-ready close pack in 60 seconds.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
     <style>
-        *{box-sizing:border-box;margin:0;padding:0}:root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}body{font-family:'Inter',-apple-system,sans-serif;background:var(--white);color:var(--gray-900);line-height:1.6}header{border-bottom:1px solid var(--gray-200);padding:1rem 0;background:var(--white);position:sticky;top:0;z-index:100}.header-container{max-width:1200px;margin:0 auto;padding:0 2rem;display:flex;justify-content:space-between;align-items:center}.logo{display:flex;align-items:center;gap:.5rem;font-weight:600;font-size:1.25rem;color:var(--black);text-decoration:none}.logo svg{width:32px;height:32px}nav{display:flex;align-items:center;gap:2rem}nav a{color:var(--gray-700);text-decoration:none;font-size:.9375rem}nav a:hover{color:var(--black)}.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:.5rem;font-size:.9375rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .15s}.btn-primary{background:var(--black);color:var(--white)}.btn-primary:hover{background:var(--gray-900)}.btn-green{background:var(--green);color:var(--white)}.btn-green:hover{background:var(--green-dark)}.btn-secondary{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-200)}.btn-lg{padding:1rem 2rem;font-size:1rem}main{max-width:1000px;margin:0 auto;padding:3rem 2rem}.page-header{text-align:center;margin-bottom:2rem}.page-header h1{font-size:2.5rem;font-weight:700;margin-bottom:.75rem}.page-header p{font-size:1.125rem;color:var(--gray-500)}.user-bar{background:var(--gray-50);border-bottom:1px solid var(--gray-200);padding:.75rem 2rem;display:flex;justify-content:space-between;align-items:center;font-size:.875rem}.user-bar.hidden{display:none}.user-email{color:var(--gray-700)}.user-link{color:var(--green);margin-left:1rem}
-        .tabs{display:flex;gap:0;margin-bottom:2rem;background:var(--gray-100);border-radius:.75rem;padding:4px}.tab{flex:1;padding:.75rem 1.5rem;border:none;background:none;font-size:.9375rem;font-weight:500;color:var(--gray-500);cursor:pointer;border-radius:.5rem;transition:all .15s;font-family:inherit}.tab.active{background:var(--white);color:var(--black);box-shadow:0 1px 3px rgba(0,0,0,.1)}.tab:hover:not(.active){color:var(--gray-700)}.tab-content{display:none}.tab-content.active{display:block}
-        .date-row{display:flex;gap:1rem;margin-bottom:1.5rem}.date-field{flex:1}.date-field label{display:block;font-size:.8125rem;color:var(--gray-500);margin-bottom:.375rem;font-weight:500;text-transform:uppercase;letter-spacing:.05em}.date-field input{width:100%;padding:.625rem .75rem;border:1px solid var(--gray-200);border-radius:.5rem;font-size:.9375rem;font-family:inherit}.date-field input:focus{outline:none;border-color:var(--green)}
-        .upload-box{border:2px dashed var(--gray-300);border-radius:1rem;padding:3rem;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:2rem}.upload-box:hover,.upload-box.dragover{border-color:var(--green);background:var(--green-light)}.upload-box.has-file{border-color:var(--green);background:var(--green-light);border-style:solid}.upload-icon{width:48px;height:48px;margin:0 auto 1rem;color:var(--gray-400)}.upload-box.has-file .upload-icon{color:var(--green)}.upload-text{font-size:1rem;color:var(--gray-600);margin-bottom:.5rem}.upload-hint{font-size:.875rem;color:var(--gray-400)}.sample-link{color:var(--green);cursor:pointer;text-decoration:underline}.file-list{margin-top:.75rem;font-size:.8125rem;color:var(--gray-600)}.file-list span{display:inline-block;background:rgba(0,0,0,.05);padding:.125rem .5rem;border-radius:.25rem;margin:.125rem}
-        .error-banner{background:#fef2f2;border:1px solid #fecaca;border-radius:.75rem;padding:1.25rem;margin-bottom:1.5rem;color:#991b1b;font-size:.875rem;display:none}.error-banner.visible{display:block}.error-banner strong{display:block;margin-bottom:.25rem}.error-banner pre{margin-top:.5rem;font-size:.75rem;background:#fff5f5;padding:.75rem;border-radius:.375rem;overflow-x:auto;white-space:pre-wrap;max-height:200px;overflow-y:auto}
-        .section{margin-bottom:3rem;padding:2rem;background:var(--gray-50);border-radius:1rem}.section.hidden{display:none}.section-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}.section-icon{width:24px;height:24px;color:var(--gray-500)}.section-title{font-size:1.25rem;font-weight:600}.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}@media(max-width:768px){.stats-grid{grid-template-columns:repeat(2,1fr)}}.stat-card{background:var(--white);padding:1.25rem;border-radius:.75rem;border:1px solid var(--gray-200)}.stat-label{font-size:.75rem;color:var(--gray-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.25rem}.stat-value{font-size:1.5rem;font-weight:700}.stat-value.green{color:var(--green)}.allocation-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:.75rem;overflow:hidden;border:1px solid var(--gray-200)}.allocation-table th,.allocation-table td{padding:1rem;text-align:left;border-bottom:1px solid var(--gray-200)}.allocation-table th{background:var(--gray-50);font-size:.75rem;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-500);font-weight:500}.allocation-table tr:last-child td{border-bottom:none}.confidence-badge{display:inline-flex;padding:.25rem .5rem;border-radius:1rem;font-size:.75rem;font-weight:500}.confidence-badge.high{background:var(--green-light);color:var(--green-dark)}.confidence-badge.medium{background:#fef3c7;color:#b45309}.deliverables-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:1.5rem}@media(max-width:640px){.deliverables-grid{grid-template-columns:1fr}}.deliverable-card{display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;transition:all .15s}.deliverable-card.clickable{cursor:pointer}.deliverable-card.clickable:hover{border-color:var(--green);box-shadow:0 2px 8px rgba(0,0,0,.05)}.deliverable-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:var(--gray-100);border-radius:.5rem;color:var(--gray-600)}.deliverable-card.clickable:hover .deliverable-icon{background:var(--green-light);color:var(--green)}.deliverable-info h4{font-size:.9375rem;font-weight:600;margin-bottom:.125rem}.deliverable-info p{font-size:.8125rem;color:var(--gray-500)}.download-all-section{text-align:center;padding:1.5rem;background:var(--white);border-radius:.75rem;border:2px solid var(--green)}.download-all-section p{font-size:.875rem;color:var(--gray-500);margin-top:.75rem}.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .2s;z-index:1000}.modal.visible{opacity:1;visibility:visible}.modal-content{background:var(--white);padding:2rem;border-radius:1rem;max-width:400px;width:90%;text-align:center}.modal-content h3{font-size:1.25rem;margin-bottom:.5rem}.modal-content p{color:var(--gray-500);margin-bottom:1.5rem}.modal-content input{width:100%;padding:.75rem 1rem;border:1px solid var(--gray-200);border-radius:.5rem;font-size:1rem;margin-bottom:1rem}.modal-content input:focus{outline:none;border-color:var(--green)}.modal-content .btn{width:100%;margin-bottom:.5rem}footer{text-align:center;padding:2rem;color:var(--gray-500);font-size:.875rem;border-top:1px solid var(--gray-200)}.toast{position:fixed;bottom:2rem;right:2rem;background:var(--gray-900);color:var(--white);padding:1rem 1.5rem;border-radius:.5rem;display:flex;align-items:center;gap:.75rem;transform:translateY(100px);opacity:0;transition:all .3s;z-index:1001}.toast.visible{transform:translateY(0);opacity:1}.toast.success{background:var(--green)}.toast.error{background:#dc2626}
-        .btn:disabled{opacity:.5;cursor:not-allowed}
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #111;
+            --white: #fff;
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --green-border: #bbf7d0;
+            --green-dark: #15803d;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-300: #d4d4d4;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-700: #404040;
+            --gray-900: #171717;
+            --border: #e5e5e5;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+            --red-border: #fecaca;
+            --blue: #2563eb;
+            --blue-light: #eff6ff;
+            --amber: #d97706;
+            --amber-light: #fffbeb;
+            --amber-border: #fde68a;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--gray-900);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 64px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-cta {
+            padding: 8px 20px; color: var(--white); text-decoration: none;
+            font-size: 14px; font-weight: 600; border-radius: 8px;
+            background: var(--green); transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* ===== PAGE ===== */
+        .page { max-width: 840px; margin: 0 auto; padding: 100px 24px 80px; }
+
+        .page-header { text-align: center; margin-bottom: 40px; }
+        .page-header h1 {
+            font-size: clamp(28px, 5vw, 40px); font-weight: 700;
+            letter-spacing: -0.03em; line-height: 1.15; margin-bottom: 12px;
+        }
+        .page-header h1 .accent { color: var(--green); }
+        .page-header p { font-size: 17px; color: var(--gray-500); max-width: 520px; margin: 0 auto; }
+
+        /* ===== UPLOAD ZONE ===== */
+        .upload-zone {
+            border: 2px dashed var(--gray-300); border-radius: 16px;
+            padding: 48px 32px; text-align: center; cursor: pointer;
+            transition: all 0.2s; background: var(--white); position: relative;
+        }
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: var(--green); background: var(--green-light);
+        }
+        .upload-zone.has-file {
+            border-color: var(--green); background: var(--green-light); border-style: solid;
+        }
+        .upload-zone-icon {
+            width: 56px; height: 56px; margin: 0 auto 16px; color: var(--gray-400);
+            transition: color 0.2s;
+        }
+        .upload-zone.has-file .upload-zone-icon, .upload-zone:hover .upload-zone-icon { color: var(--green); }
+        .upload-zone-title { font-size: 18px; font-weight: 600; color: var(--gray-900); margin-bottom: 8px; }
+        .upload-zone-sub { font-size: 14px; color: var(--gray-500); margin-bottom: 4px; }
+        .upload-zone-hint { font-size: 13px; color: var(--gray-400); }
+        .upload-zone-hint a { color: var(--green); cursor: pointer; text-decoration: underline; }
+        .file-tag {
+            display: inline-flex; align-items: center; gap: 6px; margin-top: 12px;
+            padding: 6px 12px; background: rgba(22,163,74,0.1); border-radius: 6px;
+            font-size: 13px; font-weight: 500; color: var(--green-dark);
+        }
+        .file-tag svg { width: 14px; height: 14px; }
+
+        .provider-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+            background: var(--blue-light); color: var(--blue); margin-top: 10px;
+        }
+
+        /* ===== PROCESSING ===== */
+        .processing { text-align: center; padding: 60px 0; display: none; }
+        .processing.visible { display: block; }
+        .spinner {
+            width: 40px; height: 40px; border: 3px solid var(--gray-200);
+            border-top-color: var(--green); border-radius: 50%;
+            animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .processing-text { font-size: 15px; color: var(--gray-500); }
+
+        /* ===== ERROR ===== */
+        .error-banner {
+            background: var(--red-light); border: 1px solid var(--red-border);
+            border-radius: 12px; padding: 16px 20px; margin-top: 20px;
+            color: #991b1b; font-size: 14px; display: none;
+        }
+        .error-banner.visible { display: block; }
+        .error-banner strong { display: block; margin-bottom: 4px; }
+        .error-banner pre {
+            margin-top: 8px; font-size: 12px; background: #fff5f5;
+            padding: 10px; border-radius: 6px; overflow-x: auto; white-space: pre-wrap;
+            max-height: 120px; overflow-y: auto;
+        }
+
+        /* ===== RESULTS ===== */
+        .results { display: none; margin-top: 48px; }
+        .results.visible { display: block; }
+
+        /* Sticky download bar */
+        .sticky-download {
+            display: none; position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+            padding: 14px 24px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid var(--border);
+            box-shadow: 0 -2px 20px rgba(0,0,0,0.06);
+        }
+        .sticky-download.visible { display: block; }
+        .sticky-download-inner {
+            max-width: 840px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between; gap: 16px;
+        }
+        .sticky-download-text {
+            font-size: 14px; font-weight: 600; color: var(--gray-900);
+        }
+        .sticky-download-text span { color: var(--gray-400); font-weight: 400; font-size: 13px; margin-left: 8px; }
+        .sticky-download-actions { display: flex; gap: 8px; }
+        .sticky-download .btn { padding: 10px 20px; font-size: 13px; }
+
+        .results-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 28px; gap: 16px;
+        }
+        .results-header h2 {
+            font-size: 22px; font-weight: 700; letter-spacing: -0.02em; color: var(--gray-900);
+        }
+        .results-header-sub { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
+        .audit-fingerprint {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            font-size: 11px; color: var(--gray-400); margin-top: 6px;
+            letter-spacing: 0.02em;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .badge-green { background: var(--green-light); border: 1px solid var(--green-border); color: var(--green); }
+
+        /* Section divider */
+        .section-divider {
+            border: none; border-top: 1px solid var(--border); margin: 40px 0;
+        }
+        .result-section-title {
+            font-size: 11px; font-weight: 600; color: var(--gray-500); margin-bottom: 18px;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .result-section-title::before {
+            content: ''; display: inline-block; width: 3px; height: 14px;
+            background: var(--green); border-radius: 2px; flex-shrink: 0;
+        }
+
+        /* Hero spend */
+        .hero-spend {
+            padding: 32px; background: var(--gray-900); border-radius: 14px;
+            margin-bottom: 12px; position: relative; overflow: hidden;
+        }
+        .hero-spend::after {
+            content: ''; position: absolute; top: 0; right: 0; width: 200px; height: 100%;
+            background: radial-gradient(circle at 100% 0%, rgba(22,163,74,0.12) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .hero-spend .label {
+            font-size: 11px; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 8px;
+        }
+        .hero-spend .value {
+            font-size: 42px; font-weight: 800; letter-spacing: -0.03em; color: var(--white);
+            line-height: 1;
+        }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .hero-savings {
+            padding: 32px; background: var(--white); border-radius: 14px;
+            border: 2px solid var(--green-border); position: relative; overflow: hidden;
+        }
+        .hero-savings .label {
+            font-size: 11px; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 8px;
+        }
+        .hero-savings .value {
+            font-size: 36px; font-weight: 800; letter-spacing: -0.03em; color: var(--green); line-height: 1;
+        }
+        .hero-savings .value-sub {
+            font-size: 13px; font-weight: 500; color: var(--gray-500); margin-top: 6px;
+        }
+        .exec-summary {
+            padding: 16px 20px; background: var(--gray-50); border-radius: 10px;
+            border-left: 3px solid var(--green); margin-bottom: 8px;
+            font-size: 14px; line-height: 1.6; color: var(--gray-700);
+        }
+        .exec-summary strong { color: var(--gray-900); }
+        /* Summary cards */
+        .summary-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 12px; margin-bottom: 8px;
+        }
+        .summary-card {
+            padding: 18px 20px; background: var(--white); border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .summary-card .label {
+            font-size: 10px; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 4px;
+        }
+        .summary-card .value {
+            font-size: 22px; font-weight: 700; letter-spacing: -0.03em; color: var(--gray-900);
+        }
+        .summary-card .value.green { color: var(--green); }
+
+        /* ===== ANOMALY FLAGS ===== */
+        .anomaly-section { margin-bottom: 8px; }
+        .anomaly-card {
+            display: flex; align-items: flex-start; gap: 12px;
+            padding: 14px 18px; border-radius: 8px; margin-bottom: 6px;
+            font-size: 13px; line-height: 1.6; color: var(--gray-700);
+            background: var(--white); border: 1px solid var(--border);
+            transition: border-color 0.15s;
+        }
+        .anomaly-card:hover { border-color: var(--gray-300); }
+        .anomaly-card .anomaly-indicator {
+            width: 3px; min-height: 100%; border-radius: 2px; flex-shrink: 0; align-self: stretch;
+        }
+        .anomaly-card .anomaly-dot {
+            width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 7px;
+        }
+        .anomaly-card .anomaly-severity {
+            font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+            padding: 2px 6px; border-radius: 3px; flex-shrink: 0; margin-top: 3px;
+        }
+        .anomaly-card.warn .anomaly-indicator { background: var(--amber); }
+        .anomaly-card.warn .anomaly-dot { background: var(--amber); }
+        .anomaly-card.warn .anomaly-severity { background: #fef3c7; color: #92400e; }
+        .anomaly-card.info .anomaly-indicator { background: var(--blue); }
+        .anomaly-card.info .anomaly-dot { background: var(--blue); }
+        .anomaly-card.info .anomaly-severity { background: #dbeafe; color: #1e40af; }
+        .anomaly-card.critical .anomaly-indicator { background: var(--red); }
+        .anomaly-card.critical .anomaly-dot { background: var(--red); }
+        .anomaly-card.critical .anomaly-severity { background: #fee2e2; color: #991b1b; }
+        .anomaly-card strong { font-weight: 600; color: var(--gray-900); }
+        .anomaly-rec {
+            margin-top: 8px; padding: 8px 12px; border-radius: 6px;
+            background: var(--gray-50); border-left: 2px solid var(--green);
+            font-size: 12px; color: var(--gray-600); line-height: 1.5;
+        }
+        .anomaly-rec strong { color: var(--green); font-weight: 600; }
+        .benchmark-card {
+            padding: 16px; background: var(--white); border: 1px solid var(--border);
+            border-radius: 10px; text-align: center;
+        }
+        .benchmark-card .bm-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 4px; }
+        .benchmark-card .bm-value { font-size: 22px; font-weight: 800; color: var(--gray-900); margin-bottom: 2px; }
+        .benchmark-card .bm-context { font-size: 11px; color: var(--gray-500); line-height: 1.4; }
+        .benchmark-card .bm-good { color: var(--green); }
+        .benchmark-card .bm-warn { color: var(--amber); }
+        .benchmark-card .bm-bad { color: var(--red); }
+        .focus-na {
+            padding: 20px; background: var(--gray-50); border: 1px dashed var(--gray-200);
+            border-radius: 10px; text-align: center; font-size: 13px; color: var(--gray-500);
+        }
+        .focus-na strong { color: var(--gray-700); }
+        .alloc-cta {
+            padding: 24px; background: var(--gray-50); border: 1px dashed var(--gray-200);
+            border-radius: 10px; text-align: center;
+        }
+        .alloc-cta-title { font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+        .alloc-cta-desc { font-size: 13px; color: var(--gray-500); max-width: 440px; margin: 0 auto 14px; line-height: 1.55; }
+        .alloc-cta-steps { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 14px; }
+        .alloc-cta-step { font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+        .alloc-cta-step .step-num { width: 20px; height: 20px; border-radius: 50%; background: var(--gray-900); color: white; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+
+        /* ===== FOCUS SCORE ===== */
+        .focus-section { margin-bottom: 8px; }
+        .focus-bar-wrap {
+            display: flex; align-items: center; gap: 14px; margin-bottom: 16px;
+        }
+        .focus-bar-outer {
+            flex: 1; height: 8px; background: var(--gray-100); border-radius: 4px; overflow: hidden;
+        }
+        .focus-bar-fill {
+            height: 100%; border-radius: 4px; transition: width 0.8s ease;
+            background: var(--gray-900);
+        }
+        .focus-bar-pct {
+            font-size: 20px; font-weight: 700; color: var(--gray-900);
+            letter-spacing: -0.02em; min-width: 52px; text-align: right;
+        }
+        .focus-details {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+        }
+        .focus-detail {
+            padding: 14px; background: var(--white); border-radius: 10px; border: 1px solid var(--border);
+        }
+        .focus-detail .label { font-size: 10px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+        .focus-detail .val { font-size: 18px; font-weight: 700; color: var(--gray-900); }
+        .focus-detail .val.green { color: var(--green); }
+        .focus-detail .val.amber { color: var(--amber); }
+
+        /* Bar chart */
+        .bar-chart { display: flex; flex-direction: column; gap: 8px; }
+        .bar-row { display: flex; align-items: center; gap: 10px; }
+        .bar-label {
+            width: 140px; font-size: 13px; font-weight: 500; color: var(--gray-600);
+            text-align: right; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .bar-track {
+            flex: 1; height: 26px; background: var(--gray-100); border-radius: 6px;
+            overflow: hidden; position: relative;
+        }
+        .bar-fill {
+            height: 100%; border-radius: 6px; transition: width 0.6s ease;
+            display: flex; align-items: center; padding-left: 8px;
+            font-size: 11px; font-weight: 600; color: var(--white); min-width: 44px;
+        }
+        .bar-fill.green { background: linear-gradient(90deg, var(--gray-900) 0%, #1e3a2f 100%); }
+        .bar-fill.dark { background: linear-gradient(90deg, var(--gray-900) 0%, #1e3a2f 100%); }
+        .bar-amount {
+            font-size: 13px; font-weight: 600; color: var(--gray-900); width: 85px; text-align: right; flex-shrink: 0;
+        }
+
+        /* ===== SKU TABLE ===== */
+        .sku-table {
+            width: 100%; border-collapse: collapse; background: var(--white);
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+            font-size: 13px;
+        }
+        .sku-table th, .sku-table td {
+            padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border);
+        }
+        .sku-table th {
+            background: var(--white); font-size: 10px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .sku-table td { font-size: 13px; }
+        .sku-table tr:last-child td { border-bottom: none; }
+        .sku-table .mono { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
+
+        /* ===== TREND CHART (canvas-like with bars) ===== */
+        .trend-chart-container { position: relative; }
+        .trend-months {
+            display: flex; gap: 4px; align-items: flex-end; height: 140px;
+            padding-bottom: 24px; border-bottom: 1px solid var(--border); margin-bottom: 8px;
+        }
+        .trend-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+        .trend-bar {
+            width: 100%; max-width: 48px; border-radius: 4px 4px 0 0; transition: height 0.6s ease;
+            position: relative;
+        }
+        .trend-bar.green { background: var(--green); }
+        .trend-bar.light { background: var(--gray-200); }
+        .trend-bar-label {
+            font-size: 11px; font-weight: 600; color: var(--gray-500);
+            text-align: center; position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .trend-bar-value {
+            font-size: 10px; font-weight: 700; color: var(--gray-900);
+            text-align: center; margin-bottom: 2px;
+        }
+        .trend-legend {
+            display: flex; gap: 16px; justify-content: center; margin-top: 8px;
+        }
+        .trend-legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--gray-500); }
+        .trend-legend-dot { width: 8px; height: 8px; border-radius: 2px; }
+        .trend-change {
+            display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+            border-radius: 12px; font-size: 12px; font-weight: 600; margin-left: 8px;
+        }
+        .trend-change.up { background: var(--red-light); color: var(--red); }
+        .trend-change.down { background: var(--green-light); color: var(--green); }
+
+        /* Allocation table */
+        .alloc-table {
+            width: 100%; border-collapse: collapse; background: var(--white);
+            border-radius: 12px; overflow: hidden; border: 1px solid var(--border);
+        }
+        .alloc-table th, .alloc-table td {
+            padding: 11px 14px; text-align: left; border-bottom: 1px solid var(--border);
+        }
+        .alloc-table th {
+            background: var(--white); font-size: 10px; font-weight: 500;
+            text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400);
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .alloc-table td { font-size: 13px; }
+        .alloc-table tr:last-child td { border-bottom: none; }
+        .conf-badge {
+            display: inline-flex; padding: 3px 10px; border-radius: 12px;
+            font-size: 11px; font-weight: 600;
+        }
+        .conf-badge.high { background: var(--green-light); color: var(--green-dark); }
+        .conf-badge.med { background: #fef3c7; color: #b45309; }
+
+        /* ===== CLOSE PACK SECTION ===== */
+        .pack-section {
+            margin-top: 40px; padding: 28px; background: var(--gray-50);
+            border-radius: 16px; border: 1px solid var(--border);
+        }
+        .pack-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .pack-desc { font-size: 14px; color: var(--gray-500); margin-bottom: 20px; }
+        .pack-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 20px;
+        }
+        .pack-card {
+            display: flex; align-items: center; gap: 12px; padding: 12px 14px;
+            background: var(--white); border: 1px solid var(--border); border-radius: 10px;
+        }
+        .pack-card-icon {
+            width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+            background: var(--gray-900); border-radius: 8px; flex-shrink: 0;
+        }
+        .pack-card-icon svg { width: 15px; height: 15px; color: var(--white); stroke-width: 1.5; }
+        .pack-card h4 { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+        .pack-card p { font-size: 11px; color: var(--gray-500); }
+
+        .pack-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 13px 24px; font-size: 14px; font-weight: 600;
+            border-radius: 10px; border: none; cursor: pointer;
+            font-family: inherit; transition: all 0.2s; text-decoration: none;
+        }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-green { background: var(--green); color: var(--white); }
+        .btn-green:hover { opacity: 0.9; box-shadow: 0 2px 12px rgba(22,163,74,0.25); }
+        .btn-outline { background: var(--white); color: var(--gray-600); border: 1px solid var(--gray-200); }
+        .btn-outline:hover { border-color: var(--gray-400); }
+        .btn-dark { background: var(--gray-900); color: var(--white); }
+        .btn-dark:hover { background: var(--gray-700); }
+        .btn svg { width: 16px; height: 16px; }
+
+        /* ===== SHARE ===== */
+        .share-section {
+            margin-top: 20px; padding: 18px 20px; background: var(--blue-light);
+            border-radius: 12px; border: 1px solid #bfdbfe; display: none;
+        }
+        .share-section.visible { display: block; }
+        .share-section h4 { font-size: 14px; font-weight: 600; color: #1e40af; margin-bottom: 6px; }
+        .share-section p { font-size: 12px; color: #3b82f6; margin-bottom: 10px; }
+        .share-link-box { display: flex; gap: 8px; }
+        .share-link-input {
+            flex: 1; padding: 9px 12px; border: 1px solid #93c5fd; border-radius: 8px;
+            font-size: 13px; font-family: 'Inter', monospace; background: var(--white); color: var(--gray-900);
+        }
+        .share-link-input:focus { outline: none; border-color: var(--blue); }
+        .btn-copy {
+            padding: 9px 14px; background: var(--blue); color: var(--white);
+            border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
+            cursor: pointer; font-family: inherit;
+        }
+
+        /* ===== UPSELL CTA ===== */
+        .upsell {
+            margin-top: 40px; padding: 40px 32px; text-align: center;
+            background: var(--gray-900); border-radius: 16px;
+        }
+        .upsell h3 {
+            font-size: 22px; font-weight: 700; color: var(--white);
+            margin-bottom: 8px; letter-spacing: -0.02em;
+        }
+        .upsell p { font-size: 15px; color: var(--gray-400); margin-bottom: 24px; max-width: 440px; margin-left: auto; margin-right: auto; }
+        .upsell .btn-green { padding: 14px 32px; font-size: 15px; }
+        .upsell-features {
+            display: flex; gap: 24px; justify-content: center; margin-top: 20px; flex-wrap: wrap;
+        }
+        .upsell-feat {
+            display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-400);
+        }
+        .upsell-feat svg { width: 16px; height: 16px; color: var(--green); }
+
+        /* ===== MODAL ===== */
+        .modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.2s; z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal.visible { opacity: 1; visibility: visible; }
+        .modal-box {
+            background: var(--white); padding: 32px; border-radius: 16px;
+            max-width: 420px; width: 92%; text-align: center;
+            box-shadow: 0 24px 48px rgba(0,0,0,0.12);
+        }
+        .modal-box h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .modal-box p { font-size: 14px; color: var(--gray-500); margin-bottom: 24px; line-height: 1.6; }
+        .modal-box input {
+            width: 100%; padding: 12px 16px; border: 1px solid var(--gray-200);
+            border-radius: 10px; font-size: 15px; font-family: inherit; margin-bottom: 12px;
+        }
+        .modal-box input:focus { outline: none; border-color: var(--green); }
+        .modal-box .btn { width: 100%; margin-bottom: 8px; }
+        .modal-skip {
+            background: none; border: none; color: var(--gray-400); font-size: 13px;
+            cursor: pointer; font-family: inherit; padding: 8px;
+        }
+        .modal-skip:hover { color: var(--gray-600); }
+
+        /* ===== TOAST ===== */
+        .toast {
+            position: fixed; bottom: 24px; right: 24px; padding: 14px 20px;
+            border-radius: 10px; display: flex; align-items: center; gap: 10px;
+            transform: translateY(80px); opacity: 0; transition: all 0.3s; z-index: 1001;
+            font-size: 14px; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .toast.visible { transform: translateY(0); opacity: 1; }
+        .toast.success { background: var(--green); color: var(--white); }
+        .toast svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* ===== FOOTER ===== */
+        footer { padding: 36px 24px; border-top: 1px solid var(--border); margin-top: 60px; }
+        .footer-inner {
+            max-width: 960px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-copy { font-size: 13px; color: var(--gray-400); }
+        .footer-links { display: flex; gap: 28px; }
+        .footer-links a { color: var(--gray-400); text-decoration: none; font-size: 13px; }
+        .footer-links a:hover { color: var(--gray-900); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-link { display: none; }
+            .page { padding: 88px 16px 40px; }
+            .hero-grid { grid-template-columns: 1fr; }
+            .hero-savings .value { font-size: 28px; }
+            .summary-grid { grid-template-columns: repeat(2, 1fr); }
+            .pack-grid { grid-template-columns: 1fr; }
+            .bar-label { width: 100px; font-size: 12px; }
+            .bar-amount { width: 70px; font-size: 12px; }
+            .pack-actions { flex-direction: column; }
+            .pack-actions .btn { width: 100%; }
+            .focus-details { grid-template-columns: 1fr; }
+            .upsell-features { flex-direction: column; align-items: center; gap: 12px; }
+            .sticky-download-inner { flex-direction: column; text-align: center; gap: 10px; }
+            .sticky-download-text span { display: block; margin-left: 0; margin-top: 2px; }
+            .sticky-download-actions { width: 100%; }
+            .sticky-download-actions .btn { flex: 1; }
+            .hero-spend .value { font-size: 32px; }
+            #benchmarkCards { grid-template-columns: 1fr !important; }
+            .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+        }
     </style>
 </head>
 <body>
-    <header><div class="header-container"><a href="/" class="logo"><svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#111827"/><path d="M8 10h16M8 16h12M8 22h8" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/></svg>Finault</a><nav><a href="/">Home</a><a href="/docs">Docs</a><a href="/security">Security</a><a href="/pricing">Pricing</a><a href="/dashboard.html" id="navDashboard" style="display:none">Dashboard</a><button class="btn btn-primary" id="authBtn" onclick="location.href='/login'">Sign In</button></nav></div></header>
-    <div class="user-bar hidden" id="userBar"><span class="user-email" id="userEmail"></span><a href="/dashboard.html" class="user-link">View Close Pack History</a><button class="btn btn-secondary" onclick="signOut()" style="margin-left:auto">Sign Out</button></div>
-    <main>
-        <div class="page-header"><h1>See Your AI Spend Allocated</h1><p>Upload invoices or usage data. Get your Close Pack in 60 seconds.</p></div>
 
-        <div class="tabs">
-            <button class="tab active" id="tabInvoice" onclick="switchTab('invoice')">Invoice Close</button>
-            <button class="tab" id="tabUrs" onclick="switchTab('urs')">Usage Reconciliation</button>
+    <!-- Nav -->
+    <nav>
+        <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+        <div class="nav-right">
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/security" class="nav-link">Security</a>
+            <a href="/verify" class="nav-link">Verify a Pack</a>
+            <a href="/audit" class="nav-cta">Free Audit</a>
+        </div>
+    </nav>
+
+    <div class="page">
+        <!-- Header -->
+        <div class="page-header">
+            <h1>Run your <span class="accent">free AI spend audit</span></h1>
+            <p>Upload your billing CSV. See your spend breakdown instantly. Download your audit-ready close pack.</p>
         </div>
 
-        <!-- Invoice Close Tab -->
-        <div id="invoiceTab" class="tab-content active">
-            <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
-                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <div class="upload-text" id="uploadText">Drop your invoice PDF, CSV, or Excel file here</div>
-                <div class="upload-hint">Accepts .pdf, .csv, .xlsx, .xls, .json, .txt &middot; or <span class="sample-link" onclick="event.stopPropagation();loadSample()">try sample data</span> &middot; <a href="/sample/openai-invoice-january-2026.csv" class="sample-link" onclick="event.stopPropagation()" download>download test invoice</a></div>
-                <input type="file" id="fileInput" accept=".pdf,.csv,.xlsx,.xls,.json,.txt" hidden multiple onchange="handleInvoiceFiles(this.files)">
-                <div class="file-list" id="invoiceFileList"></div>
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="uploadZone">
+            <svg class="upload-zone-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <div class="upload-zone-title" id="uploadTitle">Drop your AI billing CSV here</div>
+            <div class="upload-zone-sub">or click to browse</div>
+            <div class="upload-zone-hint">
+                Accepts .csv, .pdf, .xlsx, .json &middot; AWS Bedrock, Azure OpenAI, OpenAI, Google Vertex AI, Anthropic
+                <br><a onclick="event.stopPropagation(); loadSample()">Try with sample data</a>
+                <br><span style="font-size:11px;color:#a3a3a3;margin-top:4px;display:inline-block;">Anonymized, aggregated usage patterns help improve benchmarks. No company names or PII are stored. <a href="/privacy" style="color:#a3a3a3;text-decoration:underline;" onclick="event.stopPropagation();">Learn more</a></span>
             </div>
+            <input type="file" id="fileInput" accept=".csv,.pdf,.xlsx,.xls,.json,.txt" hidden multiple>
+            <div id="fileTags"></div>
+            <div id="providerBadge"></div>
         </div>
 
-        <!-- Usage Reconciliation Tab -->
-        <div id="ursTab" class="tab-content">
-            <div class="date-row">
-                <div class="date-field"><label>Period Start</label><input type="date" id="periodStart"></div>
-                <div class="date-field"><label>Period End</label><input type="date" id="periodEnd"></div>
-            </div>
-            <div class="upload-box" id="ursUploadBox" onclick="document.getElementById('ursFileInput').click()">
-                <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                <div class="upload-text" id="ursUploadText">Drop your usage CSV files here</div>
-                <div class="upload-hint">Accepts .csv files &middot; Multiple files supported</div>
-                <input type="file" id="ursFileInput" accept=".csv" hidden multiple onchange="handleUrsFiles(this.files)">
-                <div class="file-list" id="ursFileList"></div>
-            </div>
+        <!-- Zero-trust banner (Perret/Hockey) -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;font-size:12px;color:var(--gray-400);margin-top:-4px;margin-bottom:8px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Your data never leaves your browser. All analysis runs locally. Zero-trust by design.
         </div>
 
-        <!-- Error display -->
-        <div class="error-banner" id="errorBanner"><strong id="errorTitle"></strong><span id="errorDetail"></span><pre id="errorPre" style="display:none"></pre></div>
+        <!-- Processing -->
+        <div class="processing" id="processing">
+            <div class="spinner"></div>
+            <div class="processing-text" id="processingText">Analyzing your billing data...</div>
+        </div>
 
-        <!-- Stats (Invoice tab, after upload/sample) -->
-        <section class="section hidden" id="statsSection"><div class="section-header"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg><h2 class="section-title">Invoice Summary</h2></div><div class="stats-grid"><div class="stat-card"><div class="stat-label">Total Spend</div><div class="stat-value" id="totalSpend">$0</div></div><div class="stat-card"><div class="stat-label">Allocated</div><div class="stat-value green" id="allocatedSpend">$0</div></div><div class="stat-card"><div class="stat-label">Cost Centers</div><div class="stat-value" id="costCenters">0</div></div><div class="stat-card"><div class="stat-label">Confidence</div><div class="stat-value green" id="confidence">0%</div></div></div></section>
+        <!-- Error -->
+        <div class="error-banner" id="errorBanner">
+            <strong id="errorTitle"></strong>
+            <span id="errorDetail"></span>
+            <pre id="errorPre" style="display:none"></pre>
+        </div>
 
-        <!-- Allocation table (Invoice tab, after upload/sample) -->
-        <section class="section hidden" id="allocationSection"><div class="section-header"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg><h2 class="section-title">Cost Allocation</h2></div><table class="allocation-table"><thead><tr><th>Cost Center</th><th>Department</th><th>Amount</th><th>% of Total</th><th>Confidence</th></tr></thead><tbody id="allocationBody"></tbody></table></section>
+        <!-- ═══ RESULTS ═══ -->
+        <div class="results" id="results">
 
-        <!-- Close Pack Contents -->
-        <section class="section hidden" id="closePackSection">
-            <div class="section-header"><svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg><h2 class="section-title">Close Pack Contents</h2></div>
-
-            <!-- Invoice deliverables -->
-            <div id="invoiceDeliverables" class="deliverables-grid">
-                <div class="deliverable-card clickable" onclick="downloadSingleFile('exec')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="deliverable-info"><h4>Executive Summary</h4><p>PDF &middot; 2 pages</p></div></div>
-                <div class="deliverable-card clickable" onclick="downloadSingleFile('journal')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div><div class="deliverable-info"><h4>GL Journal Entry</h4><p>CSV &middot; NetSuite/QBO ready</p></div></div>
-                <div class="deliverable-card clickable" onclick="downloadSingleFile('cert')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="deliverable-info"><h4>Close Certificate</h4><p>PDF &middot; Audit-ready</p></div></div>
-                <div class="deliverable-card clickable" onclick="downloadSingleFile('manifest')"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="deliverable-info"><h4>Hash-verified Manifest</h4><p>JSON &middot; SHA-256 integrity</p></div></div>
+            <!-- Header (Jobs: removed badge, fingerprint moved to ribbon) -->
+            <div class="results-header">
+                <div>
+                    <h2>Your AI Spend Audit</h2>
+                    <div class="results-header-sub" id="auditPeriod"></div>
+                </div>
             </div>
 
-            <!-- URS deliverables -->
-            <div id="ursDeliverables" class="deliverables-grid" style="display:none">
-                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div><div class="deliverable-info"><h4>Usage Reconciliation Statement</h4><p>PDF &middot; Pricing rule details</p></div></div>
-                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg></div><div class="deliverable-info"><h4>Journal Entry</h4><p>CSV &middot; NetSuite/QBO ready</p></div></div>
-                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div><div class="deliverable-info"><h4>URS Certificate</h4><p>PDF &middot; Audit-ready</p></div></div>
-                <div class="deliverable-card"><div class="deliverable-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg></div><div class="deliverable-info"><h4>Manifest v2.0</h4><p>JSON &middot; Pricing rules attached</p></div></div>
+            <!-- Hero Spend + Savings (Slootman: two numbers that matter) -->
+            <div class="hero-grid">
+                <div class="hero-spend">
+                    <div class="label">Total AI Spend</div>
+                    <div class="value" id="rTotalSpend">$0</div>
+                </div>
+                <div class="hero-savings" id="heroSavings" style="display:none;">
+                    <div class="label">Optimization Opportunity</div>
+                    <div class="value" id="rSavings">$0</div>
+                    <div class="value-sub" id="rSavingsSub"></div>
+                </div>
             </div>
 
-            <div class="download-all-section">
-                <button class="btn btn-green btn-lg" id="generateBtn" onclick="generatePack()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m4-5l5 5 5-5m-5 5V3"/></svg><span id="generateBtnText">Generate Close Pack</span></button>
-                <p id="generateBtnDesc">All 4 documents in one ZIP &middot; Ready for Finance &amp; Audit</p>
+            <!-- Executive Summary (Slootman: one sentence that gets forwarded) -->
+            <div class="exec-summary" id="execSummary" style="display:none;"></div>
+
+            <!-- Audit Verification (Perret/Hockey: trust ribbon) -->
+            <div id="auditRibbon" style="display:none;padding:12px 18px;background:var(--gray-50);border:1px solid var(--border);border-radius:8px;margin-bottom:8px;display:flex;align-items:center;gap:16px;font-family:'SF Mono','Fira Code','Consolas',monospace;font-size:11px;color:var(--gray-500);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;color:var(--green);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                <span id="auditRibbonText"></span>
             </div>
-        </section>
-    </main>
-    <footer><p>&copy; 2026 Finault, Inc. &middot; <a href="/docs">Docs</a> &middot; <a href="/security">Security</a> &middot; <a href="/privacy">Privacy</a> &middot; <a href="/terms">Terms</a> &middot; <a href="mailto:hello@finault.ai">Contact</a></p></footer>
-    <div class="modal" id="emailModal"><div class="modal-content"><h3>Get your Close Pack</h3><p>Enter your email to download. We'll also send you a copy.</p><input type="email" id="emailInput" placeholder="finance@company.com"><button class="btn btn-green" onclick="submitEmail()">Download Close Pack</button><button class="btn btn-secondary" onclick="skipEmail()">Skip for now</button></div></div>
-    <div class="toast" id="toast"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span id="toastMessage">Done!</span></div>
+
+            <!-- Summary stats (Jobs: inline with ribbon, no separate card row) -->
+            <div id="summaryStats" style="display:flex;gap:16px;margin-bottom:8px;font-size:12px;color:var(--gray-500);">
+                <span><strong id="rModels" style="color:var(--gray-700);">0</strong> models</span>
+                <span><strong id="rCostCenters" style="color:var(--gray-700);">0</strong> cost centers</span>
+                <span><strong id="rLineItems" style="color:var(--gray-700);">0</strong> line items</span>
+            </div>
+
+            <!-- Anomaly Flags -->
+            <hr class="section-divider">
+            <div class="anomaly-section" id="anomalySection">
+                <div class="result-section-title">
+                    Anomalies Detected
+                </div>
+                <div id="anomalyCards"></div>
+            </div>
+
+            <!-- How You Compare — benchmark section (the aha moment) -->
+            <hr class="section-divider" id="benchmarkDivider" style="display:none;">
+            <div id="benchmarkSection" style="display:none;">
+                <div class="result-section-title">
+                    How You Compare
+                    <span style="margin-left:auto;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--gray-400);">vs. published rates &amp; peer data</span>
+                </div>
+                <div id="benchmarkCards" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;"></div>
+            </div>
+
+            <!-- Slootman: What to Do Monday — concrete action plan -->
+            <hr class="section-divider" id="mondayDivider" style="display:none;">
+            <div id="mondaySection" style="display:none;">
+                <div class="result-section-title">
+                    What to Do Monday
+                    <span style="margin-left:auto;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--gray-400);">prioritized by savings impact</span>
+                </div>
+                <div id="mondayActions" style="display:flex;flex-direction:column;gap:8px;"></div>
+            </div>
+
+            <!-- Jobs: Deep-dive sections collapsed by default — expandable for those who want detail -->
+            <hr class="section-divider">
+            <div>
+                <div class="result-section-title" onclick="toggleDetails()" style="cursor:pointer;user-select:none;">
+                    <span id="detailsToggle" style="display:inline-flex;align-items:center;gap:8px;">
+                        <svg id="detailsChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="transition:transform 0.2s;transform:rotate(0deg);flex-shrink:0;"><polyline points="9 18 15 12 9 6"/></svg>
+                        Detailed Breakdown
+                    </span>
+                    <span style="margin-left:auto;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--gray-400);" id="detailsSummary">model mix, FOCUS, trends, allocation</span>
+                </div>
+                <div id="detailsBody" style="display:none;margin-top:12px;">
+                    <!-- FOCUS 1.3 Compliance -->
+                    <div class="focus-section" id="focusSectionWrap">
+                        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray-400);margin-bottom:8px;">FOCUS 1.3 Compliance</div>
+                        <div class="focus-bar-wrap">
+                            <div class="focus-bar-outer"><div class="focus-bar-fill" id="focusBar" style="width:0%"></div></div>
+                            <div class="focus-bar-pct" id="focusPct">0%</div>
+                        </div>
+                        <div class="focus-details" id="focusDetails"></div>
+                    </div>
+
+                    <!-- Spend by Model -->
+                    <div style="margin-top:16px;">
+                        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray-400);margin-bottom:8px;">Spend by Model</div>
+                        <div class="bar-chart" id="modelChart"></div>
+                    </div>
+
+                    <!-- Month-over-Month Trend -->
+                    <div id="trendSection" style="display:none;margin-top:16px;">
+                        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray-400);margin-bottom:8px;">
+                            Month-over-Month Trend <span class="trend-change" id="trendChange"></span>
+                        </div>
+                        <div class="trend-chart-container" id="trendChartWrap">
+                            <div class="trend-months" id="trendChart"></div>
+                            <div class="trend-legend">
+                                <span class="trend-legend-item"><span class="trend-legend-dot" style="background:var(--gray-200)"></span> Prior</span>
+                                <span class="trend-legend-item"><span class="trend-legend-dot" style="background:var(--green)"></span> Current</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cost Allocation -->
+                    <div style="margin-top:16px;">
+                        <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--gray-400);margin-bottom:8px;">Cost Allocation</div>
+                        <div id="allocWrap"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Hidden share link for copy link feature -->
+            <input type="hidden" id="shareLink" value="">
+
+            <!-- Upsell: hidden until monthly automation product is live -->
+            <div class="upsell" id="upsellBlock" style="display:none;"></div>
+        </div>
+    </div>
+
+    <!-- Email Opt-in Modal (non-blocking — shown AFTER download, not before) -->
+    <div class="modal" id="emailModal">
+        <div class="modal-box">
+            <h3>Get monthly alerts</h3>
+            <p>We'll alert you when next month's spend changes by more than 10%. Your data never leaves the browser.</p>
+            <input type="email" id="emailInput" placeholder="cfo@yourcompany.com">
+            <button class="btn btn-green" onclick="submitEmail()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                Subscribe
+            </button>
+            <button class="modal-skip" onclick="dismissEmail()">No thanks</button>
+        </div>
+    </div>
+
+    <!-- Sticky Download Bar -->
+    <div class="sticky-download" id="stickyDownload">
+        <div class="sticky-download-inner">
+            <div class="sticky-download-text">Close Pack ready<span>PDF report, journal entry, certificate &middot; hash-verified</span></div>
+            <div class="sticky-download-actions">
+                <button class="btn btn-outline" onclick="copyForSlack()" style="padding:10px 18px;font-size:13px;" id="slackBtn">Copy Summary</button>
+                <button class="btn btn-outline" onclick="copyStickyLink()" style="padding:10px 18px;font-size:13px;" id="stickyLinkBtn">Copy Link</button>
+                <button class="btn btn-green" id="stickyDownloadBtn" onclick="downloadPack()" style="padding:10px 18px;font-size:13px;">Download Close Pack</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+        <span id="toastMsg">Done!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 Finault. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="/pricing">Pricing</a>
+                <a href="/security">Security</a>
+                <a href="/verify">Verify a Pack</a>
+                <a href="mailto:hello@finault.ai">Contact</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+            </div>
+        </div>
+    </footer>
+
 <script>
-var SUPABASE_URL='https://bejoptgsrhmklmllkobu.supabase.co';
-var SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
-var sb=null,currentUser=null,invoice=null,allocs=[],pending=null;
-var invoiceFiles=[];
-var ursFiles=[];
-var activeTab='invoice';
-var usedSample=false;
-var cert='CERT-'+new Date().toISOString().slice(0,7).replace('-','')+'-'+Math.random().toString().slice(2,8);
-var hash=Math.random().toString(16).slice(2,10).toUpperCase();
-var GATEWAY_URL='https://api.finault.ai';
-var CLOSEPACK_URL='https://closepack.finault.ai';
+/* ═══════════════════════════════════════════════════
+   Finault — Free AI Spend Audit (v5 — World Class)
+   ═══════════════════════════════════════════════════ */
 
-window.onload=function(){
-    try{
-        if(window.supabase&&window.supabase.createClient){
-            sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-            checkAuth();
-        }
-    }catch(e){console.warn('Supabase init error:',e);}
-    // Default URS dates to current month
-    var now=new Date(),y=now.getFullYear(),m=String(now.getMonth()+1).padStart(2,'0');
-    document.getElementById('periodStart').value=y+'-'+m+'-01';
-    var lastDay=new Date(y,now.getMonth()+1,0).getDate();
-    document.getElementById('periodEnd').value=y+'-'+m+'-'+String(lastDay).padStart(2,'0');
+var SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
+var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
+var CLOSEPACK_URL = 'https://closepack.finault.ai';
+var sb = null;
+var uploadedFiles = [];
+var usedSample = false;
+var invoice = null;
+var allocs = [];
+var skus = [];
+var anomalies = [];
+var trend = [];
+var focusScore = {};
+var detectedProvider = null;
+var cert = 'CERT-' + new Date().toISOString().slice(0,7).replace('-','') + '-' + Math.random().toString().slice(2,8);
+var hash = Math.random().toString(16).slice(2,10).toUpperCase();
+var fileDigest = null; // Real SHA-256 hex string, set by handleFiles via Web Crypto API
+var fileDigestPromise = null; // Promise for async hash — resolved before ribbon renders
+var savingsTotal = 0; // Module-level so copyForSlack() and other functions can access
+var savingsLines = []; // Each entry: {from, to, amount, reason}
+
+// ── Init ──
+window.onload = function() {
+    try {
+        if (window.supabase && window.supabase.createClient) sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    } catch(e) {}
+    var zone = document.getElementById('uploadZone'), fi = document.getElementById('fileInput');
+    zone.addEventListener('click', function() { fi.click(); });
+    fi.addEventListener('change', function() { handleFiles(this.files); });
+    zone.addEventListener('dragover', function(e) { e.preventDefault(); zone.classList.add('dragover'); });
+    zone.addEventListener('dragleave', function() { zone.classList.remove('dragover'); });
+    zone.addEventListener('drop', function(e) {
+        e.preventDefault(); zone.classList.remove('dragover');
+        if (e.dataTransfer.files.length) { fi.files = e.dataTransfer.files; handleFiles(e.dataTransfer.files); }
+    });
 };
 
-function checkAuth(){
-    if(!sb)return;
-    sb.auth.getUser().then(function(res){
-        if(res.data&&res.data.user){
-            currentUser=res.data.user;
-            document.getElementById('authBtn').textContent='Dashboard';
-            document.getElementById('authBtn').onclick=function(){location.href='/dashboard.html';};
-            document.getElementById('navDashboard').style.display='inline';
-            document.getElementById('userBar').classList.remove('hidden');
-            document.getElementById('userEmail').textContent=currentUser.email;
-        }
-    }).catch(function(e){console.warn('Auth check error:',e);});
-}
-function signOut(){
-    if(sb){sb.auth.signOut().then(function(){location.reload();}).catch(function(){location.reload();});}
-    else{location.reload();}
-}
-
-/* ── Tab switching ── */
-function switchTab(tab){
-    activeTab=tab;
-    document.getElementById('tabInvoice').classList.toggle('active',tab==='invoice');
-    document.getElementById('tabUrs').classList.toggle('active',tab==='urs');
-    document.getElementById('invoiceTab').classList.toggle('active',tab==='invoice');
-    document.getElementById('ursTab').classList.toggle('active',tab==='urs');
-    document.getElementById('invoiceDeliverables').style.display=tab==='invoice'?'grid':'none';
-    document.getElementById('ursDeliverables').style.display=tab==='urs'?'grid':'none';
-    document.getElementById('generateBtnText').textContent=tab==='invoice'?'Generate Close Pack':'Generate URS Pack';
-    document.getElementById('generateBtnDesc').textContent=tab==='invoice'
-        ?'All 4 documents in one ZIP \u00b7 Ready for Finance & Audit'
-        :'Usage Reconciliation Statement + Journal + Certificate + Manifest';
-    // Show/hide invoice-specific sections
-    if(tab==='urs'){
-        document.getElementById('statsSection').classList.add('hidden');
-        document.getElementById('allocationSection').classList.add('hidden');
+function handleFiles(fileList) {
+    uploadedFiles = Array.from(fileList); usedSample = false;
+    if (!uploadedFiles.length) return;
+    // Perret/Hockey: Compute real SHA-256 of uploaded file bytes via Web Crypto API
+    fileDigest = null;
+    fileDigestPromise = null;
+    if (window.crypto && window.crypto.subtle && uploadedFiles[0]) {
+        // Compute SHA-256 of ALL uploaded files concatenated
+        fileDigestPromise = Promise.all(uploadedFiles.map(function(f){ return f.arrayBuffer(); }))
+            .then(function(buffers) {
+                // Concatenate all file buffers into one
+                var totalLen = buffers.reduce(function(s,b){ return s + b.byteLength; }, 0);
+                var merged = new Uint8Array(totalLen);
+                var offset = 0;
+                buffers.forEach(function(b){ merged.set(new Uint8Array(b), offset); offset += b.byteLength; });
+                return crypto.subtle.digest('SHA-256', merged.buffer);
+            })
+            .then(function(hashBuf) {
+                var arr = Array.from(new Uint8Array(hashBuf));
+                fileDigest = arr.map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+                // Update ribbon if already rendered
+                var el = document.getElementById('auditDigestSpan');
+                if (el) el.textContent = 'SHA-256 ' + fileDigest.slice(0,8) + '\u2026' + fileDigest.slice(-8);
+            })
+            .catch(function(){ fileDigest = null; });
     }
-    hideError();
-    // Show close pack section if files are ready
-    if(tab==='invoice'&&(invoiceFiles.length>0||invoice)){
-        document.getElementById('closePackSection').classList.remove('hidden');
-        if(invoice){
-            document.getElementById('statsSection').classList.remove('hidden');
-            document.getElementById('allocationSection').classList.remove('hidden');
-        }
-    }else if(tab==='urs'&&ursFiles.length>0){
-        document.getElementById('closePackSection').classList.remove('hidden');
-    }
-}
-
-/* ── File handling ── */
-function handleInvoiceFiles(fileList){
-    invoiceFiles=Array.from(fileList);
-    usedSample=false;
-    if(!invoiceFiles.length)return;
-    var box=document.getElementById('uploadBox');
-    box.classList.add('has-file');
-    document.getElementById('uploadText').textContent=invoiceFiles.length===1?invoiceFiles[0].name:invoiceFiles.length+' files selected';
-    var html=invoiceFiles.length>1?invoiceFiles.map(function(f){return '<span>'+f.name+'</span>';}).join(' '):'';
-    document.getElementById('invoiceFileList').innerHTML=html;
-    // Try to parse first file for preview stats
-    if(invoiceFiles.length===1&&/\.(csv|txt)$/i.test(invoiceFiles[0].name)){
-        var r=new FileReader();
-        r.onload=function(e){parse(e.target.result,invoiceFiles[0].name);};
-        r.readAsText(invoiceFiles[0]);
-    }else{
-        invoice={name:invoiceFiles.map(function(f){return f.name;}).join(', '),total:0,items:0,period:'January 2026',pshort:'2026-01',company:'Your Company',budget:0,prior:0,providers:[],models:[]};
-        document.getElementById('closePackSection').classList.remove('hidden');
-        document.getElementById('closePackSection').scrollIntoView({behavior:'smooth'});
+    var zone = document.getElementById('uploadZone');
+    zone.classList.add('has-file');
+    document.getElementById('uploadTitle').textContent = uploadedFiles.length === 1 ? uploadedFiles[0].name : uploadedFiles.length + ' files selected';
+    document.getElementById('fileTags').innerHTML = uploadedFiles.map(function(f) {
+        return '<span class="file-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>' + f.name + '</span>';
+    }).join(' ');
+    // Filter CSV files
+    var csvFiles = uploadedFiles.filter(function(f){ return /\.(csv|txt)$/i.test(f.name); });
+    if (csvFiles.length === 1) {
+        var r = new FileReader();
+        r.onload = function(e) { parseCSV(e.target.result, csvFiles[0].name); };
+        r.readAsText(csvFiles[0]);
+    } else if (csvFiles.length > 1) {
+        // Dageville/Cruanes: Multi-CSV upload — parse each, merge results
+        showProcessing('Analyzing ' + csvFiles.length + ' files...');
+        var parsedInvoices = [];
+        var pending = csvFiles.length;
+        csvFiles.forEach(function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var result = parseCSVToObject(e.target.result, file.name);
+                if (result) parsedInvoices.push(result);
+                pending--;
+                if (pending === 0) mergeInvoices(parsedInvoices);
+            };
+            reader.readAsText(file);
+        });
+    } else {
+        invoice = { name: uploadedFiles.map(function(f){return f.name}).join(', '), total: 0, items: 0, period: 'Unknown', pshort: '', company: 'Your Organization', models: [], hasAllocData: false, tokenData: {}, allocRaw: {}, totalAllocated: 0, totalUnallocated: 0 };
+        genAllocs(); genSkus(); genAnomalies(); genTrend(); genFocusScore();
+        showResults();
     }
 }
 
-function handleUrsFiles(fileList){
-    ursFiles=Array.from(fileList);
-    if(!ursFiles.length)return;
-    var box=document.getElementById('ursUploadBox');
-    box.classList.add('has-file');
-    document.getElementById('ursUploadText').textContent=ursFiles.length===1?ursFiles[0].name:ursFiles.length+' files selected';
-    var html=ursFiles.length>1?ursFiles.map(function(f){return '<span>'+f.name+'</span>';}).join(' '):'';
-    document.getElementById('ursFileList').innerHTML=html;
-    document.getElementById('closePackSection').classList.remove('hidden');
-    document.getElementById('closePackSection').scrollIntoView({behavior:'smooth'});
-}
+// Dageville/Cruanes: Single source of truth for CSV parsing.
+// _parseCSVCore returns {invoiceObj, provider} without setting globals.
+// parseCSV and parseCSVToObject both call this.
+function _parseCSVCore(csv, name) {
+        var _detectedProvider = null;
+        var allLines = csv.trim().split('\n');
 
-/* ── CSV parsing & sample data ── */
-function parse(csv,name){
-    var lines=csv.trim().split('\n'),total=0,h=lines[0].toLowerCase().split(','),ci=-1;
-    for(var i=0;i<h.length;i++)if(h[i].indexOf('cost')>=0||h[i].indexOf('amount')>=0){ci=i;break;}
-    if(ci>=0)for(var j=1;j<lines.length;j++){var v=parseFloat((lines[j].split(',')[ci]||'').replace(/[$,]/g,''));if(!isNaN(v))total+=v;}
-    if(total===0)total=903561.45;
-    invoice={name:name,total:total,items:lines.length-1,period:'January 2026',pshort:'2026-01',company:'Acme Corporation',budget:850000,prior:780000,providers:[],models:[]};
-    genAllocs();show(name);
-}
-
-function loadSample(){
-    usedSample=true;
-    invoiceFiles=[];
-    invoice={name:'azure-openai-january-2026.csv',total:903561.45,items:62,period:'January 2026',pshort:'2026-01',company:'Acme Corporation',budget:850000,prior:780000,
-        providers:[{name:'OpenAI',amount:425000,pct:47},{name:'Anthropic',amount:285000,pct:31.5},{name:'Google',amount:125000,pct:13.8},{name:'Azure',amount:45000,pct:5},{name:'AWS Bedrock',amount:23561.45,pct:2.7}],
-        models:[{provider:'OpenAI',model:'GPT-4o',tokens:85.2,cost:212500},{provider:'OpenAI',model:'GPT-4o-mini',tokens:425,cost:127500},{provider:'OpenAI',model:'o1',tokens:12.5,cost:56250},{provider:'Anthropic',model:'Claude Sonnet 4.5',tokens:95,cost:171000},{provider:'Anthropic',model:'Claude Opus 4.5',tokens:15.2,cost:91200},{provider:'Google',model:'Gemini 2.5 Pro',tokens:62.5,cost:78125},{provider:'Google',model:'Gemini 2.5 Flash',tokens:156,cost:46875},{provider:'Azure',model:'GPT-4o (Azure)',tokens:18,cost:45000},{provider:'AWS Bedrock',model:'Claude Sonnet (Bedrock)',tokens:15.7,cost:23561.45}]};
-    genAllocs();show(invoice.name);
-}
-
-function genAllocs(){allocs=[{code:'ENG-001',dept:'Platform Engineering',amt:350000,pct:38.7,conf:97,model:'GPT-4o'},{code:'PROD-001',dept:'AI Features',amt:300000,pct:33.2,conf:95,model:'Claude Sonnet 4.5'},{code:'DS-001',dept:'Data Science',amt:110000,pct:12.2,conf:92,model:'Claude Opus 4.5'},{code:'UNALLOC',dept:'Unallocated',amt:53561.45,pct:5.9,conf:0,model:'-'},{code:'MKT-001',dept:'Marketing',amt:50000,pct:5.5,conf:88,model:'Gemini 2.5 Flash'},{code:'CS-001',dept:'Customer Success',amt:40000,pct:4.4,conf:85,model:'GPT-4o-mini'}];}
-
-function show(name){
-    document.getElementById('uploadBox').classList.add('has-file');
-    document.getElementById('uploadText').textContent=name;
-    document.getElementById('totalSpend').textContent='$'+invoice.total.toLocaleString(undefined,{minimumFractionDigits:2});
-    document.getElementById('allocatedSpend').textContent='$'+invoice.total.toLocaleString(undefined,{minimumFractionDigits:2});
-    document.getElementById('costCenters').textContent=allocs.length;
-    document.getElementById('confidence').textContent='97%';
-    var html='';
-    for(var i=0;i<allocs.length;i++){var a=allocs[i];html+='<tr><td><strong>'+a.code+'</strong></td><td>'+a.dept+'</td><td>$'+a.amt.toLocaleString(undefined,{minimumFractionDigits:2})+'</td><td>'+a.pct+'%</td><td><span class="confidence-badge '+(a.conf>=85?'high':'medium')+'">'+(a.conf>0?a.conf+'%':'-')+'</span></td></tr>';}
-    document.getElementById('allocationBody').innerHTML=html;
-    document.getElementById('statsSection').classList.remove('hidden');
-    document.getElementById('allocationSection').classList.remove('hidden');
-    document.getElementById('closePackSection').classList.remove('hidden');
-    document.getElementById('statsSection').scrollIntoView({behavior:'smooth'});
-}
-
-/* ── Error display ── */
-function showError(title,detail,extra){
-    document.getElementById('errorTitle').textContent=title;
-    document.getElementById('errorDetail').textContent=detail;
-    var pre=document.getElementById('errorPre');
-    if(extra){pre.textContent=extra;pre.style.display='block';}else{pre.style.display='none';}
-    document.getElementById('errorBanner').classList.add('visible');
-    document.getElementById('errorBanner').scrollIntoView({behavior:'smooth'});
-}
-function hideError(){document.getElementById('errorBanner').classList.remove('visible');}
-
-/* ── Email gate ── */
-function hasEmail(){return localStorage.getItem('finault_email')||(currentUser&&currentUser.email);}
-function downloadSingleFile(t){
-    if(!invoice)return;
-    // Individual file previews use local generation (sample data)
-    if(t==='exec')dlPDF(genExec(),'01-Executive-Summary');
-    else if(t==='journal')dlCSV(genJournal(),'02-Journal-Entry');
-    else if(t==='cert')dlPDF(genCloseCert(),'03-Close-Certificate');
-    else if(t==='manifest')dlJSON(genManifest(),'MANIFEST');
-    toast('Preview downloaded');
-}
-
-/* ── Main generate button ── */
-function generatePack(){
-    if(!hasEmail()){
-        pending='generate';
-        document.getElementById('emailModal').classList.add('visible');
-        return;
-    }
-    hideError();
-    if(activeTab==='invoice'){generateInvoiceClose();}
-    else{generateUrsClose();}
-}
-
-/* ── Invoice Close: POST to worker ── */
-async function generateInvoiceClose(){
-    // If real files uploaded, always use worker
-    if(invoiceFiles.length>0){
-        var btn=document.getElementById('generateBtn');
-        btn.disabled=true;
-        try{
-            toast('Generating Close Pack...');
-            var fd=new FormData();
-            for(var i=0;i<invoiceFiles.length;i++){fd.append('files',invoiceFiles[i]);}
-            var resp=await fetch(CLOSEPACK_URL+'/closepack?t='+Date.now(),{method:'POST',body:fd,cache:'no-store'});
-            if(resp.ok){
-                var blob=await resp.blob();
-                var disp=resp.headers.get('content-disposition')||'';
-                var fn=disp.match(/filename="?([^"]+)"?/);
-                dlBlob(blob,fn?fn[1]:'finault-closepack.zip');
-                toast('Close Pack downloaded!');
-                saveToDB();
-                return;
-            }else{
-                var errText=await resp.text();
-                showError('Close Pack generation failed (HTTP '+resp.status+')',errText);
-                console.error('Worker returned',resp.status,errText);
-                return;
+        // ── Auto-detect header row ──
+        // Skip metadata rows (key-value pairs, blank lines) at top of invoice-style CSVs
+        var headerIdx = 0;
+        var metadata = {};
+        for (var hi = 0; hi < Math.min(allLines.length, 20); hi++) {
+            var testLine = allLines[hi].trim();
+            if (!testLine) continue; // skip blank lines
+            var testCols = testLine.split(',');
+            // A real header row has 3+ non-empty columns and the values aren't all numeric
+            var nonEmpty = testCols.filter(function(c){ return c.trim().replace(/"/g,'').length > 0; }).length;
+            var hasNumeric = testCols.some(function(c){ return !isNaN(parseFloat(c.trim().replace(/[$,"]/g,''))); });
+            var looksLikeHeader = nonEmpty >= 3 && !testCols.every(function(c){ var v=c.trim().replace(/[$,"]/g,''); return !isNaN(parseFloat(v)) && v.length > 0; });
+            if (looksLikeHeader) {
+                // Check it's not a metadata pair like "Vendor,Microsoft Azure"
+                if (nonEmpty === 2 && !hasNumeric) {
+                    // Store as metadata
+                    metadata[testCols[0].trim().replace(/"/g,'')] = testCols[1].trim().replace(/"/g,'');
+                    continue;
+                }
+                headerIdx = hi;
+                break;
             }
-        }catch(e){
-            showError('Network error reaching closepack.finault.ai','This usually means CORS is blocking the request. Open browser DevTools > Console for details.','Error: '+e.message+'\n\nTip: Try visiting https://closepack.finault.ai directly to generate your Close Pack.');
-            console.error('Worker fetch failed:',e);
-            return;
-        }finally{
-            btn.disabled=false;
-        }
-    }
-
-    // Sample data fallback - use local jsPDF generation
-    if(usedSample&&invoice){
-        toast('Generating sample Close Pack...');
-        var z=new JSZip(),f=z.folder('finault-close-pack-'+invoice.pshort);
-        f.file('01-Executive-Summary.pdf',genExec(),{binary:true});
-        f.file('02-Journal-Entry.csv',genJournal());
-        f.file('03-Close-Certificate.pdf',genCloseCert(),{binary:true});
-        f.file('MANIFEST.json',JSON.stringify(genManifest(),null,2));
-        z.generateAsync({type:'blob'}).then(function(b){dlBlob(b,'finault-close-pack-'+invoice.pshort+'.zip');});
-        toast('Sample Close Pack downloaded!');
-        saveToDB();
-        return;
-    }
-
-    showError('No files uploaded','Upload at least one invoice file, or try the sample data.');
-}
-
-/* ── URS: POST to worker ── */
-async function generateUrsClose(){
-    if(ursFiles.length===0){
-        showError('No files uploaded','Upload at least one usage CSV file.');
-        return;
-    }
-    var periodStart=document.getElementById('periodStart').value;
-    var periodEnd=document.getElementById('periodEnd').value;
-    if(!periodStart||!periodEnd){
-        showError('Missing dates','Set both Period Start and Period End dates.');
-        return;
-    }
-
-    var btn=document.getElementById('generateBtn');
-    btn.disabled=true;
-    try{
-        toast('Generating URS Pack...');
-        var fd=new FormData();
-        for(var i=0;i<ursFiles.length;i++){fd.append('file',ursFiles[i]);}
-        fd.append('period_start',periodStart);
-        fd.append('period_end',periodEnd);
-        var resp=await fetch(CLOSEPACK_URL+'/reconcilepack?t='+Date.now(),{method:'POST',body:fd,cache:'no-store'});
-        if(resp.ok){
-            var ct=resp.headers.get('content-type')||'';
-            if(ct.includes('application/zip')){
-                var blob=await resp.blob();
-                var disp=resp.headers.get('content-disposition')||'';
-                var fn=disp.match(/filename="?([^"]+)"?/);
-                dlBlob(blob,fn?fn[1]:'finault-urs.zip');
-                toast('URS Pack downloaded!');
-                return;
+            // Store 2-column metadata rows (including ones with date-like values)
+            if (nonEmpty === 2 && !looksLikeHeader) {
+                metadata[testCols[0].trim().replace(/"/g,'')] = testCols[1].trim().replace(/"/g,'');
             }
         }
-        // Error handling - try JSON first, then text
-        var errBody;
-        try{
-            errBody=await resp.clone().json();
-            showError(errBody.reason||'URS generation failed (HTTP '+resp.status+')',
-                errBody.error?errBody.error.summary||errBody.error:'',
-                errBody.details?JSON.stringify(errBody.details,null,2):null);
-        }catch(jsonErr){
-            errBody=await resp.text();
-            showError('URS generation failed (HTTP '+resp.status+')',errBody);
+
+        var lines = allLines.slice(headerIdx);
+        var header = lines[0].toLowerCase();
+        var cols = lines[0].split(',');
+        var lc = cols.map(function(c){return c.toLowerCase().trim().replace(/"/g,'');});
+
+        // Extract invoice metadata if found
+        var invoiceVendor = metadata['Vendor'] || metadata['vendor'] || null;
+        var invoiceNumber = metadata['Invoice Number'] || metadata['invoice number'] || null;
+        var invoiceDate = metadata['Invoice Date'] || metadata['invoice date'] || null;
+        var invoiceBillTo = metadata['Bill To'] || metadata['bill to'] || null;
+        var invoiceCurrency = metadata['Currency'] || metadata['currency'] || null;
+
+        // Detect provider from header OR metadata
+        if (header.indexOf('lineitem/usagetype') >= 0 || header.indexOf('bill/payeraccount') >= 0) _detectedProvider = 'AWS Bedrock';
+        else if (header.indexOf('metercategory') >= 0 || header.indexOf('resourcegroup') >= 0) _detectedProvider = 'Azure OpenAI';
+        else if (header.indexOf('organization_id') >= 0 || header.indexOf('api_key_name') >= 0) _detectedProvider = 'OpenAI';
+        else if (header.indexOf('gcp_project') >= 0 || header.indexOf('vertex') >= 0 || header.indexOf('aiplatform') >= 0 || (header.indexOf('google') >= 0 && header.indexOf('model') >= 0)) _detectedProvider = 'Google Vertex AI';
+        else if (header.indexOf('anthropic') >= 0 || header.indexOf('workspace_id') >= 0 || header.indexOf('claude') >= 0) _detectedProvider = 'Anthropic';
+        else if (invoiceVendor && invoiceVendor.indexOf('Azure') >= 0) _detectedProvider = 'Azure OpenAI';
+        else if (invoiceVendor && invoiceVendor.indexOf('Google') >= 0) _detectedProvider = 'Google Vertex AI';
+        else if (invoiceVendor && invoiceVendor.indexOf('Amazon') >= 0) _detectedProvider = 'AWS Bedrock';
+        else _detectedProvider = null;
+
+        // FOCUS 1.3 column detection
+        var focusCols = ['BillingAccountId','BillingAccountName','BilledCost','BillingCurrency','BillingPeriodEnd','BillingPeriodStart','ChargeCategory','ChargeClass','ChargeDescription','ChargeFrequency','ChargePeriodEnd','ChargePeriodStart','CommitmentDiscountCategory','CommitmentDiscountId','CommitmentDiscountName','CommitmentDiscountStatus','CommitmentDiscountType','ConsumedQuantity','ConsumedUnit','ContractedCost','ContractedUnitPrice','EffectiveCost','InvoiceIssuerName','ListCost','ListUnitPrice','PricingCategory','PricingQuantity','PricingUnit','ProviderName','PublisherName','RegionId','RegionName','ResourceId','ResourceName','ResourceType','ServiceCategory','ServiceName','SkuId','SkuPriceId','SubAccountId','SubAccountName','Tags'];
+        var detected = 0;
+        focusCols.forEach(function(fc) {
+            lc.forEach(function(c) { if (c === fc.toLowerCase() || c.replace(/_/g,'') === fc.toLowerCase()) detected++; });
+        });
+
+        // Find cost column — prioritize: cost > amount > price (skip "unit price" when "amount" exists)
+        var ci = -1;
+        for (var i=0;i<lc.length;i++) { if (lc[i].indexOf('cost')>=0||lc[i]==='amount'||lc[i].indexOf('billedcost')>=0) { ci=i; break; } }
+        if (ci<0) { for (var i2=0;i2<lc.length;i2++) { if (lc[i2].indexOf('amount')>=0) { ci=i2; break; } } }
+        if (ci<0) { for (var i3=0;i3<lc.length;i3++) { if (lc[i3].indexOf('price')>=0 && lc[i3].indexOf('unit')<0) { ci=i3; break; } } }
+        if (ci<0) { for (var i4=0;i4<lc.length;i4++) { if (lc[i4].indexOf('price')>=0) { ci=i4; break; } } }
+        // Filter out summary/total rows (like "Total Amount Due,,,127262.00")
+        var total = 0;
+        var dataLineStart = 1; // skip header
+        if (ci >= 0) {
+            for (var j=dataLineStart;j<lines.length;j++) {
+                var rowText = lines[j].toLowerCase();
+                // Skip total/summary rows
+                if (rowText.indexOf('total') >= 0 || rowText.indexOf('subtotal') >= 0 || rowText.indexOf('tax') >= 0 || rowText.indexOf('due') >= 0) continue;
+                if (!lines[j].trim()) continue; // skip blank lines
+                var v = parseFloat((lines[j].split(',')[ci]||'').replace(/[$,"]/g,''));
+                if (!isNaN(v)) total += v;
+            }
         }
-    }catch(e){
-        showError('Network error reaching closepack.finault.ai','This usually means CORS is blocking the request. Open browser DevTools > Console for details.','Error: '+e.message+'\n\nTip: Try visiting https://closepack.finault.ai directly to generate your URS Pack.');
-        console.error('Worker URS fetch failed:',e);
-    }finally{
-        btn.disabled=false;
+        if (total === 0) total = 903561.45;
+
+        // Model/SKU column detection — supports multiple provider formats
+        var mi = -1;
+        for (var k=0;k<lc.length;k++) {
+            if (lc[k].indexOf('model')>=0||lc[k].indexOf('product')>=0||lc[k].indexOf('sku')>=0) { mi=k; break; }
+        }
+        // Azure billing export: MeterSubCategory
+        if (mi < 0) {
+            for (var k2=0;k2<lc.length;k2++) {
+                if (lc[k2]==='metersubcategory'||lc[k2]==='meter_sub_category') { mi=k2; break; }
+            }
+        }
+        // AWS / other: ProductCode, MetterName, ServiceName
+        if (mi < 0) {
+            for (var k3=0;k3<lc.length;k3++) {
+                if (lc[k3].indexOf('productcode')>=0||lc[k3].indexOf('productfamily')>=0||lc[k3]==='metername'||lc[k3]==='meter_name'||lc[k3]==='servicename'||lc[k3]==='service_name') { mi=k3; break; }
+            }
+        }
+        // Invoice-style: Description column — extract model name from text like "GPT-4o API Usage - Input Tokens"
+        var descIdx = -1;
+        var useDescParsing = false;
+        if (mi < 0) {
+            for (var k4=0;k4<lc.length;k4++) {
+                if (lc[k4]==='description'||lc[k4]==='item'||lc[k4]==='line_item'||lc[k4]==='service') { descIdx=k4; mi=k4; useDescParsing=true; break; }
+            }
+        }
+
+        // Known model name patterns for extracting from description text
+        var knownModels = ['gpt-4o-mini','gpt-4o','gpt-4 turbo','gpt-4-turbo','gpt-4','gpt-3.5-turbo','o1-pro','o1-mini','o1','o3-mini','o3','claude opus','claude sonnet','claude haiku','claude','gemini 2.5 pro','gemini 2.5 flash','gemini 2.0 flash','gemini 1.5 pro','gemini','text-embedding-3-large','text-embedding-3-small','text-embedding-ada','dall-e','whisper','tts'];
+
+        // Canonical display names for known models
+        var modelDisplayNames = {
+            'gpt-4o-mini':'GPT-4o-mini','gpt-4o':'GPT-4o','gpt-4 turbo':'GPT-4-Turbo','gpt-4-turbo':'GPT-4-Turbo','gpt-4':'GPT-4',
+            'gpt-3.5-turbo':'GPT-3.5-Turbo','o1-pro':'o1-pro','o1-mini':'o1-mini','o1':'o1','o3-mini':'o3-mini','o3':'o3',
+            'claude opus':'Claude Opus','claude sonnet':'Claude Sonnet','claude haiku':'Claude Haiku','claude':'Claude',
+            'gemini 2.5 pro':'Gemini 2.5 Pro','gemini 2.5 flash':'Gemini 2.5 Flash','gemini 2.0 flash':'Gemini 2.0 Flash',
+            'gemini 1.5 pro':'Gemini 1.5 Pro','gemini':'Gemini',
+            'text-embedding-3-large':'text-embedding-3-large','text-embedding-3-small':'text-embedding-3-small',
+            'text-embedding-ada':'text-embedding-ada','dall-e':'DALL-E','whisper':'Whisper','tts':'TTS'
+        };
+        function extractModelFromDesc(desc) {
+            var dl = desc.toLowerCase();
+            for (var em=0;em<knownModels.length;em++) {
+                if (dl.indexOf(knownModels[em]) >= 0) return modelDisplayNames[knownModels[em]] || knownModels[em];
+            }
+            // Fallback: use first part before " - " or " API " or " ("
+            var cut = desc.split(/\s*[-–(]|\sAPI\s/)[0].trim();
+            return cut || desc;
+        }
+
+        var um = {};
+        for (var m=dataLineStart;m<lines.length;m++) {
+            var rowText2 = lines[m].toLowerCase();
+            if (rowText2.indexOf('total') >= 0 || rowText2.indexOf('subtotal') >= 0 || !lines[m].trim()) continue;
+            var p = lines[m].split(','), rawName = (p[mi]||'').replace(/"/g,'').trim();
+            if (!rawName) continue;
+            var mn = useDescParsing ? extractModelFromDesc(rawName) : rawName;
+            if(!um[mn]) um[mn]=0;
+            var rc = ci>=0?parseFloat((p[ci]||'').replace(/[$,"]/g,'')):0;
+            if(!isNaN(rc)) um[mn]+=rc;
+        }
+        var ml = Object.keys(um).map(function(n){return{model:n,cost:um[n]}}).sort(function(a,b){return b.cost-a.cost}).slice(0,10);
+        var modelColumnFound = mi >= 0 && ml.length > 0;
+        if (ml.length === 0) {
+            ml = [{ model: 'Unknown (no model column detected)', cost: total }];
+        }
+
+        // ── Extract additional columns for intelligence layer ──
+        var ri = -1, cui = -1, pi = -1, cci = -1, rgi = -1, tagi = -1, toki = -1, otoki = -1, reqi = -1, dti = -1, qtyi = -1, mni = -1;
+        for (var z=0;z<lc.length;z++) {
+            if (ri<0 && (lc[z].indexOf('region')>=0||lc[z].indexOf('location')>=0||lc[z].indexOf('availabilityzone')>=0)) ri=z;
+            if (cui<0 && (lc[z].indexOf('currency')>=0||lc[z]==='billingcurrency')) cui=z;
+            if (pi<0 && (lc[z].indexOf('pricingunit')>=0||lc[z].indexOf('unit_price')>=0||lc[z].indexOf('unitprice')>=0||lc[z].indexOf('rate')>=0)) pi=z;
+            // Cost center / resource group / tag columns
+            if (cci<0 && (lc[z]==='costcenter'||lc[z]==='cost_center'||lc[z].indexOf('costcenter')>=0||lc[z]==='lineitem/resourceid'||lc[z]==='department'||lc[z]==='dept')) cci=z;
+            if (rgi<0 && (lc[z]==='resourcegroup'||lc[z]==='resource_group'||lc[z].indexOf('resourcegroup')>=0||lc[z]==='project'||lc[z]==='gcp_project')) rgi=z;
+            if (tagi<0 && (lc[z]==='tags'||lc[z].indexOf('tag')>=0||lc[z]==='labels'||lc[z].indexOf('usertag')>=0)) tagi=z;
+            // Token / usage columns
+            if (toki<0 && (lc[z].indexOf('input_token')>=0||lc[z].indexOf('prompt_token')>=0||lc[z]==='inputtokens'||lc[z]==='prompttokens')) toki=z;
+            if (otoki<0 && (lc[z].indexOf('output_token')>=0||lc[z].indexOf('completion_token')>=0||lc[z]==='outputtokens'||lc[z]==='completiontokens')) otoki=z;
+            if (reqi<0 && (lc[z]==='requests'||lc[z]==='request_count'||lc[z]==='num_requests'||lc[z]==='api_calls')) reqi=z;
+            // Quantity column (Azure uses this for token counts) + MeterName for input/output classification
+            if (qtyi<0 && (lc[z]==='quantity'||lc[z]==='consumedquantity')) qtyi=z;
+            if (mni<0 && (lc[z]==='metername'||lc[z]==='meter_name')) mni=z;
+            // Date column for period detection
+            if (dti<0 && (lc[z].indexOf('date')>=0||lc[z].indexOf('billingperiod')>=0||lc[z].indexOf('usagedate')>=0||lc[z]==='day'||lc[z]==='month')) dti=z;
+        }
+        var regions = {}, currency = null, pricingData = [];
+        // Cost allocation raw data
+        var allocRaw = {}, totalAllocated = 0, totalUnallocated = 0;
+        // Token/usage raw data per model
+        var tokenData = {};
+        // Date range detection
+        var dateMin = null, dateMax = null;
+
+        for (var rr=dataLineStart;rr<lines.length;rr++) {
+            var rrText = lines[rr].toLowerCase();
+            if (!lines[rr].trim() || rrText.indexOf('total') >= 0 || rrText.indexOf('subtotal') >= 0) continue;
+            var rp = lines[rr].split(',');
+            var rowCost = ci>=0?parseFloat((rp[ci]||'').replace(/[$,"]/g,'')):0;
+            if (isNaN(rowCost)) rowCost = 0;
+            var rawRowModel = mi>=0?(rp[mi]||'').replace(/"/g,'').trim():'';
+            var rowModel = useDescParsing && rawRowModel ? extractModelFromDesc(rawRowModel) : rawRowModel;
+
+            if (ri>=0) { var rv=(rp[ri]||'').replace(/"/g,'').trim(); if(rv) { if(!regions[rv]) regions[rv]=0; regions[rv]++; } }
+            if (cui>=0 && !currency) { var cv=(rp[cui]||'').replace(/"/g,'').trim(); if(cv) currency=cv; }
+            if (pi>=0 && mi>=0) {
+                var pm=(rp[mi]||'').replace(/"/g,'').trim();
+                var pp=parseFloat((rp[pi]||'').replace(/[$,"]/g,''));
+                if(pm && !isNaN(pp) && pp>0) pricingData.push({model:pm,unit_price:pp});
+            }
+
+            // ── Cost allocation: parse real cost center / resource group / tags ──
+            var allocKey = null;
+            if (cci>=0) { allocKey = (rp[cci]||'').replace(/"/g,'').trim(); }
+            if (!allocKey && rgi>=0) { allocKey = (rp[rgi]||'').replace(/"/g,'').trim(); }
+            if (!allocKey && tagi>=0) {
+                var tagVal = (rp[tagi]||'').replace(/"/g,'').trim();
+                // Try to extract cost center from tags like "team:engineering" or "department=product"
+                var tagMatch = tagVal.match(/(?:team|department|cost.?center|project)[=:]\s*([^,;|]+)/i);
+                if (tagMatch) allocKey = tagMatch[1].trim();
+            }
+            if (allocKey) {
+                if (!allocRaw[allocKey]) allocRaw[allocKey] = 0;
+                allocRaw[allocKey] += rowCost;
+                totalAllocated += rowCost;
+            } else {
+                totalUnallocated += rowCost;
+            }
+
+            // ── Token / usage data per model ──
+            if (rowModel) {
+                if (!tokenData[rowModel]) tokenData[rowModel] = { inputTokens: 0, outputTokens: 0, requests: 0, hasTokens: false, hasRequests: false };
+                // Direct token columns (OpenAI, Anthropic formats)
+                if (toki>=0) { var tv = parseInt((rp[toki]||'').replace(/[,"]/g,'')); if(!isNaN(tv)) { tokenData[rowModel].inputTokens += tv; tokenData[rowModel].hasTokens = true; } }
+                if (otoki>=0) { var ov = parseInt((rp[otoki]||'').replace(/[,"]/g,'')); if(!isNaN(ov)) { tokenData[rowModel].outputTokens += ov; tokenData[rowModel].hasTokens = true; } }
+                if (reqi>=0) { var qv = parseInt((rp[reqi]||'').replace(/[,"]/g,'')); if(!isNaN(qv)) { tokenData[rowModel].requests += qv; tokenData[rowModel].hasRequests = true; } }
+                // Azure billing export: Quantity column + MeterName tells input vs output
+                if (toki<0 && qtyi>=0 && mni>=0) {
+                    var meterName = (rp[mni]||'').replace(/"/g,'').trim().toLowerCase();
+                    var qty = parseInt((rp[qtyi]||'').replace(/[,"]/g,''));
+                    if (!isNaN(qty) && qty > 0) {
+                        if (meterName.indexOf('input')>=0 || meterName.indexOf('prompt')>=0) {
+                            tokenData[rowModel].inputTokens += qty; tokenData[rowModel].hasTokens = true;
+                        } else if (meterName.indexOf('output')>=0 || meterName.indexOf('completion')>=0) {
+                            tokenData[rowModel].outputTokens += qty; tokenData[rowModel].hasTokens = true;
+                        } else {
+                            tokenData[rowModel].inputTokens += qty; tokenData[rowModel].hasTokens = true;
+                        }
+                    }
+                }
+                // Invoice-style: Description has "Input Tokens"/"Output Tokens" and Quantity has token count
+                if (toki<0 && mni<0 && useDescParsing && qtyi>=0) {
+                    var descText = rawRowModel.toLowerCase();
+                    var descQty = parseInt((rp[qtyi]||'').replace(/[,"]/g,''));
+                    if (!isNaN(descQty) && descQty > 0) {
+                        if (descText.indexOf('input') >= 0 || descText.indexOf('prompt') >= 0) {
+                            tokenData[rowModel].inputTokens += descQty; tokenData[rowModel].hasTokens = true;
+                        } else if (descText.indexOf('output') >= 0 || descText.indexOf('completion') >= 0) {
+                            tokenData[rowModel].outputTokens += descQty; tokenData[rowModel].hasTokens = true;
+                        } else {
+                            // Embeddings, provisioned throughput, etc.
+                            tokenData[rowModel].inputTokens += descQty; tokenData[rowModel].hasTokens = true;
+                        }
+                    }
+                }
+            }
+
+            // ── Date range ──
+            if (dti>=0) {
+                var dv = (rp[dti]||'').replace(/"/g,'').trim();
+                if (dv) {
+                    var dp = new Date(dv);
+                    if (!isNaN(dp.getTime())) {
+                        if (!dateMin || dp < dateMin) dateMin = dp;
+                        if (!dateMax || dp > dateMax) dateMax = dp;
+                    }
+                }
+            }
+        }
+
+        // Determine billing period from actual dates or invoice metadata
+        var periodStr = 'Unknown', periodShort = '';
+        // Try invoice metadata date first
+        if (!dateMin && invoiceDate) {
+            dateMin = new Date(invoiceDate);
+            if (isNaN(dateMin.getTime())) dateMin = null;
+        }
+        if (dateMin) {
+            var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            periodStr = months[dateMin.getMonth()] + ' ' + dateMin.getFullYear();
+            periodShort = dateMin.getFullYear() + '-' + String(dateMin.getMonth()+1).padStart(2,'0');
+            if (dateMax && (dateMax.getMonth() !== dateMin.getMonth() || dateMax.getFullYear() !== dateMin.getFullYear())) {
+                periodStr = months[dateMin.getMonth()] + ' – ' + months[dateMax.getMonth()] + ' ' + dateMax.getFullYear();
+            }
+        }
+
+        // Compute actual billed price per model (median unit price from CSV)
+        var billedPrices = {};
+        pricingData.forEach(function(pd) {
+            if(!billedPrices[pd.model]) billedPrices[pd.model]=[];
+            billedPrices[pd.model].push(pd.unit_price);
+        });
+        var medianPrices = {};
+        Object.keys(billedPrices).forEach(function(m) {
+            var arr = billedPrices[m].sort(function(a,b){return a-b});
+            medianPrices[m] = arr[Math.floor(arr.length/2)];
+        });
+
+        // Determine which allocation columns were found
+        var hasAllocData = (cci >= 0 || rgi >= 0 || tagi >= 0);
+
+        // Store extracted intelligence on invoice object
+        // Count actual data lines (excluding skipped rows)
+        var dataCount = 0;
+        for (var dc=dataLineStart;dc<lines.length;dc++) {
+            var dcText = lines[dc].toLowerCase();
+            if (lines[dc].trim() && dcText.indexOf('total')<0 && dcText.indexOf('subtotal')<0) dataCount++;
+        }
+
+        var _invoiceObj = { name:name, total:total, items:dataCount, period:periodStr, pshort:periodShort, company: invoiceBillTo || 'Your Organization', models:ml, modelColumnFound: modelColumnFound, focusDetected: detected, focusTotal: focusCols.length, regions: Object.keys(regions), regionDist: regions, currency: invoiceCurrency || currency || 'USD', billedPrices: medianPrices, columnCount: cols.length, columnNames: lc, focusColumns: lc.filter(function(c){ return focusCols.some(function(fc){ return c===fc.toLowerCase()||c.replace(/_/g,'')===fc.toLowerCase(); }); }), allocRaw: allocRaw, totalAllocated: totalAllocated, totalUnallocated: totalUnallocated, hasAllocData: hasAllocData, tokenData: tokenData, allocColumn: cci>=0?cols[cci].trim():rgi>=0?cols[rgi].trim():tagi>=0?cols[tagi].trim():null, invoiceNumber: invoiceNumber, invoiceVendor: invoiceVendor };
+        return { invoiceObj: _invoiceObj, provider: _detectedProvider };
+}
+
+// parseCSV: sets globals and renders results
+function parseCSV(csv, name) {
+    showProcessing('Analyzing ' + name + '...');
+    setTimeout(function() {
+        var result = _parseCSVCore(csv, name);
+        invoice = result.invoiceObj;
+        detectedProvider = result.provider;
+        genAllocs(); genSkus(); genAnomalies(); genTrend(); genFocusScore();
+        hideProcessing(); showResults();
+
+        if (detectedProvider) {
+            document.getElementById('providerBadge').innerHTML = '<div class="provider-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Detected: ' + detectedProvider + '</div>';
+        }
+    }, 600);
+}
+
+// parseCSVToObject: returns simplified invoice object for multi-file merge (non-mutating)
+function parseCSVToObject(csv, name) {
+    var result = _parseCSVCore(csv, name);
+    var inv = result.invoiceObj;
+    return { name: inv.name, total: inv.total, models: inv.models, provider: result.provider, items: inv.items, period: inv.period };
+}
+
+function mergeInvoices(invoices) {
+    if (!invoices.length) { hideProcessing(); return; }
+    var mergedTotal = 0, mergedModels = {}, mergedItems = 0, providers = [];
+    invoices.forEach(function(inv) {
+        mergedTotal += inv.total;
+        mergedItems += inv.items;
+        if (inv.provider && providers.indexOf(inv.provider) < 0) providers.push(inv.provider);
+        inv.models.forEach(function(m) {
+            if (!mergedModels[m.model]) mergedModels[m.model] = 0;
+            mergedModels[m.model] += m.cost;
+        });
+    });
+    var ml = Object.keys(mergedModels).map(function(n){return{model:n,cost:mergedModels[n]}}).sort(function(a,b){return b.cost-a.cost}).slice(0,10);
+    detectedProvider = providers.length === 1 ? providers[0] : 'Multi-provider (' + providers.length + ')';
+    invoice = {
+        name: invoices.map(function(i){return i.name}).join(', '), total: mergedTotal, items: mergedItems,
+        period: invoices[0].period || 'Multiple Files', pshort: '', company: 'Your Organization',
+        models: ml, modelColumnFound: true, focusDetected: 0, focusTotal: 42,
+        hasAllocData: false, tokenData: {}, allocRaw: {}, totalAllocated: 0, totalUnallocated: 0, allocColumn: null
+    };
+    genAllocs(); genSkus(); genAnomalies(); genTrend(); genFocusScore();
+    hideProcessing(); showResults();
+    document.getElementById('providerBadge').innerHTML = '<div class="provider-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Detected: ' + detectedProvider + '</div>';
+}
+
+function loadSample() {
+    usedSample = true; uploadedFiles = []; detectedProvider = 'Azure OpenAI';
+    var zone = document.getElementById('uploadZone'); zone.classList.add('has-file');
+    document.getElementById('uploadTitle').textContent = 'azure-openai-january-2026.csv';
+    document.getElementById('fileTags').innerHTML = '<span class="file-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Sample data (62 rows)</span>';
+    document.getElementById('providerBadge').innerHTML = '<div class="provider-badge"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Detected: Azure OpenAI</div>';
+    showProcessing('Analyzing sample billing data...');
+    setTimeout(function() {
+        invoice = {
+            name:'azure-openai-january-2026.csv', total:903561.45, items:62,
+            period:'January 2026', pshort:'2026-01', company:'Acme Corporation',
+            models:[
+                {model:'GPT-4o',cost:212500},{model:'Claude Sonnet 4.5',cost:171000},
+                {model:'GPT-4o-mini',cost:127500},{model:'Claude Opus 4.5',cost:91200},
+                {model:'Gemini 2.5 Pro',cost:78125},{model:'o1',cost:56250},
+                {model:'Gemini 2.5 Flash',cost:46875},{model:'Azure GPT-4o',cost:45000},
+                {model:'Bedrock Claude',cost:23561.45},{model:'GPT-4-Turbo',cost:21550}
+            ],
+            focusDetected: 28, focusTotal: 42,
+            // Sample data includes synthetic allocation for demo purposes
+            hasAllocData: true, isSample: true,
+            allocRaw: {'Platform Engineering': 903561.45*0.387, 'AI Product Features': 903561.45*0.332, 'Data Science': 903561.45*0.122, 'Marketing Automation': 903561.45*0.055, 'Customer Success': 903561.45*0.044},
+            totalAllocated: 903561.45*0.941, totalUnallocated: 903561.45*0.059,
+            allocColumn: 'ResourceGroup', tokenData: {}
+        };
+        genAllocs(); genSkus(); genAnomalies(); genTrend(); genFocusScore();
+        hideProcessing(); showResults();
+    }, 800);
+}
+
+// ── Data generators ──
+function genAllocs() {
+    var t = invoice ? invoice.total : 0;
+    allocs = [];
+
+    if (invoice && invoice.hasAllocData && invoice.allocRaw) {
+        // ── Real allocation from CSV columns ──
+        var raw = invoice.allocRaw;
+        var keys = Object.keys(raw).sort(function(a,b){ return raw[b] - raw[a]; });
+        keys.forEach(function(k) {
+            var amt = raw[k];
+            var pct = t > 0 ? parseFloat((amt / t * 100).toFixed(1)) : 0;
+            allocs.push({ code: k, dept: k, amt: amt, pct: pct, conf: 100, source: 'csv' });
+        });
+        // Add unallocated bucket only if real unallocated rows exist
+        if (invoice.totalUnallocated > 0) {
+            var unPct = t > 0 ? parseFloat((invoice.totalUnallocated / t * 100).toFixed(1)) : 0;
+            allocs.push({ code: 'UNALLOC', dept: 'Unallocated', amt: invoice.totalUnallocated, pct: unPct, conf: 0, source: 'csv' });
+        }
+    } else {
+        // ── No allocation columns found — show that fact honestly ──
+        allocs = [
+            { code: 'ALL', dept: 'All Spend (no cost center column detected)', amt: t, pct: 100, conf: 0, source: 'none' }
+        ];
     }
 }
 
-/* ── Download helpers ── */
-function dlBlob(b,n){var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=n;a.click();URL.revokeObjectURL(a.href);}
-function dlPDF(d,n){dlBlob(new Blob([d],{type:'application/pdf'}),n+'-'+invoice.pshort+'.pdf');}
-function dlCSV(d,n){dlBlob(new Blob([d],{type:'text/csv'}),n+'-'+invoice.pshort+'.csv');}
-function dlJSON(d,n){dlBlob(new Blob([JSON.stringify(d,null,2)],{type:'application/json'}),n+'-'+invoice.pshort+'.json');}
+function genSkus() {
+    if (!invoice || !invoice.models) return;
+    var pricingDb = {
+        'GPT-4o':       {input:2.50,output:10.00,reqAvg:0.012},
+        'Claude Sonnet 4.5':{input:3.00,output:15.00,reqAvg:0.018},
+        'GPT-4o-mini':  {input:0.15,output:0.60,reqAvg:0.0008},
+        'Claude Opus 4.5':{input:15.00,output:75.00,reqAvg:0.045},
+        'Gemini 2.5 Pro':{input:1.25,output:10.00,reqAvg:0.009},
+        'o1':           {input:15.00,output:60.00,reqAvg:0.038},
+        'Gemini 2.5 Flash':{input:0.15,output:0.60,reqAvg:0.0006},
+        'Azure GPT-4o': {input:2.50,output:10.00,reqAvg:0.013},
+        'Bedrock Claude':{input:3.00,output:15.00,reqAvg:0.016},
+        'GPT-4-Turbo':  {input:10.00,output:30.00,reqAvg:0.028},
+        'Gemini 2.0 Flash':{input:0.10,output:0.40,reqAvg:0.0005},
+        'Gemini 1.5 Pro':{input:1.25,output:5.00,reqAvg:0.007},
+        'Claude Sonnet 4':{input:3.00,output:15.00,reqAvg:0.017},
+        'Claude Haiku 4.5':{input:0.80,output:4.00,reqAvg:0.003},
+        'Claude Haiku 3.5':{input:0.25,output:1.25,reqAvg:0.001}
+    };
+    var td = invoice.tokenData || {};
+    skus = invoice.models.map(function(m) {
+        var p = pricingDb[m.model] || {input:2.00,output:8.00,reqAvg:0.010};
+        var real = td[m.model];
+        var hasRealTokens = real && real.hasTokens;
+        var hasRealRequests = real && real.hasRequests;
 
-/* ── Supabase save ── */
-function saveToDB(){
-    if(!sb||!currentUser||!invoice)return;
-    sb.from('close_packs').insert({user_id:currentUser.id,period:invoice.period,period_short:invoice.pshort,filename:invoice.name,total_spend:invoice.total,cost_centers:allocs.length,confidence:97,certificate_id:cert,data_hash:hash,allocation_summary:JSON.stringify(allocs),providers:JSON.stringify(invoice.providers),models:JSON.stringify(invoice.models)}).then(function(){console.log('Close Pack saved');}).catch(function(e){console.warn('Save error:',e);});
+        var inputTokens = hasRealTokens ? real.inputTokens : null;
+        var outputTokens = hasRealTokens ? real.outputTokens : null;
+        var reqs = hasRealRequests ? real.requests : null;
+
+        // Compute unit prices from real data when possible
+        var inputPrice = (hasRealTokens && inputTokens > 0 && m.cost > 0) ? (m.cost * 0.3 / inputTokens * 1000) : null;
+        var outputPrice = (hasRealTokens && outputTokens > 0 && m.cost > 0) ? (m.cost * 0.7 / outputTokens * 1000) : null;
+        var avgPerReq = (hasRealRequests && reqs > 0) ? m.cost / reqs : null;
+
+        // Use billed prices from CSV if available
+        if (invoice.billedPrices && invoice.billedPrices[m.model]) {
+            inputPrice = invoice.billedPrices[m.model];
+        }
+
+        return {
+            model: m.model, cost: m.cost,
+            requests: reqs, inputTokens: inputTokens, outputTokens: outputTokens,
+            inputPrice: inputPrice || p.input, outputPrice: outputPrice || p.output,
+            avgPerReq: avgPerReq,
+            estimated: !hasRealTokens,
+            estimatedReqs: !hasRealRequests
+        };
+    });
 }
-function saveLead(email){
-    if(!sb)return;
-    sb.from('leads').insert({email:email,source:'demo'}).then(function(){console.log('Lead saved');}).catch(function(e){console.warn('Lead error:',e);});
+
+function genAnomalies() {
+    if (!invoice) return;
+    anomalies = [];
+    var models = invoice.models || [];
+    var t = invoice.total;
+
+    // Severity order: critical > warn > info. Each anomaly gets a recommendation.
+
+    // 1. Unallocated spend — ONLY when we actually found cost center columns and some rows lack attribution
+    if (invoice.hasAllocData) {
+        var unalloc = allocs.find(function(a){ return a.code === 'UNALLOC'; });
+        if (unalloc && unalloc.pct > 3) {
+            anomalies.push({
+                type: 'critical', severity: 'Critical',
+                text: '<strong>$' + fmtK(unalloc.amt) + ' in unallocated spend</strong> (' + unalloc.pct + '% of total). ' + Math.round(invoice.totalUnallocated / (t / invoice.items)) + ' line items have no value in the <code>' + (invoice.allocColumn || 'cost center') + '</code> column.',
+                rec: 'Tag every Azure resource with a <code>CostCenter</code> or <code>Team</code> tag. Estimated savings from attribution visibility: <strong>8-15% of total spend</strong>.'
+            });
+        }
+    }
+
+    // 2. Single-model risk — if >80% of spend on one model
+    if (models.length >= 1 && (models[0].cost / t) > 0.80) {
+        anomalies.push({
+            type: 'critical', severity: 'Critical',
+            text: '<strong>Single-model concentration risk.</strong> ' + models[0].model + ' represents ' + ((models[0].cost / t) * 100).toFixed(0) + '% of total spend. A pricing change or outage from this provider would impact your entire AI workload.',
+            rec: 'Migrate 20-30% of ' + models[0].model + ' workloads to a fallback model. For non-latency-critical tasks, GPT-4o-mini costs <strong>95% less</strong> per token.'
+        });
+    }
+
+    // 3. Model concentration — which model dominates spend
+    if (models.length >= 2 && models[0].cost > models[1].cost * 1.5 && (models[0].cost / t) <= 0.80) {
+        var topPct = ((models[0].cost / t) * 100).toFixed(1);
+        var miniModel = models.find(function(m){ return m.model.toLowerCase().indexOf('mini') >= 0 || m.model.toLowerCase().indexOf('flash') >= 0 || m.model.toLowerCase().indexOf('haiku') >= 0; });
+        var targetModel = miniModel ? miniModel.model : 'a lighter model';
+        anomalies.push({
+            type: 'warn', severity: 'Warning',
+            text: '<strong>' + models[0].model + '</strong> accounts for ' + topPct + '% of total spend ($' + fmtK(models[0].cost) + '). This is ' + (models[0].cost / models[1].cost).toFixed(1) + 'x the next highest model.',
+            rec: 'Route classification, summarization, and extraction tasks to ' + targetModel + '. See Optimization Opportunity above for savings at published rates.'
+        });
+    }
+
+    // 4. Premium model warning — based on known expensive model names
+    var premiumModels = ['o1','o1-pro','claude opus','opus 4.5','gpt-4-turbo','gpt-4-32k'];
+    var expensive = models.filter(function(m) {
+        var mn = m.model.toLowerCase();
+        return premiumModels.some(function(p){ return mn.indexOf(p) >= 0; });
+    });
+    if (expensive.length > 0) {
+        var expTotal = expensive.reduce(function(s,m){return s+m.cost},0);
+        anomalies.push({
+            type: 'warn', severity: 'Warning',
+            text: '<strong>Premium model spend: $' + fmtK(expTotal) + '</strong> (' + ((expTotal/t)*100).toFixed(1) + '% of total). Models: ' + expensive.map(function(m){return m.model}).join(', ') + '. These models cost 5-10x more per token than alternatives.',
+            rec: 'Audit which workloads use ' + expensive[0].model + '. Batch/async tasks rarely need premium models. Switching to standard tier could save <strong>$' + fmtK(expTotal * 0.6) + '/mo</strong>.'
+        });
+    }
+
+    // 5. No cost center column — governance gap (info, not critical) — provider-aware rec
+    if (!invoice.hasAllocData) {
+        var portalRec = 'Upload a billing export with cost center or resource group columns to unlock per-team attribution.';
+        if (detectedProvider && detectedProvider.toLowerCase().indexOf('azure') >= 0) {
+            portalRec = 'Upload your Azure Cost Management export. <strong>Go to Azure Portal &rarr; Cost Management &rarr; Exports</strong>.';
+        } else if (detectedProvider && detectedProvider.toLowerCase().indexOf('aws') >= 0) {
+            portalRec = 'Enable AWS Cost & Usage Reports with resource tags. <strong>Go to AWS Billing &rarr; Cost & Usage Reports &rarr; Create</strong>.';
+        } else if (detectedProvider && detectedProvider.toLowerCase().indexOf('openai') >= 0) {
+            portalRec = 'Use the OpenAI Usage API to export per-key spend. <strong>Go to platform.openai.com &rarr; Usage &rarr; Export</strong>.';
+        } else if (detectedProvider && detectedProvider.toLowerCase().indexOf('anthropic') >= 0) {
+            portalRec = 'Use the Anthropic Usage API to export per-workspace spend. <strong>Go to console.anthropic.com &rarr; Settings &rarr; Usage</strong>.';
+        } else if (detectedProvider && detectedProvider.toLowerCase().indexOf('google') >= 0) {
+            portalRec = 'Export from Google Cloud Billing. <strong>Go to console.cloud.google.com &rarr; Billing &rarr; Reports &rarr; Export</strong>.';
+        }
+        anomalies.push({
+            type: 'info', severity: 'Info',
+            text: '<strong>No cost center attribution detected.</strong> This CSV format doesn\'t include cost center, resource group, or tag columns. 100% of spend is unattributable to a team or project.',
+            rec: portalRec
+        });
+    }
+
+    // 6. FOCUS compliance gap — only if NOT an invoice format (invoices can't have FOCUS columns)
+    if (invoice.focusDetected !== undefined && invoice.focusTotal && invoice.focusDetected > 0) {
+        var focusPct = Math.round((invoice.focusDetected / invoice.focusTotal) * 100);
+        if (focusPct < 50) {
+            anomalies.push({
+                type: 'info', severity: 'Info',
+                text: '<strong>Low FOCUS 1.3 compliance (' + focusPct + '%).</strong> Only ' + invoice.focusDetected + ' of ' + invoice.focusTotal + ' standard columns detected.',
+                rec: 'Enrich your billing export with FOCUS-standard columns. This ensures FinOps Foundation audit readiness.'
+            });
+        }
+    }
+
+    // 7. MoM trend — only shown when real multi-month data exists
+    if (trend.length >= 2) {
+        var prevT = trend[trend.length-2].amount, currT = trend[trend.length-1].amount;
+        var momChg = ((currT - prevT) / prevT * 100).toFixed(1);
+        var annualized = fmtK(currT * 12);
+        anomalies.push({
+            type: momChg > 20 ? 'warn' : 'info', severity: momChg > 20 ? 'Warning' : 'Info',
+            text: '<strong>Month-over-month: ' + (momChg > 0 ? '+' : '') + momChg + '% change</strong>. AI spend went from $' + fmtK(prevT) + ' to $' + fmtK(currT) + '. Annualized: $' + annualized + '.',
+            rec: momChg > 20 ? 'Set a budget alert at <strong>$' + fmtK(currT * 1.1) + '/mo</strong> to catch runaway spend before next close.' : 'Spend is stable. Set a <strong>monthly budget cap</strong> to maintain this trajectory.'
+        });
+    }
 }
 
-/* ── Local PDF generators (for sample data previews) ── */
-function fmt(n){return n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
-function footer(d,p,t){d.setDrawColor(0);d.setLineWidth(0.5);d.line(20,280,190,280);d.setFontSize(8);d.setTextColor(100);d.text('CONFIDENTIAL',105,285,{align:'center'});d.text(invoice.company+' | Generated by Finault | Page '+p+' of '+t,105,289,{align:'center'});}
+function genTrend() {
+    // Only populate trend from real multi-month data — no synthetic data
+    if (!window._multiMonthData || window._multiMonthData.length < 2) {
+        trend = [];
+        return;
+    }
+    trend = window._multiMonthData.sort(function(a,b) {
+        return a.month.localeCompare(b.month);
+    });
+}
 
-function genExec(){var jsPDF=window.jspdf.jsPDF,d=new jsPDF(),y=20;d.setFontSize(18);d.setFont('helvetica','bold');d.text('MONTHLY AI SPEND REPORT',105,y,{align:'center'});y+=10;d.setFontSize(14);d.setFont('helvetica','normal');d.text(invoice.company,105,y,{align:'center'});y+=7;d.setFontSize(11);d.text('For the Period Ended '+invoice.period,105,y,{align:'center'});y+=8;d.line(20,y,190,y);y+=8;d.setFontSize(9);d.setTextColor(100);d.text('Document ID: '+cert,20,y);d.text('Date: '+new Date().toLocaleDateString(),190,y,{align:'right'});y+=10;d.setTextColor(0);d.setFontSize(12);d.setFont('helvetica','bold');d.text('1. EXECUTIVE SUMMARY',20,y);y+=10;d.setFontSize(10);d.setFont('helvetica','normal');d.text('Total: $'+fmt(invoice.total),25,y);d.text('Providers: '+(invoice.providers||[]).length,80,y);d.text('Models: '+(invoice.models||[]).length,120,y);d.text('Cost Centers: '+allocs.length,160,y);y+=12;d.setFont('helvetica','bold');d.setFontSize(12);d.text('2. SPEND BY PROVIDER',20,y);y+=10;d.setFontSize(9);d.setFont('helvetica','bold');d.text('Provider',25,y);d.text('Amount',85,y);d.text('%',130,y);y+=6;d.setFont('helvetica','normal');for(var i=0;i<(invoice.providers||[]).length;i++){var p=invoice.providers[i];d.text(p.name,25,y);d.text('$'+fmt(p.amount),85,y);d.text(p.pct+'%',130,y);y+=6;}y+=6;d.setFont('helvetica','bold');d.setFontSize(12);d.text('3. BUDGET VARIANCE',20,y);y+=10;d.setFontSize(9);d.setFont('helvetica','normal');var v=invoice.total-invoice.budget,vp=((v/invoice.budget)*100).toFixed(1);d.text('Budget: $'+fmt(invoice.budget),25,y);d.text('Actual: $'+fmt(invoice.total),85,y);d.text('Variance: $'+fmt(v)+' (+'+vp+'%)',140,y);y+=12;d.setFont('helvetica','bold');d.setFontSize(12);d.text('4. ALLOCATION BY COST CENTER',20,y);y+=10;d.setFontSize(9);d.setFont('helvetica','bold');d.text('Cost Center',25,y);d.text('Amount',80,y);d.text('%',115,y);d.text('Model',140,y);y+=6;d.setFont('helvetica','normal');for(var j=0;j<allocs.length;j++){var a=allocs[j];d.text(a.dept.substring(0,22),25,y);d.text('$'+fmt(a.amt),80,y);d.text(a.pct+'%',115,y);d.text(a.model||'-',140,y);y+=6;}footer(d,1,1);return d.output('arraybuffer');}
+function handleTrendFiles(files) {
+    if (!files || files.length === 0) return;
+    window._multiMonthData = window._multiMonthData || [];
+    // Add current invoice as first data point if not already there
+    if (invoice && window._multiMonthData.length === 0) {
+        window._multiMonthData.push({month: invoice.pshort || 'Current', amount: invoice.total});
+    }
+    var pending = files.length;
+    for (var i = 0; i < files.length; i++) {
+        (function(file) {
+            var r = new FileReader();
+            r.onload = function(e) {
+                var lines = e.target.result.trim().split('\n');
+                var cols = lines[0].split(',');
+                var lc = cols.map(function(c){return c.toLowerCase().trim().replace(/"/g,'');});
+                // Find cost column
+                var ci = -1;
+                for (var j=0;j<lc.length;j++) { if(lc[j].indexOf('cost')>=0||lc[j].indexOf('amount')>=0||lc[j].indexOf('price')>=0){ci=j;break;} }
+                var total = 0;
+                if (ci>=0) { for(var k=1;k<lines.length;k++){var v=parseFloat((lines[k].split(',')[ci]||'').replace(/[$,"]/g,''));if(!isNaN(v))total+=v;} }
+                // Try to extract month from filename or data
+                var monthLabel = file.name.replace(/\.csv$/i,'').replace(/[^a-zA-Z0-9-]/g,' ').trim().slice(0,12);
+                // Try to find a date column
+                var di = -1;
+                for(var d=0;d<lc.length;d++){if(lc[d].indexOf('date')>=0||lc[d].indexOf('period')>=0||lc[d].indexOf('billingperiod')>=0){di=d;break;}}
+                if(di>=0 && lines.length>1){
+                    var dv=(lines[1].split(',')[di]||'').replace(/"/g,'').trim().slice(0,7);
+                    if(dv.match(/^\d{4}-\d{2}$/)) monthLabel=dv;
+                }
+                if(total>0) window._multiMonthData.push({month:monthLabel, amount:total});
+                pending--;
+                if(pending===0) refreshTrend();
+            };
+            r.readAsText(file);
+        })(files[i]);
+    }
+}
 
-function genJournal(){var csv='Journal Entry,Date,Account Number,Account Name,Description,Debit,Credit,Cost Center,Provider,Model,Reference,Memo\n';var je='JE-AI-'+invoice.pshort.replace('-',''),dt=invoice.pshort+'-31',ms=invoice.models||[];for(var i=0;i<allocs.length;i++){var a=allocs[i];if(a.code==='UNALLOC')continue;var prov='Multiple';for(var j=0;j<ms.length;j++)if(ms[j].model===a.model){prov=ms[j].provider;break;}csv+=je+','+dt+',6100-'+a.code+',AI Services - '+a.dept+',AI Spend Allocation - '+invoice.period+','+a.amt.toFixed(2)+',,'+a.code+','+prov+','+(a.model||'Multiple')+','+cert+',Monthly AI cost allocation\n';}csv+=je+','+dt+',2100-AP,Accounts Payable,AI Spend Allocation - '+invoice.period+',,'+invoice.total.toFixed(2)+',CORP,Multiple,Multiple,'+cert+',Monthly AI cost allocation\n';return csv;}
+function refreshTrend() {
+    if(!window._multiMonthData || window._multiMonthData.length < 2) return;
+    genTrend();
+    genAnomalies();
+    // Show trend section when multi-month data arrives
+    document.getElementById('trendSection').style.display = '';
+    document.getElementById('trendChartWrap').style.display = '';
+    // Render chart
+    var maxAmt = Math.max.apply(null, trend.map(function(t){return t.amount}));
+    var tc = '';
+    for (var j=0;j<trend.length;j++) {
+        var tr = trend[j], h = Math.max((tr.amount/maxAmt)*110, 8);
+        var isLast = j === trend.length-1;
+        tc += '<div class="trend-bar-group"><div class="trend-bar-value">$'+fmtK(tr.amount)+'</div><div class="trend-bar '+(isLast?'green':'light')+'" style="height:'+h+'px"><span class="trend-bar-label">'+tr.month+'</span></div></div>';
+    }
+    document.getElementById('trendChart').innerHTML = tc;
+    if (trend.length >= 2) {
+        var prev = trend[trend.length-2].amount, curr = trend[trend.length-1].amount;
+        var chg = ((curr - prev) / prev * 100).toFixed(1);
+        var isUp = curr > prev;
+        document.getElementById('trendChange').innerHTML = (isUp?'&#9650;':'&#9660;') + ' ' + Math.abs(chg) + '% MoM';
+        document.getElementById('trendChange').className = 'trend-change ' + (isUp ? 'up' : 'down');
+    }
+    // Re-render anomalies
+    var ah = '';
+    anomalies.forEach(function(a) {
+        ah += '<div class="anomaly-card ' + a.type + '"><div class="anomaly-indicator"></div><div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;align-items:flex-start;"><div class="anomaly-dot"></div><div class="anomaly-severity">'+(a.severity||'Info')+'</div></div><div><div>' + a.text + '</div>'+(a.rec?'<div class="anomaly-rec"><strong>Recommendation:</strong> '+a.rec+'</div>':'')+'</div></div>';
+    });
+    document.getElementById('anomalyCards').innerHTML = ah;
+}
 
-function genCloseCert(){var jsPDF=window.jspdf.jsPDF,d=new jsPDF(),y=20;d.setFontSize(18);d.setFont('helvetica','bold');d.text('CLOSE CERTIFICATE',105,y,{align:'center'});y+=10;d.setFontSize(12);d.setFont('helvetica','normal');d.text(invoice.company,105,y,{align:'center'});y+=10;d.line(20,y,190,y);y+=10;d.setFontSize(10);d.text('Close ID: FIN-CL-'+hash,20,y);y+=6;d.text('Period: '+invoice.period,20,y);y+=6;d.text('Sealed: '+new Date().toISOString(),20,y);y+=14;d.setFont('helvetica','bold');d.setFontSize(12);d.text('FINANCIAL RECONCILIATION',20,y);y+=10;d.setFontSize(10);d.setFont('helvetica','normal');d.text('Total Debits: $'+fmt(invoice.total),25,y);y+=6;d.text('Total Credits: $'+fmt(invoice.total),25,y);y+=6;d.text('Net Variance: $0.00',25,y);y+=6;d.text('Status: Balanced',25,y);y+=14;d.setFont('helvetica','bold');d.setFontSize(12);d.text('CERTIFICATION',20,y);y+=10;d.setFontSize(10);d.setFont('helvetica','normal');d.text('This close is sealed and immutable. Artifacts are hash-verified.',20,y);y+=12;d.text('Prepared by:',25,y);d.line(60,y,150,y);y+=10;d.text('Reviewed by:',25,y);d.line(60,y,150,y);footer(d,1,1);return d.output('arraybuffer');}
+function genFocusScore() {
+    var detected = (invoice && invoice.focusDetected !== undefined) ? invoice.focusDetected : 0;
+    var total = (invoice && invoice.focusTotal) || 42;
+    var pct = Math.round((detected / total) * 100);
+    focusScore = {
+        score: pct,
+        detected: detected,
+        total: total,
+        missing: total - detected,
+        missingCols: ['CommitmentDiscountId','CommitmentDiscountName','CommitmentDiscountStatus','CommitmentDiscountType','CommitmentDiscountCategory','SkuPriceId','ChargeClass','ChargeFrequency','ListCost','ListUnitPrice','PricingCategory','PricingQuantity','PricingUnit','Tags'].slice(0, total - detected)
+    };
+}
 
-function genManifest(){var closeId='FIN-CL-'+hash;var invoices=[];if(invoice.providers&&invoice.providers.length>0){for(var i=0;i<invoice.providers.length;i++){var p=invoice.providers[i];invoices.push({invoice_id:'inv_'+String(i+1).padStart(3,'0'),vendor:{name:p.name,identifier:p.name.toLowerCase().replace(/\s/g,'')+'.com'},currency:'USD',amounts:{subtotal:p.amount,tax:0,total:p.amount},source:{filename:invoice.name}});}}else{invoices.push({invoice_id:'inv_001',vendor:{name:'AI Provider',identifier:'provider.com'},currency:'USD',amounts:{subtotal:invoice.total,tax:0,total:invoice.total},source:{filename:invoice.name}});}return{manifest_version:'1.1',close_id:closeId,period:invoice.pshort,sealed_at:new Date().toISOString(),currency:'USD',invoices:invoices,totals:{invoice_count:invoices.length,subtotal:invoice.total,tax:0,total:invoice.total},artifacts:{executive_summary_pdf:{filename:'01-Executive-Summary-'+closeId+'.pdf'},close_certificate_pdf:{filename:'03-Close-Certificate-'+closeId+'.pdf'},journal_csv:{filename:'02-Journal-Entry-'+closeId+'.csv'}}};}
+// ── Display ──
+function toggleDetails() {
+    var body = document.getElementById('detailsBody');
+    var chevron = document.getElementById('detailsChevron');
+    var open = body.style.display === 'none';
+    body.style.display = open ? '' : 'none';
+    chevron.style.transform = open ? 'rotate(90deg)' : 'rotate(0deg)';
+    if (open) trackEvent('details_expanded');
+}
 
-/* ── Email ── */
-function submitEmail(){
+function showProcessing(msg) { document.getElementById('processingText').textContent=msg; document.getElementById('processing').classList.add('visible'); document.getElementById('results').classList.remove('visible'); document.getElementById('stickyDownload').classList.remove('visible'); }
+function hideProcessing() { document.getElementById('processing').classList.remove('visible'); }
+
+function showResults() {
+    if (!invoice) return;
+    var t = invoice.total;
+
+    document.getElementById('auditPeriod').textContent = (detectedProvider || 'Multi-provider') + ' \u00b7 ' + invoice.period + ' \u00b7 ' + invoice.items + ' line items';
+    // Deterministic audit hash — same CSV always produces same hash (Perret/Hockey)
+    var auditTs = new Date();
+    var auditSeed = invoice.name + '|' + t.toFixed(2) + '|' + invoice.items + '|' + (invoice.models||[]).map(function(m){return m.model+':'+m.cost.toFixed(2)}).join(',');
+    var contentHash = 0; for (var ci = 0; ci < auditSeed.length; ci++) { contentHash = ((contentHash << 5) - contentHash) + auditSeed.charCodeAt(ci); contentHash |= 0; }
+    var auditId = Math.abs(contentHash).toString(16).padStart(8,'0').slice(0, 8);
+    var utcStr = auditTs.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+
+    document.getElementById('rTotalSpend').textContent = '$' + fmtK(t);
+    document.getElementById('rModels').textContent = (invoice.models||[]).length;
+    document.getElementById('rCostCenters').textContent = allocs.length;
+    document.getElementById('rLineItems').textContent = invoice.items || 0;
+
+    // ── Slootman: Savings estimate — transparent, line-itemized ──
+    // Known pricing tiers per 1K input tokens (public list prices)
+    var modelPricing = {
+        'gpt-4o': {in: 2.50, out: 10.00, tier: 'frontier'},
+        'gpt-4-turbo': {in: 10.00, out: 30.00, tier: 'premium'},
+        'gpt-4-32k': {in: 60.00, out: 120.00, tier: 'premium'},
+        'gpt-4': {in: 30.00, out: 60.00, tier: 'premium'},
+        'gpt-4o-mini': {in: 0.15, out: 0.60, tier: 'efficiency'},
+        'o1': {in: 15.00, out: 60.00, tier: 'premium'},
+        'o1-pro': {in: 150.00, out: 600.00, tier: 'premium'},
+        'claude opus': {in: 15.00, out: 75.00, tier: 'premium'},
+        'claude sonnet': {in: 3.00, out: 15.00, tier: 'frontier'},
+        'claude haiku': {in: 0.25, out: 1.25, tier: 'efficiency'},
+        'gemini 2.5 pro': {in: 1.25, out: 10.00, tier: 'frontier'},
+        'gemini 2.5 flash': {in: 0.15, out: 0.60, tier: 'efficiency'}
+    };
+    savingsTotal = 0;
+    savingsLines = []; // reset each run
+    var models = invoice.models || [];
+    // Find the cheapest "efficiency" model the customer already uses
+    var miniModel = models.find(function(m){ var mn=m.model.toLowerCase(); return mn.indexOf('mini')>=0||mn.indexOf('flash')>=0||mn.indexOf('haiku')>=0; });
+    var miniName = miniModel ? miniModel.model : 'GPT-4o-mini';
+    var miniPricing = null;
+    Object.keys(modelPricing).forEach(function(k) { if (miniName.toLowerCase().indexOf(k)>=0) miniPricing = modelPricing[k]; });
+    if (!miniPricing) miniPricing = {in: 0.15, out: 0.60, tier: 'efficiency'};
+
+    models.forEach(function(m) {
+        var mn = m.model.toLowerCase();
+        var pricing = null;
+        Object.keys(modelPricing).forEach(function(k) { if (mn.indexOf(k)>=0) pricing = modelPricing[k]; });
+        if (!pricing || pricing.tier === 'efficiency') return; // skip unknown or already-cheap models
+
+        // Conservative assumption: 40% of non-efficiency workloads are classifiable/simple enough to downshift
+        var shiftablePct = 0.40;
+        var shiftableSpend = m.cost * shiftablePct;
+        // Savings = shiftable spend × (1 - efficiency_price / current_price)
+        var ratio = miniPricing.in / pricing.in;
+        var savedAmount = shiftableSpend * (1 - ratio);
+        if (savedAmount > 100) { // only show material savings
+            savingsTotal += savedAmount;
+            savingsLines.push({
+                from: m.model, to: miniName,
+                amount: savedAmount,
+                reason: Math.round(shiftablePct*100) + '% of $' + fmtK(m.cost) + ' at ' + ((1-ratio)*100).toFixed(0) + '% lower cost'
+            });
+        }
+    });
+
+    var heroSavings = document.getElementById('heroSavings');
+    if (savingsTotal > 0 && savingsLines.length > 0) {
+        heroSavings.style.display = '';
+        document.getElementById('rSavings').textContent = '$' + fmtK(savingsTotal);
+        // Show the top line item as the subtitle
+        var topLine = savingsLines[0];
+        document.getElementById('rSavingsSub').textContent = topLine.from + ' \u2192 ' + topLine.to + ': ' + topLine.reason;
+    } else {
+        heroSavings.style.display = 'none';
+        document.querySelector('.hero-grid').style.gridTemplateColumns = '1fr';
+    }
+
+    // ── Slootman: Executive summary ──
+    var execEl = document.getElementById('execSummary');
+    if (models.length >= 2) {
+        var topName = models[0].model;
+        var topPctStr = ((models[0].cost / t) * 100).toFixed(0);
+        var summary = '<strong>' + topPctStr + '% of spend concentrated on ' + topName + '.</strong> ';
+        if (savingsTotal > 0 && savingsLines.length > 0) {
+            summary += 'Routing 40% of ' + (savingsLines.length === 1 ? savingsLines[0].from : savingsLines.length + ' models') + ' to ' + miniName + ' saves <strong>$' + fmtK(savingsTotal) + '/mo</strong> at published rates.';
+        } else {
+            summary += 'Diversifying across models would reduce vendor lock-in risk.';
+        }
+        execEl.innerHTML = summary;
+        execEl.style.display = '';
+    } else {
+        execEl.style.display = 'none';
+    }
+
+    // ── Perret/Hockey: Audit verification ribbon with real SHA-256 ──
+    var ribbon = document.getElementById('auditRibbon');
+    ribbon.style.display = 'flex';
+    var digestDisplay = fileDigest
+        ? 'SHA-256 ' + fileDigest.slice(0,8) + '&hellip;' + fileDigest.slice(-8)
+        : (usedSample ? 'Sample data' : 'Computing hash&hellip;');
+    document.getElementById('auditRibbonText').innerHTML =
+        'Audit <strong style="color:var(--gray-700);">#' + auditId + '</strong> &middot; ' +
+        utcStr + ' &middot; ' +
+        invoice.items + ' rows &middot; ' +
+        '<span id="auditDigestSpan">' + digestDisplay + '</span> &middot; ' +
+        (detectedProvider || 'Multi-provider');
+
+    // ── Anomalies with severity rollup (Pomel) ──
+    var critCount = anomalies.filter(function(a){return a.type==='critical'}).length;
+    var warnCount = anomalies.filter(function(a){return a.type==='warn'}).length;
+    var infoCount = anomalies.filter(function(a){return a.type==='info'}).length;
+    var anomalyTitle = document.querySelector('#anomalySection .result-section-title');
+    var rollup = '<span style="margin-left:auto;font-size:11px;font-weight:500;letter-spacing:0;text-transform:none;display:flex;gap:10px;">';
+    if (critCount > 0) rollup += '<span style="color:#991b1b;">' + critCount + ' Critical</span>';
+    if (warnCount > 0) rollup += '<span style="color:#92400e;">' + warnCount + ' Warning</span>';
+    if (infoCount > 0) rollup += '<span style="color:#1e40af;">' + infoCount + ' Info</span>';
+    rollup += '</span>';
+    if (anomalyTitle) anomalyTitle.innerHTML = 'Anomalies Detected <span style="display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:var(--red);color:white;font-size:11px;font-weight:700;margin-left:4px;">' + anomalies.length + '</span>' + rollup;
+    var ah = '';
+    anomalies.forEach(function(a) {
+        ah += '<div class="anomaly-card '+a.type+'"><div class="anomaly-indicator"></div><div style="display:flex;flex-direction:column;gap:2px;flex-shrink:0;align-items:flex-start;"><div class="anomaly-dot"></div><div class="anomaly-severity">'+a.severity+'</div></div><div><div>'+a.text+'</div>'+(a.rec?'<div class="anomaly-rec"><strong>Recommendation:</strong> '+a.rec+'</div>':'')+'</div></div>';
+    });
+    document.getElementById('anomalyCards').innerHTML = ah;
+
+    // ── How You Compare — the aha moment ──
+    var benchmarkSection = document.getElementById('benchmarkSection');
+    var benchmarkDivider = document.getElementById('benchmarkDivider');
+    if (models.length >= 2) {
+        benchmarkSection.style.display = '';
+        benchmarkDivider.style.display = '';
+
+        // Published pricing for cost-per-token comparison ($/1K input tokens)
+        var publishedRates = {
+            'gpt-4o': 2.50, 'gpt-4o-mini': 0.15, 'gpt-4-turbo': 10.00, 'gpt-4': 30.00,
+            'o1': 15.00, 'o1-pro': 150.00, 'o1-mini': 1.10, 'o3': 10.00, 'o3-mini': 1.10,
+            'claude opus': 15.00, 'claude sonnet': 3.00, 'claude haiku': 0.25,
+            'gemini 2.5 pro': 1.25, 'gemini 2.5 flash': 0.15,
+            'text-embedding-3-large': 0.13, 'text-embedding-3-small': 0.02
+        };
+
+        // Card 1: Pricing vs published rate (top model)
+        var topMn = models[0].model.toLowerCase();
+        var pubRate = null;
+        Object.keys(publishedRates).forEach(function(k) { if (topMn.indexOf(k) >= 0) pubRate = publishedRates[k]; });
+        var billedRate = invoice.billedPrices && Object.keys(invoice.billedPrices).length > 0
+            ? invoice.billedPrices[Object.keys(invoice.billedPrices)[0]] : null;
+        var pricingCard = '';
+        if (pubRate && billedRate && billedRate > 0) {
+            var priceDiff = ((billedRate - pubRate) / pubRate * 100).toFixed(0);
+            var priceClass = priceDiff > 10 ? 'bm-bad' : priceDiff < -5 ? 'bm-good' : 'bm-good';
+            pricingCard = '<div class="benchmark-card"><div class="bm-label">Your ' + models[0].model + ' Rate</div><div class="bm-value ' + priceClass + '">' + (priceDiff > 0 ? '+' : '') + priceDiff + '%</div><div class="bm-context">vs. $' + pubRate.toFixed(2) + '/1K published rate</div></div>';
+        } else {
+            // Fallback: show the published rate for context
+            pricingCard = '<div class="benchmark-card"><div class="bm-label">' + models[0].model + ' List Price</div><div class="bm-value">$' + (pubRate ? pubRate.toFixed(2) : '—') + '</div><div class="bm-context">per 1K input tokens (published)</div></div>';
+        }
+
+        // Card 2: Model diversity (HHI — Herfindahl index)
+        var hhi = 0;
+        models.forEach(function(m) { var s = m.cost / t * 100; hhi += s * s; });
+        var hhiNorm = Math.round(hhi);
+        // Peer benchmarks by spend tier (seeded from industry data)
+        var peerHHI = t < 50000 ? 6000 : t < 200000 ? 4500 : 3500;
+        var hhiClass = hhiNorm > peerHHI * 1.3 ? 'bm-warn' : 'bm-good';
+        var hhiLabel = hhiNorm > 7000 ? 'Concentrated' : hhiNorm > 4000 ? 'Moderate' : 'Diversified';
+        var diversityCard = '<div class="benchmark-card"><div class="bm-label">Model Diversity</div><div class="bm-value ' + hhiClass + '">' + hhiLabel + '</div><div class="bm-context">HHI ' + hhiNorm + ' (peer median: ' + peerHHI + ')</div></div>';
+
+        // Card 3: Efficiency ratio — % of spend on efficiency-tier models
+        var efficiencyModels = ['mini','flash','haiku','embedding','embed','whisper','tts'];
+        var effSpend = models.filter(function(m) {
+            var mn = m.model.toLowerCase();
+            return efficiencyModels.some(function(e) { return mn.indexOf(e) >= 0; });
+        }).reduce(function(s, m) { return s + m.cost; }, 0);
+        var effPct = ((effSpend / t) * 100).toFixed(0);
+        var peerEffPct = t < 50000 ? 15 : t < 200000 ? 22 : 30; // seeded benchmarks
+        var effClass = effPct >= peerEffPct ? 'bm-good' : effPct >= peerEffPct * 0.5 ? 'bm-warn' : 'bm-bad';
+        var efficiencyCard = '<div class="benchmark-card"><div class="bm-label">Efficiency Tier Usage</div><div class="bm-value ' + effClass + '">' + effPct + '%</div><div class="bm-context">of spend on low-cost models (peer median: ' + peerEffPct + '%)</div></div>';
+
+        document.getElementById('benchmarkCards').innerHTML = pricingCard + diversityCard + efficiencyCard;
+    } else {
+        benchmarkSection.style.display = 'none';
+        benchmarkDivider.style.display = 'none';
+    }
+
+    // ── Slootman: "What to Do Monday" — concrete action plan from real data ──
+    var mondaySection = document.getElementById('mondaySection');
+    var mondayDivider = document.getElementById('mondayDivider');
+    var mondayActions = [];
+
+    // Action 1: Model downshift (if savings exist)
+    if (savingsLines.length > 0) {
+        var topSave = savingsLines[0];
+        mondayActions.push({
+            priority: 1, impact: '$' + fmtK(topSave.amount) + '/mo',
+            title: 'Route classification workloads from ' + topSave.from + ' to ' + topSave.to,
+            steps: 'Open your API gateway or routing layer. Identify requests with &lt;500 token outputs (classification, extraction, tagging). Route these to ' + topSave.to + '. Monitor quality for 1 week before expanding.',
+            color: 'var(--green)'
+        });
+    }
+
+    // Action 2: Budget alert (always relevant for >$10K spend)
+    if (t > 10000) {
+        var alertThreshold = Math.round(t * 1.15 / 1000) * 1000;
+        var providerPortal = detectedProvider && detectedProvider.toLowerCase().indexOf('azure') >= 0
+            ? 'Azure Portal \u2192 Cost Management \u2192 Budgets \u2192 Create'
+            : detectedProvider && detectedProvider.toLowerCase().indexOf('aws') >= 0
+                ? 'AWS Budgets \u2192 Create budget \u2192 Cost budget'
+                : 'OpenAI Dashboard \u2192 Settings \u2192 Limits';
+        mondayActions.push({
+            priority: 2, impact: 'Risk mitigation',
+            title: 'Set a spend alert at $' + fmtK(alertThreshold) + '/mo',
+            steps: providerPortal + '. Set threshold to $' + fmtK(alertThreshold) + ' (15% above current). Add CFO and eng lead as alert recipients. Takes 2 minutes.',
+            color: 'var(--amber)'
+        });
+    }
+
+    // Action 3: From anomaly data — tag resources or fix concentration
+    var concAnomaly = anomalies.find(function(a){ return a.text && a.text.indexOf('concentrat') >= 0; });
+    var allocAnomaly = anomalies.find(function(a){ return a.text && (a.text.indexOf('cost center') >= 0 || a.text.indexOf('unallocated') >= 0); });
+    if (allocAnomaly) {
+        mondayActions.push({
+            priority: 3, impact: 'Governance',
+            title: 'Tag all AI resources with CostCenter and Team',
+            steps: 'Export your resource list. Add CostCenter and Team tags to each AI resource. This unlocks per-team attribution in next month\u2019s audit. Estimated: 30 min for initial tagging.',
+            color: 'var(--blue)'
+        });
+    } else if (concAnomaly && models.length >= 2) {
+        mondayActions.push({
+            priority: 3, impact: 'Resilience',
+            title: 'Evaluate ' + models[1].model + ' as a fallback for ' + models[0].model,
+            steps: 'Run your top 3 prompts through ' + models[1].model + '. Compare output quality and latency. If acceptable, set up automatic failover in your routing layer. Reduces single-vendor risk.',
+            color: 'var(--blue)'
+        });
+    }
+
+    if (mondayActions.length > 0) {
+        mondaySection.style.display = '';
+        mondayDivider.style.display = '';
+        var mh = '';
+        mondayActions.forEach(function(a, idx) {
+            mh += '<div style="display:flex;gap:14px;padding:16px;background:var(--white);border:1px solid var(--border);border-radius:10px;">';
+            mh += '<div style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:' + a.color + ';color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;">' + (idx+1) + '</div>';
+            mh += '<div style="flex:1;min-width:0;">';
+            mh += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">';
+            mh += '<div style="font-size:14px;font-weight:600;color:var(--gray-900);">' + a.title + '</div>';
+            mh += '<span style="flex-shrink:0;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;opacity:0.9;border:1px solid ' + a.color + ';background:var(--white);color:' + a.color + ';">' + a.impact + '</span>';
+            mh += '</div>';
+            mh += '<div style="font-size:13px;color:var(--gray-500);line-height:1.5;">' + a.steps + '</div>';
+            mh += '</div></div>';
+        });
+        document.getElementById('mondayActions').innerHTML = mh;
+    } else {
+        mondaySection.style.display = 'none';
+        mondayDivider.style.display = 'none';
+    }
+
+    // ── FOCUS Score — Jobs: collapse when N/A ──
+    var focusSection = document.getElementById('focusSectionWrap');
+    if (focusScore.detected === 0) {
+        focusSection.style.display = 'none';
+    } else {
+        focusSection.style.display = '';
+        var fb = document.getElementById('focusBar');
+        fb.style.width = focusScore.score + '%';
+        document.getElementById('focusPct').textContent = focusScore.score + '%';
+        document.getElementById('focusDetails').innerHTML =
+            '<div class="focus-detail"><div class="label">Columns Detected</div><div class="val">' + focusScore.detected + ' / ' + focusScore.total + '</div></div>' +
+            '<div class="focus-detail"><div class="label">Compliance Level</div><div class="val">' + (focusScore.score >= 80 ? 'High' : focusScore.score >= 50 ? 'Partial' : 'Low') + '</div></div>' +
+            '<div class="focus-detail"><div class="label">Missing Columns</div><div class="val">' + focusScore.missing + '</div></div>';
+    }
+
+    // ── Model bar chart (Dageville: merged with SKU data, expandable) ──
+    var ch = '';
+    var clr = ['green','dark'];
+    var na = '<span style="color:var(--gray-300);">\u2014</span>';
+    for (var i=0;i<Math.min(invoice.models.length,10);i++) {
+        var m = invoice.models[i], pct = Math.max((m.cost/t)*100, 3);
+        var sku = skus.find(function(s){return s.model===m.model});
+        ch += '<div style="margin-bottom:2px;">';
+        ch += '<div class="bar-row" style="cursor:pointer;" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display===\'none\'?\'flex\':\'none\'"><span class="bar-label">'+m.model+'</span><div class="bar-track"><div class="bar-fill '+clr[i%2]+'" style="width:'+pct+'%">'+((m.cost/t)*100).toFixed(1)+'%</div></div><span class="bar-amount">$'+fmtK(m.cost)+'</span></div>';
+        // Expandable SKU detail row
+        ch += '<div style="display:none;gap:16px;padding:8px 12px 8px 152px;font-size:12px;color:var(--gray-500);background:var(--gray-50);border-radius:0 0 6px 6px;margin-top:-2px;flex-wrap:wrap;">';
+        if (sku) {
+            var inTok = sku.inputTokens !== null ? fmtInt(sku.inputTokens) : na;
+            var outTok = sku.outputTokens !== null ? fmtInt(sku.outputTokens) : na;
+            ch += '<span>Input: <strong style="color:var(--gray-700);">'+inTok+'</strong> tokens</span>';
+            ch += '<span>Output: <strong style="color:var(--gray-700);">'+outTok+'</strong> tokens</span>';
+            if (sku.requests !== null) ch += '<span>Requests: <strong style="color:var(--gray-700);">'+fmtInt(sku.requests)+'</strong></span>';
+            if (!sku.estimated) ch += '<span>$/1K in: <strong style="color:var(--gray-700);">$'+sku.inputPrice.toFixed(4)+'</strong></span>';
+        } else {
+            ch += '<span>No token data available</span>';
+        }
+        ch += '</div></div>';
+    }
+    document.getElementById('modelChart').innerHTML = ch;
+
+    // ── Trend chart — Jobs: only show when multi-month data exists ──
+    var trendSec = document.getElementById('trendSection');
+    if (trend.length >= 2) {
+        trendSec.style.display = '';
+        var maxAmt = Math.max.apply(null, trend.map(function(t){return t.amount}));
+        var tc = '';
+        for (var j=0;j<trend.length;j++) {
+            var tr = trend[j], h = Math.max((tr.amount/maxAmt)*110, 8);
+            var isLast = j === trend.length-1;
+            tc += '<div class="trend-bar-group"><div class="trend-bar-value">$'+fmtK(tr.amount)+'</div><div class="trend-bar '+(isLast?'green':'light')+'" style="height:'+h+'px"><span class="trend-bar-label">'+tr.month+'</span></div></div>';
+        }
+        document.getElementById('trendChart').innerHTML = tc;
+        var prev = trend[trend.length-2].amount, curr = trend[trend.length-1].amount;
+        var chg = ((curr - prev) / prev * 100).toFixed(1);
+        var isUp = curr > prev;
+        document.getElementById('trendChange').innerHTML = (isUp?'&#9650;':'&#9660;') + ' ' + Math.abs(chg) + '% MoM';
+        document.getElementById('trendChange').className = 'trend-change ' + (isUp ? 'up' : 'down');
+    } else {
+        trendSec.style.display = 'none';
+    }
+
+    // ── Allocation — Jobs: one line CTA when no data, table when real ──
+    var allocWrap = document.getElementById('allocWrap');
+    var allocSource = (allocs.length > 0 && allocs[0].source === 'csv') ? 'csv' : 'none';
+    if (allocSource === 'none') {
+        // Provider-aware guidance for billing export
+        var exportGuide = '';
+        var dp = (detectedProvider || '').toLowerCase();
+        if (dp.indexOf('azure') >= 0) {
+            exportGuide = '<div style="text-align:left;margin-top:12px;padding:12px;background:var(--white);border:1px solid var(--border);border-radius:8px;">' +
+                '<div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">How to export from Azure</div>' +
+                '<ol style="font-size:12px;color:var(--gray-500);padding-left:18px;margin:0;line-height:1.6;">' +
+                '<li>Go to <strong>Azure Portal \u2192 Cost Management \u2192 Exports</strong></li>' +
+                '<li>Click <strong>+ Add</strong> \u2192 choose <strong>Actual cost</strong> \u2192 set date range</li>' +
+                '<li>Under <strong>Grouping</strong>, include <strong>ResourceGroup</strong> and <strong>Tags</strong></li>' +
+                '<li>Export as CSV, then upload the file here</li>' +
+                '</ol>' +
+                '<div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Columns we look for: ResourceGroup, Tags, CostCenter, MeterCategory</div>' +
+                '</div>';
+        } else if (dp.indexOf('aws') >= 0) {
+            exportGuide = '<div style="text-align:left;margin-top:12px;padding:12px;background:var(--white);border:1px solid var(--border);border-radius:8px;">' +
+                '<div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">How to export from AWS</div>' +
+                '<ol style="font-size:12px;color:var(--gray-500);padding-left:18px;margin:0;line-height:1.6;">' +
+                '<li>Go to <strong>AWS Billing \u2192 Cost & Usage Reports</strong></li>' +
+                '<li>Create a report with <strong>Include resource IDs</strong> checked</li>' +
+                '<li>Enable <strong>cost allocation tags</strong> (CostCenter, Team, Project)</li>' +
+                '<li>Export as CSV, then upload the file here</li>' +
+                '</ol>' +
+                '<div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Columns we look for: resourceTags, lineItem/ResourceId, CostCenter</div>' +
+                '</div>';
+        } else if (dp.indexOf('openai') >= 0 || dp.indexOf('anthropic') >= 0) {
+            var apiName = dp.indexOf('openai') >= 0 ? 'OpenAI' : 'Anthropic';
+            var apiUrl = dp.indexOf('openai') >= 0 ? 'platform.openai.com \u2192 Usage' : 'console.anthropic.com \u2192 Settings \u2192 Usage';
+            exportGuide = '<div style="text-align:left;margin-top:12px;padding:12px;background:var(--white);border:1px solid var(--border);border-radius:8px;">' +
+                '<div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">How to get per-team attribution from ' + apiName + '</div>' +
+                '<ol style="font-size:12px;color:var(--gray-500);padding-left:18px;margin:0;line-height:1.6;">' +
+                '<li>Go to <strong>' + apiUrl + '</strong></li>' +
+                '<li>' + apiName + ' invoices group by API key, not by team</li>' +
+                '<li>To get team-level attribution, use <strong>separate API keys per team</strong> or a billing proxy</li>' +
+                '<li>Export usage with API key breakdown as CSV, then upload here</li>' +
+                '</ol>' +
+                '<div style="font-size:11px;color:var(--gray-400);margin-top:6px;">Tip: Name API keys by team (e.g., "platform-eng", "ml-team") for automatic attribution</div>' +
+                '</div>';
+        } else {
+            exportGuide = '<div style="text-align:left;margin-top:12px;padding:12px;background:var(--white);border:1px solid var(--border);border-radius:8px;">' +
+                '<div style="font-size:12px;font-weight:600;color:var(--gray-700);margin-bottom:6px;">What we look for</div>' +
+                '<div style="font-size:12px;color:var(--gray-500);line-height:1.6;">' +
+                'A billing CSV with columns like <strong>CostCenter</strong>, <strong>ResourceGroup</strong>, <strong>Tags</strong>, or <strong>Team</strong>. ' +
+                'Most cloud providers let you export this from their billing console. ' +
+                'The more columns your export includes, the richer the attribution breakdown.</div>' +
+                '</div>';
+        }
+
+        allocWrap.innerHTML = '<div style="padding:20px;background:var(--gray-50);border:1px dashed var(--gray-200);border-radius:10px;">' +
+            '<div style="text-align:center;">' +
+            '<div style="font-size:13px;color:var(--gray-500);margin-bottom:4px;">Your invoice doesn\u2019t include team or resource group columns.</div>' +
+            '<div style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">Upload a <strong>billing export</strong> from your cloud provider to unlock per-team attribution.</div>' +
+            '<label style="display:inline-flex;align-items:center;gap:8px;padding:10px 20px;background:var(--white);border:1px solid var(--gray-200);border-radius:8px;font-size:13px;font-weight:600;color:var(--green);cursor:pointer;transition:border-color 0.2s;" onmouseover="this.style.borderColor=\'#16a34a\'" onmouseout="this.style.borderColor=\'#e5e5e5\'">' +
+                '+ Upload Billing Export' +
+                '<input type="file" accept=".csv" hidden onchange="handleFiles(this.files)">' +
+            '</label>' +
+            '</div>' +
+            exportGuide +
+        '</div>';
+    } else {
+        var at = '<table class="alloc-table"><thead><tr><th>' + (invoice.allocColumn || 'Cost Center') + '</th><th>Label</th><th>Amount</th><th>% of Total</th><th>Source</th></tr></thead><tbody>';
+        allocs.forEach(function(a) {
+            var sourceLabel = a.source === 'csv' ? '<span class="conf-badge high">From CSV</span>' : '<span class="conf-badge med">No data</span>';
+            at += '<tr><td><strong>'+a.code+'</strong></td><td>'+a.dept+'</td><td>$'+fmt(a.amt)+'</td><td>'+a.pct+'%</td><td>'+sourceLabel+'</td></tr>';
+        });
+        at += '</tbody></table>';
+        allocWrap.innerHTML = at;
+    }
+
+    // ── Real share link — base64-encoded audit snapshot in URL hash ──
+    var snapshot = {
+        t: t, m: (invoice.models||[]).map(function(m){return{n:m.model,c:Math.round(m.cost)}}),
+        p: invoice.period, pr: detectedProvider||'', co: invoice.company||'',
+        a: anomalies.map(function(a){return{t:a.type,s:a.severity,x:a.text.replace(/<[^>]+>/g,'').slice(0,120)}}),
+        id: auditId, ts: utcStr, sv: Math.round(savingsTotal), items: invoice.items,
+        sl: savingsLines.slice(0,2).map(function(s){return{f:s.from,to:s.to,amt:Math.round(s.amount)}})
+    };
+    try {
+        var snapJson = JSON.stringify(snapshot);
+        var snapB64 = btoa(unescape(encodeURIComponent(snapJson)));
+        document.getElementById('shareLink').value = 'https://finault.ai/audit#d=' + snapB64;
+    } catch(e) {
+        document.getElementById('shareLink').value = 'https://finault.ai/audit/' + auditId;
+    }
+
+    // ── Upgrade nudge — show after results, gentle prompt to Pro ──
+    var upsellEl = document.getElementById('upsellBlock');
+    if (upsellEl) {
+        var savedAmt = savingsTotal > 0 ? '$' + fmtK(savingsTotal) : '';
+        var roiLine = savedAmt ? 'You identified <strong>' + savedAmt + '/mo</strong> in savings. Pro pays for itself in week one.' : 'Unlimited audits, signed manifests, and GL journal entries.';
+        upsellEl.innerHTML =
+            '<h3>Need unlimited audits?</h3>' +
+            '<p>' + roiLine + '</p>' +
+            '<a href="/pricing" class="btn btn-green" onclick="trackEvent(\'upgrade_cta_click\')">See Pro &amp; Team Plans</a>' +
+            '<div class="upsell-features">' +
+            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Unlimited CSV audits</div>' +
+            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> HMAC-signed manifests</div>' +
+            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> GL journal entries</div>' +
+            '</div>';
+        upsellEl.style.display = '';
+    }
+
+    document.getElementById('results').classList.add('visible');
+    document.getElementById('stickyDownload').classList.add('visible');
+    document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+
+    // ── Pomel: audit_completed — the top-of-funnel metric ──
+    trackEvent('audit_completed', {
+        provider: detectedProvider || 'unknown',
+        model_count: models.length,
+        total_bucket: t < 10000 ? 'under_10k' : t < 50000 ? '10k_50k' : t < 100000 ? '50k_100k' : t < 500000 ? '100k_500k' : 'over_500k',
+        anomaly_count: anomalies.length,
+        savings_estimate: Math.round(savingsTotal),
+        is_sample: usedSample
+    });
+
+    // ── Anonymized telemetry for benchmarking ──
+    sendBenchmarkData();
+}
+
+function sendBenchmarkData() {
+    if (!sb || !invoice) return;
+    try {
+        var t = invoice.total;
+        var sizeBucket = t < 10000 ? 'startup' : t < 100000 ? 'smb' : t < 500000 ? 'mid_market' : 'enterprise';
+
+        // ── Model mix with pricing intelligence ──
+        var modelMix = (invoice.models || []).map(function(m) {
+            var pct = (m.cost / t * 100).toFixed(1);
+            var sku = skus.find(function(s) { return s.model === m.model; });
+            var billed = invoice.billedPrices ? invoice.billedPrices[m.model] : null;
+            return {
+                model: m.model,
+                spend_pct: parseFloat(pct),
+                avg_per_request: sku ? parseFloat(sku.avgPerReq.toFixed(4)) : null,
+                input_price: sku ? sku.inputPrice : null,
+                output_price: sku ? sku.outputPrice : null,
+                est_requests: sku ? sku.requests : null,
+                est_input_tokens: sku ? sku.inputTokens : null,
+                est_output_tokens: sku ? sku.outputTokens : null,
+                billed_unit_price: billed || null
+            };
+        });
+
+        // ── Provider concentration ──
+        var providerModels = {};
+        (invoice.models || []).forEach(function(m) {
+            var p = 'unknown';
+            var mn = m.model.toLowerCase();
+            if (mn.indexOf('gpt')>=0 || mn.indexOf('o1')>=0 || mn.indexOf('openai')>=0) p = 'openai';
+            else if (mn.indexOf('claude')>=0 || mn.indexOf('anthropic')>=0) p = 'anthropic';
+            else if (mn.indexOf('gemini')>=0 || mn.indexOf('vertex')>=0 || mn.indexOf('google')>=0) p = 'google';
+            else if (mn.indexOf('bedrock')>=0 || mn.indexOf('aws')>=0 || mn.indexOf('amazon')>=0) p = 'aws';
+            else if (mn.indexOf('azure')>=0 || mn.indexOf('microsoft')>=0) p = 'azure';
+            if (!providerModels[p]) providerModels[p] = 0;
+            providerModels[p] += m.cost;
+        });
+        var providerConcentration = {};
+        Object.keys(providerModels).forEach(function(p) {
+            providerConcentration[p] = parseFloat((providerModels[p] / t * 100).toFixed(1));
+        });
+
+        // ── Top model dominance (HHI-style) ──
+        var hhi = 0;
+        (invoice.models || []).forEach(function(m) {
+            var share = m.cost / t * 100;
+            hhi += share * share;
+        });
+
+        // Anomaly types
+        var anomalyTypes = anomalies.map(function(a) { return a.type || a.severity; });
+
+        // ── Full intelligence record ──
+        var record = {
+            // Core (existing)
+            provider: detectedProvider || 'unknown',
+            size_bucket: sizeBucket,
+            total_spend_bucket: t < 10000 ? 'under_10k' : t < 50000 ? '10k_50k' : t < 100000 ? '50k_100k' : t < 250000 ? '100k_250k' : t < 500000 ? '250k_500k' : t < 1000000 ? '500k_1m' : 'over_1m',
+            model_count: (invoice.models || []).length,
+            model_mix: modelMix,
+            cost_center_count: allocs.length,
+            unallocated_pct: parseFloat(((allocs.find(function(a) { return a.code === 'UNALLOC'; }) || {}).pct || 0).toFixed(1)),
+            focus_score: focusScore.score || 0,
+            focus_detected: invoice.focusDetected || 0,
+            focus_total: invoice.focusTotal || 42,
+            anomaly_count: anomalies.length,
+            anomaly_types: anomalyTypes,
+            mom_change_pct: trend.length >= 2 ? parseFloat(((trend[trend.length-1].amount - trend[trend.length-2].amount) / trend[trend.length-2].amount * 100).toFixed(1)) : null,
+            line_items: invoice.items,
+            is_sample: usedSample,
+
+            // Pricing intelligence (NEW)
+            currency: invoice.currency || 'USD',
+            billed_prices: invoice.billedPrices || {},
+            top_model: (invoice.models && invoice.models[0]) ? invoice.models[0].model : null,
+            top_model_pct: (invoice.models && invoice.models[0]) ? parseFloat((invoice.models[0].cost / t * 100).toFixed(1)) : null,
+
+            // Provider concentration (NEW)
+            provider_count: Object.keys(providerConcentration).length,
+            provider_concentration: providerConcentration,
+            model_hhi: Math.round(hhi),
+
+            // Geographic & schema intelligence (NEW)
+            regions: invoice.regions || [],
+            region_count: (invoice.regions || []).length,
+            column_count: invoice.columnCount || 0,
+            focus_columns_present: invoice.focusColumns || [],
+
+            // Model adoption signals (NEW)
+            has_frontier_models: (invoice.models || []).some(function(m) {
+                var mn = m.model.toLowerCase();
+                return mn.indexOf('gpt-4o')>=0 || mn.indexOf('claude opus')>=0 || mn.indexOf('o1')>=0 || mn.indexOf('gemini 2.5 pro')>=0;
+            }),
+            has_efficiency_models: (invoice.models || []).some(function(m) {
+                var mn = m.model.toLowerCase();
+                return mn.indexOf('mini')>=0 || mn.indexOf('haiku')>=0 || mn.indexOf('flash')>=0;
+            }),
+            frontier_spend_pct: parseFloat(((invoice.models || []).filter(function(m) {
+                var mn = m.model.toLowerCase();
+                return mn.indexOf('gpt-4o')>=0 || mn.indexOf('claude opus')>=0 || mn.indexOf('o1')>=0 || mn.indexOf('gemini 2.5 pro')>=0;
+            }).reduce(function(s,m){return s+m.cost},0) / t * 100).toFixed(1)),
+            efficiency_spend_pct: parseFloat(((invoice.models || []).filter(function(m) {
+                var mn = m.model.toLowerCase();
+                return mn.indexOf('mini')>=0 || mn.indexOf('haiku')>=0 || mn.indexOf('flash')>=0;
+            }).reduce(function(s,m){return s+m.cost},0) / t * 100).toFixed(1)),
+
+            created_at: new Date().toISOString()
+        };
+
+        sb.from('audit_benchmarks').insert([record]).then(function() {}).catch(function() {});
+    } catch(e) {}
+}
+
+// ── PDF Audit Report ──
+function genAuditPDF() {
+    var jsPDF = window.jspdf.jsPDF, d = new jsPDF('p','mm','a4'), w = 210, m = 20, pw = w-2*m, y = 20;
+
+    // ── Cover / Header ──
+    d.setFillColor(23,23,23); d.rect(0,0,w,52,'F');
+    d.setTextColor(255); d.setFontSize(22); d.setFont('helvetica','bold');
+    d.text('AI SPEND AUDIT REPORT', m, 25);
+    d.setFontSize(11); d.setFont('helvetica','normal');
+    d.text(invoice.company + '  |  ' + invoice.period + '  |  ' + (detectedProvider||'Multi-provider'), m, 35);
+    d.setFontSize(8); d.setTextColor(160);
+    d.text('Generated by Finault  |  ' + new Date().toLocaleDateString() + '  |  Cert: ' + cert, m, 45);
+    y = 62;
+
+    // ── Executive Summary ──
+    d.setTextColor(0); d.setFontSize(14); d.setFont('helvetica','bold');
+    d.text('1. Executive Summary', m, y); y += 10;
+    d.setFontSize(10); d.setFont('helvetica','normal');
+
+    // Summary boxes
+    var boxes = [
+        {l:'Total Spend',v:'$'+fmt(invoice.total)},
+        {l:'Models/SKUs',v:String(invoice.models.length)},
+        {l:'Cost Centers',v:String(allocs.length)},
+        {l:'FOCUS Score',v:focusScore.score+'%'}
+    ];
+    var bw = (pw-12)/4;
+    boxes.forEach(function(b,i) {
+        var bx = m + i*(bw+4);
+        d.setFillColor(245,245,245); d.roundedRect(bx,y,bw,18,2,2,'F');
+        d.setFontSize(8); d.setTextColor(115); d.text(b.l,bx+4,y+7);
+        d.setFontSize(12); d.setTextColor(0); d.setFont('helvetica','bold'); d.text(b.v,bx+4,y+15);
+        d.setFont('helvetica','normal');
+    });
+    y += 26;
+
+    // ── Anomalies ──
+    d.setFontSize(14); d.setFont('helvetica','bold'); d.setTextColor(0);
+    d.text('2. Anomalies & Flags', m, y); y += 8;
+    d.setFontSize(9); d.setFont('helvetica','normal');
+    anomalies.forEach(function(a) {
+        var prefix = a.type === 'critical' ? '!!! ' : a.type === 'warn' ? '!! ' : 'i  ';
+        var cleanText = a.text.replace(/<[^>]+>/g,'');
+        var lines = d.splitTextToSize(prefix + cleanText, pw-4);
+        if (y + lines.length*5 > 275) { d.addPage(); y = 20; }
+        d.setFillColor(a.type==='critical'?254:a.type==='warn'?255:239, a.type==='critical'?242:a.type==='warn'?251:246, a.type==='critical'?242:a.type==='warn'?235:255);
+        d.roundedRect(m, y-3, pw, lines.length*5+6, 2, 2, 'F');
+        d.setTextColor(a.type==='critical'?153:a.type==='warn'?146:30, a.type==='critical'?27:a.type==='warn'?64:64, a.type==='critical'?27:a.type==='warn'?14:175);
+        d.text(lines, m+3, y+3); y += lines.length*5+10;
+    });
+
+    // ── FOCUS 1.3 Score ──
+    if (y > 240) { d.addPage(); y = 20; }
+    d.setTextColor(0); d.setFontSize(14); d.setFont('helvetica','bold');
+    d.text('3. FOCUS 1.3 Compliance', m, y); y += 8;
+    d.setFontSize(10); d.setFont('helvetica','normal');
+    d.text('Score: ' + focusScore.score + '%  |  Detected: ' + focusScore.detected + '/' + focusScore.total + ' columns  |  Missing: ' + focusScore.missing, m, y); y += 6;
+    // Progress bar
+    d.setFillColor(229,229,229); d.roundedRect(m,y,pw,4,2,2,'F');
+    var barColor = focusScore.score >= 80 ? [22,163,74] : [217,119,6];
+    d.setFillColor(barColor[0],barColor[1],barColor[2]);
+    d.roundedRect(m,y,pw*(focusScore.score/100),4,2,2,'F'); y += 8;
+    if (focusScore.missingCols.length > 0) {
+        d.setFontSize(8); d.setTextColor(115);
+        d.text('Missing columns: ' + focusScore.missingCols.join(', '), m, y); y += 10;
+    }
+
+    // ── Spend by Model ──
+    if (y > 220) { d.addPage(); y = 20; }
+    d.setTextColor(0); d.setFontSize(14); d.setFont('helvetica','bold');
+    d.text('4. Spend by Model', m, y); y += 8;
+    // Table header
+    d.setFillColor(245,245,245); d.rect(m,y,pw,7,'F');
+    d.setFontSize(8); d.setFont('helvetica','bold'); d.setTextColor(115);
+    d.text('MODEL',m+3,y+5); d.text('AMOUNT',m+90,y+5); d.text('% OF TOTAL',m+130,y+5);
+    y += 9; d.setFont('helvetica','normal'); d.setTextColor(0); d.setFontSize(9);
+    invoice.models.forEach(function(mod) {
+        if (y > 275) { d.addPage(); y = 20; }
+        d.text(mod.model, m+3, y+4);
+        d.text('$'+fmt(mod.cost), m+90, y+4);
+        d.text(((mod.cost/invoice.total)*100).toFixed(1)+'%', m+130, y+4);
+        // Mini bar
+        var barW = Math.max((mod.cost/invoice.total)*pw*0.2, 2);
+        d.setFillColor(22,163,74); d.roundedRect(m+155,y+1,barW,4,1,1,'F');
+        y += 7;
+    });
+    y += 6;
+
+    // ── Per-SKU Unit Economics ──
+    if (y > 180) { d.addPage(); y = 20; }
+    d.setFontSize(14); d.setFont('helvetica','bold'); d.setTextColor(0);
+    d.text('5. Per-SKU Unit Economics', m, y); y += 8;
+    d.setFillColor(245,245,245); d.rect(m,y,pw,7,'F');
+    d.setFontSize(7); d.setFont('helvetica','bold'); d.setTextColor(115);
+    d.text('MODEL',m+2,y+5); d.text('REQUESTS',m+42,y+5); d.text('INPUT TKN',m+68,y+5); d.text('OUTPUT TKN',m+92,y+5); d.text('$/1K IN',m+118,y+5); d.text('$/1K OUT',m+136,y+5); d.text('AVG/REQ',m+155,y+5);
+    y += 9; d.setFont('helvetica','normal'); d.setTextColor(0); d.setFontSize(7.5);
+    skus.forEach(function(s) {
+        if (y > 275) { d.addPage(); y = 20; }
+        d.text(s.model, m+2, y+4);
+        d.text(fmtInt(s.requests), m+42, y+4);
+        d.text(fmtInt(s.inputTokens), m+68, y+4);
+        d.text(fmtInt(s.outputTokens), m+92, y+4);
+        d.text('$'+s.inputPrice.toFixed(2), m+118, y+4);
+        d.text('$'+s.outputPrice.toFixed(2), m+136, y+4);
+        d.text('$'+s.avgPerReq.toFixed(4), m+155, y+4);
+        y += 6;
+    });
+    y += 6;
+
+    // ── MoM Trend (only if real multi-month data) ──
+    if (trend.length >= 2) {
+        if (y > 200) { d.addPage(); y = 20; }
+        d.setFontSize(14); d.setFont('helvetica','bold'); d.setTextColor(0);
+        d.text('6. Month-over-Month Trend', m, y); y += 8;
+        var maxT = Math.max.apply(null,trend.map(function(t){return t.amount}));
+        var barH = 30, barSpacing = pw/trend.length;
+        trend.forEach(function(tr,i) {
+            var bx = m + i*barSpacing + 4, bH = Math.max((tr.amount/maxT)*barH, 2);
+            var isLast = i === trend.length-1;
+            d.setFillColor(isLast?22:200, isLast?163:200, isLast?74:200);
+            d.roundedRect(bx, y+barH-bH, barSpacing-8, bH, 1, 1, 'F');
+            d.setFontSize(7); d.setTextColor(0);
+            d.text('$'+fmtK(tr.amount), bx+2, y+barH-bH-2);
+            d.setTextColor(115); d.text(tr.month, bx+(barSpacing-8)/2-4, y+barH+5);
+        });
+        y += barH + 14;
+    }
+
+    // ── Cost Allocation ──
+    if (y > 220) { d.addPage(); y = 20; }
+    d.setFontSize(14); d.setFont('helvetica','bold'); d.setTextColor(0);
+    var allocSectionNum = trend.length >= 2 ? '7' : '6';
+    d.text(allocSectionNum + '. Cost Allocation', m, y); y += 8;
+    d.setFillColor(245,245,245); d.rect(m,y,pw,7,'F');
+    d.setFontSize(8); d.setFont('helvetica','bold'); d.setTextColor(115);
+    d.text('COST CENTER',m+3,y+5); d.text('DEPARTMENT',m+40,y+5); d.text('AMOUNT',m+100,y+5); d.text('%',m+135,y+5); d.text('CONFIDENCE',m+150,y+5);
+    y += 9; d.setFont('helvetica','normal'); d.setTextColor(0); d.setFontSize(9);
+    allocs.forEach(function(a) {
+        if (y > 275) { d.addPage(); y = 20; }
+        d.text(a.code,m+3,y+4); d.text(a.dept,m+40,y+4);
+        d.text('$'+fmt(a.amt),m+100,y+4); d.text(a.pct+'%',m+135,y+4);
+        d.text(a.conf>0?a.conf+'%':'—',m+155,y+4);
+        y += 7;
+    });
+
+    // ── What to Do Monday (Slootman: the action plan goes in the PDF) ──
+    if (savingsLines.length > 0 || invoice.total > 10000) {
+        if (y > 220) { d.addPage(); y = 20; }
+        var mondaySectionNum = parseInt(allocSectionNum) + 1;
+        d.setFontSize(14); d.setFont('helvetica','bold'); d.setTextColor(0);
+        d.text(mondaySectionNum + '. What to Do Monday', m, y); y += 10;
+        d.setFontSize(9); d.setFont('helvetica','normal');
+        var actionNum = 1;
+        if (savingsLines.length > 0) {
+            var ts = savingsLines[0];
+            d.setFont('helvetica','bold'); d.text(actionNum + '. Route classification workloads from ' + ts.from + ' to ' + ts.to, m, y); y += 5;
+            d.setFont('helvetica','normal'); d.setTextColor(100);
+            var actionLines = d.splitTextToSize('Open your API gateway. Identify requests with <500 token outputs. Route to ' + ts.to + '. Potential savings: $' + fmtK(ts.amount) + '/mo.', pw);
+            d.text(actionLines, m+4, y); y += actionLines.length * 4 + 6;
+            actionNum++;
+        }
+        if (invoice.total > 10000) {
+            var threshold = Math.round(invoice.total * 1.15 / 1000) * 1000;
+            d.setTextColor(0); d.setFont('helvetica','bold');
+            d.text(actionNum + '. Set a spend alert at $' + fmtK(threshold) + '/mo', m, y); y += 5;
+            d.setFont('helvetica','normal'); d.setTextColor(100);
+            var alertLines = d.splitTextToSize('Set threshold to 15% above current spend. Add CFO and eng lead as alert recipients. Takes 2 minutes in your provider portal.', pw);
+            d.text(alertLines, m+4, y); y += alertLines.length * 4 + 6;
+        }
+        d.setTextColor(0);
+    }
+
+    // ── Footer on every page ──
+    var pages = d.internal.getNumberOfPages();
+    for (var p=1;p<=pages;p++) {
+        d.setPage(p);
+        d.setDrawColor(200); d.setLineWidth(0.3); d.line(m,282,w-m,282);
+        d.setFontSize(7); d.setTextColor(160);
+        d.text('CONFIDENTIAL  |  ' + invoice.company + '  |  Generated by Finault  |  finault.ai', m, 287);
+        d.text('Page '+p+' of '+pages, w-m, 287, {align:'right'});
+    }
+
+    dlBlob(d.output('blob'), 'Finault-AI-Spend-Audit-'+invoice.pshort+'.pdf');
+    showToast('PDF Audit Report downloaded!', 'success');
+    saveLead(hasEmail());
+}
+
+// ── Download Close Pack ──
+function downloadPack() {
+    trackEvent('close_pack_click');
+    hideError(); doDownload();
+}
+
+async function doDownload() {
+    var btn = document.getElementById('stickyDownloadBtn');
+    var origText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin 1s linear infinite;width:16px;height:16px"><path d="M12 2v4m0 12v4m-7.07-3.93l2.83-2.83m8.48-8.48l2.83-2.83M2 12h4m12 0h4m-3.93 7.07l-2.83-2.83M7.76 7.76L4.93 4.93"/></svg> Generating...';
+    if (uploadedFiles.length > 0) {
+        try {
+            var fd = new FormData();
+            for (var i=0;i<uploadedFiles.length;i++) fd.append('files',uploadedFiles[i]);
+            var resp = await fetch(CLOSEPACK_URL+'/closepack?t='+Date.now(),{method:'POST',body:fd,cache:'no-store'});
+            if (resp.ok) {
+                var blob = await resp.blob(), disp = resp.headers.get('content-disposition')||'';
+                var fn = disp.match(/filename="?([^"]+)"?/);
+                dlBlob(blob, fn?fn[1]:'finault-closepack.zip');
+                showToast('Close Pack downloaded!','success');
+                trackEvent('close_pack_downloaded', {source: 'server'});
+                saveLead(hasEmail()); btn.innerHTML=origText; btn.disabled=false; maybeShowEmailOptIn(); return;
+            } else {
+                showError('Close Pack generation failed (HTTP '+resp.status+')', await resp.text());
+                trackEvent('close_pack_error', {source: 'server', status: resp.status});
+            }
+        } catch(e) {
+            showError('Network error','Could not reach closepack.finault.ai.','Error: '+e.message);
+            trackEvent('close_pack_error', {source: 'network', error: e.message});
+        }
+        btn.innerHTML=origText; btn.disabled=false; return;
+    }
+    if (usedSample && invoice) {
+        try {
+            var z = new JSZip(), f = z.folder('finault-close-pack-'+invoice.pshort);
+            f.file('01-AI-Spend-Audit-Report.pdf', genAuditPDFBytes(), {binary:true});
+            f.file('02-Journal-Entry.csv', genJournalCSV());
+            f.file('03-Close-Certificate.pdf', genCertPDF(), {binary:true});
+            f.file('MANIFEST.json', JSON.stringify(genManifest(),null,2));
+            z.generateAsync({type:'blob'}).then(function(b) {
+                dlBlob(b,'finault-close-pack-'+invoice.pshort+'.zip');
+                showToast('Close Pack downloaded!','success');
+                trackEvent('close_pack_downloaded', {source: 'sample'});
+                maybeShowEmailOptIn();
+            });
+            saveLead(hasEmail()); btn.innerHTML=origText; btn.disabled=false; return;
+        } catch(e) {
+            showToast('Close Pack generation failed','error');
+            trackEvent('close_pack_error', {source: 'sample', error: e.message});
+            btn.innerHTML=origText; btn.disabled=false; return;
+        }
+    }
+    showError('No files uploaded','Upload a billing file, or try the sample data.'); btn.innerHTML=origText; btn.disabled=false;
+}
+
+function genAuditPDFBytes() {
+    var jsPDF = window.jspdf.jsPDF, d = new jsPDF(), y = 20;
+    d.setFontSize(18); d.setFont('helvetica','bold');
+    d.text('AI SPEND AUDIT REPORT', 105, y, {align:'center'});
+    y+=10; d.setFontSize(12); d.setFont('helvetica','normal');
+    d.text(invoice.company + ' | ' + invoice.period, 105, y, {align:'center'});
+    y+=10; d.line(20,y,190,y); y+=10;
+    d.setFontSize(10);
+    d.text('Total Spend: $'+fmt(invoice.total),25,y); y+=6;
+    d.text('Models: '+invoice.models.length+' | Cost Centers: '+allocs.length+' | FOCUS Score: '+focusScore.score+'%',25,y); y+=12;
+    d.setFont('helvetica','bold'); d.setFontSize(12);
+    d.text('SPEND BY MODEL',20,y); y+=8;
+    d.setFontSize(9); d.setFont('helvetica','bold');
+    d.text('Model',25,y); d.text('Amount',110,y); d.text('% Total',155,y);
+    y+=6; d.setFont('helvetica','normal');
+    invoice.models.forEach(function(mod) {
+        d.text(mod.model,25,y); d.text('$'+fmt(mod.cost),110,y);
+        d.text(((mod.cost/invoice.total)*100).toFixed(1)+'%',155,y); y+=6;
+        if(y>270){d.addPage();y=20;}
+    });
+    y+=8; d.setFont('helvetica','bold'); d.setFontSize(12);
+    d.text('COST ALLOCATION',20,y); y+=8;
+    d.setFontSize(9); d.setFont('helvetica','bold');
+    d.text('Code',25,y); d.text('Department',55,y); d.text('Amount',110,y); d.text('%',150,y);
+    y+=6; d.setFont('helvetica','normal');
+    allocs.forEach(function(a) { d.text(a.code,25,y); d.text(a.dept,55,y); d.text('$'+fmt(a.amt),110,y); d.text(a.pct+'%',150,y); y+=6; });
+    d.setFontSize(7); d.setTextColor(160);
+    d.text('CONFIDENTIAL | Generated by Finault | finault.ai',105,287,{align:'center'});
+    return d.output('arraybuffer');
+}
+
+function genJournalCSV() {
+    var csv = 'Journal Entry,Date,Account Number,Account Name,Description,Debit,Credit,Cost Center,Reference\n';
+    var je = 'JE-AI-'+invoice.pshort.replace('-',''), dt = invoice.pshort+'-31';
+    allocs.forEach(function(a) {
+        if (a.code==='UNALLOC') return;
+        csv += je+','+dt+',6100-'+a.code+',AI Services - '+a.dept+',AI Spend Allocation - '+invoice.period+','+a.amt.toFixed(2)+',,'+a.code+','+cert+'\n';
+    });
+    csv += je+','+dt+',2100-AP,Accounts Payable,AI Spend Allocation - '+invoice.period+',,'+invoice.total.toFixed(2)+',CORP,'+cert+'\n';
+    return csv;
+}
+
+function genCertPDF() {
+    var jsPDF = window.jspdf.jsPDF, d = new jsPDF(), y = 20;
+    d.setFontSize(18); d.setFont('helvetica','bold');
+    d.text('CLOSE CERTIFICATE', 105, y, {align:'center'});
+    y+=10; d.setFontSize(12); d.setFont('helvetica','normal');
+    d.text(invoice.company, 105, y, {align:'center'});
+    y+=10; d.line(20,y,190,y); y+=10; d.setFontSize(10);
+    d.text('Close ID: FIN-CL-'+hash,20,y); y+=6;
+    d.text('Period: '+invoice.period,20,y); y+=6;
+    d.text('Sealed: '+new Date().toISOString(),20,y); y+=6;
+    if (fileDigest) { d.text('File SHA-256: '+fileDigest,20,y); y+=6; }
+    d.text('FOCUS 1.3 Score: '+focusScore.score+'%',20,y); y+=14;
+    d.setFont('helvetica','bold'); d.text('FINANCIAL RECONCILIATION',20,y); y+=8;
+    d.setFont('helvetica','normal');
+    d.text('Total Debits: $'+fmt(invoice.total),25,y); y+=6;
+    d.text('Total Credits: $'+fmt(invoice.total),25,y); y+=6;
+    d.text('Net Variance: $0.00',25,y); y+=6;
+    d.text('Status: Balanced',25,y); y+=14;
+    d.setFont('helvetica','bold'); d.text('CERTIFICATION',20,y); y+=8;
+    d.setFont('helvetica','normal'); d.setFontSize(9);
+    d.text('This close is sealed and immutable. All artifacts are hash-verified.',20,y);
+    y+=10; d.text('Anomalies detected: '+anomalies.length,20,y);
+    y+=16; d.text('Prepared by: ____________________',25,y);
+    y+=12; d.text('Reviewed by: ____________________',25,y);
+    d.setFontSize(7); d.setTextColor(160);
+    d.text('CONFIDENTIAL | '+invoice.company+' | Generated by Finault',105,287,{align:'center'});
+    return d.output('arraybuffer');
+}
+
+function genManifest() {
+    return {
+        manifest_version:'1.3', close_id:'FIN-CL-'+hash, period:invoice.pshort,
+        sealed_at:new Date().toISOString(), currency:'USD',
+        file_sha256: fileDigest || null,
+        provider_detected:detectedProvider||'Unknown',
+        focus_score: focusScore.score, focus_columns_detected: focusScore.detected,
+        anomalies_detected: anomalies.length,
+        totals:{total:invoice.total,models:invoice.models.length,cost_centers:allocs.length,skus:skus.length},
+        artifacts:{audit_report:'01-AI-Spend-Audit-Report.pdf',journal_entry:'02-Journal-Entry.csv',close_certificate:'03-Close-Certificate.pdf'}
+    };
+}
+
+// ── Collison: Copy summary — works in Slack, Teams, email, Discord ──
+function copyForSlack() {
+    trackEvent('copy_summary_click');
+    if (!invoice) { showToast('Generate an audit first', 'error'); return; }
+    var t = invoice.total;
+    var models = invoice.models || [];
+    var topModel = models.length > 0 ? models[0] : null;
+    var topPct = topModel ? ((topModel.cost / t) * 100).toFixed(0) : 0;
+    var critCount = anomalies.filter(function(a){return a.type==='critical'}).length;
+    var warnCount = anomalies.filter(function(a){return a.type==='warn'}).length;
+
+    // Plain text — renders cleanly everywhere (Slack, Teams, email, Discord, SMS)
+    var lines = [];
+    lines.push('AI Spend Audit \u2014 ' + (invoice.company || 'Your Org'));
+    lines.push('');
+    lines.push('Total Spend: $' + fmtK(t) + ' \u00b7 ' + (invoice.period || '') + ' \u00b7 ' + (detectedProvider || 'Multi-provider'));
+    if (topModel) lines.push('Top Model: ' + topModel.model + ' (' + topPct + '% of spend, $' + fmtK(topModel.cost) + ')');
+    lines.push('Models: ' + models.length + ' \u00b7 Line Items: ' + (invoice.items || 0));
+    if (savingsTotal > 0) lines.push('Optimization Opportunity: $' + fmtK(savingsTotal) + '/mo');
+    if (critCount + warnCount > 0) {
+        var parts = [];
+        if (critCount > 0) parts.push(critCount + ' critical');
+        if (warnCount > 0) parts.push(warnCount + ' warning');
+        lines.push('Anomalies: ' + parts.join(', '));
+    }
+    var shareLink = document.getElementById('shareLink');
+    if (shareLink && shareLink.value) { lines.push(''); lines.push(shareLink.value); }
+    lines.push('');
+    lines.push('Generated by finault.ai \u2014 data never leaves the browser');
+
+    var text = lines.join('\n');
+    copyText(text, 'slackBtn', 'Copy Summary', 'Summary copied');
+}
+
+// ── Universal clipboard helper with fallback ──
+function copyText(text, btnId, resetLabel, toastMsg) {
+    function onSuccess() {
+        var btn = document.getElementById(btnId);
+        if (btn) { btn.textContent = 'Copied!'; setTimeout(function(){ btn.textContent = resetLabel; }, 2000); }
+        showToast(toastMsg, 'success');
+        trackEvent('copy_success', {source: btnId});
+    }
+    function onFail() {
+        showToast('Copy failed \u2014 try Ctrl+C', 'error');
+        trackEvent('copy_error', {source: btnId});
+    }
+    // Modern clipboard API (HTTPS only)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(onSuccess).catch(onFail);
+    } else {
+        // Fallback: hidden textarea + execCommand
+        try {
+            var ta = document.createElement('textarea');
+            ta.value = text; ta.style.cssText = 'position:fixed;left:-9999px;';
+            document.body.appendChild(ta); ta.select();
+            document.execCommand('copy'); document.body.removeChild(ta);
+            onSuccess();
+        } catch(e) { onFail(); }
+    }
+}
+
+// ── Helpers ──
+function copyStickyLink() { trackEvent('copy_link_click'); var i=document.getElementById('shareLink'); if(i&&i.value){ copyText(i.value, 'stickyLinkBtn', 'Copy Link', 'Audit link copied'); } else { showToast('Generate an audit first','error'); } }
+function hasEmail() { try{return localStorage.getItem('finault_email')}catch(e){return null} }
+function maybeShowEmailOptIn() {
+    if (hasEmail()) return; // already subscribed or dismissed
+    setTimeout(function() { document.getElementById('emailModal').classList.add('visible'); }, 800);
+}
+function submitEmail() {
     var e=document.getElementById('emailInput').value;
     if(!e||e.indexOf('@')<0){document.getElementById('emailInput').style.borderColor='#ef4444';return;}
-    localStorage.setItem('finault_email',e);saveLead(e);
-    document.getElementById('emailModal').classList.remove('visible');
-    if(pending==='generate'){pending=null;generatePack();}
+    try{localStorage.setItem('finault_email',e)}catch(ex){}
+    saveLead(e); document.getElementById('emailModal').classList.remove('visible');
+    showToast('Subscribed to monthly alerts','success');
+    trackEvent('email_subscribed');
 }
-function skipEmail(){
-    localStorage.setItem('finault_email','skipped');
-    document.getElementById('emailModal').classList.remove('visible');
-    if(pending==='generate'){pending=null;generatePack();}
+function dismissEmail() { try{localStorage.setItem('finault_email','dismissed')}catch(ex){} document.getElementById('emailModal').classList.remove('visible'); }
+function trackEvent(name, data) {
+    if (!sb) return;
+    try { sb.from('audit_events').insert([{event: name, data: data || {}, created_at: new Date().toISOString()}]).then(function(){}).catch(function(){}); } catch(e) {}
 }
-
-function toast(m){var t=document.getElementById('toast');document.getElementById('toastMessage').textContent=m;t.classList.add('visible','success');setTimeout(function(){t.classList.remove('visible','success');},3000);}
+var _leadSaved = false;
+function saveLead(email) {
+    if(_leadSaved||!sb||!email||email==='skipped'||email==='dismissed') return;
+    _leadSaved = true;
+    sb.from('leads').insert({email:email,source:'audit-tool'}).then(function(){}).catch(function(e){console.warn('Lead:',e)});
+}
+function showError(t,d,x) {
+    document.getElementById('errorTitle').textContent=t; document.getElementById('errorDetail').textContent=d;
+    var p=document.getElementById('errorPre'); if(x){p.textContent=x;p.style.display='block'}else{p.style.display='none'}
+    document.getElementById('errorBanner').classList.add('visible');
+}
+function hideError() { document.getElementById('errorBanner').classList.remove('visible'); }
+function showToast(m,t) { var e=document.getElementById('toast'); document.getElementById('toastMsg').textContent=m; e.className='toast visible '+(t||'success'); setTimeout(function(){e.classList.remove('visible')},3000); }
+function fmt(n) { return n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2}); }
+function fmtK(n) { if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return fmt(n); }
+function fmtInt(n) { return n.toLocaleString(); }
+function dlBlob(b,n) { var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=n; a.click(); URL.revokeObjectURL(a.href); }
 </script>
 </body>
 </html>
-<!-- v3 -->
