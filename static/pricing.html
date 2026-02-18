@@ -268,10 +268,9 @@
     <nav>
         <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
         <div class="nav-right">
-            <a href="/pricing" class="nav-link">Pricing</a>
-            <a href="/security" class="nav-link">Security</a>
-            <a href="/verify" class="nav-link">Verify a Pack</a>
-            <a href="/audit" class="nav-cta">Free Audit</a>
+            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/platform" class="nav-link">Platform</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
         </div>
     </nav>
 
@@ -506,6 +505,16 @@
             question.classList.toggle('open');
             answer.classList.toggle('open');
         }
+    </script>
+    <script>
+    (function() {
+        var token = null;
+        try { token = localStorage.getItem('finault_token'); } catch(e) {}
+        if (token) {
+            var el = document.getElementById('navAuthLink');
+            if (el) { el.textContent = 'Dashboard'; el.href = 'https://app.finault.ai'; }
+        }
+    })();
     </script>
 
 </body>

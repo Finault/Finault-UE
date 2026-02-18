@@ -440,10 +440,9 @@
             <span class="nav-logo-text">Finault</span>
         </a>
         <div class="nav-right">
-            <a href="/demo.html" class="nav-text-link">Demo</a>
-            <a href="/docs.html" class="nav-text-link">Docs</a>
-            <a href="/pricing.html" class="nav-text-link">Pricing</a>
-            <a href="/dashboard.html" class="nav-cta">Dashboard</a>
+            <a href="/audit" class="nav-text-link">Free Audit</a>
+            <a href="/platform" class="nav-text-link">Platform</a>
+            <a href="/pricing" class="nav-text-link">Pricing</a>
         </div>
     </nav>
 
@@ -601,9 +600,12 @@
             const params = new URLSearchParams(window.location.search);
             const redirect = params.get('redirect');
             if (redirect === 'pricing') return '/pricing';
-            if (redirect === 'app') return '/app.html';
+            if (redirect === 'app') return 'https://app.finault.ai';
+            // Allow full URLs to app.finault.ai
+            if (redirect && redirect.startsWith('https://app.finault.ai')) return redirect;
+            // Allow relative paths
             if (redirect && redirect.startsWith('/')) return redirect;
-            return '/dashboard.html';
+            return 'https://app.finault.ai';
         }
 
         // Check if already logged in
@@ -621,6 +623,12 @@
 
             // Initialize event listeners
             initializeEventListeners();
+
+            // Auto-switch to signup tab if ?tab=signup is in URL
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('tab') === 'signup') {
+                switchTab('signup');
+            }
         });
 
         function initializeEventListeners() {

@@ -609,10 +609,10 @@
     <nav>
         <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
         <div class="nav-right">
+            <a href="/platform" class="nav-link">Platform</a>
             <a href="/pricing" class="nav-link">Pricing</a>
-            <a href="/security" class="nav-link">Security</a>
             <a href="/verify" class="nav-link">Verify a Pack</a>
-            <a href="/audit" class="nav-cta">Free Audit</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
         </div>
     </nav>
 
@@ -828,6 +828,22 @@
                 Download Close Pack
             </button>
             <button class="modal-skip" onclick="skipEmailGate()">Skip &mdash; just download</button>
+        </div>
+    </div>
+
+    <!-- Account Creation Nudge — shown AFTER close pack download for non-logged-in users -->
+    <div class="modal" id="accountNudgeModal">
+        <div class="modal-box">
+            <div style="width:48px;height:48px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" style="width:24px;height:24px;"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <h3>Close Pack Downloaded</h3>
+            <p style="margin-bottom:20px;">Want continuous monitoring? Create a free account to track spend anomalies, set budget alerts, and automate your monthly close.</p>
+            <a href="/login?tab=signup&redirect=https://app.finault.ai" class="btn btn-green" onclick="trackEvent('post_download_signup_click')" style="width:100%;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;font-size:15px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                Create Free Account
+            </a>
+            <button class="modal-skip" onclick="dismissAccountNudge()" style="margin-top:8px;">Maybe later</button>
         </div>
     </div>
 
@@ -2057,20 +2073,39 @@ function showResults() {
         document.getElementById('shareLink').value = 'https://finault.ai/audit/' + auditId;
     }
 
-    // ── Upgrade nudge — show after results, gentle prompt to Pro ──
+    // ── Upgrade nudge — show after results, prompt to create account + upgrade ──
     var upsellEl = document.getElementById('upsellBlock');
     if (upsellEl) {
         var savedAmt = savingsTotal > 0 ? '$' + fmtK(savingsTotal) : '';
-        var roiLine = savedAmt ? 'You identified <strong>' + savedAmt + '/mo</strong> in savings. Pro pays for itself in week one.' : 'Unlimited audits, signed manifests, and GL journal entries.';
-        upsellEl.innerHTML =
-            '<h3>Need unlimited audits?</h3>' +
-            '<p>' + roiLine + '</p>' +
-            '<a href="/pricing" class="btn btn-green" onclick="trackEvent(\'upgrade_cta_click\')">See Pro &amp; Team Plans</a>' +
-            '<div class="upsell-features">' +
-            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Unlimited CSV audits</div>' +
-            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> HMAC-signed manifests</div>' +
-            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> GL journal entries</div>' +
-            '</div>';
+        var roiLine = savedAmt ? 'You identified <strong>' + savedAmt + '/mo</strong> in potential savings.' : '';
+        var isLoggedIn = false;
+        try { isLoggedIn = !!localStorage.getItem('finault_token'); } catch(e) {}
+
+        if (isLoggedIn) {
+            // User is already logged in — nudge to full dashboard
+            upsellEl.innerHTML =
+                '<h3>Continue in the Dashboard</h3>' +
+                '<p>Access the full platform &mdash; anomaly monitoring, budget alerts, reconciliation workflows, 20 AI agents, and 8 ERP integrations.' + (roiLine ? ' ' + roiLine : '') + '</p>' +
+                '<a href="https://app.finault.ai" class="btn btn-green" onclick="trackEvent(\'dashboard_cta_click\')" style="margin-right:12px;">Open Dashboard</a>' +
+                '<a href="/pricing" class="btn btn-outline" onclick="trackEvent(\'upgrade_cta_click\')" style="margin-top:8px;">See Pro &amp; Team Plans</a>' +
+                '<div class="upsell-features">' +
+                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> 20 AI agents</div>' +
+                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> 14 Diamond modules</div>' +
+                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> 8 ERP integrations</div>' +
+                '</div>';
+        } else {
+            // User is not logged in — nudge to create free account
+            upsellEl.innerHTML =
+                '<h3>Unlock the Full Platform</h3>' +
+                '<p>Create a free account to access the dashboard &mdash; anomaly monitoring, budget forecasts, reconciliation workflows, and 20 AI agents.' + (roiLine ? ' ' + roiLine : '') + '</p>' +
+                '<a href="/login?tab=signup&redirect=https://app.finault.ai" class="btn btn-green" onclick="trackEvent(\'signup_cta_click\')" style="margin-right:12px;">Create Free Account</a>' +
+                '<a href="/pricing" class="btn btn-outline" onclick="trackEvent(\'upgrade_cta_click\')" style="margin-top:8px;">See Pro &amp; Team Plans</a>' +
+                '<div class="upsell-features">' +
+                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Unlimited CSV audits</div>' +
+                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> HMAC-signed manifests</div>' +
+                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Dashboard + 20 AI agents</div>' +
+                '</div>';
+        }
         upsellEl.style.display = '';
     }
 
@@ -2605,7 +2640,7 @@ async function doDownload() {
                 dlBlob(blob, fn?fn[1]:'finault-closepack.zip');
                 showToast('Close Pack downloaded!','success');
                 trackEvent('close_pack_downloaded', {source: 'server'});
-                saveLead(hasEmail()); btn.innerHTML=origText; btn.disabled=false; maybeShowEmailOptIn(); return;
+                saveLead(hasEmail()); btn.innerHTML=origText; btn.disabled=false; maybeShowEmailOptIn(); showAccountNudge(); return;
             } else {
                 showError('Close Pack generation failed (HTTP '+resp.status+')', await resp.text());
                 trackEvent('close_pack_error', {source: 'server', status: resp.status});
@@ -2627,7 +2662,7 @@ async function doDownload() {
                 dlBlob(b,'finault-close-pack-'+invoice.pshort+'.zip');
                 showToast('Close Pack downloaded!','success');
                 trackEvent('close_pack_downloaded', {source: 'sample'});
-                maybeShowEmailOptIn();
+                maybeShowEmailOptIn(); showAccountNudge();
             });
             saveLead(hasEmail()); btn.innerHTML=origText; btn.disabled=false; return;
         } catch(e) {
@@ -2821,6 +2856,32 @@ function fmt(n) { return n.toLocaleString(undefined,{minimumFractionDigits:2,max
 function fmtK(n) { if(n>=1e6) return (n/1e6).toFixed(1)+'M'; if(n>=1e3) return (n/1e3).toFixed(1)+'K'; return fmt(n); }
 function fmtInt(n) { return n.toLocaleString(); }
 function dlBlob(b,n) { var a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download=n; a.click(); URL.revokeObjectURL(a.href); }
+
+// ── Account nudge — show after close pack download for non-logged-in users ──
+function showAccountNudge() {
+    var isLoggedIn = false;
+    try { isLoggedIn = !!localStorage.getItem('finault_token'); } catch(e) {}
+    if (isLoggedIn) return; // Already has account
+    // Small delay so download starts first
+    setTimeout(function() {
+        document.getElementById('accountNudgeModal').classList.add('visible');
+        trackEvent('account_nudge_shown');
+    }, 1500);
+}
+function dismissAccountNudge() {
+    document.getElementById('accountNudgeModal').classList.remove('visible');
+    trackEvent('account_nudge_dismissed');
+}
+
+// ── Smart nav auth link ──
+(function() {
+    var token = null;
+    try { token = localStorage.getItem('finault_token'); } catch(e) {}
+    if (token) {
+        var el = document.getElementById('navAuthLink');
+        if (el) { el.textContent = 'Dashboard'; el.href = 'https://app.finault.ai'; }
+    }
+})();
 </script>
 </body>
 </html>

@@ -334,8 +334,8 @@
         <div class="nav-right">
             <a href="/platform" class="nav-link">Platform</a>
             <a href="/pricing" class="nav-link">Pricing</a>
-            <a href="/security" class="nav-link">Security</a>
-            <a href="/audit" class="nav-cta">Free Audit</a>
+            <a href="/audit" class="nav-link nav-audit-link">Free Audit</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
         </div>
     </nav>
 
@@ -629,5 +629,16 @@
         </div>
     </footer>
 
+    <script>
+    // Smart auth link — show Dashboard if user is logged in
+    (function() {
+        var token = null;
+        try { token = localStorage.getItem('finault_token'); } catch(e) {}
+        if (token) {
+            var el = document.getElementById('navAuthLink');
+            if (el) { el.textContent = 'Dashboard'; el.href = 'https://app.finault.ai'; }
+        }
+    })();
+    </script>
 </body>
 </html>
