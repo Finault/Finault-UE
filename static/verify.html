@@ -1,844 +1,858 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verify Close Pack - Finault | AI Cost Governance</title>
-    <meta name="description" content="Verify the integrity of your Finault Close Pack ZIP file with SHA-256 hash verification.">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --green: #22c55e;
-            --green-dark: #16a34a;
-            --green-light: #dcfce7;
-            --gray-900: #111827;
-            --gray-700: #374151;
-            --gray-600: #4b5563;
-            --gray-500: #6b7280;
-            --gray-400: #9ca3af;
-            --gray-300: #d1d5db;
-            --gray-200: #e5e7eb;
-            --gray-100: #f3f4f6;
-            --gray-50: #f9fafb;
-            --white: #fff;
-            --red: #ef4444;
-            --red-light: #fee2e2;
-            --amber: #f59e0b;
-            --amber-light: #fef3c7;
-        }
-
-        html { scroll-behavior: smooth; }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--white);
-            color: var(--gray-900);
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-            line-height: 1.5;
-        }
-
-        /* ===== NAVIGATION ===== */
-        nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            padding: 0 40px;
-            height: 64px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .logo-box {
-            width: 32px;
-            height: 32px;
-            background: var(--gray-900);
-            border-radius: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo-box svg {
-            width: 20px;
-            height: 20px;
-            stroke: var(--green);
-            stroke-width: 2.5;
-            stroke-linecap: round;
-        }
-
-        .logo-text {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--gray-900);
-            text-decoration: none;
-            letter-spacing: -0.03em;
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 32px;
-        }
-
-        .nav-text-link {
-            color: var(--gray-500);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .nav-text-link:hover { color: var(--gray-900); }
-
-        .nav-cta {
-            padding: 8px 20px;
-            color: var(--white);
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 8px;
-            background: var(--gray-900);
-            transition: opacity 0.2s;
-            border: none;
-            cursor: pointer;
-        }
-
-        .nav-cta:hover { opacity: 0.85; }
-
-        /* ===== HERO ===== */
-        .hero {
-            padding: 160px 24px 80px;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .hero h1 {
-            font-size: clamp(42px, 7vw, 72px);
-            font-weight: 700;
-            letter-spacing: -0.04em;
-            line-height: 1.05;
-            color: var(--gray-900);
-            margin-bottom: 24px;
-        }
-
-        .hero-sub {
-            font-size: 19px;
-            color: var(--gray-500);
-            max-width: 520px;
-            margin: 0 auto 48px;
-            line-height: 1.6;
-        }
-
-        /* ===== UPLOAD SECTION ===== */
-        .upload-section {
-            max-width: 600px;
-            margin: 0 auto 80px;
-            padding: 0 24px;
-        }
-
-        .upload-box {
-            border: 2px dashed var(--gray-300);
-            border-radius: 12px;
-            padding: 48px 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: var(--white);
-        }
-
-        .upload-box:hover {
-            border-color: var(--gray-400);
-            background: var(--gray-50);
-        }
-
-        .upload-box.dragover {
-            border-color: var(--green);
-            background: var(--green-light);
-        }
-
-        .upload-box.has-file {
-            border-color: var(--green);
-            border-style: solid;
-            background: var(--green-light);
-        }
-
-        .upload-icon {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 16px;
-            color: var(--gray-400);
-        }
-
-        .upload-box.has-file .upload-icon {
-            color: var(--green);
-        }
-
-        .upload-icon svg {
-            width: 100%;
-            height: 100%;
-            stroke: currentColor;
-            stroke-width: 1.5;
-            fill: none;
-        }
-
-        .upload-text {
-            font-size: 16px;
-            font-weight: 500;
-            color: var(--gray-900);
-            margin-bottom: 8px;
-        }
-
-        .upload-hint {
-            font-size: 14px;
-            color: var(--gray-500);
-        }
-
-        .file-name {
-            margin-top: 12px;
-            font-size: 13px;
-            color: var(--green-dark);
-            font-weight: 500;
-        }
-
-        #fileInput {
-            display: none;
-        }
-
-        .verify-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px 32px;
-            background: var(--gray-900);
-            color: var(--white);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: 24px;
-            width: 100%;
-            justify-content: center;
-        }
-
-        .verify-button:hover:not(:disabled) { opacity: 0.85; }
-
-        .verify-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* ===== LOADING SPINNER ===== */
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: var(--white);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        .verify-button:disabled .spinner {
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* ===== RESULTS SECTION ===== */
-        .results-section {
-            display: none;
-            max-width: 700px;
-            margin: 0 auto 80px;
-            padding: 0 24px;
-        }
-
-        .results-section.visible {
-            display: block;
-        }
-
-        .result-card {
-            padding: 40px 32px;
-            border-radius: 12px;
-            border: 1px solid;
-            margin-bottom: 24px;
-        }
-
-        .result-card.success {
-            background: var(--green-light);
-            border-color: var(--green);
-        }
-
-        .result-card.error {
-            background: var(--red-light);
-            border-color: var(--red);
-        }
-
-        .result-card.warning {
-            background: var(--amber-light);
-            border-color: var(--amber);
-        }
-
-        .result-icon {
-            width: 48px;
-            height: 48px;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .result-card.success .result-icon {
-            color: var(--green);
-        }
-
-        .result-card.error .result-icon {
-            color: var(--red);
-        }
-
-        .result-card.warning .result-icon {
-            color: var(--amber);
-        }
-
-        .result-icon svg {
-            width: 100%;
-            height: 100%;
-            stroke: currentColor;
-            stroke-width: 1.5;
-            fill: none;
-        }
-
-        .result-heading {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-
-        .result-card.success .result-heading {
-            color: var(--green-dark);
-        }
-
-        .result-card.error .result-heading {
-            color: #991b1b;
-        }
-
-        .result-card.warning .result-heading {
-            color: #92400e;
-        }
-
-        .result-message {
-            font-size: 15px;
-            line-height: 1.6;
-            margin-bottom: 16px;
-        }
-
-        .result-card.success .result-message {
-            color: var(--green-dark);
-        }
-
-        .result-card.error .result-message {
-            color: #7f1d1d;
-        }
-
-        .result-card.warning .result-message {
-            color: #78350f;
-        }
-
-        .result-details {
-            margin-top: 20px;
-            font-size: 14px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid;
-        }
-
-        .result-card.success .detail-row {
-            border-bottom-color: rgba(34, 197, 94, 0.2);
-            color: var(--green-dark);
-        }
-
-        .result-card.error .detail-row {
-            border-bottom-color: rgba(239, 68, 68, 0.2);
-            color: #991b1b;
-        }
-
-        .result-card.warning .detail-row {
-            border-bottom-color: rgba(245, 158, 11, 0.2);
-            color: #92400e;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            font-weight: 500;
-        }
-
-        .detail-value {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 13px;
-            word-break: break-all;
-        }
-
-        /* ===== MISMATCH TABLE ===== */
-        .mismatch-table {
-            margin-top: 20px;
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-
-        .mismatch-table th {
-            text-align: left;
-            padding: 8px;
-            font-weight: 600;
-            border-bottom: 2px solid;
-            background: rgba(0,0,0,0.03);
-        }
-
-        .result-card.error .mismatch-table th {
-            border-bottom-color: rgba(239, 68, 68, 0.2);
-            color: #991b1b;
-        }
-
-        .mismatch-table td {
-            padding: 8px;
-            border-bottom: 1px solid;
-        }
-
-        .result-card.error .mismatch-table td {
-            border-bottom-color: rgba(239, 68, 68, 0.2);
-            color: #7f1d1d;
-        }
-
-        .mismatch-file {
-            font-weight: 500;
-            word-break: break-all;
-        }
-
-        .hash-value {
-            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-            font-size: 11px;
-            word-break: break-all;
-            max-width: 200px;
-        }
-
-        /* ===== HOW IT WORKS ===== */
-        .how-it-works {
-            max-width: 960px;
-            margin: 0 auto 120px;
-            padding: 0 24px;
-            text-align: center;
-        }
-
-        .how-it-works h2 {
-            font-size: 32px;
-            font-weight: 700;
-            letter-spacing: -0.03em;
-            margin-bottom: 12px;
-            color: var(--gray-900);
-        }
-
-        .how-it-works-desc {
-            font-size: 17px;
-            color: var(--gray-500);
-            margin-bottom: 56px;
-        }
-
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-        }
-
-        .step {
-            text-align: center;
-        }
-
-        .step-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background: var(--gray-100);
-            color: var(--gray-900);
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 16px;
-        }
-
-        .step-title {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--gray-900);
-            margin-bottom: 8px;
-        }
-
-        .step-desc {
-            font-size: 14px;
-            color: var(--gray-500);
-            line-height: 1.6;
-        }
-
-        /* ===== FOOTER ===== */
-        footer {
-            padding: 40px 24px;
-            border-top: 1px solid var(--gray-200);
-            text-align: center;
-        }
-
-        .footer-copy {
-            font-size: 13px;
-            color: var(--gray-400);
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            nav { padding: 0 20px; }
-            .nav-text-link { display: none; }
-            .hero { padding: 120px 20px 60px; }
-            .steps-grid { grid-template-columns: 1fr; gap: 32px; }
-            .upload-box { padding: 40px 24px; }
-        }
-    </style>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify a Close Pack - Finault</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link href="https://rsms.me/inter/inter.css" rel="stylesheet">
+  <style>
+    :root {
+      --green: #16a34a;
+      --black: #111;
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --red: #dc2626;
+      --spacing: 1rem;
+      --radius: 0.5rem;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--white);
+      color: var(--black);
+      line-height: 1.5;
+    }
+
+    /* Navigation */
+    nav {
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.8);
+      border-bottom: 1px solid var(--gray-200);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .nav-container {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--black);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--black);
+      font-size: 0.95rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--green);
+    }
+
+    .cta-button {
+      background: var(--green);
+      color: var(--white);
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius);
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .cta-button:hover {
+      background: #15803d;
+    }
+
+    /* Main Content */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .hero-label {
+      display: inline-block;
+      background: var(--gray-100);
+      color: var(--black);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--black);
+      margin-bottom: 1rem;
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--gray-600);
+      max-width: 600px;
+      margin: 0 auto 3rem;
+      line-height: 1.6;
+    }
+
+    /* Upload Zone */
+    .upload-container {
+      max-width: 800px;
+      margin: 0 auto 3rem;
+    }
+
+    .upload-zone {
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius);
+      padding: 3rem 2rem;
+      text-align: center;
+      background: var(--gray-50);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .upload-zone:hover {
+      border-color: var(--green);
+      background: linear-gradient(to bottom, rgba(22, 163, 74, 0.05), rgba(22, 163, 74, 0.02));
+    }
+
+    .upload-zone.dragover {
+      border-color: var(--green);
+      background: rgba(22, 163, 74, 0.1);
+    }
+
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin: 0 auto 1rem;
+      color: var(--green);
+    }
+
+    .upload-zone p {
+      margin: 0.5rem 0;
+    }
+
+    .upload-main {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--black);
+      margin-bottom: 0.5rem;
+    }
+
+    .upload-secondary {
+      font-size: 0.95rem;
+      color: var(--green);
+    }
+
+    .upload-meta {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      margin-top: 1rem;
+    }
+
+    #fileInput {
+      display: none;
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--gray-300);
+      border-top: 3px solid var(--green);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .verifying {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .verifying p {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      font-size: 1.1rem;
+      color: var(--black);
+    }
+
+    /* Results Section */
+    .results-section {
+      margin-top: 2rem;
+    }
+
+    .metadata-card {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .metadata-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .metadata-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .metadata-value {
+      font-size: 1rem;
+      color: var(--black);
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    /* Verification Table */
+    .verification-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 2rem;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .verification-table thead {
+      background: var(--gray-50);
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .verification-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--gray-700);
+    }
+
+    .verification-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-200);
+      font-size: 0.95rem;
+    }
+
+    .verification-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    .hash-truncated {
+      font-family: 'Courier New', monospace;
+      font-size: 0.85rem;
+      color: var(--gray-600);
+      word-break: break-all;
+    }
+
+    .status-check {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #dcfce7;
+      color: var(--green);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .status-x {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: #fee2e2;
+      color: var(--red);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    /* Verdict Card */
+    .verdict-card {
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      border: 2px solid;
+    }
+
+    .verdict-success {
+      background: #dcfce7;
+      border-color: var(--green);
+      color: #166534;
+    }
+
+    .verdict-failure {
+      background: #fee2e2;
+      border-color: var(--red);
+      color: #991b1b;
+    }
+
+    .verdict-text {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .signature-status {
+      font-size: 0.95rem;
+      margin-top: 0.5rem;
+      opacity: 0.8;
+    }
+
+    /* How It Works */
+    .how-it-works {
+      margin-top: 3rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--gray-200);
+    }
+
+    .how-it-works h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .step {
+      background: var(--gray-50);
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .step-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      background: var(--green);
+      color: var(--white);
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .step h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--black);
+    }
+
+    .step p {
+      color: var(--gray-600);
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .privacy-note {
+      background: #ecfdf5;
+      border: 1px solid #d1fae5;
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      text-align: center;
+      color: #065f46;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+      background: var(--black);
+      color: var(--white);
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .footer-section h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 1rem;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .footer-links a {
+      color: var(--gray-400);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--green);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--gray-700);
+      padding-top: 2rem;
+      text-align: center;
+      color: var(--gray-500);
+      font-size: 0.9rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-container {
+        padding: 1rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+        font-size: 0.85rem;
+      }
+
+      main {
+        padding: 2rem 1rem;
+      }
+
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+
+      .upload-zone {
+        padding: 2rem 1rem;
+      }
+
+      .metadata-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .verification-table {
+        font-size: 0.85rem;
+      }
+
+      .verification-table th,
+      .verification-table td {
+        padding: 0.75rem;
+      }
+
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-container">
+      <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+      <div class="nav-links">
+        <a href="/pricing">Pricing</a>
+        <a href="/security">Security</a>
+        <a href="/verify">Verify</a>
+        <a href="/audit" class="cta-button">Free Audit</a>
+      </div>
+    </div>
+  </nav>
 
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-left">
-            <div class="logo-box">
-                <svg viewBox="0 0 24 24">
-                    <path d="M5 8h14M5 14h10M5 20h6" />
-                </svg>
-            </div>
-            <a href="/" class="logo-text">Finault</a>
-        </div>
-        <div class="nav-right">
-            <a href="/demo.html" class="nav-text-link">Demo</a>
-            <a href="/docs.html" class="nav-text-link">Docs</a>
-            <a href="/pricing.html" class="nav-text-link">Pricing</a>
-            <a href="/dashboard.html" class="nav-text-link">Dashboard</a>
-            <a href="/demo.html" class="nav-cta">Get Started</a>
-        </div>
-    </nav>
-
+  <!-- Main Content -->
+  <main>
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Verify Close Pack Integrity</h1>
-        <p class="hero-sub">Upload a Finault Close Pack ZIP to verify that no files have been tampered with. Every artifact is checked against the SHA-256 hashes in the manifest.</p>
+      <div class="hero-label">Verify</div>
+      <h1>Verify a close pack</h1>
+      <p>Upload any Finault close pack ZIP to independently verify its cryptographic integrity. Every SHA-256 hash and HMAC-SHA256 signature is recomputed and checked.</p>
     </section>
 
-    <!-- Upload Section -->
-    <section class="upload-section">
-        <div class="upload-box" id="uploadBox">
-            <svg class="upload-icon" viewBox="0 0 24 24">
-                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5m0 0L7 8m5-5v12"/>
-            </svg>
-            <div class="upload-text">Drop your Close Pack ZIP here</div>
-            <div class="upload-hint">or click to browse</div>
-            <div class="file-name" id="fileName" style="display: none;"></div>
-            <input type="file" id="fileInput" accept=".zip">
-        </div>
-        <button class="verify-button" id="verifyBtn" disabled>
-            <span class="spinner"></span>
-            <span id="verifyBtnText">Verify Pack</span>
-        </button>
-    </section>
+    <!-- Upload Zone -->
+    <div class="upload-container">
+      <div class="upload-zone" id="uploadZone">
+        <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+        </svg>
+        <p class="upload-main">Drop your close pack ZIP here</p>
+        <p class="upload-secondary">or click to browse</p>
+        <p class="upload-meta">Accepts .zip files up to 100MB</p>
+      </div>
+      <input type="file" id="fileInput" accept=".zip" />
+    </div>
+
+    <!-- Verifying State -->
+    <div id="verifyingState" class="verifying hidden">
+      <p><span class="spinner"></span> Verifying...</p>
+    </div>
 
     <!-- Results Section -->
-    <section class="results-section" id="resultsSection">
-        <div class="result-card" id="resultCard">
-            <div style="display: flex; align-items: flex-start;">
-                <div class="result-icon">
-                    <svg id="resultIcon" viewBox="0 0 24 24"></svg>
-                </div>
-                <div style="flex: 1;">
-                    <h2 class="result-heading" id="resultHeading"></h2>
-                    <p class="result-message" id="resultMessage"></p>
-                    <div class="result-details" id="resultDetails"></div>
-                    <table class="mismatch-table" id="mismatchTable" style="display: none;">
-                        <thead>
-                            <tr>
-                                <th>File Path</th>
-                                <th>Expected SHA-256</th>
-                                <th>Actual SHA-256</th>
-                            </tr>
-                        </thead>
-                        <tbody id="mismatchBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </section>
+    <div id="resultsSection" class="results-section hidden">
+      <!-- Verdict Card -->
+      <div id="verdictCard"></div>
 
-    <!-- How It Works Section -->
-    <section class="how-it-works">
-        <h2>How It Works</h2>
-        <p class="how-it-works-desc">Verification is performed locally with cryptographic integrity checks</p>
+      <!-- Metadata -->
+      <div class="metadata-card">
+        <div class="metadata-grid">
+          <div class="metadata-item">
+            <div class="metadata-label">Close ID</div>
+            <div class="metadata-value" id="closeId">—</div>
+          </div>
+          <div class="metadata-item">
+            <div class="metadata-label">Provider</div>
+            <div class="metadata-value" id="provider">—</div>
+          </div>
+          <div class="metadata-item">
+            <div class="metadata-label">Period</div>
+            <div class="metadata-value" id="period">—</div>
+          </div>
+          <div class="metadata-item">
+            <div class="metadata-label">Sealed At</div>
+            <div class="metadata-value" id="sealedAt">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Verification Table -->
+      <table class="verification-table" id="verificationTable">
+        <thead>
+          <tr>
+            <th>Filename</th>
+            <th>Expected Hash</th>
+            <th>Actual Hash</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+        </tbody>
+      </table>
+
+      <!-- How It Works -->
+      <div class="how-it-works">
+        <h2>How Verification Works</h2>
         <div class="steps-grid">
-            <div class="step">
-                <div class="step-number">1</div>
-                <h3 class="step-title">Upload</h3>
-                <p class="step-desc">Upload the original sealed ZIP exported by Finault</p>
-            </div>
-            <div class="step">
-                <div class="step-number">2</div>
-                <h3 class="step-title">Verify</h3>
-                <p class="step-desc">We read the manifest and compute SHA-256 of every artifact</p>
-            </div>
-            <div class="step">
-                <div class="step-number">3</div>
-                <h3 class="step-title">Result</h3>
-                <p class="step-desc">Green check if all hashes match. Red flag if anything was modified.</p>
-            </div>
+          <div class="step">
+            <div class="step-number">1</div>
+            <h3>Extract</h3>
+            <p>We unpack your ZIP and locate the manifest.json</p>
+          </div>
+          <div class="step">
+            <div class="step-number">2</div>
+            <h3>Recompute</h3>
+            <p>Every artifact's SHA-256 hash is recalculated in your browser</p>
+          </div>
+          <div class="step">
+            <div class="step-number">3</div>
+            <h3>Compare</h3>
+            <p>Hashes are matched against the manifest. Any mismatch means tampering.</p>
+          </div>
         </div>
-    </section>
+        <div class="privacy-note">
+          All verification happens entirely in your browser. Your close pack is never uploaded to any server.
+        </div>
+      </div>
+    </div>
+  </main>
 
-    <!-- Footer -->
-    <footer>
-        <p class="footer-copy">© 2026 Finault. The AI Cost Governance Standard.</p>
-    </footer>
+  <!-- Footer -->
+  <footer>
+    <div class="footer-container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h3>Product</h3>
+          <div class="footer-links">
+            <a href="/pricing">Pricing</a>
+            <a href="/security">Security</a>
+            <a href="/verify">Verify a Pack</a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h3>Company</h3>
+          <div class="footer-links">
+            <a href="mailto:hello@finault.ai">Contact</a>
+            <a href="/privacy">Privacy</a>
+            <a href="/terms">Terms</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 Finault. All rights reserved.
+      </div>
+    </div>
+  </footer>
 
-    <script>
-        const uploadBox = document.getElementById('uploadBox');
-        const fileInput = document.getElementById('fileInput');
-        const fileName = document.getElementById('fileName');
-        const verifyBtn = document.getElementById('verifyBtn');
-        const resultsSection = document.getElementById('resultsSection');
-        const resultCard = document.getElementById('resultCard');
-        const resultIcon = document.getElementById('resultIcon');
-        const resultHeading = document.getElementById('resultHeading');
-        const resultMessage = document.getElementById('resultMessage');
-        const resultDetails = document.getElementById('resultDetails');
-        const mismatchTable = document.getElementById('mismatchTable');
-        const mismatchBody = document.getElementById('mismatchBody');
+  <!-- JSZip Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
-        // Upload box click
-        uploadBox.addEventListener('click', () => fileInput.click());
+  <!-- Verification Script -->
+  <script>
+    const uploadZone = document.getElementById('uploadZone');
+    const fileInput = document.getElementById('fileInput');
+    const verifyingState = document.getElementById('verifyingState');
+    const resultsSection = document.getElementById('resultsSection');
 
-        // Drag and drop
-        uploadBox.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadBox.classList.add('dragover');
-        });
+    // Upload zone click handler
+    uploadZone.addEventListener('click', () => {
+      fileInput.click();
+    });
 
-        uploadBox.addEventListener('dragleave', () => {
-            uploadBox.classList.remove('dragover');
-        });
+    // File input change handler
+    fileInput.addEventListener('change', (e) => {
+      const files = e.target.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
 
-        uploadBox.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadBox.classList.remove('dragover');
-            if (e.dataTransfer.files.length > 0) {
-                handleFileSelect(e.dataTransfer.files[0]);
+    // Drag and drop handlers
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        handleFile(files[0]);
+      }
+    });
+
+    // Main file handler
+    async function handleFile(file) {
+      if (!file.name.endsWith('.zip')) {
+        alert('Please select a .zip file');
+        return;
+      }
+
+      uploadZone.classList.add('hidden');
+      verifyingState.classList.remove('hidden');
+      resultsSection.classList.add('hidden');
+
+      try {
+        const zip = new JSZip();
+        const loaded = await zip.loadAsync(file);
+
+        // Find and parse manifest.json
+        const manifestFile = loaded.file('manifest.json');
+        if (!manifestFile) {
+          throw new Error('manifest.json not found in ZIP');
+        }
+
+        const manifestText = await manifestFile.async('text');
+        const manifest = JSON.parse(manifestText);
+
+        // Verify artifacts
+        const results = [];
+        let allMatch = true;
+
+        if (manifest.artifacts && Array.isArray(manifest.artifacts)) {
+          for (const artifact of manifest.artifacts) {
+            const artifactFile = loaded.file(artifact.path);
+            if (!artifactFile) {
+              results.push({
+                filename: artifact.path,
+                expected: artifact.sha256.substring(0, 16) + '...',
+                actual: 'NOT FOUND',
+                match: false,
+              });
+              allMatch = false;
+              continue;
             }
-        });
 
-        // File input change
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                handleFileSelect(e.target.files[0]);
+            const fileData = await artifactFile.async('arraybuffer');
+            const hashBuffer = await crypto.subtle.digest('SHA-256', fileData);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            const match = hashHex === artifact.sha256;
+
+            results.push({
+              filename: artifact.path,
+              expected: artifact.sha256.substring(0, 16) + '...',
+              actual: hashHex.substring(0, 16) + '...',
+              match: match,
+            });
+
+            if (!match) {
+              allMatch = false;
             }
-        });
-
-        function handleFileSelect(file) {
-            if (!file.name.toLowerCase().endsWith('.zip')) {
-                alert('Please select a ZIP file.');
-                return;
-            }
-
-            uploadBox.classList.add('has-file');
-            fileName.textContent = file.name;
-            fileName.style.display = 'block';
-            verifyBtn.disabled = false;
-            resultsSection.classList.remove('visible');
+          }
         }
 
-        // Verify button
-        verifyBtn.addEventListener('click', async () => {
-            const file = fileInput.files[0];
-            if (!file) return;
+        // Display results
+        displayResults(manifest, results, allMatch);
 
-            verifyBtn.disabled = true;
-            resultsSection.classList.remove('visible');
+      } catch (error) {
+        alert('Error verifying file: ' + error.message);
+        uploadZone.classList.remove('hidden');
+        verifyingState.classList.add('hidden');
+      }
+    }
 
-            try {
-                const formData = new FormData();
-                formData.append('zip', file);
+    // Display verification results
+    function displayResults(manifest, results, allMatch) {
+      verifyingState.classList.add('hidden');
+      resultsSection.classList.remove('hidden');
 
-                const response = await fetch('https://closepack.finault.ai/verify', {
-                    method: 'POST',
-                    body: formData,
-                    credentials: 'omit'
-                });
+      // Verdict Card
+      const verdictCard = document.getElementById('verdictCard');
+      const mismatchCount = results.filter(r => !r.match).length;
 
-                const data = await response.json();
-                displayResults(data);
-            } catch (error) {
-                displayNetworkError(error.message);
-            } finally {
-                verifyBtn.disabled = false;
-            }
-        });
+      if (allMatch) {
+        verdictCard.innerHTML = `
+          <div class="verdict-card verdict-success">
+            <p class="verdict-text">✓ Close pack integrity verified — all artifacts match</p>
+            <div class="signature-status">
+              ${manifest.manifest_signature ? 'Signature present' : 'No signature'}
+            </div>
+          </div>
+        `;
+      } else {
+        verdictCard.innerHTML = `
+          <div class="verdict-card verdict-failure">
+            <p class="verdict-text">✗ Integrity check failed — ${mismatchCount} artifact${mismatchCount !== 1 ? 's' : ''} do${mismatchCount !== 1 ? '' : 'es'} not match</p>
+            <div class="signature-status">
+              ${manifest.manifest_signature ? 'Signature present' : 'No signature'}
+            </div>
+          </div>
+        `;
+      }
 
-        function displayResults(data) {
-            mismatchTable.style.display = 'none';
-            mismatchBody.innerHTML = '';
-            resultDetails.innerHTML = '';
+      // Metadata
+      document.getElementById('closeId').textContent = manifest.close_id || '—';
+      document.getElementById('provider').textContent = manifest.provider || '—';
+      document.getElementById('period').textContent = manifest.period || '—';
+      document.getElementById('sealedAt').textContent = manifest.sealed_at || '—';
 
-            if (data.ok) {
-                displayVerifiedResult(data);
-            } else if (data.result === 'TAMPER_DETECTED') {
-                displayTamperResult(data);
-            } else if (data.result === 'INVALID_PACK') {
-                displayInvalidResult(data);
-            } else {
-                displayUnknownResult(data);
-            }
+      // Verification Table
+      const tableBody = document.getElementById('tableBody');
+      tableBody.innerHTML = '';
 
-            resultsSection.classList.add('visible');
-            resultsSection.scrollIntoView({ behavior: 'smooth' });
-        }
+      results.forEach(result => {
+        const row = document.createElement('tr');
+        const statusClass = result.match ? 'status-check' : 'status-x';
+        const statusSymbol = result.match ? '✓' : '✗';
 
-        function displayVerifiedResult(data) {
-            resultCard.className = 'result-card success';
-            resultIcon.innerHTML = '<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>';
-            resultHeading.textContent = 'Pack Verified';
-            resultMessage.textContent = `All ${data.checked_files} files match their manifest hashes. This close pack has not been tampered with.`;
+        row.innerHTML = `
+          <td>${result.filename}</td>
+          <td><span class="hash-truncated">${result.expected}</span></td>
+          <td><span class="hash-truncated">${result.actual}</span></td>
+          <td><span class="${statusClass}">${statusSymbol}</span></td>
+        `;
 
-            const details = `
-                <div class="detail-row">
-                    <span class="detail-label">Close ID:</span>
-                    <span class="detail-value">${escapeHtml(data.close_id)}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Pack Type:</span>
-                    <span class="detail-value">${escapeHtml(data.pack_type)}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Files Verified:</span>
-                    <span class="detail-value">${data.checked_files}</span>
-                </div>
-            `;
-            resultDetails.innerHTML = details;
-        }
-
-        function displayTamperResult(data) {
-            resultCard.className = 'result-card error';
-            resultIcon.innerHTML = '<path d="M12 9v2m0 4v2m0-10a9 9 0 110 18 9 9 0 010-18z"/>';
-            resultHeading.textContent = 'Tamper Detected';
-            const mismatches = data.mismatches || [];
-            resultMessage.textContent = `WARNING: ${mismatches.length} file(s) do not match their manifest hashes.`;
-
-            const details = `
-                <div class="detail-row">
-                    <span class="detail-label">Close ID:</span>
-                    <span class="detail-value">${escapeHtml(data.close_id)}</span>
-                </div>
-                <div class="detail-row">
-                    <span class="detail-label">Pack Type:</span>
-                    <span class="detail-value">${escapeHtml(data.pack_type)}</span>
-                </div>
-            `;
-            resultDetails.innerHTML = details;
-
-            if (mismatches.length > 0) {
-                mismatchTable.style.display = 'table';
-                mismatches.forEach(mismatch => {
-                    const row = mismatchBody.insertRow();
-                    row.innerHTML = `
-                        <td class="mismatch-file">${escapeHtml(mismatch.file_path)}</td>
-                        <td class="hash-value">${escapeHtml(mismatch.expected_sha256)}</td>
-                        <td class="hash-value">${escapeHtml(mismatch.actual_sha256)}</td>
-                    `;
-                });
-            }
-        }
-
-        function displayInvalidResult(data) {
-            resultCard.className = 'result-card warning';
-            resultIcon.innerHTML = '<path d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
-
-            const error = data.error || {};
-            resultHeading.textContent = escapeHtml(error.title || 'Invalid Pack');
-            resultMessage.textContent = escapeHtml(error.summary || 'The pack could not be verified.');
-
-            if (error.action) {
-                const actionDiv = document.createElement('div');
-                actionDiv.style.marginTop = '12px';
-                actionDiv.style.fontSize = '13px';
-                actionDiv.style.fontStyle = 'italic';
-                actionDiv.textContent = escapeHtml(error.action);
-                resultMessage.parentNode.insertBefore(actionDiv, resultMessage.nextSibling);
-            }
-        }
-
-        function displayUnknownResult(data) {
-            resultCard.className = 'result-card error';
-            resultIcon.innerHTML = '<path d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
-            resultHeading.textContent = 'Verification Failed';
-            resultMessage.textContent = 'An unexpected error occurred during verification.';
-
-            const details = `
-                <pre style="background: rgba(0,0,0,0.05); padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 12px; margin-top: 12px;">
-${escapeHtml(JSON.stringify(data, null, 2))}
-                </pre>
-            `;
-            resultDetails.innerHTML = details;
-        }
-
-        function displayNetworkError(errorMessage) {
-            resultCard.className = 'result-card error';
-            resultIcon.innerHTML = '<path d="M12 8v4m0 4v.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>';
-            resultHeading.textContent = 'Network Error';
-            resultMessage.textContent = 'Unable to reach the verification service. Please check your connection and try again.';
-            resultDetails.innerHTML = `<div style="margin-top: 12px; font-size: 13px; font-family: monospace;">${escapeHtml(errorMessage)}</div>`;
-            resultsSection.classList.add('visible');
-            resultsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return String(text).replace(/[&<>"']/g, m => map[m]);
-        }
-    </script>
-
+        tableBody.appendChild(row);
+      });
+    }
+  </script>
 </body>
 </html>

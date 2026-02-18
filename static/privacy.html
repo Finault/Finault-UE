@@ -1,57 +1,474 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Privacy Policy | Finault</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-  <style>
-    :root { --white: #FFFFFF; --gray-200: #E5E5E5; --gray-500: #737373; --gray-600: #525252; --gray-900: #171717; --green-500: #22C55E; --font-sans: 'DM Sans', sans-serif; }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: var(--font-sans); background: var(--white); color: var(--gray-900); line-height: 1.7; }
-    .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(255,255,255,0.9); backdrop-filter: blur(20px); border-bottom: 1px solid var(--gray-200); }
-    .nav-inner { max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; }
-    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--gray-900); }
-    .logo-mark { width: 32px; height: 32px; }
-    .logo-text { font-size: 20px; font-weight: 600; }
-    .content { max-width: 700px; margin: 0 auto; padding: 140px 24px 80px; }
-    h1 { font-size: 36px; font-weight: 600; margin-bottom: 8px; }
-    .updated { font-size: 14px; color: var(--gray-500); margin-bottom: 48px; }
-    h2 { font-size: 20px; font-weight: 600; margin-top: 40px; margin-bottom: 16px; }
-    p { margin-bottom: 16px; color: var(--gray-600); }
-    ul { margin-bottom: 16px; padding-left: 24px; color: var(--gray-600); }
-    li { margin-bottom: 8px; }
-    .footer { padding: 40px 24px; border-top: 1px solid var(--gray-200); text-align: center; }
-    .footer p { font-size: 14px; color: var(--gray-500); margin: 0; }
-  </style>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy | Finault</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        :root {
+            --green: #16a34a;
+            --black: #111;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-600: #4b5563;
+            --gray-900: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #fff;
+            color: var(--black);
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.7);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--green);
+        }
+
+        .nav-cta {
+            background-color: var(--green);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .nav-cta:hover {
+            background-color: #15803d;
+        }
+
+        /* Main content */
+        main {
+            margin-top: 5rem;
+            padding: 3rem 2rem;
+            min-height: calc(100vh - 5rem - 300px);
+        }
+
+        .content-wrapper {
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--green);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+
+        .page-subtitle {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 3rem;
+        }
+
+        /* Policy sections */
+        .policy-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .policy-section h2 {
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: var(--black);
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .policy-section h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .policy-section p {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .policy-section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--gray-600);
+            line-height: 1.8;
+        }
+
+        .policy-section ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .policy-section strong {
+            color: var(--black);
+            font-weight: 600;
+        }
+
+        .policy-section a {
+            color: var(--green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .policy-section a:hover {
+            text-decoration: underline;
+        }
+
+        /* Effective date highlight */
+        .effective-date {
+            background-color: var(--gray-50);
+            border-left: 4px solid var(--green);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0.25rem;
+        }
+
+        .effective-date p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--gray-50);
+            border-top: 1px solid var(--gray-300);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section ul {
+            list-style: none;
+        }
+
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-section a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--green);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--gray-300);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--green);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .nav-links {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .policy-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .footer-links {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
 </head>
 <body>
-  <nav class="nav"><div class="nav-inner"><a href="index.html" class="logo"><svg class="logo-mark" viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#171717"/><path d="M9 8H23V11H12V14H21V17H12V24H9V8Z" fill="#22C55E"/></svg><span class="logo-text">Finault</span></a></div></nav>
-  <main class="content">
-    <h1>Privacy Policy</h1>
-    <p class="updated">Last updated: January 26, 2026</p>
-    <p>Finault ("we", "our", or "us") is committed to protecting your privacy. This policy explains how we handle your information.</p>
-    <h2>Data Processing</h2>
-    <p>Finault processes your AI invoice data entirely in your browser. Your invoice files are never uploaded to our servers. All calculations, allocations, and report generation happen locally on your device.</p>
-    <h2>Information We Collect</h2>
-    <p>We collect minimal information necessary to provide our service:</p>
-    <ul>
-      <li><strong>Account Information:</strong> Email address and name when you create an account</li>
-      <li><strong>Usage Data:</strong> Anonymous analytics about feature usage to improve the product</li>
-      <li><strong>Payment Information:</strong> Processed securely by Stripe; we never see your full card details</li>
-    </ul>
-    <h2>What We Don't Collect</h2>
-    <ul>
-      <li>Your invoice data or financial information</li>
-      <li>Your allocation rules or cost center mappings</li>
-      <li>Generated reports or Close Packs</li>
-    </ul>
-    <h2>Data Security</h2>
-    <p>We use industry-standard security measures including encryption in transit (TLS 1.3) and secure authentication. Since invoice processing happens in your browser, your financial data never leaves your device.</p>
-    <h2>Contact</h2>
-    <p>Questions about this policy? Contact us at privacy@finault.ai</p>
-  </main>
-  <footer class="footer"><p>© 2026 Finault. All rights reserved.</p></footer>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+            <ul class="nav-links">
+                <li><a href="/pricing">Pricing</a></li>
+                <li><a href="/security">Security</a></li>
+                <li><a href="/verify">Verify</a></li>
+                <li><a href="/audit" class="nav-cta">Free Audit</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="content-wrapper">
+            <p class="section-label">Legal</p>
+            <h1 class="section-title">Privacy Policy</h1>
+            <p class="page-subtitle">How we handle your data with transparency and respect.</p>
+
+            <div class="effective-date">
+                <p><strong>Effective Date:</strong> February 15, 2026</p>
+            </div>
+
+            <!-- Section 1: Introduction -->
+            <div class="policy-section">
+                <h2>Introduction</h2>
+                <p>Finault ("we", "us", "our") operates finault.ai. This privacy policy explains how we handle your data. We are committed to transparency and minimal data collection. We believe privacy is a fundamental right, and we've designed our platform to collect only what we absolutely need to provide our service.</p>
+            </div>
+
+            <!-- Section 2: Information We Collect -->
+            <div class="policy-section">
+                <h2>Information We Collect</h2>
+                <p>We collect different types of information depending on how you use Finault:</p>
+                <ul>
+                    <li><strong>Billing CSV Data:</strong> When you upload your billing data to generate a close pack, we process it in-memory on Cloudflare Workers during the request lifecycle. This data is never stored after close pack generation is complete and is never shared with third parties.</li>
+                    <li><strong>Email Address (optional):</strong> If you provide your email for lead capture or to receive product updates, we store it in our database. You can request deletion of your email address at any time by contacting us.</li>
+                    <li><strong>Usage Analytics:</strong> We use privacy-respecting analytics tools that do not use cookies and do not track personally identifiable information. We collect only aggregate page view counts and feature usage metrics to understand how the platform is being used.</li>
+                    <li><strong>Anonymized Benchmark Data:</strong> When you run an audit, we collect anonymized, aggregated data points to power industry benchmarks and trend reports. This includes: spend size bucket (e.g., "$100K–$250K" — never the exact amount), model names and their percentage of total spend, provider distribution, FOCUS 1.3 compliance score, anomaly types detected, month-over-month change percentage, region count, and whether frontier or efficiency models are in use. <strong>We never store your company name, file name, account identifiers, or any information that could identify you or your organization.</strong> This data is used solely to produce aggregate benchmarking insights (e.g., "companies in your size bracket typically spend X% on GPT-4o"). You may opt out by contacting us at <a href="mailto:hello@finault.ai">hello@finault.ai</a>.</li>
+                </ul>
+            </div>
+
+            <!-- Section 3: How We Use Your Information -->
+            <div class="policy-section">
+                <h2>How We Use Your Information</h2>
+                <p>We use the information we collect for specific, limited purposes:</p>
+                <ul>
+                    <li>To generate close packs and audit reports from your billing data</li>
+                    <li>To send product updates if you have opted in (you can unsubscribe from communications at any time)</li>
+                    <li>To improve the platform based on aggregate usage patterns and user feedback</li>
+                    <li>To produce anonymized industry benchmarks, trend reports, and pricing intelligence (e.g., "State of AI Spend" reports) based on aggregated data from all users — never from individual companies</li>
+                </ul>
+            </div>
+
+            <!-- Section 4: Data Storage & Security -->
+            <div class="policy-section">
+                <h2>Data Storage & Security</h2>
+                <p>We take data security seriously and use multiple layers of protection:</p>
+                <ul>
+                    <li><strong>Close packs are stored in Cloudflare R2</strong> as sealed, write-once objects that cannot be modified after creation.</li>
+                    <li><strong>Edge computing:</strong> All processing occurs on Cloudflare Workers at the edge (300+ global locations), minimizing data transit and centralization.</li>
+                    <li><strong>HMAC-SHA256 signing:</strong> Every close pack is cryptographically signed to ensure tamper-evident integrity and authenticity.</li>
+                    <li><strong>No centralized database:</strong> Your billing CSV data is never stored in a traditional database. It exists only in memory during processing.</li>
+                </ul>
+            </div>
+
+            <!-- Section 5: Third-Party Services -->
+            <div class="policy-section">
+                <h2>Third-Party Services</h2>
+                <p>We use a minimal set of trusted third-party services:</p>
+                <ul>
+                    <li><strong>Cloudflare:</strong> We rely on Cloudflare for infrastructure, edge computing, and R2 storage. Your data is processed and stored within Cloudflare's secure infrastructure.</li>
+                    <li><strong>Supabase:</strong> If you provide your email address, it is stored in a Supabase database for lead capture and product updates.</li>
+                    <li><strong>No advertising networks, no tracking pixels, no data brokers:</strong> We do not share your data with advertising networks, tracking services, or data brokers.</li>
+                </ul>
+            </div>
+
+            <!-- Section 6: Your Rights -->
+            <div class="policy-section">
+                <h2>Your Rights</h2>
+                <p>You have the following rights regarding your data:</p>
+                <ul>
+                    <li><strong>Right to deletion:</strong> Request deletion of your email from our database at any time.</li>
+                    <li><strong>Right to access:</strong> Request a copy of any data we hold about you.</li>
+                    <li><strong>Right to opt-out:</strong> Opt out of marketing communications at any time with a single click.</li>
+                    <li><strong>Data requests:</strong> Contact us at <a href="mailto:privacy@finault.ai">privacy@finault.ai</a> for any data-related requests, and we will respond within 30 days.</li>
+                </ul>
+            </div>
+
+            <!-- Section 7: Data Retention -->
+            <div class="policy-section">
+                <h2>Data Retention</h2>
+                <p>We maintain a simple data retention policy:</p>
+                <ul>
+                    <li><strong>Billing CSVs:</strong> Are not retained after close pack generation.</li>
+                    <li><strong>Close packs:</strong> Are retained for the duration of your subscription, after which they can be deleted upon request.</li>
+                    <li><strong>Email addresses:</strong> Are retained until you request deletion or unsubscribe from communications.</li>
+                </ul>
+            </div>
+
+            <!-- Section 8: Changes to This Policy -->
+            <div class="policy-section">
+                <h2>Changes to This Policy</h2>
+                <p>We may update this privacy policy from time to time to reflect changes in our practices, technology, or other factors. Any changes will be posted on this page with an updated effective date. We will notify users of material changes via email if we have your email address on file.</p>
+            </div>
+
+            <!-- Section 9: Contact -->
+            <div class="policy-section">
+                <h2>Contact Us</h2>
+                <p>If you have any questions about this privacy policy, how we handle your data, or if you wish to exercise any of your data rights, please contact us at <a href="mailto:privacy@finault.ai">privacy@finault.ai</a>. We're here to help and will respond to all inquiries promptly.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <ul>
+                        <li><a href="/pricing">Pricing</a></li>
+                        <li><a href="/security">Security</a></li>
+                        <li><a href="/verify">Verify a Pack</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="mailto:hello@finault.ai">Contact</a></li>
+                        <li><a href="/privacy">Privacy</a></li>
+                        <li><a href="/terms">Terms</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p class="footer-copyright">© 2026 Finault. All rights reserved.</p>
+                <ul class="footer-links">
+                    <li><a href="/pricing">Pricing</a></li>
+                    <li><a href="/security">Security</a></li>
+                    <li><a href="/verify">Verify a Pack</a></li>
+                    <li><a href="mailto:hello@finault.ai">Contact</a></li>
+                    <li><a href="/privacy">Privacy</a></li>
+                    <li><a href="/terms">Terms</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
