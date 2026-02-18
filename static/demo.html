@@ -817,7 +817,21 @@
         </div>
     </div>
 
-    <!-- Email Opt-in Modal (non-blocking — shown AFTER download, not before) -->
+    <!-- Email Gate Modal — shown BEFORE close pack download -->
+    <div class="modal" id="emailGateModal">
+        <div class="modal-box">
+            <h3>Get your Close Pack</h3>
+            <p>Enter your work email and we'll send you monthly spend alerts when your costs change by more than 10%. Your billing data never leaves the browser.</p>
+            <input type="email" id="emailGateInput" placeholder="cfo@yourcompany.com">
+            <button class="btn btn-green" onclick="submitEmailGate()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Download Close Pack
+            </button>
+            <button class="modal-skip" onclick="skipEmailGate()">Skip &mdash; just download</button>
+        </div>
+    </div>
+
+    <!-- Email Opt-in Modal (non-blocking — shown AFTER download if gate was skipped) -->
     <div class="modal" id="emailModal">
         <div class="modal-box">
             <h3>Get monthly alerts</h3>
@@ -2549,7 +2563,30 @@ function genAuditPDF() {
 // ── Download Close Pack ──
 function downloadPack() {
     trackEvent('close_pack_click');
-    hideError(); doDownload();
+    hideError();
+    // If user already gave email, skip gate
+    var existing = hasEmail();
+    if (existing && existing !== 'dismissed' && existing !== 'skipped') {
+        doDownload();
+        return;
+    }
+    // Show email gate modal
+    document.getElementById('emailGateModal').classList.add('visible');
+}
+function submitEmailGate() {
+    var e = document.getElementById('emailGateInput').value;
+    if (!e || e.indexOf('@') < 0) { document.getElementById('emailGateInput').style.borderColor = '#ef4444'; return; }
+    try { localStorage.setItem('finault_email', e); } catch(ex) {}
+    saveLead(e);
+    document.getElementById('emailGateModal').classList.remove('visible');
+    trackEvent('email_gate_submitted');
+    doDownload();
+}
+function skipEmailGate() {
+    try { localStorage.setItem('finault_email', 'skipped'); } catch(ex) {}
+    document.getElementById('emailGateModal').classList.remove('visible');
+    trackEvent('email_gate_skipped');
+    doDownload();
 }
 
 async function doDownload() {
