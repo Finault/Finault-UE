@@ -200,11 +200,6 @@
         }
 
         /* ===== FORM SECTIONS ===== */
-        .form-section {
-            display: none !important;
-        }
-
-        .form-section.active { display: block !important; }
 
         .form-group {
             margin-bottom: 16px;
@@ -341,10 +336,8 @@
 
         /* ===== FORGOT PASSWORD VIEW ===== */
         .forgot-password-view {
-            display: none;
+            /* controlled by inline style via JS */
         }
-
-        .forgot-password-view.active { display: block; }
 
         .forgot-password-heading {
             font-size: 18px;
@@ -464,7 +457,7 @@
                 </div>
 
                 <!-- Sign In Form -->
-                <div id="signin" class="form-section active">
+                <div id="signin" style="display:block">
                     <div class="error-message" id="signinError"></div>
 
                     <div class="form-group">
@@ -498,7 +491,7 @@
                 </div>
 
                 <!-- Sign Up Form -->
-                <div id="signup" class="form-section" style="display:none">
+                <div id="signup" style="display:none">
                     <div class="error-message" id="signupError"></div>
                     <div class="success-message" id="signupSuccess">Check your email to confirm your account.</div>
 
@@ -550,7 +543,7 @@
                 </div>
 
                 <!-- Forgot Password View -->
-                <div class="forgot-password-view" id="forgotPasswordView">
+                <div class="forgot-password-view" id="forgotPasswordView" style="display:none">
                     <h3 class="forgot-password-heading">Reset Password</h3>
                     <p class="forgot-password-desc">Enter your email address and we'll send you a link to reset your password.</p>
 
@@ -679,14 +672,10 @@
             });
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
 
-            // Update forms — hide all, then show target
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
-                section.style.display = 'none';
-            });
-            var target = document.getElementById(tab);
-            target.classList.add('active');
-            target.style.display = 'block';
+            // Hide both forms, then show only the target
+            document.getElementById('signin').style.display = 'none';
+            document.getElementById('signup').style.display = 'none';
+            document.getElementById(tab).style.display = 'block';
 
             // Hide forgot password view
             hideForgotPassword();
@@ -699,19 +688,18 @@
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.style.display = 'none';
             });
-            document.querySelectorAll('.form-section').forEach(section => {
-                section.classList.remove('active');
-            });
-            document.getElementById('forgotPasswordView').classList.add('active');
+            document.getElementById('signin').style.display = 'none';
+            document.getElementById('signup').style.display = 'none';
+            document.getElementById('forgotPasswordView').style.display = 'block';
             clearAllErrors();
         }
 
         function hideForgotPassword() {
-            document.getElementById('forgotPasswordView').classList.remove('active');
+            document.getElementById('forgotPasswordView').style.display = 'none';
             document.querySelectorAll('.tab-button').forEach(btn => {
                 btn.style.display = 'flex';
             });
-            document.getElementById('signin').classList.add('active');
+            document.getElementById('signin').style.display = 'block';
             clearAllErrors();
         }
 
