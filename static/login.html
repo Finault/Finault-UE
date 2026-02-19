@@ -456,91 +456,8 @@
                     <button class="tab-button" data-tab="signup">Sign Up</button>
                 </div>
 
-                <!-- Sign In Form -->
-                <div id="signin" style="display:block">
-                    <div class="error-message" id="signinError"></div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input
-                            type="email"
-                            class="form-input"
-                            id="signinEmail"
-                            placeholder="you@company.com"
-                            autocomplete="email"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input
-                            type="password"
-                            class="form-input"
-                            id="signinPassword"
-                            placeholder="••••••••"
-                            autocomplete="current-password"
-                        >
-                    </div>
-
-                    <button class="btn-primary" id="signinBtn">Sign In</button>
-
-                    <div class="form-link">
-                        <span></span>
-                        <a href="#" id="forgotPasswordLink">Forgot password?</a>
-                    </div>
-                </div>
-
-                <!-- Sign Up Form -->
-                <div id="signup" style="display:none">
-                    <div class="error-message" id="signupError"></div>
-                    <div class="success-message" id="signupSuccess">Check your email to confirm your account.</div>
-
-                    <div class="form-group">
-                        <label class="form-label">Full Name</label>
-                        <input
-                            type="text"
-                            class="form-input"
-                            id="signupName"
-                            placeholder="Jane Smith"
-                            autocomplete="name"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Company</label>
-                        <input
-                            type="text"
-                            class="form-input"
-                            id="signupCompany"
-                            placeholder="Acme Corporation"
-                            autocomplete="organization"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Email</label>
-                        <input
-                            type="email"
-                            class="form-input"
-                            id="signupEmail"
-                            placeholder="you@company.com"
-                            autocomplete="email"
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Password</label>
-                        <input
-                            type="password"
-                            class="form-input"
-                            id="signupPassword"
-                            placeholder="At least 8 characters"
-                            autocomplete="new-password"
-                        >
-                    </div>
-
-                    <button class="btn-primary" id="signupBtn">Create Account</button>
-                </div>
+                <!-- Single form container — JS swaps content -->
+                <div id="formContainer"></div>
 
                 <!-- Forgot Password View -->
                 <div class="forgot-password-view" id="forgotPasswordView" style="display:none">
@@ -614,93 +531,90 @@
                 document.getElementById('configWarning').classList.add('show');
             }
 
-            // Initialize event listeners
+            // Initialize event listeners and render initial form
             initializeEventListeners();
-
-            // Auto-switch to signup tab if ?tab=signup is in URL
-            const params = new URLSearchParams(window.location.search);
-            if (params.get('tab') === 'signup') {
-                switchTab('signup');
-            }
         });
+
+        // ===== FORM HTML TEMPLATES =====
+        var SIGNIN_HTML = '<div class="error-message" id="signinError"></div>'
+            + '<div class="form-group"><label class="form-label">Email</label>'
+            + '<input type="email" class="form-input" id="signinEmail" placeholder="you@company.com" autocomplete="email"></div>'
+            + '<div class="form-group"><label class="form-label">Password</label>'
+            + '<input type="password" class="form-input" id="signinPassword" placeholder="••••••••" autocomplete="current-password"></div>'
+            + '<button class="btn-primary" id="signinBtn">Sign In</button>'
+            + '<div class="form-link"><span></span><a href="#" id="forgotPasswordLink">Forgot password?</a></div>';
+
+        var SIGNUP_HTML = '<div class="error-message" id="signupError"></div>'
+            + '<div class="success-message" id="signupSuccess">Check your email to confirm your account.</div>'
+            + '<div class="form-group"><label class="form-label">Full Name</label>'
+            + '<input type="text" class="form-input" id="signupName" placeholder="Jane Smith" autocomplete="name"></div>'
+            + '<div class="form-group"><label class="form-label">Company</label>'
+            + '<input type="text" class="form-input" id="signupCompany" placeholder="Acme Corporation" autocomplete="organization"></div>'
+            + '<div class="form-group"><label class="form-label">Email</label>'
+            + '<input type="email" class="form-input" id="signupEmail" placeholder="you@company.com" autocomplete="email"></div>'
+            + '<div class="form-group"><label class="form-label">Password</label>'
+            + '<input type="password" class="form-input" id="signupPassword" placeholder="At least 8 characters" autocomplete="new-password"></div>'
+            + '<button class="btn-primary" id="signupBtn">Create Account</button>';
+
+        var currentTab = 'signin';
+
+        function renderForm(tab) {
+            currentTab = tab;
+            var container = document.getElementById('formContainer');
+            container.innerHTML = (tab === 'signup') ? SIGNUP_HTML : SIGNIN_HTML;
+
+            // Update tab buttons
+            document.querySelectorAll('.tab-button').forEach(function(btn) {
+                btn.classList.remove('active');
+                btn.style.display = 'flex';
+            });
+            document.querySelector('[data-tab="' + tab + '"]').classList.add('active');
+
+            // Hide forgot password view
+            document.getElementById('forgotPasswordView').style.display = 'none';
+
+            // Bind events for the newly rendered form
+            if (tab === 'signin') {
+                document.getElementById('signinBtn').addEventListener('click', handleSignIn);
+                document.getElementById('signinEmail').addEventListener('keypress', function(e) { if (e.key === 'Enter') handleSignIn(); });
+                document.getElementById('signinPassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') handleSignIn(); });
+                document.getElementById('forgotPasswordLink').addEventListener('click', function(e) { e.preventDefault(); showForgotPassword(); });
+            } else {
+                document.getElementById('signupBtn').addEventListener('click', handleSignUp);
+                document.getElementById('signupPassword').addEventListener('keypress', function(e) { if (e.key === 'Enter') handleSignUp(); });
+            }
+        }
 
         function initializeEventListeners() {
             // Tab switching
-            document.querySelectorAll('.tab-button').forEach(button => {
+            document.querySelectorAll('.tab-button').forEach(function(button) {
                 button.addEventListener('click', function() {
-                    const tab = this.dataset.tab;
-                    switchTab(tab);
+                    renderForm(this.dataset.tab);
                 });
             });
 
-            // Sign In
-            document.getElementById('signinBtn').addEventListener('click', handleSignIn);
-            document.getElementById('signinEmail').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleSignIn();
-            });
-            document.getElementById('signinPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleSignIn();
-            });
-
-            // Sign Up
-            document.getElementById('signupBtn').addEventListener('click', handleSignUp);
-            document.getElementById('signupPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') handleSignUp();
-            });
-
-            // Forgot Password
-            document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
-                e.preventDefault();
-                showForgotPassword();
-            });
-
+            // Forgot password back link
             document.getElementById('backToSigninLink').addEventListener('click', function(e) {
                 e.preventDefault();
-                hideForgotPassword();
+                renderForm('signin');
             });
 
             document.getElementById('forgotBtn').addEventListener('click', handleForgotPassword);
             document.getElementById('forgotEmail').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') handleForgotPassword();
             });
-        }
 
-        function switchTab(tab) {
-            // Update buttons
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
-
-            // Hide both forms, then show only the target
-            document.getElementById('signin').style.display = 'none';
-            document.getElementById('signup').style.display = 'none';
-            document.getElementById(tab).style.display = 'block';
-
-            // Hide forgot password view
-            hideForgotPassword();
-
-            // Clear errors
-            clearAllErrors();
+            // Render initial form
+            var params = new URLSearchParams(window.location.search);
+            renderForm(params.get('tab') === 'signup' ? 'signup' : 'signin');
         }
 
         function showForgotPassword() {
-            document.querySelectorAll('.tab-button').forEach(btn => {
+            document.querySelectorAll('.tab-button').forEach(function(btn) {
                 btn.style.display = 'none';
             });
-            document.getElementById('signin').style.display = 'none';
-            document.getElementById('signup').style.display = 'none';
+            document.getElementById('formContainer').innerHTML = '';
             document.getElementById('forgotPasswordView').style.display = 'block';
-            clearAllErrors();
-        }
-
-        function hideForgotPassword() {
-            document.getElementById('forgotPasswordView').style.display = 'none';
-            document.querySelectorAll('.tab-button').forEach(btn => {
-                btn.style.display = 'flex';
-            });
-            document.getElementById('signin').style.display = 'block';
-            clearAllErrors();
         }
 
         async function handleSignIn() {
@@ -904,11 +818,10 @@
         }
 
         function clearAllErrors() {
-            document.getElementById('signinError').classList.remove('show');
-            document.getElementById('signupError').classList.remove('show');
-            document.getElementById('signupSuccess').classList.remove('show');
-            document.getElementById('forgotError').classList.remove('show');
-            document.getElementById('forgotSuccess').classList.remove('show');
+            ['signinError','signupError','signupSuccess','forgotError','forgotSuccess'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.classList.remove('show');
+            });
         }
 
         function setButtonLoading(button, isLoading) {
