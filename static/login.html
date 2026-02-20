@@ -19,7 +19,7 @@
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --green: #22c55e;
+            --green: #16a34a;
             --green-dark: #16a34a;
             --green-light: #dcfce7;
             --gray-900: #111827;
@@ -114,6 +114,16 @@
         }
 
         .nav-text-link:hover { color: var(--gray-900); }
+
+        .nav-link {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-link:hover { color: var(--gray-900); }
 
         .nav-cta {
             padding: 8px 20px;
@@ -246,7 +256,7 @@
         .btn-primary {
             width: 100%;
             padding: 12px 16px;
-            background: var(--gray-900);
+            background: var(--green);
             color: var(--white);
             border: none;
             border-radius: 8px;
@@ -433,9 +443,10 @@
             <span class="nav-logo-text">Finault</span>
         </a>
         <div class="nav-right">
-            <a href="/audit" class="nav-text-link">Free Audit</a>
-            <a href="/platform" class="nav-text-link">Platform</a>
-            <a href="/pricing" class="nav-text-link">Pricing</a>
+            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
         </div>
     </nav>
 
@@ -445,6 +456,14 @@
             <!-- Config Warning -->
             <div class="config-warning" id="configWarning">
                 <p class="config-warning-text">Authentication is being configured. Please check back soon.</p>
+            </div>
+
+            <!-- Sandbox Pitch -->
+            <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 1.5rem;background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.15);border-radius:12px">
+                <p style="font-size:.9rem;color:var(--gray-600);margin:0;line-height:1.5">
+                    <strong style="color:#16a34a">Free API key on signup.</strong><br>
+                    230 endpoints. 5 SDKs. No credit card. Hit the gateway in 2 minutes.
+                </p>
             </div>
 
             <!-- Auth Card -->
@@ -488,8 +507,8 @@
                 <!-- Terms Notice -->
                 <div class="terms-notice">
                     By signing in, you agree to the
-                    <a href="/terms.html">Terms of Service</a> and
-                    <a href="/privacy.html">Privacy Policy</a>.
+                    <a href="/terms">Terms of Service</a> and
+                    <a href="/privacy">Privacy Policy</a>.
                 </div>
             </div>
         </div>
@@ -497,6 +516,13 @@
 
     <!-- Footer -->
     <footer>
+        <div style="display:flex;justify-content:center;gap:24px;margin-bottom:12px;font-size:.8rem">
+            <a href="/pricing" style="color:var(--gray-500);text-decoration:none">Pricing</a>
+            <a href="/docs" style="color:var(--gray-500);text-decoration:none">Docs</a>
+            <a href="/security" style="color:var(--gray-500);text-decoration:none">Security</a>
+            <a href="/privacy" style="color:var(--gray-500);text-decoration:none">Privacy</a>
+            <a href="/terms" style="color:var(--gray-500);text-decoration:none">Terms</a>
+        </div>
         <p class="footer-copy">© 2026 Finault. The AI Cost Governance Standard.</p>
     </footer>
 
@@ -510,20 +536,38 @@
             const params = new URLSearchParams(window.location.search);
             const redirect = params.get('redirect');
             if (redirect === 'pricing') return '/pricing';
-            if (redirect === 'app') return 'https://app.finault.ai';
-            // Allow full URLs to app.finault.ai
+            if (redirect === 'app') return '/welcome';
+            if (redirect === 'welcome') return '/welcome';
+            if (redirect === 'dashboard') {
+                var token = localStorage.getItem('finault_token');
+                return token
+                    ? 'https://dashboard.finault.ai/dashboard#access_token=' + encodeURIComponent(token)
+                    : '/dashboard';
+            }
+            // Allow full URLs to dashboard.finault.ai or app.finault.ai
+            if (redirect && redirect.startsWith('https://dashboard.finault.ai')) return redirect;
             if (redirect && redirect.startsWith('https://app.finault.ai')) return redirect;
             // Allow relative paths
             if (redirect && redirect.startsWith('/')) return redirect;
-            return 'https://app.finault.ai';
+            return '/welcome';
         }
 
-        // Check if already logged in
-        window.addEventListener('DOMContentLoaded', function() {
+        // Check if already logged in — verify token is still valid before redirecting
+        window.addEventListener('DOMContentLoaded', async function() {
             const token = localStorage.getItem('finault_token');
             if (token) {
-                window.location.href = getRedirectUrl();
-                return;
+                try {
+                    const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+                        headers: { 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_ANON_KEY },
+                    });
+                    if (res.ok) {
+                        window.location.href = getRedirectUrl();
+                        return;
+                    }
+                } catch (e) { /* token invalid, fall through to login form */ }
+                // Token expired or invalid — clear it
+                localStorage.removeItem('finault_token');
+                localStorage.removeItem('finault_user');
             }
 
             // Show config warning if key is not set

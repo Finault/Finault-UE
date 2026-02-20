@@ -1,0 +1,18 @@
+Vendor,Microsoft Azure
+Invoice Number,INV-AZ-2026-0142
+Invoice Date,2026-01-31
+Bill To,Finault Inc.
+Currency,USD
+
+Description,Quantity,Unit Price,Amount
+GPT-4o API Usage - Input Tokens (9.84M tokens),9840000,0.0050,49200.00
+GPT-4o API Usage - Output Tokens (2.52M tokens),2517000,0.0150,37755.00
+GPT-4o-mini API Usage - Input Tokens (18.0M tokens),18000000,0.00015,2700.00
+GPT-4o-mini API Usage - Output Tokens (4.5M tokens),4500000,0.00060,2700.00
+GPT-4 Turbo API Usage - Input Tokens (1.2M tokens),1200000,0.0100,12000.00
+GPT-4 Turbo API Usage - Output Tokens (360K tokens),360000,0.0300,10800.00
+text-embedding-3-large (23.9M tokens),23900000,0.00013,3107.00
+text-embedding-3-small (25.0M tokens),25000000,0.00002,500.00
+Azure OpenAI Provisioned Throughput - GPT-4o,1,8500.00,8500.00
+
+Total Amount Due,,,127262.00

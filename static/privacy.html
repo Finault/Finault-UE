@@ -326,12 +326,12 @@
     <nav>
         <div class="nav-container">
             <a href="/" class="nav-logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
-            <ul class="nav-links">
-                <li><a href="/pricing">Pricing</a></li>
-                <li><a href="/security">Security</a></li>
-                <li><a href="/verify">Verify</a></li>
-                <li><a href="/audit" class="nav-cta">Free Audit</a></li>
-            </ul>
+            <div class="nav-right">
+                <a href="/audit" class="nav-link">Free Audit</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+                <a href="/docs" class="nav-link">Docs</a>
+                <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+            </div>
         </div>
     </nav>
 
@@ -360,7 +360,7 @@
                     <li><strong>Billing CSV Data:</strong> When you upload your billing data to generate a close pack, we process it in-memory on Cloudflare Workers during the request lifecycle. This data is never stored after close pack generation is complete and is never shared with third parties.</li>
                     <li><strong>Email Address (optional):</strong> If you provide your email for lead capture or to receive product updates, we store it in our database. You can request deletion of your email address at any time by contacting us.</li>
                     <li><strong>Usage Analytics:</strong> We use privacy-respecting analytics tools that do not use cookies and do not track personally identifiable information. We collect only aggregate page view counts and feature usage metrics to understand how the platform is being used.</li>
-                    <li><strong>Anonymized Benchmark Data:</strong> When you run an audit, we collect anonymized, aggregated data points to power industry benchmarks and trend reports. This includes: spend size bucket (e.g., "$100K–$250K" — never the exact amount), model names and their percentage of total spend, provider distribution, FOCUS 1.3 compliance score, anomaly types detected, month-over-month change percentage, region count, and whether frontier or efficiency models are in use. <strong>We never store your company name, file name, account identifiers, or any information that could identify you or your organization.</strong> This data is used solely to produce aggregate benchmarking insights (e.g., "companies in your size bracket typically spend X% on GPT-4o"). You may opt out by contacting us at <a href="mailto:hello@finault.ai">hello@finault.ai</a>.</li>
+                    <li><strong>Anonymized Benchmark Data:</strong> When you run an audit, we collect anonymized, aggregated data points to power industry benchmarks and trend reports. This includes: spend size bucket (e.g., "$100K–$250K" — never the exact amount), model names and their percentage of total spend, provider distribution, FOCUS 1.3 compliance score, anomaly types detected, month-over-month change percentage, region count, and whether frontier or efficiency models are in use. <strong>We never store your company name, file name, account identifiers, or any information that could identify you or your organization.</strong> This data is used solely to produce aggregate benchmarking insights (e.g., "companies in your size bracket typically spend X% on GPT-4o"). You may opt out by contacting us at <a href="mailto:bernard.cotter@finault.ai">bernard.cotter@finault.ai</a>.</li>
                 </ul>
             </div>
 
@@ -444,6 +444,7 @@
                     <h3>Product</h3>
                     <ul>
                         <li><a href="/pricing">Pricing</a></li>
+                        <li><a href="/docs">Documentation</a></li>
                         <li><a href="/security">Security</a></li>
                         <li><a href="/verify">Verify a Pack</a></li>
                     </ul>
@@ -451,7 +452,7 @@
                 <div class="footer-section">
                     <h3>Company</h3>
                     <ul>
-                        <li><a href="mailto:hello@finault.ai">Contact</a></li>
+                        <li><a href="mailto:bernard.cotter@finault.ai">Contact</a></li>
                         <li><a href="/privacy">Privacy</a></li>
                         <li><a href="/terms">Terms</a></li>
                     </ul>
@@ -463,7 +464,7 @@
                     <li><a href="/pricing">Pricing</a></li>
                     <li><a href="/security">Security</a></li>
                     <li><a href="/verify">Verify a Pack</a></li>
-                    <li><a href="mailto:hello@finault.ai">Contact</a></li>
+                    <li><a href="mailto:bernard.cotter@finault.ai">Contact</a></li>
                     <li><a href="/privacy">Privacy</a></li>
                     <li><a href="/terms">Terms</a></li>
                 </ul>

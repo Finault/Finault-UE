@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Get Your API Key</title>
+    <meta name="description" content="Generate your Finault API key and start routing AI traffic through the gateway in under 5 minutes.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #111;
+            --white: #fff;
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --green-border: #bbf7d0;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-900: #171717;
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--gray-900);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        /* Nav */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 64px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+
+        /* Main */
+        .main {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 140px 24px 80px;
+        }
+
+        .welcome-badge {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--green);
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            padding: 4px 12px;
+            border-radius: 999px;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--gray-500);
+            margin-bottom: 40px;
+        }
+
+        /* Step */
+        .step {
+            margin-bottom: 40px;
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .step-num {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--green);
+            color: var(--white);
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .step-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .step p {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 12px;
+        }
+
+        /* Key generation */
+        .key-box {
+            background: var(--gray-50);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .key-box-generated {
+            background: var(--green-light);
+            border-color: var(--green-border);
+        }
+
+        .generate-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 24px;
+            background: var(--green);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-family: inherit;
+        }
+
+        .generate-btn:hover { opacity: 0.9; }
+        .generate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .key-display {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .key-field {
+            flex: 1;
+            padding: 10px 14px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            background: var(--white);
+            border: 1px solid var(--green-border);
+            border-radius: 8px;
+            color: var(--gray-900);
+        }
+
+        .copy-btn {
+            padding: 10px 16px;
+            background: var(--green);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: opacity 0.2s;
+        }
+
+        .copy-btn:hover { opacity: 0.9; }
+
+        .key-warning {
+            font-size: 12px;
+            color: var(--green);
+            font-weight: 500;
+        }
+
+        .key-error {
+            font-size: 13px;
+            color: #dc2626;
+            margin-top: 8px;
+        }
+
+        /* Code block */
+        .code-block {
+            background: var(--gray-900);
+            border-radius: 10px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e5e7eb;
+        }
+
+        .code-block .comment { color: #6b7280; }
+        .code-block .string { color: #86efac; }
+
+        /* Links */
+        .next-steps {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .next-steps h3 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .link-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .link-card {
+            display: block;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--gray-900);
+            transition: border-color 0.2s;
+        }
+
+        .link-card:hover { border-color: var(--green); }
+
+        .link-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .link-card-desc {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        /* Footer */
+        footer {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 40px 24px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--gray-400);
+        }
+
+        footer a { color: var(--gray-400); text-decoration: none; }
+        footer a:hover { color: var(--gray-600); }
+
+        .hidden { display: none; }
+
+        @media (max-width: 640px) {
+            nav { padding: 0 20px; }
+            .link-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">Finault</a>
+        <div class="nav-right">
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="#" onclick="goToDashboard();return false" class="nav-link" style="color:var(--green);font-weight:600">Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <div class="welcome-badge">You're in</div>
+        <h1>Get your API key.</h1>
+        <p class="subtitle">Three steps. Under five minutes. Then you're routing AI traffic through Finault.</p>
+
+        <!-- Step 1: Generate key -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-num">1</div>
+                <div class="step-title">Generate your key</div>
+            </div>
+            <p>This is your Finault API key. It starts with <code>fk_</code> and gives you access to all 230 endpoints. Store it somewhere safe — it won't be shown again.</p>
+
+            <div class="key-box" id="keyBox">
+                <div id="preGenerate">
+                    <button class="generate-btn" id="generateBtn" onclick="generateKey()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                        Generate API Key
+                    </button>
+                </div>
+                <div id="postGenerate" class="hidden">
+                    <div class="key-display">
+                        <input type="text" class="key-field" id="keyField" readonly>
+                        <button class="copy-btn" onclick="copyKey()">Copy</button>
+                    </div>
+                    <p class="key-warning">Save this key now. It will not be shown again.</p>
+                </div>
+                <p class="key-error hidden" id="keyError"></p>
+            </div>
+        </div>
+
+        <!-- Step 2: Try it live -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-num">2</div>
+                <div class="step-title">Try it live</div>
+            </div>
+            <p>Paste your OpenAI key below. We'll route one request through Finault and show you exactly what it cost — in real time.</p>
+
+            <div class="key-box" id="tryBox">
+                <div id="tryForm">
+                    <div style="display:flex;gap:8px;margin-bottom:12px">
+                        <input type="password" class="key-field" id="providerKey" placeholder="sk-... (your OpenAI key)" style="flex:1">
+                        <button class="generate-btn" id="tryBtn" onclick="tryLive()" style="white-space:nowrap">
+                            Send request
+                        </button>
+                    </div>
+                    <p style="font-size:12px;color:var(--gray-500);margin:0">Your provider key is sent directly to the gateway and never stored. It's used once to proxy this request.</p>
+                </div>
+                <div id="tryResult" class="hidden">
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:16px">
+                        <div style="text-align:center;padding:16px;background:var(--white);border:1px solid var(--green-border);border-radius:8px">
+                            <div style="font-size:24px;font-weight:700;color:var(--green)" id="resultCost">—</div>
+                            <div style="font-size:12px;color:var(--gray-500);margin-top:4px">Cost</div>
+                        </div>
+                        <div style="text-align:center;padding:16px;background:var(--white);border:1px solid var(--green-border);border-radius:8px">
+                            <div style="font-size:24px;font-weight:700;color:var(--gray-900)" id="resultTokens">—</div>
+                            <div style="font-size:12px;color:var(--gray-500);margin-top:4px">Tokens</div>
+                        </div>
+                        <div style="text-align:center;padding:16px;background:var(--white);border:1px solid var(--green-border);border-radius:8px">
+                            <div style="font-size:24px;font-weight:700;color:var(--gray-900)" id="resultLatency">—</div>
+                            <div style="font-size:12px;color:var(--gray-500);margin-top:4px">Latency</div>
+                        </div>
+                    </div>
+                    <div style="padding:12px 16px;background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;margin-bottom:12px">
+                        <p style="font-size:13px;color:var(--green);font-weight:600;margin:0" id="resultMessage">Finault tracked this request.</p>
+                    </div>
+                    <div style="font-size:13px;color:var(--gray-500)">
+                        <strong style="color:var(--gray-900)">AI response:</strong> <span id="resultAI">—</span>
+                    </div>
+                    <div style="margin-top:12px;font-size:12px;color:var(--gray-400)">
+                        Request ID: <code id="resultRequestId">—</code> &middot; Audit hash: <code id="resultHash">—</code>
+                    </div>
+                    <button class="generate-btn" onclick="resetTry()" style="margin-top:16px;background:var(--gray-900)">Try another</button>
+                </div>
+                <p class="key-error hidden" id="tryError"></p>
+            </div>
+        </div>
+
+        <!-- Step 3: Integrate -->
+        <div class="step">
+            <div class="step-header">
+                <div class="step-num">3</div>
+                <div class="step-title">Change one line in your code</div>
+            </div>
+            <p>Replace your provider's base URL with the Finault gateway. Your existing code works without modification — every request is tracked, attributed, and auditable.</p>
+
+            <div class="code-block">
+<pre><span class="comment"># Before (direct to OpenAI)</span>
+curl https://api.openai.com/v1/chat/completions ...
+
+<span class="comment"># After (through Finault — same payload, full visibility)</span>
+curl https://api.finault.ai/v1/chat/completions \
+  -H <span class="string">"Authorization: Bearer fk_your_key_here"</span> \
+  -H <span class="string">"X-Provider-Key: sk-your-openai-key"</span> \
+  -H <span class="string">"Content-Type: application/json"</span> \
+  -d <span class="string">'{"model":"gpt-4o","messages":[{"role":"user","content":"hello"}]}'</span></pre>
+            </div>
+        </div>
+
+        <!-- Next steps -->
+        <div class="next-steps">
+            <h3>Next steps</h3>
+            <div class="link-grid">
+                <a href="/docs" class="link-card">
+                    <div class="link-card-title">Documentation</div>
+                    <div class="link-card-desc">Full API reference, SDKs, and guides</div>
+                </a>
+                <a href="/demo" class="link-card">
+                    <div class="link-card-title">Run a free audit</div>
+                    <div class="link-card-desc">Upload a CSV and see results instantly</div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <a href="/pricing">Pricing</a> &nbsp;&middot;&nbsp;
+        <a href="/docs">Docs</a> &nbsp;&middot;&nbsp;
+        <a href="/security">Security</a> &nbsp;&middot;&nbsp;
+        <a href="/privacy">Privacy</a> &nbsp;&middot;&nbsp;
+        <a href="/terms">Terms</a>
+        <p style="margin-top:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</p>
+    </footer>
+
+    <script>
+        async function generateKey() {
+            const btn = document.getElementById('generateBtn');
+            const errorEl = document.getElementById('keyError');
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+            errorEl.classList.add('hidden');
+
+            try {
+                const token = localStorage.getItem('finault_token');
+                if (!token) {
+                    window.location.href = '/login?redirect=welcome';
+                    return;
+                }
+
+                const resp = await fetch('https://api.finault.ai/v1/keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ name: 'My First Key' })
+                });
+
+                if (resp.status === 401) {
+                    localStorage.removeItem('finault_token');
+                    window.location.href = '/login?redirect=welcome';
+                    return;
+                }
+
+                const data = await resp.json();
+
+                if (data.success && data.key && data.key.secret) {
+                    document.getElementById('keyField').value = data.key.secret;
+                    document.getElementById('preGenerate').classList.add('hidden');
+                    document.getElementById('postGenerate').classList.remove('hidden');
+                    document.getElementById('keyBox').classList.add('key-box-generated');
+
+                    // Update the curl examples with the real key
+                    document.querySelectorAll('pre').forEach(pre => {
+                        pre.innerHTML = pre.innerHTML.replace(/fk_your_key_here/g, data.key.secret);
+                    });
+                } else {
+                    throw new Error((data.error || 'Failed to generate key') + (data.details ? ' — ' + data.details : ''));
+                }
+            } catch (e) {
+                errorEl.textContent = e.message || 'Could not connect to API. Try again or visit app.finault.ai/keys.';
+                errorEl.classList.remove('hidden');
+                btn.textContent = 'Generate API Key';
+                btn.disabled = false;
+            }
+        }
+
+        // Strip non-ASCII characters from header values (prevents copy-paste unicode issues)
+        function cleanKey(s) { return s.trim().replace(/[^\x20-\x7E]/g, ''); }
+
+        async function tryLive() {
+            const providerKey = cleanKey(document.getElementById('providerKey').value);
+            const fkKey = cleanKey(document.getElementById('keyField').value);
+            const btn = document.getElementById('tryBtn');
+            const errorEl = document.getElementById('tryError');
+            errorEl.classList.add('hidden');
+
+            if (!providerKey) {
+                errorEl.textContent = 'Paste your OpenAI API key to try it.';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            if (!fkKey) {
+                errorEl.textContent = 'Generate your Finault key first (Step 1).';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            btn.textContent = 'Sending...';
+            btn.disabled = true;
+
+            try {
+                const resp = await fetch('https://api.finault.ai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + fkKey,
+                        'X-Provider-Key': providerKey,
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-4o',
+                        messages: [{ role: 'user', content: 'Say hello in one sentence.' }]
+                    })
+                });
+
+                // Extract Finault headers
+                const costDollars = resp.headers.get('X-Finault-Cost-Dollars') || '0';
+                const costCents = resp.headers.get('X-Finault-Cost-Cents') || '0';
+                const latency = resp.headers.get('X-Finault-Latency-Ms') || '0';
+                const reqId = resp.headers.get('X-Finault-Request-Id') || '—';
+                const auditHash = resp.headers.get('X-Finault-Audit-Hash') || '—';
+
+                const data = await resp.json();
+
+                if (!resp.ok) {
+                    throw new Error(data.error || 'Request failed');
+                }
+
+                const totalTokens = data.usage?.total_tokens || 0;
+                const aiMessage = data.choices?.[0]?.message?.content || '—';
+                const costDisplay = parseFloat(costDollars) < 0.01
+                    ? '$' + parseFloat(costDollars).toFixed(4)
+                    : '$' + parseFloat(costDollars).toFixed(2);
+
+                document.getElementById('resultCost').textContent = costDisplay;
+                document.getElementById('resultTokens').textContent = totalTokens;
+                document.getElementById('resultLatency').textContent = latency + 'ms';
+                document.getElementById('resultAI').textContent = aiMessage;
+                document.getElementById('resultRequestId').textContent = reqId.substring(0, 8) + '...';
+                document.getElementById('resultHash').textContent = auditHash.substring(0, 12) + '...';
+                document.getElementById('resultMessage').textContent =
+                    'Finault tracked this request. ' + totalTokens + ' tokens, ' + costDisplay + ', audit-ready.';
+
+                document.getElementById('tryForm').classList.add('hidden');
+                document.getElementById('tryResult').classList.remove('hidden');
+                document.getElementById('tryBox').classList.add('key-box-generated');
+            } catch (e) {
+                errorEl.textContent = e.message || 'Request failed. Check your provider key.';
+                errorEl.classList.remove('hidden');
+                btn.textContent = 'Send request';
+                btn.disabled = false;
+            }
+        }
+
+        function resetTry() {
+            document.getElementById('tryForm').classList.remove('hidden');
+            document.getElementById('tryResult').classList.add('hidden');
+            document.getElementById('tryBox').classList.remove('key-box-generated');
+            document.getElementById('tryBtn').textContent = 'Send request';
+            document.getElementById('tryBtn').disabled = false;
+            document.getElementById('providerKey').value = '';
+        }
+
+        function goToDashboard() {
+            const token = localStorage.getItem('finault_token');
+            if (token) {
+                window.location.href = 'https://dashboard.finault.ai/dashboard#access_token=' + encodeURIComponent(token);
+            } else {
+                window.location.href = 'https://dashboard.finault.ai/dashboard';
+            }
+        }
+
+        function copyKey() {
+            const key = document.getElementById('keyField').value;
+            navigator.clipboard.writeText(key).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'Copied';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            });
+        }
+
+        // Extract token from Supabase redirect hash or localStorage
+        window.addEventListener('DOMContentLoaded', function() {
+            // Supabase email verification redirects with #access_token=...
+            const hash = window.location.hash.substring(1);
+            if (hash) {
+                const params = new URLSearchParams(hash);
+                const accessToken = params.get('access_token');
+                if (accessToken) {
+                    localStorage.setItem('finault_token', accessToken);
+                    // Clean the URL
+                    window.history.replaceState(null, '', '/welcome');
+                }
+            }
+
+            const token = localStorage.getItem('finault_token');
+            if (!token) {
+                window.location.href = '/login?redirect=welcome';
+            }
+        });
+    </script>
+</body>
+</html>

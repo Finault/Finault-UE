@@ -1,455 +1,1100 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "vj0l9eldil");
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Close Pack History - Finault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Dashboard — Finault</title>
+    <meta name="description" content="See what your AI costs. Every request, every token, every dollar.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <style>
-        *{box-sizing:border-box;margin:0;padding:0}
-        :root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--gray-900:#111827;--gray-800:#1f2937;--gray-700:#374151;--gray-600:#4b5563;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-300:#d1d5db;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff;--red:#ef4444}
-        body{font-family:'Inter',-apple-system,sans-serif;background:var(--gray-50);color:var(--gray-900);line-height:1.6}
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        /* Navigation */
-        nav{padding:1rem 2rem;background:var(--white);border-bottom:1px solid var(--gray-200)}
-        .nav-container{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-        .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.25rem;color:var(--gray-900);text-decoration:none}
-        .logo-icon{width:32px;height:32px;background:var(--gray-900);border-radius:8px;display:flex;align-items:center;justify-content:center}
-        .logo-icon svg{width:18px;height:18px}
-        .nav-links{display:flex;align-items:center;gap:1.5rem}
-        .nav-links a{color:var(--gray-600);text-decoration:none;font-size:.9375rem;font-weight:500}
-        .nav-links a:hover{color:var(--gray-900)}
-        .nav-links a.active{color:var(--gray-900);font-weight:600}
-        .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.625rem 1.25rem;border-radius:.5rem;font-size:.875rem;font-weight:500;text-decoration:none;cursor:pointer;border:none;transition:all .15s}
-        .btn-primary{background:var(--gray-900);color:var(--white)}
-        .btn-primary:hover{background:#000}
-        .btn-outline{background:var(--white);color:var(--gray-700);border:1px solid var(--gray-300)}
-        .btn-outline:hover{background:var(--gray-50);border-color:var(--gray-400)}
+        :root {
+            --sidebar-bg: #0f172a;
+            --sidebar-w: 240px;
+            --header-h: 56px;
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --green-border: #bbf7d0;
+            --white: #fff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+            --red-500: #ef4444;
+            --amber-500: #f59e0b;
+            --blue-500: #3b82f6;
+            --border: #e2e8f0;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --mono: 'JetBrains Mono', 'Fira Code', monospace;
+        }
 
-        /* Page Header */
-        .page-header{background:var(--white);border-bottom:1px solid var(--gray-200);padding:1.5rem 2rem}
-        .page-header-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center}
-        .page-title{font-size:1.5rem;font-weight:700}
-        .page-meta{display:flex;align-items:center;gap:1rem}
-        .live-badge{display:flex;align-items:center;gap:.375rem;font-size:.875rem;color:var(--green);font-weight:500}
-        .live-dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
-        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+        body {
+            font-family: var(--font);
+            background: var(--gray-50);
+            color: var(--gray-900);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+            display: flex;
+            min-height: 100vh;
+        }
 
-        /* Main Content */
-        .main{max-width:1200px;margin:0 auto;padding:2rem}
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: var(--sidebar-bg);
+            color: var(--white);
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 50;
+        }
 
-        /* Alert Banner */
-        .alert{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-radius:.75rem;margin-bottom:2rem;gap:1rem}
-        .alert-error{background:#fee2e2;border:1px solid #fecaca}
-        .alert-content{display:flex;align-items:flex-start;gap:.75rem}
-        .alert-icon{width:20px;height:20px;flex-shrink:0;color:#dc2626}
-        .alert-text h4{font-size:.9375rem;font-weight:600;color:var(--gray-900);margin-bottom:.125rem}
-        .alert-text p{font-size:.875rem;color:var(--gray-600)}
-        .alert-close{background:none;border:none;color:var(--gray-600);cursor:pointer;font-size:1.25rem}
-        .alert-close:hover{color:var(--gray-900)}
+        .sidebar-logo {
+            padding: 20px 24px;
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        /* Stats Grid */
-        .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem}
-        @media(max-width:1024px){.stats-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:640px){.stats-grid{grid-template-columns:1fr}}
-        .stat-card{background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;padding:1.5rem;text-align:center}
-        .stat-value{font-size:2.25rem;font-weight:700;color:var(--gray-900);margin-bottom:.25rem}
-        .stat-label{font-size:.875rem;color:var(--gray-500)}
-        .stat-skeleton{height:2.5rem;background:var(--gray-200);border-radius:.25rem;margin-bottom:.25rem;animation:skeleton-load 1s infinite}
-        @keyframes skeleton-load{0%,100%{opacity:.5}50%{opacity:1}}
+        .sidebar-logo .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--green);
+            border-radius: 50%;
+        }
 
-        /* Table */
-        .table-card{background:var(--white);border:1px solid var(--gray-200);border-radius:.75rem;overflow:hidden;margin-bottom:2rem}
-        .table-header{display:flex;justify-content:space-between;align-items:center;padding:1rem 1.5rem;border-bottom:1px solid var(--gray-200)}
-        .table-title{font-size:1rem;font-weight:600}
-        .table-wrapper{overflow-x:auto}
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:.875rem 1.5rem;text-align:left}
-        th{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-500);background:var(--gray-50);border-bottom:1px solid var(--gray-200)}
-        td{font-size:.875rem;border-bottom:1px solid var(--gray-100);color:var(--gray-700)}
-        tr:last-child td{border-bottom:none}
-        tr:hover td{background:var(--gray-50)}
-        .type-badge{display:inline-flex;padding:.25rem .75rem;border-radius:.25rem;font-size:.75rem;font-weight:500;background:var(--gray-100);color:var(--gray-700)}
-        .badge-invoice{background:var(--gray-100);color:var(--gray-700)}
-        .badge-urs{background:var(--gray-100);color:var(--gray-700)}
-        .download-link{color:var(--gray-900);font-weight:500;text-decoration:none;border-bottom:1px solid var(--gray-300)}
-        .download-link:hover{border-bottom-color:var(--gray-900)}
+        .sidebar-nav {
+            padding: 16px 12px;
+            flex: 1;
+        }
 
-        /* Empty State */
-        .empty-state{text-align:center;padding:3rem 1.5rem;color:var(--gray-500)}
-        .empty-state-icon{font-size:3rem;margin-bottom:1rem}
-        .empty-state h3{font-size:1.125rem;font-weight:600;color:var(--gray-900);margin-bottom:.5rem}
-        .empty-state p{font-size:.875rem}
+        .nav-section {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--gray-400);
+            padding: 16px 12px 8px;
+        }
 
-        /* User Bar */
-        .user-bar{background:var(--white);border-bottom:1px solid var(--gray-200);padding:.5rem 2rem;display:flex;justify-content:space-between;align-items:center;font-size:.8125rem}
-        .user-info{display:flex;align-items:center;gap:1rem;color:var(--gray-600)}
-        .user-tier{display:inline-flex;padding:.125rem .5rem;border-radius:1rem;font-size:.6875rem;font-weight:600;background:var(--gray-900);color:var(--white);text-transform:uppercase;letter-spacing:.03em}
-        .btn-sm{padding:.375rem .75rem;font-size:.8125rem}
-        .btn-ghost{background:none;border:none;color:var(--gray-500);cursor:pointer;font-size:.8125rem;font-family:inherit}
-        .btn-ghost:hover{color:var(--gray-900)}
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 6px;
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s;
+            margin-bottom: 2px;
+        }
 
-        /* Footer */
-        footer{padding:2rem;text-align:center;color:var(--gray-400);font-size:.8125rem;background:var(--white);border-top:1px solid var(--gray-200);margin-top:3rem}
+        .nav-item:hover {
+            color: var(--white);
+            background: rgba(255,255,255,0.06);
+        }
+
+        .nav-item.active {
+            color: var(--white);
+            background: rgba(255,255,255,0.1);
+            position: relative;
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 6px;
+            bottom: 6px;
+            width: 3px;
+            background: var(--green);
+            border-radius: 0 2px 2px 0;
+        }
+
+        .nav-icon {
+            width: 18px;
+            height: 18px;
+            opacity: 0.7;
+        }
+
+        .nav-item.active .nav-icon { opacity: 1; }
+
+        .sidebar-footer {
+            padding: 16px 24px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            font-size: 12px;
+            color: var(--gray-400);
+        }
+
+        .sidebar-footer .env-badge {
+            display: inline-block;
+            background: rgba(22,163,74,0.15);
+            color: var(--green);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .header {
+            height: var(--header-h);
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            position: sticky;
+            top: 0;
+            z-index: 40;
+        }
+
+        .header-title {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-email {
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .logout-btn {
+            font-size: 13px;
+            color: var(--gray-400);
+            text-decoration: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.15s;
+            border: none;
+            background: none;
+            font-family: inherit;
+        }
+
+        .logout-btn:hover {
+            color: var(--gray-900);
+            background: var(--gray-100);
+        }
+
+        .content {
+            padding: 32px;
+            flex: 1;
+        }
+
+        /* ===== PAGE: OVERVIEW ===== */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .page-subtitle {
+            font-size: 14px;
+            color: var(--gray-500);
+            margin-bottom: 28px;
+        }
+
+        .spend-hero {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+        }
+
+        .spend-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-500);
+            margin-bottom: 6px;
+        }
+
+        .spend-amount {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            color: var(--green);
+            font-family: var(--mono);
+        }
+
+        .spend-period {
+            font-size: 13px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            font-family: var(--mono);
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .chart-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 240px;
+        }
+
+        .models-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .models-table th {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--gray-500);
+            text-align: left;
+            padding: 10px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .models-table td {
+            font-size: 14px;
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .models-table .mono {
+            font-family: var(--mono);
+            font-size: 13px;
+        }
+
+        .bar-cell { width: 200px; }
+
+        .bar-bg {
+            height: 6px;
+            background: var(--gray-100);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: var(--green);
+            border-radius: 3px;
+            transition: width 0.4s ease;
+        }
+
+        /* ===== PAGE: REQUESTS ===== */
+        .requests-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 8px 14px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-family: var(--font);
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.15s;
+        }
+
+        .search-input:focus { border-color: var(--green); }
+
+        .refresh-btn {
+            padding: 8px 16px;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all 0.15s;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--gray-300);
+            background: var(--gray-50);
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .requests-table th {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--gray-500);
+            text-align: left;
+            padding: 12px 14px;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .requests-table td {
+            font-size: 13px;
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--gray-100);
+            white-space: nowrap;
+        }
+
+        .requests-table tr:last-child td { border-bottom: none; }
+        .requests-table tr:hover td { background: var(--gray-50); }
+
+        .requests-table .mono {
+            font-family: var(--mono);
+            font-size: 12px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            font-family: var(--mono);
+        }
+
+        .status-badge.success {
+            background: var(--green-light);
+            color: var(--green);
+        }
+
+        .status-badge.error {
+            background: #fef2f2;
+            color: var(--red-500);
+        }
+
+        .pagination {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
+            font-size: 13px;
+            color: var(--gray-500);
+        }
+
+        .pagination-btns { display: flex; gap: 8px; }
+
+        .page-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            background: var(--white);
+            font-size: 13px;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: all 0.15s;
+        }
+
+        .page-btn:hover:not(:disabled) { border-color: var(--gray-300); }
+        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* ===== PAGE: API KEYS ===== */
+        .keys-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .key-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .key-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .key-name {
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .key-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        .key-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .key-status.active { background: var(--green); }
+        .key-status.inactive { background: var(--gray-300); }
+
+        .create-key-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 20px;
+            background: var(--green);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: var(--font);
+            transition: opacity 0.15s;
+            margin-bottom: 20px;
+        }
+
+        .create-key-btn:hover { opacity: 0.9; }
+
+        /* ===== EMPTY / LOADING ===== */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-500);
+        }
+
+        .empty-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 16px;
+            background: var(--gray-100);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 6px;
+        }
+
+        .empty-desc {
+            font-size: 14px;
+            max-width: 360px;
+            margin: 0 auto;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px;
+            color: var(--gray-400);
+            font-size: 14px;
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-200);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 1024px) {
+            .stats-row { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .main { margin-left: 0; }
+            .stats-row { grid-template-columns: 1fr 1fr; }
+        }
     </style>
 </head>
 <body>
-    <nav>
-        <div class="nav-container">
-            <a href="/" class="logo">
-                <span class="logo-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
-                </span>
-                Finault
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="dot"></span>
+            Finault
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-section">Analytics</div>
+            <a class="nav-item active" data-page="overview" onclick="showPage('overview')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Overview
             </a>
-            <div class="nav-links">
-                <a href="/demo.html">Demo</a>
-                <a href="/docs.html">Docs</a>
-                <a href="/pricing.html">Pricing</a>
-                <a href="/dashboard.html" class="active">Dashboard</a>
-                <a href="/login" class="btn btn-primary">Get Started</a>
+            <a class="nav-item" data-page="requests" onclick="showPage('requests')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/></svg>
+                Requests
+            </a>
+
+            <div class="nav-section">Settings</div>
+            <a class="nav-item" data-page="keys" onclick="showPage('keys')">
+                <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+                API Keys
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="env-badge">Live</div>
+            <div id="sidebarEmail" style="overflow:hidden;text-overflow:ellipsis"></div>
+        </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main">
+        <header class="header">
+            <div class="header-title" id="headerTitle">Overview</div>
+            <div class="header-right">
+                <span class="header-email" id="headerEmail"></span>
+                <button class="logout-btn" onclick="logout()">Sign out</button>
             </div>
-        </div>
-    </nav>
+        </header>
 
-    <div id="userBar" class="user-bar" style="display:none">
-        <div class="user-info">
-            <span id="userEmail"></span>
-            <span id="userTier" class="user-tier"></span>
-        </div>
-        <button class="btn-ghost" onclick="signOut()">Sign Out</button>
-    </div>
+        <div class="content">
+            <!-- OVERVIEW PAGE -->
+            <div class="page active" id="page-overview">
+                <h1 class="page-title">Overview</h1>
+                <p class="page-subtitle">Your AI spend this month at a glance.</p>
 
-    <div class="page-header">
-        <div class="page-header-inner">
-            <h1 class="page-title">Close Pack History</h1>
-            <div class="page-meta">
-                <span class="live-badge"><span class="live-dot"></span> Live</span>
-            </div>
-        </div>
-    </div>
+                <div class="spend-hero">
+                    <div class="spend-label">Total spend this month</div>
+                    <div class="spend-amount" id="totalSpend">$0.00</div>
+                    <div class="spend-period" id="spendPeriod"></div>
+                </div>
 
-    <main class="main">
-        <!-- Configuration Alert -->
-        <div id="configAlert" class="alert alert-error" style="display:none">
-            <div class="alert-content">
-                <svg class="alert-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
-                <div class="alert-text">
-                    <h4>Connect to Supabase</h4>
-                    <p>Set your anon key in the dashboard configuration to view close pack history.</p>
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-value" id="statRequests">0</div>
+                        <div class="stat-label">Requests</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statAvgCost">$0.00</div>
+                        <div class="stat-label">Avg Cost / Request</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statLatency">0ms</div>
+                        <div class="stat-label">Avg Latency</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="statTokens">0</div>
+                        <div class="stat-label">Total Tokens</div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title">Daily spend</div>
+                    <div class="chart-container">
+                        <canvas id="spendChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-title">Top models by cost</div>
+                    <div id="modelsContainer">
+                        <div class="loading"><div class="spinner"></div> Loading...</div>
+                    </div>
                 </div>
             </div>
-            <button class="alert-close" onclick="document.getElementById('configAlert').style.display='none'">&times;</button>
-        </div>
 
-        <!-- Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div id="stat1-value" class="stat-value stat-skeleton"></div>
-                <div class="stat-label">Total Invoice Closes</div>
-            </div>
-            <div class="stat-card">
-                <div id="stat2-value" class="stat-value stat-skeleton"></div>
-                <div class="stat-label">Total URS Closes</div>
-            </div>
-            <div class="stat-card">
-                <div id="stat3-value" class="stat-value stat-skeleton"></div>
-                <div class="stat-label">Total Spend Reconciled</div>
-            </div>
-            <div class="stat-card">
-                <div id="stat4-value" class="stat-value stat-skeleton"></div>
-                <div class="stat-label">Average Confidence</div>
-            </div>
-        </div>
+            <!-- REQUESTS PAGE -->
+            <div class="page" id="page-requests">
+                <h1 class="page-title">Requests</h1>
+                <p class="page-subtitle">Every AI request through Finault, with full audit trail.</p>
 
-        <!-- Close Pack History Table -->
-        <div id="historyTable" class="table-card">
-            <div class="table-header">
-                <span class="table-title">Close Pack History</span>
+                <div class="requests-toolbar">
+                    <input type="text" class="search-input" id="searchInput" placeholder="Filter by model, provider, or cost center..." oninput="filterRequests()">
+                    <button class="refresh-btn" onclick="loadRequests()">Refresh</button>
+                </div>
+
+                <div id="requestsContainer">
+                    <div class="loading"><div class="spinner"></div> Loading...</div>
+                </div>
             </div>
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Close ID</th>
-                            <th>Type</th>
-                            <th>Period</th>
-                            <th>Total</th>
-                            <th>Confidence / Ruleset</th>
-                            <th>Sealed At</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--gray-400)">Loading...</td></tr>
-                    </tbody>
-                </table>
+
+            <!-- API KEYS PAGE -->
+            <div class="page" id="page-keys">
+                <h1 class="page-title">API Keys</h1>
+                <p class="page-subtitle">Manage your Finault API keys.</p>
+
+                <button class="create-key-btn" onclick="createKey()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14m-7-7h14"/></svg>
+                    Create new key
+                </button>
+
+                <div id="keysContainer">
+                    <div class="loading"><div class="spinner"></div> Loading...</div>
+                </div>
             </div>
         </div>
-
-        <!-- Empty State -->
-        <div id="emptyState" class="table-card" style="display:none">
-            <div class="empty-state">
-                <div class="empty-state-icon">📦</div>
-                <h3>No close packs yet</h3>
-                <p>Upload an invoice or usage CSV on the <a href="/demo.html" style="color:var(--gray-900);text-decoration:underline">Demo page</a> to create your first close.</p>
-            </div>
-        </div>
-    </main>
-
-    <footer>
-        © 2026 Finault. The AI Cost Governance Standard.
-    </footer>
+    </div>
 
     <script>
-        // Configuration
-        var SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
-        var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
+    // ===============================================================
+    // AUTH
+    // ===============================================================
+    const API_BASE = 'https://api.finault.ai';
+    let authToken = null;
+    let userEmail = '';
+    let currentPage = 'overview';
+    let requestsData = [];
+    let requestsOffset = 0;
+    let requestsTotal = 0;
+    let spendChart = null;
 
-        // Format currency
-        function formatCurrency(value) {
-            if (!value) return '$0';
-            return '$' + parseFloat(value).toLocaleString('en-US', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
+    function getAuthHeaders() {
+        return { 'Authorization': 'Bearer ' + authToken, 'Content-Type': 'application/json' };
+    }
+
+    function init() {
+        // Check for Supabase token in hash (from redirect)
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            const params = new URLSearchParams(hash);
+            const accessToken = params.get('access_token');
+            if (accessToken) {
+                localStorage.setItem('finault_token', accessToken);
+                window.history.replaceState(null, '', '/dashboard');
+            }
+        }
+
+        // Try Supabase token first, then fk_ key
+        authToken = localStorage.getItem('finault_token') || localStorage.getItem('finault_api_key');
+
+        if (!authToken) {
+            window.location.href = 'https://finault.ai/login?redirect=dashboard';
+            return;
+        }
+
+        fetchUserEmail();
+        loadOverview();
+    }
+
+    async function fetchUserEmail() {
+        try {
+            const token = localStorage.getItem('finault_token');
+            if (!token) return;
+            const SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
+            const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
+            const res = await fetch(SUPABASE_URL + '/auth/v1/user', {
+                headers: { 'Authorization': 'Bearer ' + token, 'apikey': SUPABASE_ANON },
             });
-        }
-
-        // Format date
-        function formatDate(dateString) {
-            if (!dateString) return '-';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' ' +
-                   date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-        }
-
-        // Format period for display
-        function formatPeriod(startDate, endDate) {
-            if (!startDate) return '-';
-            const start = new Date(startDate);
-            if (!endDate) {
-                return start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+            if (res.ok) {
+                const user = await res.json();
+                userEmail = user.email || '';
+                document.getElementById('headerEmail').textContent = userEmail;
+                document.getElementById('sidebarEmail').textContent = userEmail;
             }
-            const end = new Date(endDate);
-            return start.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) + ' - ' +
-                   end.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-        }
+        } catch (e) { /* silent */ }
+    }
 
-        // Fetch closes from Supabase
-        async function fetchCloses() {
-            if (!SUPABASE_ANON_KEY) {
-                document.getElementById('configAlert').style.display = 'flex';
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('historyTable').style.display = 'none';
-                resetStats();
-                return;
-            }
+    function logout() {
+        localStorage.removeItem('finault_token');
+        localStorage.removeItem('finault_api_key');
+        window.location.href = 'https://finault.ai/login';
+    }
 
-            try {
-                // Fetch invoice closes
-                const invoicesResponse = await fetch(
-                    `${SUPABASE_URL}/rest/v1/closes?select=close_id,period,sealed_at,total,confidence,r2_key&order=sealed_at.desc&limit=50`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        }
-                    }
-                );
+    // ===============================================================
+    // NAVIGATION
+    // ===============================================================
 
-                // Fetch URS closes
-                const ursResponse = await fetch(
-                    `${SUPABASE_URL}/rest/v1/usage_reconciliations?select=close_id,period_start,period_end,sealed_at,total,pricing_ruleset_id,pricing_ruleset_version,r2_key&order=sealed_at.desc&limit=50`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        }
-                    }
-                );
-
-                const invoices = await invoicesResponse.json();
-                const urs = await ursResponse.json();
-
-                // Combine and sort
-                const combined = [];
-
-                if (Array.isArray(invoices)) {
-                    invoices.forEach(inv => {
-                        combined.push({
-                            type: 'Invoice',
-                            close_id: inv.close_id,
-                            period: inv.period,
-                            period_start: null,
-                            period_end: null,
-                            total: inv.total,
-                            confidence: inv.confidence,
-                            ruleset: null,
-                            sealed_at: inv.sealed_at,
-                            download_id: inv.close_id,
-                            download_type: 'invoice',
-                            r2_key: inv.r2_key
-                        });
-                    });
-                }
-
-                if (Array.isArray(urs)) {
-                    urs.forEach(u => {
-                        combined.push({
-                            type: 'URS',
-                            close_id: u.close_id,
-                            period: null,
-                            period_start: u.period_start,
-                            period_end: u.period_end,
-                            total: u.total,
-                            confidence: null,
-                            ruleset: u.pricing_ruleset_id,
-                            sealed_at: u.sealed_at,
-                            download_id: u.close_id,
-                            download_type: 'urs',
-                            r2_key: u.r2_key
-                        });
-                    });
-                }
-
-                // Sort by sealed_at descending
-                combined.sort((a, b) => {
-                    const dateA = new Date(a.sealed_at || 0);
-                    const dateB = new Date(b.sealed_at || 0);
-                    return dateB - dateA;
-                });
-
-                // Update table
-                renderTable(combined);
-
-                // Update stats
-                updateStats(combined, invoices, urs);
-
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                document.getElementById('configAlert').style.display = 'flex';
-                resetStats();
-            }
-        }
-
-        function renderTable(data) {
-            const tbody = document.getElementById('tableBody');
-
-            if (!data || data.length === 0) {
-                document.getElementById('historyTable').style.display = 'none';
-                document.getElementById('emptyState').style.display = 'block';
-                return;
-            }
-
-            document.getElementById('historyTable').style.display = 'block';
-            document.getElementById('emptyState').style.display = 'none';
-
-            tbody.innerHTML = data.map(row => {
-                const downloadUrl = row.download_type === 'invoice'
-                    ? `https://closepack.finault.ai/closepack/${row.download_id}`
-                    : `https://closepack.finault.ai/reconcilepack/${row.download_id}`;
-
-                const periodDisplay = row.type === 'Invoice'
-                    ? row.period
-                    : formatPeriod(row.period_start, row.period_end);
-
-                const metaDisplay = row.type === 'Invoice'
-                    ? `${Math.round(row.confidence || 0)}%`
-                    : (row.ruleset || '-');
-
-                return `
-                    <tr>
-                        <td><strong>${row.close_id || '-'}</strong></td>
-                        <td><span class="type-badge badge-${row.type.toLowerCase()}">${row.type}</span></td>
-                        <td>${periodDisplay || '-'}</td>
-                        <td>${formatCurrency(row.total)}</td>
-                        <td>${metaDisplay}</td>
-                        <td>${formatDate(row.sealed_at)}</td>
-                        <td><a href="${downloadUrl}" class="download-link" target="_blank">Download</a></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function updateStats(combined, invoices, urs) {
-            // Total Invoice Closes
-            const invoiceCount = Array.isArray(invoices) ? invoices.length : 0;
-            document.getElementById('stat1-value').innerHTML = invoiceCount.toString();
-            document.getElementById('stat1-value').classList.remove('stat-skeleton');
-
-            // Total URS Closes
-            const ursCount = Array.isArray(urs) ? urs.length : 0;
-            document.getElementById('stat2-value').innerHTML = ursCount.toString();
-            document.getElementById('stat2-value').classList.remove('stat-skeleton');
-
-            // Total Spend Reconciled
-            let totalSpend = 0;
-            combined.forEach(item => {
-                if (item.total) totalSpend += parseFloat(item.total);
-            });
-            document.getElementById('stat3-value').innerHTML = formatCurrency(totalSpend);
-            document.getElementById('stat3-value').classList.remove('stat-skeleton');
-
-            // Average Confidence
-            let confidenceSum = 0;
-            let confidenceCount = 0;
-            if (Array.isArray(invoices)) {
-                invoices.forEach(inv => {
-                    if (inv.confidence) {
-                        confidenceSum += parseFloat(inv.confidence);
-                        confidenceCount++;
-                    }
-                });
-            }
-            const avgConfidence = confidenceCount > 0 ? Math.round(confidenceSum / confidenceCount) : 0;
-            document.getElementById('stat4-value').innerHTML = avgConfidence.toString() + '%';
-            document.getElementById('stat4-value').classList.remove('stat-skeleton');
-        }
-
-        function resetStats() {
-            document.getElementById('stat1-value').innerHTML = '0';
-            document.getElementById('stat1-value').classList.remove('stat-skeleton');
-            document.getElementById('stat2-value').innerHTML = '0';
-            document.getElementById('stat2-value').classList.remove('stat-skeleton');
-            document.getElementById('stat3-value').innerHTML = '$0.00';
-            document.getElementById('stat3-value').classList.remove('stat-skeleton');
-            document.getElementById('stat4-value').innerHTML = '0%';
-            document.getElementById('stat4-value').classList.remove('stat-skeleton');
-        }
-
-        // Auth: check session and show user bar
-        function checkAuth() {
-            var token = localStorage.getItem('finault_token');
-            var userStr = localStorage.getItem('finault_user');
-            if (token && userStr) {
-                try {
-                    var user = JSON.parse(userStr);
-                    document.getElementById('userEmail').textContent = user.email || '';
-                    var tier = (user.user_metadata && user.user_metadata.tier) || 'free';
-                    document.getElementById('userTier').textContent = tier;
-                    document.getElementById('userBar').style.display = 'flex';
-                } catch(e) {}
-            }
-        }
-
-        function signOut() {
-            localStorage.removeItem('finault_token');
-            localStorage.removeItem('finault_user');
-            window.location.href = '/login.html';
-        }
-
-        // Initialize on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            checkAuth();
-            fetchCloses();
+    function showPage(page) {
+        currentPage = page;
+        document.querySelectorAll('.nav-item').forEach(function(el) {
+            el.classList.toggle('active', el.dataset.page === page);
         });
+        document.querySelectorAll('.page').forEach(function(el) {
+            el.classList.toggle('active', el.id === 'page-' + page);
+        });
+        var titles = { overview: 'Overview', requests: 'Requests', keys: 'API Keys' };
+        document.getElementById('headerTitle').textContent = titles[page] || page;
+
+        if (page === 'overview') loadOverview();
+        if (page === 'requests') loadRequests();
+        if (page === 'keys') loadKeys();
+    }
+
+    // ===============================================================
+    // OVERVIEW
+    // ===============================================================
+
+    async function loadOverview() {
+        try {
+            var res = await fetch(API_BASE + '/v1/dashboard/overview', { headers: getAuthHeaders() });
+            if (res.status === 401) { window.location.href = 'https://finault.ai/login?redirect=dashboard'; return; }
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed to load');
+
+            // Hero spend
+            var spend = parseFloat(data.totalSpendDollars || '0');
+            document.getElementById('totalSpend').textContent = '$' + spend.toFixed(2);
+
+            var now = new Date();
+            var monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+            document.getElementById('spendPeriod').textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+
+            // Stats
+            document.getElementById('statRequests').textContent = formatNumber(data.totalRequests || 0);
+            var avgCost = parseFloat(data.avgCostDollars || '0');
+            document.getElementById('statAvgCost').textContent = avgCost < 0.01 ? '$' + avgCost.toFixed(4) : '$' + avgCost.toFixed(2);
+            document.getElementById('statLatency').textContent = (data.avgLatencyMs || 0) + 'ms';
+            document.getElementById('statTokens').textContent = formatNumber(data.totalTokens || 0);
+
+            // Chart
+            renderSpendChart(data.dailyCosts || [], data.dailyRequests || []);
+
+            // Models
+            renderModelsTable(data.modelCosts || []);
+        } catch (err) {
+            console.error('Overview error:', err);
+        }
+    }
+
+    function renderSpendChart(dailyCosts, dailyRequests) {
+        var ctx = document.getElementById('spendChart').getContext('2d');
+        if (spendChart) spendChart.destroy();
+
+        var labels = [], spendData = [], requestData = [];
+        var costMap = {}, reqMap = {};
+
+        dailyCosts.forEach(function(d) { costMap[d.date] = parseFloat(d.costDollars || '0'); });
+        dailyRequests.forEach(function(d) { reqMap[d.date] = d.count; });
+
+        for (var i = 29; i >= 0; i--) {
+            var d = new Date();
+            d.setDate(d.getDate() - i);
+            var key = d.toISOString().substring(0, 10);
+            labels.push(d.getDate() + '/' + (d.getMonth() + 1));
+            spendData.push(costMap[key] || 0);
+            requestData.push(reqMap[key] || 0);
+        }
+
+        spendChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Spend ($)',
+                    data: spendData,
+                    backgroundColor: 'rgba(22, 163, 74, 0.7)',
+                    borderRadius: 3,
+                    yAxisID: 'y',
+                }, {
+                    label: 'Requests',
+                    data: requestData,
+                    type: 'line',
+                    borderColor: '#3b82f6',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    tension: 0.3,
+                    yAxisID: 'y1',
+                }],
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                interaction: { mode: 'index', intersect: false },
+                plugins: {
+                    legend: { display: true, position: 'top', align: 'end', labels: { boxWidth: 12, font: { size: 11, family: 'Inter' } } },
+                },
+                scales: {
+                    x: { grid: { display: false }, ticks: { font: { size: 10, family: 'Inter' }, maxRotation: 0 } },
+                    y: { position: 'left', grid: { color: '#f1f5f9' }, ticks: { font: { size: 11, family: 'JetBrains Mono' }, callback: function(v) { return '$' + v.toFixed(2); } } },
+                    y1: { position: 'right', grid: { display: false }, ticks: { font: { size: 11, family: 'JetBrains Mono' } } },
+                },
+            },
+        });
+    }
+
+    function renderModelsTable(models) {
+        var container = document.getElementById('modelsContainer');
+
+        if (!models.length) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="24" height="24" fill="none" stroke="#94a3b8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg></div><div class="empty-title">No requests yet</div><div class="empty-desc">Send your first request through the gateway to see model-level cost tracking here.</div></div>';
+            return;
+        }
+
+        var maxCost = Math.max.apply(null, models.map(function(m) { return m.costCents; }));
+
+        var html = '<table class="models-table"><thead><tr><th>Model</th><th>Requests</th><th>Tokens</th><th>Cost</th><th class="bar-cell">Share</th></tr></thead><tbody>';
+
+        models.forEach(function(m) {
+            var pct = maxCost > 0 ? Math.round((m.costCents / maxCost) * 100) : 0;
+            var cost = parseFloat(m.costDollars);
+            var costDisplay = cost < 0.01 ? '$' + cost.toFixed(4) : '$' + cost.toFixed(2);
+            html += '<tr>';
+            html += '<td class="mono">' + escapeHtml(m.model) + '</td>';
+            html += '<td class="mono">' + formatNumber(m.requests) + '</td>';
+            html += '<td class="mono">' + formatNumber(m.tokens) + '</td>';
+            html += '<td class="mono" style="color:var(--green);font-weight:600">' + costDisplay + '</td>';
+            html += '<td class="bar-cell"><div class="bar-bg"><div class="bar-fill" style="width:' + pct + '%"></div></div></td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+        container.innerHTML = html;
+    }
+
+    // ===============================================================
+    // REQUESTS
+    // ===============================================================
+
+    async function loadRequests() {
+        var container = document.getElementById('requestsContainer');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+
+        try {
+            var res = await fetch(API_BASE + '/v1/dashboard/requests?limit=50&offset=' + requestsOffset, { headers: getAuthHeaders() });
+            if (res.status === 401) { window.location.href = 'https://finault.ai/login?redirect=dashboard'; return; }
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed');
+
+            requestsData = data.requests || [];
+            requestsTotal = data.pagination ? data.pagination.total : 0;
+            renderRequests(requestsData);
+        } catch (err) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-title">Error loading requests</div><div class="empty-desc">' + escapeHtml(err.message) + '</div></div>';
+        }
+    }
+
+    function filterRequests() {
+        var q = document.getElementById('searchInput').value.toLowerCase();
+        if (!q) { renderRequests(requestsData); return; }
+        var filtered = requestsData.filter(function(r) {
+            return (r.model || '').toLowerCase().indexOf(q) !== -1 ||
+                   (r.provider || '').toLowerCase().indexOf(q) !== -1 ||
+                   (r.costCenter || '').toLowerCase().indexOf(q) !== -1 ||
+                   (r.requestId || '').toLowerCase().indexOf(q) !== -1;
+        });
+        renderRequests(filtered);
+    }
+
+    function renderRequests(requests) {
+        var container = document.getElementById('requestsContainer');
+
+        if (!requests.length && !requestsData.length) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="24" height="24" fill="none" stroke="#94a3b8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg></div><div class="empty-title">No requests yet</div><div class="empty-desc">Route your first AI call through api.finault.ai to see it here with cost, tokens, and latency tracked.</div></div>';
+            return;
+        }
+
+        if (!requests.length) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-title">No matching requests</div><div class="empty-desc">Try a different search term.</div></div>';
+            return;
+        }
+
+        var html = '<table class="requests-table"><thead><tr><th>Time</th><th>Status</th><th>Model</th><th>Provider</th><th>Tokens</th><th>Cost</th><th>Latency</th><th>Cost Center</th><th>Audit Hash</th></tr></thead><tbody>';
+
+        requests.forEach(function(r) {
+            var time = r.timestamp ? new Date(r.timestamp).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '\u2014';
+            var status = (r.statusCode >= 200 && r.statusCode < 300) ? 'success' : 'error';
+            var totalTokens = (r.inputTokens || 0) + (r.outputTokens || 0);
+            var cost = parseFloat(r.costDollars || '0');
+            var costDisplay = cost < 0.01 ? '$' + cost.toFixed(4) : '$' + cost.toFixed(2);
+
+            html += '<tr>';
+            html += '<td style="color:var(--gray-600)">' + time + '</td>';
+            html += '<td><span class="status-badge ' + status + '">' + (r.statusCode || '\u2014') + '</span></td>';
+            html += '<td class="mono">' + escapeHtml(r.model || '\u2014') + '</td>';
+            html += '<td>' + escapeHtml(r.provider || '\u2014') + '</td>';
+            html += '<td class="mono">' + formatNumber(totalTokens) + '</td>';
+            html += '<td class="mono" style="color:var(--green);font-weight:600">' + costDisplay + '</td>';
+            html += '<td class="mono">' + (r.latencyMs || 0) + 'ms</td>';
+            html += '<td class="mono" style="font-size:11px">' + escapeHtml(r.costCenter || '\u2014') + '</td>';
+            html += '<td class="mono" style="font-size:11px;color:var(--gray-400)">' + (r.auditHash || '\u2014').substring(0, 12) + '...</td>';
+            html += '</tr>';
+        });
+
+        html += '</tbody></table>';
+
+        html += '<div class="pagination">';
+        html += '<span>Showing ' + Math.min(requestsOffset + 1, requestsTotal) + '\u2013' + Math.min(requestsOffset + requests.length, requestsTotal) + ' of ' + requestsTotal + '</span>';
+        html += '<div class="pagination-btns">';
+        html += '<button class="page-btn" onclick="prevPage()" ' + (requestsOffset === 0 ? 'disabled' : '') + '>Previous</button>';
+        html += '<button class="page-btn" onclick="nextPage()" ' + (requestsOffset + 50 >= requestsTotal ? 'disabled' : '') + '>Next</button>';
+        html += '</div></div>';
+
+        container.innerHTML = html;
+    }
+
+    function prevPage() { requestsOffset = Math.max(0, requestsOffset - 50); loadRequests(); }
+    function nextPage() { requestsOffset += 50; loadRequests(); }
+
+    // ===============================================================
+    // API KEYS
+    // ===============================================================
+
+    async function loadKeys() {
+        var container = document.getElementById('keysContainer');
+        container.innerHTML = '<div class="loading"><div class="spinner"></div> Loading...</div>';
+
+        try {
+            var res = await fetch(API_BASE + '/v1/dashboard/keys', { headers: getAuthHeaders() });
+            if (res.status === 401) { window.location.href = 'https://finault.ai/login?redirect=dashboard'; return; }
+            var data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Failed');
+            renderKeys(data.keys || []);
+        } catch (err) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-title">Error loading keys</div><div class="empty-desc">' + escapeHtml(err.message) + '</div></div>';
+        }
+    }
+
+    function renderKeys(keys) {
+        var container = document.getElementById('keysContainer');
+
+        if (!keys.length) {
+            container.innerHTML = '<div class="empty-state"><div class="empty-icon"><svg width="24" height="24" fill="none" stroke="#94a3b8" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg></div><div class="empty-title">No API keys</div><div class="empty-desc">Create your first key to start routing AI traffic through Finault.</div></div>';
+            return;
+        }
+
+        var html = '<div class="keys-list">';
+        keys.forEach(function(k) {
+            var created = k.createdAt ? new Date(k.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '\u2014';
+            var statusClass = k.isActive ? 'active' : 'inactive';
+            var statusText = k.isActive ? 'Active' : 'Inactive';
+
+            html += '<div class="key-card">';
+            html += '<div class="key-info"><span class="key-status ' + statusClass + '"></span><div><div class="key-name">' + escapeHtml(k.name || 'Unnamed Key') + '</div><div class="key-meta">Created ' + created + ' \u00b7 ' + statusText + '</div></div></div>';
+            html += '<div class="mono" style="font-size:12px;color:var(--gray-400)">' + k.id.substring(0, 8) + '...</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    async function createKey() {
+        var token = localStorage.getItem('finault_token');
+        if (!token) { alert('Please sign in to create a key.'); return; }
+
+        try {
+            var res = await fetch(API_BASE + '/v1/keys', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ name: 'Key \u2014 ' + new Date().toLocaleDateString() }),
+            });
+            var data = await res.json();
+
+            if (data.success && data.key) {
+                prompt('New key created. Copy it now \u2014 it will not be shown again:', data.key.secret);
+                loadKeys();
+            } else {
+                alert('Failed: ' + (data.error || 'Unknown error'));
+            }
+        } catch (err) {
+            alert('Error creating key: ' + err.message);
+        }
+    }
+
+    // ===============================================================
+    // UTILITIES
+    // ===============================================================
+
+    function formatNumber(n) {
+        if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+        if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+        return String(n);
+    }
+
+    function escapeHtml(str) {
+        var div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    // Boot
+    window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>

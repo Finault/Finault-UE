@@ -791,7 +791,7 @@
 <span class="keyword">export</span> OPENAI_BASE_URL=<span class="string">"https://gateway.finault.ai/v1"</span>
 
 <span class="comment"># Add your Finault API key</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxx"</span></pre>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_your_key_here"</span></pre>
                             </div>
                             
                             <h4 style="font-size:.875rem;font-weight:600;margin:1.5rem 0 .75rem">Available Endpoints</h4>
@@ -883,53 +883,80 @@
                      PAGE: API (BUSINESS)
                      ═══════════════════════════════════════════════════════════ -->
                 <div class="page-section" id="page-api">
-                    <div class="section-card feature-gate" id="apiPageGate">
+                    <div class="section-card" id="apiPageSection">
                         <div class="section-header">
                             <div class="section-title">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
                                 API Access
                             </div>
                         </div>
-                        <div class="section-body gate-content">
+                        <div class="section-body">
                             <p style="color:var(--gray-600);margin-bottom:1.5rem">Programmatic access to all Finault features. Analyze invoices, generate Close Packs, and enforce budgets via API.</p>
-                            
-                            <h4 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Your API Key</h4>
-                            <div style="display:flex;gap:.75rem;margin-bottom:1.5rem">
-                                <input type="password" class="input-field" value="fin_live_xxxxxxxxxxxxxxxxxxxx" readonly style="flex:1;font-family:monospace">
-                                <button class="btn btn-secondary">Copy</button>
-                                <button class="btn btn-secondary">Regenerate</button>
+
+                            <!-- API Key Generation -->
+                            <div id="apiKeySection">
+                                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.75rem">
+                                    <h4 style="font-size:.875rem;font-weight:600;margin:0">Your API Key</h4>
+                                    <span style="font-size:.7rem;background:var(--green);color:#fff;padding:2px 8px;border-radius:9999px;font-weight:600">FREE</span>
+                                </div>
+                                <p style="color:var(--gray-500);font-size:.8rem;margin-bottom:.75rem">Generate a key to access all 230 Finault API endpoints. Keys use the <code>fk_</code> prefix and are scoped to your organization.</p>
+
+                                <div id="noKeyYet">
+                                    <button class="btn btn-primary" onclick="generateApiKey()" id="generateKeyBtn">Generate API Key</button>
+                                    <p style="color:var(--gray-600);font-size:.75rem;margin-top:.5rem">Your key will be shown once. Store it securely.</p>
+                                </div>
+
+                                <div id="keyGenerated" style="display:none">
+                                    <div style="background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);border-radius:8px;padding:1rem;margin-bottom:1rem">
+                                        <p style="font-size:.75rem;color:var(--green);font-weight:600;margin-bottom:.5rem">KEY GENERATED — COPY NOW</p>
+                                        <div style="display:flex;gap:.75rem">
+                                            <input type="text" class="input-field" id="newKeyField" value="" readonly style="flex:1;font-family:monospace;font-size:.85rem">
+                                            <button class="btn btn-secondary" onclick="copyNewKey()">Copy</button>
+                                        </div>
+                                        <p style="font-size:.7rem;color:var(--gray-500);margin-top:.5rem">This key will not be shown again.</p>
+                                    </div>
+                                </div>
+
+                                <div id="existingKeys" style="margin-top:1rem">
+                                    <p style="font-size:.8rem;color:var(--gray-500)">Manage all keys in the <a href="https://app.finault.ai/keys" style="color:var(--green)">full dashboard</a>.</p>
+                                </div>
+
+                                <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:1rem;margin-top:1.5rem">
+                                    <p style="font-size:.8rem;color:var(--gray-500);margin-bottom:.5rem;font-weight:600">Try it:</p>
+                                    <pre style="font-size:.78rem;color:var(--gray-400);overflow-x:auto;margin:0"><code>curl https://gateway.finault.ai/v1/chat/completions \
+  -H "Authorization: Bearer fk_your_key_here" \
+  -H "X-Provider-Key: sk-your-openai-key" \
+  -H "Content-Type: application/json" \
+  -d '{"model":"gpt-4o","messages":[{"role":"user","content":"hello"}]}'</code></pre>
+                                </div>
                             </div>
-                            
-                            <h4 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Endpoints</h4>
-                            <div class="endpoint-list">
-                                <div class="endpoint-item">
-                                    <span class="endpoint-method">POST</span>
-                                    <span class="endpoint-path">/v1/analyze</span>
-                                    <p class="endpoint-desc">Upload and analyze an invoice CSV</p>
+
+                            <div style="border-top:1px solid var(--border);padding-top:1.5rem;margin-top:1.5rem">
+                                <h4 style="font-size:.875rem;font-weight:600;margin-bottom:.75rem">Endpoints</h4>
+                                <div class="endpoint-list">
+                                    <div class="endpoint-item">
+                                        <span class="endpoint-method">POST</span>
+                                        <span class="endpoint-path">/v1/analyze</span>
+                                        <p class="endpoint-desc">Upload and analyze an invoice CSV</p>
+                                    </div>
+                                    <div class="endpoint-item">
+                                        <span class="endpoint-method">POST</span>
+                                        <span class="endpoint-path">/v1/allocate</span>
+                                        <p class="endpoint-desc">Run cost allocation on invoice data</p>
+                                    </div>
+                                    <div class="endpoint-item">
+                                        <span class="endpoint-method">POST</span>
+                                        <span class="endpoint-path">/v1/close-pack</span>
+                                        <p class="endpoint-desc">Generate a complete Close Pack</p>
+                                    </div>
+                                    <div class="endpoint-item">
+                                        <span class="endpoint-method">GET</span>
+                                        <span class="endpoint-path">/v1/attest/verify</span>
+                                        <p class="endpoint-desc">Verify data integrity hash</p>
+                                    </div>
                                 </div>
-                                <div class="endpoint-item">
-                                    <span class="endpoint-method">POST</span>
-                                    <span class="endpoint-path">/v1/allocate</span>
-                                    <p class="endpoint-desc">Run cost allocation on invoice data</p>
-                                </div>
-                                <div class="endpoint-item">
-                                    <span class="endpoint-method">POST</span>
-                                    <span class="endpoint-path">/v1/close-pack</span>
-                                    <p class="endpoint-desc">Generate a complete Close Pack</p>
-                                </div>
-                                <div class="endpoint-item">
-                                    <span class="endpoint-method">GET</span>
-                                    <span class="endpoint-path">/v1/attest/verify</span>
-                                    <p class="endpoint-desc">Verify data integrity hash</p>
-                                </div>
+                                <a href="/docs" style="color:var(--green);font-size:.85rem;text-decoration:none;display:inline-block;margin-top:1rem">View full API documentation →</a>
                             </div>
-                        </div>
-                        <div class="gate-overlay">
-                            <div class="gate-icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                            </div>
-                            <div class="gate-text">API Access requires Business</div>
-                            <button class="btn btn-primary" onclick="showUpgradeModal('business')">Upgrade to Business — $149/mo</button>
                         </div>
                     </div>
                 </div>
@@ -1160,7 +1187,8 @@
             // BUSINESS features
             document.getElementById('gatewayPageGate').classList.toggle('locked', !isBusiness);
             document.getElementById('budgetsPageGate').classList.toggle('locked', !isBusiness);
-            document.getElementById('apiPageGate').classList.toggle('locked', !isBusiness);
+
+            // API page: key generation is free for all tiers
             
             // Update settings page
             document.getElementById('currentPlan').textContent = userTier.charAt(0).toUpperCase() + userTier.slice(1);
@@ -2189,6 +2217,43 @@
             setTimeout(() => toast.classList.remove('visible'), 3000);
         }
         
+        async function generateApiKey() {
+            const btn = document.getElementById('generateKeyBtn');
+            btn.textContent = 'Generating...';
+            btn.disabled = true;
+            try {
+                const token = localStorage.getItem('finault_token');
+                const resp = await fetch('https://api.finault.ai/v1/keys', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + token
+                    },
+                    body: JSON.stringify({ name: 'My First Key', environment: 'development' })
+                });
+                const data = await resp.json();
+                if (data.success && data.key && data.key.secret) {
+                    document.getElementById('newKeyField').value = data.key.secret;
+                    document.getElementById('noKeyYet').style.display = 'none';
+                    document.getElementById('keyGenerated').style.display = 'block';
+                    showToast('API key generated');
+                } else {
+                    showToast(data.error || 'Failed to generate key');
+                    btn.textContent = 'Generate API Key';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                showToast('Could not connect to API. Generate your key at app.finault.ai/keys');
+                btn.textContent = 'Generate API Key';
+                btn.disabled = false;
+            }
+        }
+
+        function copyNewKey() {
+            const key = document.getElementById('newKeyField').value;
+            navigator.clipboard.writeText(key).then(() => showToast('API key copied to clipboard'));
+        }
+
         function saveSettings() {
             const company = document.getElementById('settingsCompany').value;
             localStorage.setItem('finault_company', company);

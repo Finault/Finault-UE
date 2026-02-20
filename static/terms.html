@@ -10,22 +10,20 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms of Service - Finault</title>
+    <title>Terms of Service | Finault</title>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --green: #16a34a;
             --black: #111;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
-            --gray-200: #e5e7eb;
             --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
             --gray-600: #4b5563;
-            --gray-700: #374151;
-            --white: #ffffff;
+            --gray-900: #0f172a;
         }
 
         * {
@@ -40,213 +38,284 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--white);
+            background-color: #fff;
             color: var(--black);
             line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
         }
 
         /* Navigation */
         nav {
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 50;
-            backdrop-filter: blur(12px);
-            background: rgba(255, 255, 255, 0.8);
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.7);
             border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
         }
 
-        nav .container {
+        .nav-container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
-            height: 70px;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
         }
 
-        .logo {
-            font-size: 20px;
+        .nav-logo {
+            font-size: 1.5rem;
             font-weight: 700;
             color: var(--black);
             text-decoration: none;
             letter-spacing: -0.5px;
         }
 
-        nav .links {
+        .nav-right {
             display: flex;
-            gap: 32px;
+            gap: 2rem;
             align-items: center;
-            list-style: none;
         }
 
-        nav a {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--gray-700);
-            text-decoration: none;
-            transition: color 0.2s ease;
-        }
-
-        nav a:hover {
+        .nav-link {
             color: var(--black);
-        }
-
-        .cta-button {
-            background: var(--green);
-            color: var(--white);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 14px;
-            font-weight: 600;
             text-decoration: none;
-            transition: background 0.2s ease, transform 0.2s ease;
-            display: inline-block;
-            border: none;
-            cursor: pointer;
+            font-size: 0.95rem;
+            transition: color 0.2s;
         }
 
-        .cta-button:hover {
-            background: #15963f;
-            transform: translateY(-1px);
+        .nav-link:hover {
+            color: var(--green);
         }
 
-        /* Main Content */
+        .nav-cta {
+            background-color: var(--green);
+            color: white;
+            padding: 0.5rem 1.25rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+
+        .nav-cta:hover {
+            background-color: #15803d;
+        }
+
+        /* Main content */
         main {
-            flex: 1;
+            margin-top: 5rem;
+            padding: 3rem 2rem;
+            min-height: calc(100vh - 5rem - 300px);
+        }
+
+        .content-wrapper {
             max-width: 720px;
             margin: 0 auto;
-            padding: 60px 20px;
-            width: 100%;
         }
 
-        h1 {
-            font-size: 36px;
+        .section-label {
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: var(--green);
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 12px;
             color: var(--black);
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
         }
 
-        .effective-date {
-            font-size: 14px;
+        .page-subtitle {
+            font-size: 1rem;
             color: var(--gray-600);
-            margin-bottom: 40px;
+            margin-bottom: 3rem;
         }
 
-        .section {
-            margin-bottom: 48px;
+        /* Effective date highlight */
+        .effective-date {
+            background-color: var(--gray-50);
+            border-left: 4px solid var(--green);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: 0.25rem;
         }
 
-        .section h2 {
-            font-size: 18px;
+        .effective-date p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: var(--gray-600);
+        }
+
+        /* Policy sections */
+        .policy-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .policy-section h2 {
+            font-size: 1.375rem;
             font-weight: 600;
             color: var(--black);
-            margin-bottom: 12px;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+        }
+
+        .policy-section h2:first-of-type {
             margin-top: 0;
         }
 
-        .section p {
-            font-size: 14px;
-            line-height: 1.7;
-            color: var(--gray-700);
-            margin-bottom: 12px;
+        .policy-section p {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            line-height: 1.8;
         }
 
-        .section p:last-child {
-            margin-bottom: 0;
+        .policy-section ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--gray-600);
+            line-height: 1.8;
+        }
+
+        .policy-section ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .policy-section strong {
+            color: var(--black);
+            font-weight: 600;
+        }
+
+        .policy-section a {
+            color: var(--green);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .policy-section a:hover {
+            text-decoration: underline;
         }
 
         /* Footer */
         footer {
-            background: var(--black);
-            color: var(--white);
-            padding: 48px 20px;
-            margin-top: auto;
+            background-color: var(--gray-50);
+            border-top: 1px solid var(--gray-300);
+            padding: 3rem 2rem;
+            margin-top: 4rem;
         }
 
-        footer .container {
+        .footer-container {
             max-width: 1200px;
             margin: 0 auto;
+        }
+
+        .footer-content {
             display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 40px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
         }
 
-        .footer-brand {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
+        .footer-section h3 {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--black);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1rem;
         }
 
-        .footer-logo {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--white);
-            text-decoration: none;
-        }
-
-        .footer-brand p {
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.5;
-        }
-
-        .footer-links {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 32px;
-        }
-
-        .footer-links ul {
+        .footer-section ul {
             list-style: none;
         }
 
-        .footer-links li {
-            margin-bottom: 12px;
+        .footer-section ul li {
+            margin-bottom: 0.5rem;
         }
 
-        .footer-links a {
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.7);
+        .footer-section a {
+            color: var(--gray-600);
             text-decoration: none;
-            transition: color 0.2s ease;
+            font-size: 0.95rem;
+            transition: color 0.2s;
         }
 
-        .footer-links a:hover {
-            color: var(--white);
+        .footer-section a:hover {
+            color: var(--green);
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 24px;
-            font-size: 13px;
-            color: rgba(255, 255, 255, 0.6);
-            text-align: center;
+            border-top: 1px solid var(--gray-300);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .footer-copyright {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 1.5rem;
+            list-style: none;
+        }
+
+        .footer-links a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--green);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            nav .links {
-                gap: 20px;
-                font-size: 13px;
+            nav {
+                padding: 1rem;
             }
 
-            h1 {
-                font-size: 28px;
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
             }
 
-            footer .container {
-                grid-template-columns: 1fr;
-                gap: 32px;
+            .nav-right {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+                text-align: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .policy-section h2 {
+                font-size: 1.25rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .footer-links {
-                grid-template-columns: 1fr;
-                gap: 20px;
+                flex-wrap: wrap;
             }
         }
     </style>
@@ -254,105 +323,174 @@
 <body>
     <!-- Navigation -->
     <nav>
-        <div class="container">
-            <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
-            <ul class="links">
-                <li><a href="/pricing">Pricing</a></li>
-                <li><a href="/security">Security</a></li>
-                <li><a href="/verify">Verify</a></li>
-                <li><a href="/audit" class="cta-button">Free Audit</a></li>
-            </ul>
+        <div class="nav-container">
+            <a href="/" class="nav-logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+            <div class="nav-right">
+                <a href="/audit" class="nav-link">Free Audit</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+                <a href="/docs" class="nav-link">Docs</a>
+                <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+            </div>
         </div>
     </nav>
 
     <!-- Main Content -->
     <main>
-        <h1>Terms of Service</h1>
-        <p class="effective-date">Effective date: February 15, 2026</p>
+        <div class="content-wrapper">
+            <p class="section-label">Legal</p>
+            <h1 class="section-title">Terms of Service</h1>
+            <p class="page-subtitle">The agreement between you and Finault when you use our platform.</p>
 
-        <div class="section">
-            <h2>1. Acceptance of Terms</h2>
-            <p>By accessing or using Finault (finault.ai), you agree to be bound by these Terms of Service. If you do not agree, do not use the platform.</p>
-        </div>
+            <div class="effective-date">
+                <p><strong>Effective Date:</strong> February 15, 2026</p>
+            </div>
 
-        <div class="section">
-            <h2>2. Description of Service</h2>
-            <p>Finault provides AI spend audit and close pack generation services. The platform processes billing CSV files from AI providers (AWS Bedrock, Azure OpenAI, OpenAI) and generates audit-ready close packs including reconciliation statements, GL journal entries, close certificates, and cryptographic manifests.</p>
-        </div>
+            <div class="policy-section">
+                <h2>1. Agreement to Terms</h2>
+                <p>By accessing or using Finault ("the Platform"), operated at finault.ai, you agree to be bound by these Terms of Service ("Terms"). If you are using the Platform on behalf of an organization, you represent that you have authority to bind that organization to these Terms. If you do not agree to these Terms, do not access or use the Platform.</p>
+            </div>
 
-        <div class="section">
-            <h2>3. User Responsibilities</h2>
-            <p>You are responsible for the accuracy of billing data you upload. You must have authorization to upload and process the billing data. You agree not to upload malicious files or attempt to exploit the platform.</p>
-        </div>
+            <div class="policy-section">
+                <h2>2. Description of Service</h2>
+                <p>Finault provides AI cost reconciliation infrastructure. The Platform processes billing export files from AI providers — including AWS Bedrock, Azure OpenAI, OpenAI, Google Vertex AI, and Anthropic — and generates audit-ready close packs containing executive summaries, general ledger journal entries, reconciliation certificates, and cryptographic integrity manifests.</p>
+                <p>The Platform also provides a programmatic API for invoice parsing, cost allocation, anomaly detection, budget enforcement, and ERP integration. Full documentation is available at <a href="/docs">finault.ai/docs</a>.</p>
+            </div>
 
-        <div class="section">
-            <h2>4. Free Tier</h2>
-            <p>The free tier provides limited access to the audit tool (1 CSV per month). Free tier access may be modified or discontinued at our discretion with reasonable notice.</p>
-        </div>
+            <div class="policy-section">
+                <h2>3. Eligibility</h2>
+                <p>You must be at least 18 years old and capable of forming a binding contract to use the Platform. If you are using the Platform on behalf of an organization, you represent and warrant that you are authorized to accept these Terms on behalf of that organization.</p>
+            </div>
 
-        <div class="section">
-            <h2>5. Paid Plans</h2>
-            <p>Paid subscriptions are billed monthly. You may cancel at any time. Refunds are provided on a pro-rata basis for the unused portion of the current billing period. Pricing may change with 30 days notice.</p>
-        </div>
+            <div class="policy-section">
+                <h2>4. User Accounts</h2>
+                <p>Certain features of the Platform require you to create an account. You are responsible for maintaining the confidentiality of your account credentials, including API keys. You are responsible for all activity that occurs under your account.</p>
+                <p>You agree to notify us immediately at <a href="mailto:security@finault.ai">security@finault.ai</a> if you become aware of any unauthorized use of your account or API keys.</p>
+            </div>
 
-        <div class="section">
-            <h2>6. Data & Intellectual Property</h2>
-            <p>You retain all rights to your billing data and generated close packs. Finault retains rights to the platform, its algorithms, and proprietary technology. We do not claim ownership of your data.</p>
-        </div>
+            <div class="policy-section">
+                <h2>5. Acceptable Use</h2>
+                <p>You agree to use the Platform only for lawful purposes and in accordance with these Terms. You agree not to:</p>
+                <ul>
+                    <li>Upload data you are not authorized to process</li>
+                    <li>Attempt to reverse-engineer, decompile, or disassemble the Platform</li>
+                    <li>Use the Platform to transmit malicious code or attempt to gain unauthorized access to our systems</li>
+                    <li>Resell, sublicense, or redistribute access to the Platform without prior written consent</li>
+                    <li>Use automated means to scrape or extract data from the Platform beyond what is provided through the API</li>
+                    <li>Interfere with or disrupt the integrity or performance of the Platform</li>
+                </ul>
+            </div>
 
-        <div class="section">
-            <h2>7. Limitation of Liability</h2>
-            <p>Finault provides close packs and audit reports for informational purposes. They do not constitute financial, legal, or accounting advice. Finault is not liable for decisions made based on close pack data. Our total liability is limited to the amount you paid in the 12 months preceding the claim.</p>
-        </div>
+            <div class="policy-section">
+                <h2>6. Free Tier</h2>
+                <p>The free tier provides limited access to the audit tool. Free tier usage is subject to the rate limits and feature restrictions described on the <a href="/pricing">pricing page</a>. We reserve the right to modify or discontinue free tier access at our discretion with reasonable notice.</p>
+            </div>
 
-        <div class="section">
-            <h2>8. Availability</h2>
-            <p>We aim for high availability but do not guarantee uninterrupted service. Scheduled maintenance will be communicated in advance when possible.</p>
-        </div>
+            <div class="policy-section">
+                <h2>7. Paid Subscriptions</h2>
+                <p>Paid subscriptions are billed on a monthly or annual basis as selected at the time of purchase. All fees are stated in US dollars. You may cancel your subscription at any time, and cancellation will take effect at the end of the current billing period.</p>
+                <p>We reserve the right to change pricing with 30 days' prior written notice. Price changes will not affect your current billing period. If you do not agree with a price change, you may cancel your subscription before the new pricing takes effect.</p>
+            </div>
 
-        <div class="section">
-            <h2>9. Termination</h2>
-            <p>We reserve the right to suspend or terminate access for violation of these terms. You may terminate your account at any time by contacting hello@finault.ai.</p>
-        </div>
+            <div class="policy-section">
+                <h2>8. API Usage</h2>
+                <p>Use of the Finault API is subject to the rate limits and usage quotas associated with your subscription plan. API keys are confidential and must not be shared publicly or embedded in client-side code. We reserve the right to throttle or suspend API access if we detect usage patterns that degrade service for other users.</p>
+            </div>
 
-        <div class="section">
-            <h2>10. Governing Law</h2>
-            <p>These terms are governed by the laws of the United States. Any disputes shall be resolved through binding arbitration.</p>
-        </div>
+            <div class="policy-section">
+                <h2>9. Data Ownership &amp; Intellectual Property</h2>
+                <p><strong>Your Data:</strong> You retain all rights, title, and interest in the billing data you upload and the close packs generated from your data. We do not claim any ownership of your data.</p>
+                <p><strong>Our Platform:</strong> Finault retains all rights, title, and interest in the Platform, including its software, algorithms, documentation, APIs, SDKs, and all related intellectual property. These Terms do not grant you any rights to our intellectual property except the limited license to use the Platform as described herein.</p>
+                <p><strong>Feedback:</strong> If you provide suggestions, ideas, or other feedback about the Platform, you grant us a non-exclusive, royalty-free, perpetual, irrevocable license to use that feedback for any purpose.</p>
+            </div>
 
-        <div class="section">
-            <h2>11. Changes to Terms</h2>
-            <p>We may update these terms. Continued use after changes constitutes acceptance. Material changes will be communicated via email to registered users.</p>
-        </div>
+            <div class="policy-section">
+                <h2>10. Data Processing</h2>
+                <p>When you use the Platform, we process your billing data solely to provide the services you have requested. We process data in accordance with our <a href="/privacy">Privacy Policy</a>. For enterprise customers requiring a formal Data Processing Agreement (DPA), please contact <a href="mailto:legal@finault.ai">legal@finault.ai</a>.</p>
+            </div>
 
-        <div class="section">
-            <h2>12. Contact</h2>
-            <p>For questions about these terms, contact legal@finault.ai</p>
+            <div class="policy-section">
+                <h2>11. Disclaimers</h2>
+                <p>The Platform is provided "as is" and "as available" without warranties of any kind, whether express, implied, or statutory, including but not limited to warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+                <p>Close packs and audit reports generated by the Platform are provided for informational and operational purposes. They do not constitute financial, legal, tax, or accounting advice. You are responsible for reviewing all outputs before relying on them for financial reporting, regulatory compliance, or any other purpose.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>12. Limitation of Liability</h2>
+                <p>To the maximum extent permitted by applicable law, in no event shall Finault, its officers, directors, employees, or agents be liable for any indirect, incidental, special, consequential, or punitive damages, including but not limited to loss of profits, data, or goodwill, arising out of or in connection with your use of the Platform.</p>
+                <p>Our total aggregate liability for all claims arising out of or relating to these Terms or the Platform shall not exceed the greater of (a) the amount you paid to Finault in the twelve (12) months preceding the claim, or (b) one hundred US dollars ($100).</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>13. Indemnification</h2>
+                <p>You agree to indemnify, defend, and hold harmless Finault and its officers, directors, employees, and agents from and against any claims, liabilities, damages, losses, and expenses (including reasonable attorneys' fees) arising out of or in connection with: (a) your use of the Platform, (b) your violation of these Terms, or (c) your violation of any rights of a third party.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>14. Service Availability</h2>
+                <p>We use commercially reasonable efforts to make the Platform available 24/7, but we do not guarantee uninterrupted access. We may perform scheduled maintenance, and we will make reasonable efforts to provide advance notice of any planned downtime. We are not liable for any interruption or loss of service.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>15. Termination</h2>
+                <p>You may terminate your account at any time by contacting <a href="mailto:support@finault.ai">support@finault.ai</a>. We may suspend or terminate your access to the Platform immediately, without prior notice, if we reasonably believe you have violated these Terms.</p>
+                <p>Upon termination, your right to use the Platform ceases immediately. We will retain your data for a reasonable period to allow you to export it, after which it will be deleted in accordance with our <a href="/privacy">Privacy Policy</a>.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>16. Governing Law &amp; Dispute Resolution</h2>
+                <p>These Terms are governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of laws principles.</p>
+                <p>Any dispute arising out of or relating to these Terms shall be resolved through binding arbitration administered by the American Arbitration Association in accordance with its Commercial Arbitration Rules. The arbitration shall take place in the State of Delaware. Each party shall bear its own costs of arbitration.</p>
+                <p>Nothing in this section prevents either party from seeking injunctive or other equitable relief from a court of competent jurisdiction to prevent the actual or threatened infringement of intellectual property rights.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>17. Changes to Terms</h2>
+                <p>We may update these Terms from time to time. When we make material changes, we will update the effective date at the top of this page and, where possible, notify you by email. Your continued use of the Platform after changes are posted constitutes acceptance of the revised Terms.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>18. General</h2>
+                <p>These Terms, together with our <a href="/privacy">Privacy Policy</a>, constitute the entire agreement between you and Finault regarding the Platform. If any provision of these Terms is found to be unenforceable, the remaining provisions will continue in full force and effect. Our failure to enforce any right or provision of these Terms shall not constitute a waiver of that right or provision.</p>
+            </div>
+
+            <div class="policy-section">
+                <h2>19. Contact</h2>
+                <p>For questions about these Terms, please contact us at <a href="mailto:legal@finault.ai">legal@finault.ai</a>.</p>
+            </div>
         </div>
     </main>
 
     <!-- Footer -->
     <footer>
-        <div class="container">
-            <div class="footer-brand">
-                <a href="/" class="footer-logo">Finault</a>
-                <p>AI spend audit and close pack generation for enterprise teams.</p>
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <ul>
+                        <li><a href="/pricing">Pricing</a></li>
+                        <li><a href="/docs">Documentation</a></li>
+                        <li><a href="/security">Security</a></li>
+                        <li><a href="/verify">Verify a Pack</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="mailto:bernard.cotter@finault.ai">Contact</a></li>
+                        <li><a href="/privacy">Privacy</a></li>
+                        <li><a href="/terms">Terms</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-links">
-                <ul>
-                    <li><a href="/pricing">Pricing</a></li>
-                    <li><a href="/security">Security</a></li>
-                    <li><a href="/verify">Verify a Pack</a></li>
-                    <li><a href="mailto:hello@finault.ai">Contact</a></li>
-                </ul>
-                <ul>
+            <div class="footer-bottom">
+                <p class="footer-copyright">&copy; 2026 Finault. All rights reserved.</p>
+                <ul class="footer-links">
                     <li><a href="/privacy">Privacy</a></li>
                     <li><a href="/terms">Terms</a></li>
+                    <li><a href="/security">Security</a></li>
+                    <li><a href="/docs">Docs</a></li>
                 </ul>
             </div>
-        </div>
-        <div class="footer-bottom">
-            &copy; 2026 Finault. All rights reserved.
         </div>
     </footer>
 </body>

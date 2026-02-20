@@ -1,0 +1,16 @@
+UsageDateTime,MeterCategory,MeterSubCategory,MeterName,Quantity,Cost,Currency,ResourceGroup,ResourceLocation,CostCenter,Department
+2026-01-15T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Input Tokens,3200000,9600.00,USD,account-112233445566,us-east-1,CC-ENG-001,Engineering
+2026-01-15T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Output Tokens,960000,14400.00,USD,account-112233445566,us-east-1,CC-ENG-001,Engineering
+2026-01-15T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Input Tokens,18500000,1850.00,USD,account-112233445566,us-east-1,CC-ENG-001,Engineering
+2026-01-15T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Output Tokens,5550000,2775.00,USD,account-112233445566,us-east-1,CC-ENG-001,Engineering
+2026-01-16T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Input Tokens,1800000,5400.00,USD,account-112233445566,us-west-2,CC-DATA-002,Data Science
+2026-01-16T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Output Tokens,540000,8100.00,USD,account-112233445566,us-west-2,CC-DATA-002,Data Science
+2026-01-16T00:00:00Z,Amazon Bedrock,Titan Embeddings V2,Embedding Tokens,22000000,2200.00,USD,account-112233445566,us-east-1,CC-DATA-002,Data Science
+2026-01-17T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Input Tokens,950000,2850.00,USD,account-998877665544,us-east-1,CC-PROD-003,Product
+2026-01-17T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Output Tokens,285000,4275.00,USD,account-998877665544,us-east-1,CC-PROD-003,Product
+2026-01-17T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Input Tokens,8200000,820.00,USD,account-998877665544,us-east-1,CC-PROD-003,Product
+2026-01-17T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Output Tokens,2460000,1230.00,USD,account-998877665544,us-east-1,CC-PROD-003,Product
+2026-01-18T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Input Tokens,620000,1860.00,USD,account-556677889900,eu-west-1,CC-INTL-007,International
+2026-01-18T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Output Tokens,186000,2790.00,USD,account-556677889900,eu-west-1,CC-INTL-007,International
+2026-01-18T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Input Tokens,4100000,410.00,USD,account-556677889900,eu-west-1,CC-INTL-007,International
+2026-01-18T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Output Tokens,1230000,615.00,USD,account-556677889900,eu-west-1,CC-INTL-007,International

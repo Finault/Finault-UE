@@ -4,7 +4,21 @@
 # Route API requests to api.finault.ai
 /api/* https://api.finault.ai/api/:splat 301
 
+# Redirect /audit to /demo (audit needs hash parameter, demo is main CTA)
+/audit /demo 301
+
+# Redirect dead pages to homepage
+/app / 301
+/blog / 301
+/changelog / 301
+/compare / 301
+/feedback / 301
+/gateway / 301
+/platform / 301
+/roadmap / 301
+/support / 301
+/webhooks / 301
+
 # Note: Clean URL rewrites (/foo -> /foo.html) are NOT needed here.
 # Cloudflare Pages automatically serves foo.html at /foo natively.
 # Adding explicit 200 rewrites causes infinite redirect loops.
-

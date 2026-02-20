@@ -1,0 +1,12 @@
+UsageDateTime,MeterCategory,MeterSubCategory,MeterName,Quantity,Cost,Currency,Organization,Project
+2026-01-15T00:00:00Z,OpenAI API,GPT-4o,GPT-4o Input Tokens,21100000,105500.00,USD,org-finault,finault-prod
+2026-01-15T00:00:00Z,OpenAI API,GPT-4o,GPT-4o Output Tokens,6400000,96000.00,USD,org-finault,finault-prod
+2026-01-16T00:00:00Z,OpenAI API,GPT-4o-mini,GPT-4o-mini Input Tokens,42750000,6412.50,USD,org-finault,finault-prod
+2026-01-16T00:00:00Z,OpenAI API,GPT-4o-mini,GPT-4o-mini Output Tokens,19100000,11460.00,USD,org-finault,finault-prod
+2026-01-17T00:00:00Z,OpenAI API,o1,o1 Input Tokens,4250000,63750.00,USD,org-finault,finault-ml
+2026-01-17T00:00:00Z,OpenAI API,o1,o1 Output Tokens,1050000,63000.00,USD,org-finault,finault-ml
+2026-01-18T00:00:00Z,OpenAI API,Embeddings,text-embedding-3-large,78000000,10140.00,USD,org-finault,finault-prod
+2026-01-19T00:00:00Z,OpenAI API,GPT-4o,GPT-4o Input Tokens,21100000,105500.00,USD,org-finault,finault-staging
+2026-01-19T00:00:00Z,OpenAI API,GPT-4o,GPT-4o Output Tokens,6400000,96000.00,USD,org-finault,finault-staging
+2026-01-20T00:00:00Z,OpenAI API,Whisper,Whisper API Minutes,625,3.75,USD,org-finault,finault-prod
+2026-01-20T00:00:00Z,OpenAI API,DALL-E 3,DALL-E 3 HD 1024x1024,1400,112.00,USD,org-finault,finault-prod

@@ -1,0 +1,13 @@
+UsageDateTime,MeterCategory,MeterSubCategory,MeterName,Quantity,Cost,Currency,ResourceGroup,ResourceLocation,CostCenter,Department
+2026-01-15T00:00:00Z,OpenAI API,GPT-4o,Input Tokens,6345000,15862.50,USD,customer-support-bot,us-central,CC-SUPPORT-008,Customer Success
+2026-01-15T00:00:00Z,OpenAI API,GPT-4o,Output Tokens,1903500,19035.00,USD,customer-support-bot,us-central,CC-SUPPORT-008,Customer Success
+2026-01-15T00:00:00Z,OpenAI API,GPT-4o-mini,Input Tokens,27900000,4185.00,USD,customer-support-bot,us-central,CC-SUPPORT-008,Customer Success
+2026-01-15T00:00:00Z,OpenAI API,GPT-4o-mini,Output Tokens,8370000,5022.00,USD,customer-support-bot,us-central,CC-SUPPORT-008,Customer Success
+2026-01-16T00:00:00Z,OpenAI API,GPT-4o,Input Tokens,2370000,5925.00,USD,internal-copilot,us-central,CC-ENG-001,Engineering
+2026-01-16T00:00:00Z,OpenAI API,GPT-4o,Output Tokens,711000,7110.00,USD,internal-copilot,us-central,CC-ENG-001,Engineering
+2026-01-16T00:00:00Z,OpenAI API,text-embedding-3-large,Embedding Tokens,13350000,1735.50,USD,search-index,us-central,CC-DATA-002,Data Science
+2026-01-17T00:00:00Z,OpenAI API,GPT-4o,Input Tokens,1335000,3337.50,USD,deal-analyzer,us-central,CC-SALES-005,Sales
+2026-01-17T00:00:00Z,OpenAI API,GPT-4o,Output Tokens,400500,4005.00,USD,deal-analyzer,us-central,CC-SALES-005,Sales
+2026-01-18T00:00:00Z,OpenAI API,GPT-4o-mini,Input Tokens,7800000,1170.00,USD,content-generator,us-central,CC-MKT-004,Marketing
+2026-01-18T00:00:00Z,OpenAI API,GPT-4o-mini,Output Tokens,3120000,1872.00,USD,content-generator,us-central,CC-MKT-004,Marketing
+2026-01-18T00:00:00Z,OpenAI API,DALL-E 3,Standard Images,4200,168.00,USD,content-generator,us-central,CC-MKT-004,Marketing

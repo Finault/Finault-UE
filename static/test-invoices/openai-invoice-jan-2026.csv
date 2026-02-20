@@ -1,0 +1,15 @@
+Vendor,OpenAI Inc.
+Invoice Number,INV-OAI-2026-0203
+Invoice Date,2026-01-31
+Bill To,Finault Inc.
+Currency,USD
+
+Description,Quantity,Unit Price,Amount
+GPT-4o API Usage - Input Tokens (10.05M tokens),10050000,0.0050,50250.00
+GPT-4o API Usage - Output Tokens (3.02M tokens),3015000,0.0150,45225.00
+GPT-4o-mini API Usage - Input Tokens (35.7M tokens),35700000,0.00015,5355.00
+GPT-4o-mini API Usage - Output Tokens (11.49M tokens),11490000,0.00060,6894.00
+text-embedding-3-large (13.35M tokens),13350000,0.00013,1735.50
+DALL-E 3 Image Generation (HD 1024x1024),4200,0.0800,336.00
+
+Total Amount Due,,,109795.50

@@ -229,6 +229,24 @@
             line-height: 1;
         }
         .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .hero-grid.three-col { grid-template-columns: 1fr 1fr 1fr; }
+        .hero-health {
+            padding: 32px; background: var(--white); border-radius: 14px;
+            border: 2px solid var(--border); position: relative; overflow: hidden; text-align: center;
+        }
+        .hero-health .label {
+            font-size: 11px; font-weight: 500; text-transform: uppercase;
+            letter-spacing: 0.08em; color: var(--gray-400); margin-bottom: 8px;
+        }
+        .hero-health .value {
+            font-size: 42px; font-weight: 800; letter-spacing: -0.03em; line-height: 1;
+        }
+        .hero-health .value.score-good { color: var(--green); }
+        .hero-health .value.score-ok { color: var(--amber); }
+        .hero-health .value.score-poor { color: #dc2626; }
+        .hero-health .value-sub {
+            font-size: 12px; font-weight: 500; color: var(--gray-500); margin-top: 6px;
+        }
         .hero-savings {
             padding: 32px; background: var(--white); border-radius: 14px;
             border: 2px solid var(--green-border); position: relative; overflow: hidden;
@@ -303,6 +321,33 @@
             font-size: 12px; color: var(--gray-600); line-height: 1.5;
         }
         .anomaly-rec strong { color: var(--green); font-weight: 600; }
+        /* Invoice Intelligence findings */
+        .intel-finding {
+            padding: 14px 16px; background: var(--white); border: 1px solid var(--border);
+            border-radius: 10px; display: flex; gap: 12px; align-items: flex-start;
+        }
+        .intel-finding .intel-icon {
+            flex-shrink: 0; width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; font-size: 16px;
+        }
+        .intel-finding .intel-icon.discovery { background: #ede9fe; }
+        .intel-finding .intel-icon.savings { background: #d1fae5; }
+        .intel-finding .intel-icon.warning { background: #fef3c7; }
+        .intel-finding .intel-icon.insight { background: #dbeafe; }
+        .intel-finding .intel-title {
+            font-size: 13px; font-weight: 600; color: var(--gray-900); margin-bottom: 3px;
+        }
+        .intel-finding .intel-detail {
+            font-size: 12px; color: var(--gray-500); line-height: 1.5;
+        }
+        .intel-finding .intel-detail strong { color: var(--gray-700); }
+        .intel-finding .intel-badge {
+            display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 8px;
+            border-radius: 4px; margin-left: 8px;
+        }
+        .intel-badge.high-impact { background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
+        .intel-badge.medium-impact { background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
+        .intel-badge.positive { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
         .benchmark-card {
             padding: 16px; background: var(--white); border: 1px solid var(--border);
             border-radius: 10px; text-align: center;
@@ -609,9 +654,9 @@
     <nav>
         <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
         <div class="nav-right">
-            <a href="/platform" class="nav-link">Platform</a>
+            <a href="/audit" class="nav-link">Free Audit</a>
             <a href="/pricing" class="nav-link">Pricing</a>
-            <a href="/verify" class="nav-link">Verify a Pack</a>
+            <a href="/docs" class="nav-link">Docs</a>
             <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
         </div>
     </nav>
@@ -670,11 +715,16 @@
                 </div>
             </div>
 
-            <!-- Hero Spend + Savings (Slootman: two numbers that matter) -->
+            <!-- Hero Spend + Health Score + Savings -->
             <div class="hero-grid">
                 <div class="hero-spend">
                     <div class="label">Total AI Spend</div>
                     <div class="value" id="rTotalSpend">$0</div>
+                </div>
+                <div class="hero-health" id="heroHealth" style="display:none;">
+                    <div class="label">Finault Health Score</div>
+                    <div class="value" id="rHealthScore">0</div>
+                    <div class="value-sub" id="rHealthSub"></div>
                 </div>
                 <div class="hero-savings" id="heroSavings" style="display:none;">
                     <div class="label">Optimization Opportunity</div>
@@ -761,6 +811,16 @@
                 <div id="roiDetail" style="margin-top:12px;"></div>
             </div>
 
+            <!-- Invoice Intelligence — the "aha moment" discoveries section -->
+            <hr class="section-divider" id="intelDivider" style="display:none;">
+            <div id="intelSection" style="display:none;">
+                <div class="result-section-title">
+                    Invoice Intelligence
+                    <span style="margin-left:auto;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--gray-400);">discoveries only a parser would find</span>
+                </div>
+                <div id="intelFindings" style="display:flex;flex-direction:column;gap:10px;"></div>
+            </div>
+
             <!-- Jobs: Deep-dive sections collapsed by default — expandable for those who want detail -->
             <hr class="section-divider">
             <div>
@@ -838,10 +898,9 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" style="width:24px;height:24px;"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
             </div>
             <h3>Close Pack Downloaded</h3>
-            <p style="margin-bottom:20px;">Want continuous monitoring? Create a free account to track spend anomalies, set budget alerts, and automate your monthly close.</p>
-            <a href="/login?tab=signup&redirect=https://app.finault.ai" class="btn btn-green" onclick="trackEvent('post_download_signup_click')" style="width:100%;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;font-size:15px;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
-                Create Free Account
+            <p style="margin-bottom:20px;">Want this every month, automatically? Continuous Close delivers audit-grade close packs, anomaly monitoring, and CFO-ready reports on your schedule.</p>
+            <a href="mailto:bernard.cotter@finault.ai?subject=Interested%20in%20Continuous%20Close&body=Hi%20Bernie%2C%0A%0AI%20just%20downloaded%20a%20close%20pack%20from%20finault.ai%20and%20I%27d%20like%20to%20learn%20more%20about%20Continuous%20Close.%0A%0A" class="btn btn-green" onclick="trackEvent('post_download_talk_bernie')" style="width:100%;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 24px;font-size:15px;">
+                Talk to Bernie about Continuous Close
             </a>
             <button class="modal-skip" onclick="dismissAccountNudge()" style="margin-top:8px;">Maybe later</button>
         </div>
@@ -887,7 +946,7 @@
                 <a href="/pricing">Pricing</a>
                 <a href="/security">Security</a>
                 <a href="/verify">Verify a Pack</a>
-                <a href="mailto:hello@finault.ai">Contact</a>
+                <a href="mailto:bernard.cotter@finault.ai">Contact</a>
                 <a href="/privacy">Privacy</a>
                 <a href="/terms">Terms</a>
             </div>
@@ -1042,15 +1101,23 @@ function _parseCSVCore(csv, name) {
         var invoiceBillTo = metadata['Bill To'] || metadata['bill to'] || null;
         var invoiceCurrency = metadata['Currency'] || metadata['currency'] || null;
 
-        // Detect provider from header OR metadata
-        if (header.indexOf('lineitem/usagetype') >= 0 || header.indexOf('bill/payeraccount') >= 0) _detectedProvider = 'AWS Bedrock';
-        else if (header.indexOf('metercategory') >= 0 || header.indexOf('resourcegroup') >= 0) _detectedProvider = 'Azure OpenAI';
-        else if (header.indexOf('organization_id') >= 0 || header.indexOf('api_key_name') >= 0) _detectedProvider = 'OpenAI';
-        else if (header.indexOf('gcp_project') >= 0 || header.indexOf('vertex') >= 0 || header.indexOf('aiplatform') >= 0 || (header.indexOf('google') >= 0 && header.indexOf('model') >= 0)) _detectedProvider = 'Google Vertex AI';
-        else if (header.indexOf('anthropic') >= 0 || header.indexOf('workspace_id') >= 0 || header.indexOf('claude') >= 0) _detectedProvider = 'Anthropic';
+        // Detect provider from header OR metadata — hardened for real billing exports
+        // AWS CUR: line_item_* columns are the definitive CUR signature
+        if (header.indexOf('lineitem/usagetype') >= 0 || header.indexOf('line_item_usage_type') >= 0 || header.indexOf('bill/payeraccount') >= 0 || header.indexOf('line_item_unblended_cost') >= 0 || header.indexOf('line_item_product_code') >= 0 || header.indexOf('line_item_operation') >= 0) _detectedProvider = 'AWS Bedrock';
+        // Azure: MeterCategory, ResourceGroup, PreTaxCost, MeterSubCategory
+        else if (header.indexOf('metercategory') >= 0 || header.indexOf('meter_category') >= 0 || (header.indexOf('resourcegroup') >= 0 && header.indexOf('metername') >= 0) || header.indexOf('pretaxcost') >= 0 || header.indexOf('metersubcategory') >= 0) _detectedProvider = 'Azure OpenAI';
+        // OpenAI: organization_id, api_key_name/api_key_id, project_id + num_model_requests
+        else if (header.indexOf('organization_id') >= 0 || header.indexOf('api_key_name') >= 0 || header.indexOf('api_key_id') >= 0 || (header.indexOf('project_id') >= 0 && header.indexOf('num_model_requests') >= 0)) _detectedProvider = 'OpenAI';
+        // Google Cloud Billing: service.description, sku.description, billing_account_id, cost_at_list, usage.amount
+        else if (header.indexOf('service.description') >= 0 || header.indexOf('sku.description') >= 0 || (header.indexOf('billing_account_id') >= 0 && header.indexOf('cost') >= 0) || header.indexOf('cost_at_list') >= 0 || (header.indexOf('usage.amount') >= 0 && header.indexOf('usage.unit') >= 0) || header.indexOf('gcp_project') >= 0 || header.indexOf('project.id') >= 0 || header.indexOf('project.name') >= 0 || header.indexOf('vertex') >= 0 || header.indexOf('aiplatform') >= 0) _detectedProvider = 'Google Vertex AI';
+        // Anthropic: workspace_id, model_id, cache_creation_input_tokens
+        else if (header.indexOf('workspace_id') >= 0 || header.indexOf('model_id') >= 0 || header.indexOf('cache_creation_input_tokens') >= 0 || header.indexOf('cache_read_input_tokens') >= 0 || (header.indexOf('anthropic') >= 0 || header.indexOf('claude') >= 0)) _detectedProvider = 'Anthropic';
+        // Metadata-based fallback detection
         else if (invoiceVendor && invoiceVendor.indexOf('Azure') >= 0) _detectedProvider = 'Azure OpenAI';
-        else if (invoiceVendor && invoiceVendor.indexOf('Google') >= 0) _detectedProvider = 'Google Vertex AI';
-        else if (invoiceVendor && invoiceVendor.indexOf('Amazon') >= 0) _detectedProvider = 'AWS Bedrock';
+        else if (invoiceVendor && (invoiceVendor.indexOf('Google') >= 0 || invoiceVendor.indexOf('GCP') >= 0)) _detectedProvider = 'Google Vertex AI';
+        else if (invoiceVendor && (invoiceVendor.indexOf('Amazon') >= 0 || invoiceVendor.indexOf('AWS') >= 0)) _detectedProvider = 'AWS Bedrock';
+        else if (invoiceVendor && invoiceVendor.indexOf('OpenAI') >= 0) _detectedProvider = 'OpenAI';
+        else if (invoiceVendor && invoiceVendor.indexOf('Anthropic') >= 0) _detectedProvider = 'Anthropic';
         else _detectedProvider = null;
 
         // FOCUS 1.3 column detection
@@ -1060,9 +1127,14 @@ function _parseCSVCore(csv, name) {
             lc.forEach(function(c) { if (c === fc.toLowerCase() || c.replace(/_/g,'') === fc.toLowerCase()) detected++; });
         });
 
-        // Find cost column — prioritize: cost > amount > price (skip "unit price" when "amount" exists)
+        // Find cost column — provider-aware priority
         var ci = -1;
-        for (var i=0;i<lc.length;i++) { if (lc[i].indexOf('cost')>=0||lc[i]==='amount'||lc[i].indexOf('billedcost')>=0) { ci=i; break; } }
+        // AWS CUR: line_item_unblended_cost is the canonical cost field
+        for (var i=0;i<lc.length;i++) { if (lc[i]==='line_item_unblended_cost'||lc[i]==='lineitem/unblendedcost'||lc[i]==='line_item_net_unblended_cost'||lc[i]==='line_item_blended_cost'||lc[i]==='lineitem/blendedcost') { ci=i; break; } }
+        // Azure: PreTaxCost
+        if (ci<0) { for (var ia=0;ia<lc.length;ia++) { if (lc[ia]==='pretaxcost'||lc[ia]==='pre_tax_cost'||lc[ia]==='costinbillingcurrency') { ci=ia; break; } } }
+        // Generic: cost > billedcost > amount > price
+        if (ci<0) { for (var i0=0;i0<lc.length;i0++) { if (lc[i0].indexOf('cost')>=0||lc[i0]==='amount'||lc[i0].indexOf('billedcost')>=0) { ci=i0; break; } } }
         if (ci<0) { for (var i2=0;i2<lc.length;i2++) { if (lc[i2].indexOf('amount')>=0) { ci=i2; break; } } }
         if (ci<0) { for (var i3=0;i3<lc.length;i3++) { if (lc[i3].indexOf('price')>=0 && lc[i3].indexOf('unit')<0) { ci=i3; break; } } }
         if (ci<0) { for (var i4=0;i4<lc.length;i4++) { if (lc[i4].indexOf('price')>=0) { ci=i4; break; } } }
@@ -1081,21 +1153,47 @@ function _parseCSVCore(csv, name) {
         }
         if (total === 0) total = 903561.45;
 
-        // Model/SKU column detection — supports multiple provider formats
+        // Model/SKU column detection — provider-aware, hardened for real exports
         var mi = -1;
-        for (var k=0;k<lc.length;k++) {
-            if (lc[k].indexOf('model')>=0||lc[k].indexOf('product')>=0||lc[k].indexOf('sku')>=0) { mi=k; break; }
+        // AWS CUR: line_item_usage_type contains model identifier (e.g., USE1:InvokeModel:anthropic.claude-3-sonnet)
+        // PRIORITY: Check AWS usage type FIRST — it contains the actual model name embedded in the usage string
+        var awsUsageTypeIdx = -1;
+        var useAwsUsageTypeParsing = false;
+        for (var ka=0;ka<lc.length;ka++) {
+            if (lc[ka]==='line_item_usage_type'||lc[ka]==='lineitem/usagetype') { awsUsageTypeIdx=ka; break; }
         }
-        // Azure billing export: MeterSubCategory
+        if (awsUsageTypeIdx >= 0) {
+            mi = awsUsageTypeIdx;
+            useAwsUsageTypeParsing = true;
+        }
+        // Google Cloud Billing: sku.description is the primary model identifier
         if (mi < 0) {
-            for (var k2=0;k2<lc.length;k2++) {
-                if (lc[k2]==='metersubcategory'||lc[k2]==='meter_sub_category') { mi=k2; break; }
+            for (var kg=0;kg<lc.length;kg++) {
+                if (lc[kg]==='sku.description'||lc[kg]==='sku_description') { mi=kg; break; }
             }
         }
-        // AWS / other: ProductCode, MetterName, ServiceName
+        // Standard model/model_id columns (exact match first to avoid false positives with "product_code")
+        if (mi < 0) {
+            for (var k=0;k<lc.length;k++) {
+                if (lc[k]==='model'||lc[k]==='model_id') { mi=k; break; }
+            }
+        }
+        // Azure billing export: MeterSubCategory, MeterName
+        if (mi < 0) {
+            for (var k2=0;k2<lc.length;k2++) {
+                if (lc[k2]==='metersubcategory'||lc[k2]==='meter_sub_category'||lc[k2]==='metername'||lc[k2]==='meter_name') { mi=k2; break; }
+            }
+        }
+        // Broader model/product/sku search (but skip line_item_product_code which gives "AmazonBedrock")
+        if (mi < 0) {
+            for (var k0=0;k0<lc.length;k0++) {
+                if ((lc[k0].indexOf('model')>=0||lc[k0].indexOf('sku')>=0) && lc[k0].indexOf('product_code')<0 && lc[k0].indexOf('productcode')<0) { mi=k0; break; }
+            }
+        }
+        // Fallback: ProductCode, ProductFamily, ServiceName (last resort)
         if (mi < 0) {
             for (var k3=0;k3<lc.length;k3++) {
-                if (lc[k3].indexOf('productcode')>=0||lc[k3].indexOf('productfamily')>=0||lc[k3]==='metername'||lc[k3]==='meter_name'||lc[k3]==='servicename'||lc[k3]==='service_name') { mi=k3; break; }
+                if (lc[k3].indexOf('productcode')>=0||lc[k3].indexOf('productfamily')>=0||lc[k3]==='servicename'||lc[k3]==='service_name'||lc[k3]==='service.description'||lc[k3]==='service_description') { mi=k3; break; }
             }
         }
         // Invoice-style: Description column — extract model name from text like "GPT-4o API Usage - Input Tokens"
@@ -1103,23 +1201,85 @@ function _parseCSVCore(csv, name) {
         var useDescParsing = false;
         if (mi < 0) {
             for (var k4=0;k4<lc.length;k4++) {
-                if (lc[k4]==='description'||lc[k4]==='item'||lc[k4]==='line_item'||lc[k4]==='service') { descIdx=k4; mi=k4; useDescParsing=true; break; }
+                if (lc[k4]==='description'||lc[k4]==='item'||lc[k4]==='line_item'||lc[k4]==='service'||lc[k4]==='line_item_line_item_description'||lc[k4]==='lineitem/description') { descIdx=k4; mi=k4; useDescParsing=true; break; }
             }
         }
 
         // Known model name patterns for extracting from description text
-        var knownModels = ['gpt-4o-mini','gpt-4o','gpt-4 turbo','gpt-4-turbo','gpt-4','gpt-3.5-turbo','o1-pro','o1-mini','o1','o3-mini','o3','claude opus','claude sonnet','claude haiku','claude','gemini 2.5 pro','gemini 2.5 flash','gemini 2.0 flash','gemini 1.5 pro','gemini','text-embedding-3-large','text-embedding-3-small','text-embedding-ada','dall-e','whisper','tts'];
+        var knownModels = [
+            // OpenAI models
+            'gpt-4o-mini','gpt-4o','gpt-4 turbo','gpt-4-turbo','gpt-4','gpt-3.5-turbo',
+            'o1-pro','o1-mini','o1','o3-mini','o3',
+            // Anthropic models (API format: claude-opus-4-5, claude-sonnet-4-5, etc.)
+            'claude-opus-4','claude-sonnet-4','claude-haiku-4',
+            'claude-3-5-sonnet','claude-3-5-haiku','claude-3-opus','claude-3-sonnet','claude-3-haiku',
+            'claude opus','claude sonnet','claude haiku','claude',
+            // AWS Bedrock model identifiers (from line_item_usage_type)
+            'anthropic.claude-3-5-sonnet','anthropic.claude-3-5-haiku','anthropic.claude-3-opus','anthropic.claude-3-sonnet','anthropic.claude-3-haiku','anthropic.claude-v2','anthropic.claude-instant',
+            'amazon.titan-embed-text','amazon.titan-text-express','amazon.titan-text-lite','amazon.titan-text-premier','amazon.titan',
+            'meta.llama3-1-405b','meta.llama3-1-70b','meta.llama3-1-8b','meta.llama3-70b','meta.llama3-8b','meta.llama',
+            'mistral.mistral-large','mistral.mistral-small','mistral.mixtral-8x7b','mistral.mistral-7b','mistral',
+            'cohere.command-r-plus','cohere.command-r','cohere.command','cohere.embed','cohere',
+            'ai21.jamba-1-5-large','ai21.jamba-1-5-mini','ai21.j2-ultra','ai21.j2-mid','ai21',
+            'stability.stable-diffusion',
+            // Google models
+            'gemini 2.5 pro','gemini 2.5 flash','gemini 2.0 flash','gemini 1.5 pro','gemini 1.5 flash','gemini 1.0 pro','gemini',
+            'palm-2','palm 2','imagen',
+            // Embeddings / utilities
+            'text-embedding-3-large','text-embedding-3-small','text-embedding-ada','dall-e','whisper','tts'
+        ];
 
         // Canonical display names for known models
         var modelDisplayNames = {
             'gpt-4o-mini':'GPT-4o-mini','gpt-4o':'GPT-4o','gpt-4 turbo':'GPT-4-Turbo','gpt-4-turbo':'GPT-4-Turbo','gpt-4':'GPT-4',
             'gpt-3.5-turbo':'GPT-3.5-Turbo','o1-pro':'o1-pro','o1-mini':'o1-mini','o1':'o1','o3-mini':'o3-mini','o3':'o3',
+            // Anthropic
+            'claude-opus-4':'Claude Opus 4','claude-sonnet-4':'Claude Sonnet 4','claude-haiku-4':'Claude Haiku 4',
+            'claude-3-5-sonnet':'Claude 3.5 Sonnet','claude-3-5-haiku':'Claude 3.5 Haiku',
+            'claude-3-opus':'Claude 3 Opus','claude-3-sonnet':'Claude 3 Sonnet','claude-3-haiku':'Claude 3 Haiku',
             'claude opus':'Claude Opus','claude sonnet':'Claude Sonnet','claude haiku':'Claude Haiku','claude':'Claude',
+            // AWS Bedrock identifiers → clean display names
+            'anthropic.claude-3-5-sonnet':'Claude 3.5 Sonnet','anthropic.claude-3-5-haiku':'Claude 3.5 Haiku',
+            'anthropic.claude-3-opus':'Claude 3 Opus','anthropic.claude-3-sonnet':'Claude 3 Sonnet','anthropic.claude-3-haiku':'Claude 3 Haiku',
+            'anthropic.claude-v2':'Claude v2','anthropic.claude-instant':'Claude Instant',
+            'amazon.titan-embed-text':'Titan Embed Text','amazon.titan-text-express':'Titan Text Express',
+            'amazon.titan-text-lite':'Titan Text Lite','amazon.titan-text-premier':'Titan Text Premier','amazon.titan':'Titan',
+            'meta.llama3-1-405b':'Llama 3.1 405B','meta.llama3-1-70b':'Llama 3.1 70B','meta.llama3-1-8b':'Llama 3.1 8B',
+            'meta.llama3-70b':'Llama 3 70B','meta.llama3-8b':'Llama 3 8B','meta.llama':'Llama',
+            'mistral.mistral-large':'Mistral Large','mistral.mistral-small':'Mistral Small',
+            'mistral.mixtral-8x7b':'Mixtral 8x7B','mistral.mistral-7b':'Mistral 7B','mistral':'Mistral',
+            'cohere.command-r-plus':'Command R+','cohere.command-r':'Command R','cohere.command':'Command',
+            'cohere.embed':'Cohere Embed','cohere':'Cohere',
+            'ai21.jamba-1-5-large':'Jamba 1.5 Large','ai21.jamba-1-5-mini':'Jamba 1.5 Mini',
+            'ai21.j2-ultra':'Jurassic-2 Ultra','ai21.j2-mid':'Jurassic-2 Mid','ai21':'AI21',
+            'stability.stable-diffusion':'Stable Diffusion',
+            // Google
             'gemini 2.5 pro':'Gemini 2.5 Pro','gemini 2.5 flash':'Gemini 2.5 Flash','gemini 2.0 flash':'Gemini 2.0 Flash',
-            'gemini 1.5 pro':'Gemini 1.5 Pro','gemini':'Gemini',
+            'gemini 1.5 pro':'Gemini 1.5 Pro','gemini 1.5 flash':'Gemini 1.5 Flash','gemini 1.0 pro':'Gemini 1.0 Pro','gemini':'Gemini',
+            'palm-2':'PaLM 2','palm 2':'PaLM 2','imagen':'Imagen',
+            // Embeddings / utilities
             'text-embedding-3-large':'text-embedding-3-large','text-embedding-3-small':'text-embedding-3-small',
             'text-embedding-ada':'text-embedding-ada','dall-e':'DALL-E','whisper':'Whisper','tts':'TTS'
         };
+        // Extract model from AWS CUR line_item_usage_type (e.g., "USE1:InvokeModel:anthropic.claude-3-sonnet")
+        function extractModelFromAwsUsageType(usageType) {
+            var parts = usageType.split(':');
+            // Model identifier is typically after "InvokeModel:" — the last colon-separated segment
+            for (var ai=0;ai<parts.length;ai++) {
+                var p = parts[ai].trim().toLowerCase();
+                // Check if this segment matches a known Bedrock model provider prefix
+                if (p.indexOf('anthropic.')===0||p.indexOf('amazon.')===0||p.indexOf('meta.')===0||p.indexOf('mistral.')===0||p.indexOf('cohere.')===0||p.indexOf('ai21.')===0||p.indexOf('stability.')===0) {
+                    // Try known models list first for best display name
+                    for (var bm=0;bm<knownModels.length;bm++) {
+                        if (p.indexOf(knownModels[bm])>=0) return modelDisplayNames[knownModels[bm]] || knownModels[bm];
+                    }
+                    return p; // Return raw identifier if no display name match
+                }
+            }
+            // Fallback: return last segment cleaned up
+            var lastPart = parts[parts.length-1].trim();
+            return lastPart || usageType;
+        }
         function extractModelFromDesc(desc) {
             var dl = desc.toLowerCase();
             for (var em=0;em<knownModels.length;em++) {
@@ -1136,7 +1296,10 @@ function _parseCSVCore(csv, name) {
             if (rowText2.indexOf('total') >= 0 || rowText2.indexOf('subtotal') >= 0 || !lines[m].trim()) continue;
             var p = lines[m].split(','), rawName = (p[mi]||'').replace(/"/g,'').trim();
             if (!rawName) continue;
-            var mn = useDescParsing ? extractModelFromDesc(rawName) : rawName;
+            var mn;
+            if (useAwsUsageTypeParsing) mn = extractModelFromAwsUsageType(rawName);
+            else if (useDescParsing) mn = extractModelFromDesc(rawName);
+            else mn = extractModelFromDesc(rawName); // Always try model name normalization
             if(!um[mn]) um[mn]=0;
             var rc = ci>=0?parseFloat((p[ci]||'').replace(/[$,"]/g,'')):0;
             if(!isNaN(rc)) um[mn]+=rc;
@@ -1149,23 +1312,37 @@ function _parseCSVCore(csv, name) {
 
         // ── Extract additional columns for intelligence layer ──
         var ri = -1, cui = -1, pi = -1, cci = -1, rgi = -1, tagi = -1, toki = -1, otoki = -1, reqi = -1, dti = -1, qtyi = -1, mni = -1;
+        var cachecreateIdx = -1, cachereadIdx = -1; // Anthropic cache token columns
+        var gcpUsageAmtIdx = -1, gcpUsageUnitIdx = -1; // Google Cloud usage columns
+        var awsUsageAmtIdx = -1; // AWS line_item_usage_amount
         for (var z=0;z<lc.length;z++) {
-            if (ri<0 && (lc[z].indexOf('region')>=0||lc[z].indexOf('location')>=0||lc[z].indexOf('availabilityzone')>=0)) ri=z;
-            if (cui<0 && (lc[z].indexOf('currency')>=0||lc[z]==='billingcurrency')) cui=z;
-            if (pi<0 && (lc[z].indexOf('pricingunit')>=0||lc[z].indexOf('unit_price')>=0||lc[z].indexOf('unitprice')>=0||lc[z].indexOf('rate')>=0)) pi=z;
-            // Cost center / resource group / tag columns
-            if (cci<0 && (lc[z]==='costcenter'||lc[z]==='cost_center'||lc[z].indexOf('costcenter')>=0||lc[z]==='lineitem/resourceid'||lc[z]==='department'||lc[z]==='dept')) cci=z;
-            if (rgi<0 && (lc[z]==='resourcegroup'||lc[z]==='resource_group'||lc[z].indexOf('resourcegroup')>=0||lc[z]==='project'||lc[z]==='gcp_project')) rgi=z;
-            if (tagi<0 && (lc[z]==='tags'||lc[z].indexOf('tag')>=0||lc[z]==='labels'||lc[z].indexOf('usertag')>=0)) tagi=z;
-            // Token / usage columns
+            // Region / location
+            if (ri<0 && (lc[z].indexOf('region')>=0||lc[z].indexOf('location')>=0||lc[z].indexOf('availabilityzone')>=0||lc[z]==='location.region'||lc[z]==='location.zone')) ri=z;
+            // Currency
+            if (cui<0 && (lc[z].indexOf('currency')>=0||lc[z]==='billingcurrency'||lc[z]==='line_item_currency_code'||lc[z]==='lineitem/currencycode')) cui=z;
+            // Unit pricing
+            if (pi<0 && (lc[z].indexOf('pricingunit')>=0||lc[z].indexOf('unit_price')>=0||lc[z].indexOf('unitprice')>=0||lc[z].indexOf('rate')>=0||lc[z]==='line_item_unblended_rate'||lc[z]==='lineitem/unblendedrate'||lc[z]==='list_unit_price')) pi=z;
+            // Cost center / resource group / tag columns — provider-aware
+            if (cci<0 && (lc[z]==='costcenter'||lc[z]==='cost_center'||lc[z].indexOf('costcenter')>=0||lc[z]==='department'||lc[z]==='dept'||lc[z]==='line_item_usage_account_id'||lc[z]==='lineitem/usageaccountid')) cci=z;
+            if (rgi<0 && (lc[z]==='resourcegroup'||lc[z]==='resource_group'||lc[z].indexOf('resourcegroup')>=0||lc[z]==='project'||lc[z]==='gcp_project'||lc[z]==='project.id'||lc[z]==='project.name'||lc[z]==='line_item_resource_id'||lc[z]==='lineitem/resourceid')) rgi=z;
+            if (tagi<0 && (lc[z]==='tags'||lc[z].indexOf('tag')>=0||lc[z]==='labels'||lc[z].indexOf('usertag')>=0||lc[z]==='labels.key'||lc[z]==='project.labels.key'||lc[z]==='resource_tags_user_name')) tagi=z;
+            // Token / usage columns — OpenAI, Anthropic
             if (toki<0 && (lc[z].indexOf('input_token')>=0||lc[z].indexOf('prompt_token')>=0||lc[z]==='inputtokens'||lc[z]==='prompttokens')) toki=z;
             if (otoki<0 && (lc[z].indexOf('output_token')>=0||lc[z].indexOf('completion_token')>=0||lc[z]==='outputtokens'||lc[z]==='completiontokens')) otoki=z;
-            if (reqi<0 && (lc[z]==='requests'||lc[z]==='request_count'||lc[z]==='num_requests'||lc[z]==='api_calls')) reqi=z;
+            if (reqi<0 && (lc[z]==='requests'||lc[z]==='request_count'||lc[z]==='num_requests'||lc[z]==='num_model_requests'||lc[z]==='api_calls')) reqi=z;
+            // Anthropic cache tokens
+            if (cachecreateIdx<0 && lc[z]==='cache_creation_input_tokens') cachecreateIdx=z;
+            if (cachereadIdx<0 && lc[z]==='cache_read_input_tokens') cachereadIdx=z;
             // Quantity column (Azure uses this for token counts) + MeterName for input/output classification
-            if (qtyi<0 && (lc[z]==='quantity'||lc[z]==='consumedquantity')) qtyi=z;
+            if (qtyi<0 && (lc[z]==='quantity'||lc[z]==='consumedquantity'||lc[z]==='consumed_quantity')) qtyi=z;
             if (mni<0 && (lc[z]==='metername'||lc[z]==='meter_name')) mni=z;
+            // Google Cloud usage columns
+            if (gcpUsageAmtIdx<0 && (lc[z]==='usage.amount'||lc[z]==='usage_amount'||lc[z]==='usage.amount_in_pricing_units')) gcpUsageAmtIdx=z;
+            if (gcpUsageUnitIdx<0 && (lc[z]==='usage.unit'||lc[z]==='usage_unit'||lc[z]==='usage.pricing_unit')) gcpUsageUnitIdx=z;
+            // AWS CUR usage amount
+            if (awsUsageAmtIdx<0 && (lc[z]==='line_item_usage_amount'||lc[z]==='lineitem/usageamount')) awsUsageAmtIdx=z;
             // Date column for period detection
-            if (dti<0 && (lc[z].indexOf('date')>=0||lc[z].indexOf('billingperiod')>=0||lc[z].indexOf('usagedate')>=0||lc[z]==='day'||lc[z]==='month')) dti=z;
+            if (dti<0 && (lc[z].indexOf('date')>=0||lc[z].indexOf('billingperiod')>=0||lc[z].indexOf('usagedate')>=0||lc[z]==='day'||lc[z]==='month'||lc[z]==='usage_start_time'||lc[z]==='usage_end_time'||lc[z]==='line_item_usage_start_date'||lc[z]==='lineitem/usagestartdate'||lc[z]==='invoice.month')) dti=z;
         }
         var regions = {}, currency = null, pricingData = [];
         // Cost allocation raw data
@@ -1212,11 +1389,14 @@ function _parseCSVCore(csv, name) {
 
             // ── Token / usage data per model ──
             if (rowModel) {
-                if (!tokenData[rowModel]) tokenData[rowModel] = { inputTokens: 0, outputTokens: 0, requests: 0, hasTokens: false, hasRequests: false };
+                if (!tokenData[rowModel]) tokenData[rowModel] = { inputTokens: 0, outputTokens: 0, cacheCreateTokens: 0, cacheReadTokens: 0, requests: 0, hasTokens: false, hasRequests: false };
                 // Direct token columns (OpenAI, Anthropic formats)
                 if (toki>=0) { var tv = parseInt((rp[toki]||'').replace(/[,"]/g,'')); if(!isNaN(tv)) { tokenData[rowModel].inputTokens += tv; tokenData[rowModel].hasTokens = true; } }
                 if (otoki>=0) { var ov = parseInt((rp[otoki]||'').replace(/[,"]/g,'')); if(!isNaN(ov)) { tokenData[rowModel].outputTokens += ov; tokenData[rowModel].hasTokens = true; } }
                 if (reqi>=0) { var qv = parseInt((rp[reqi]||'').replace(/[,"]/g,'')); if(!isNaN(qv)) { tokenData[rowModel].requests += qv; tokenData[rowModel].hasRequests = true; } }
+                // Anthropic cache tokens
+                if (cachecreateIdx>=0) { var ccv = parseInt((rp[cachecreateIdx]||'').replace(/[,"]/g,'')); if(!isNaN(ccv)) { tokenData[rowModel].cacheCreateTokens += ccv; tokenData[rowModel].hasTokens = true; } }
+                if (cachereadIdx>=0) { var crv = parseInt((rp[cachereadIdx]||'').replace(/[,"]/g,'')); if(!isNaN(crv)) { tokenData[rowModel].cacheReadTokens += crv; tokenData[rowModel].hasTokens = true; } }
                 // Azure billing export: Quantity column + MeterName tells input vs output
                 if (toki<0 && qtyi>=0 && mni>=0) {
                     var meterName = (rp[mni]||'').replace(/"/g,'').trim().toLowerCase();
@@ -1231,8 +1411,33 @@ function _parseCSVCore(csv, name) {
                         }
                     }
                 }
+                // AWS CUR: line_item_usage_amount for token/usage counts
+                if (toki<0 && qtyi<0 && awsUsageAmtIdx>=0) {
+                    var awsAmt = parseFloat((rp[awsUsageAmtIdx]||'').replace(/[,"]/g,''));
+                    if (!isNaN(awsAmt) && awsAmt > 0) {
+                        // AWS reports usage amount — classify based on usage type text
+                        var awsUtText = awsUsageTypeIdx>=0 ? (rp[awsUsageTypeIdx]||'').toLowerCase() : '';
+                        if (awsUtText.indexOf('output')>=0||awsUtText.indexOf('completion')>=0) {
+                            tokenData[rowModel].outputTokens += Math.round(awsAmt); tokenData[rowModel].hasTokens = true;
+                        } else {
+                            tokenData[rowModel].inputTokens += Math.round(awsAmt); tokenData[rowModel].hasTokens = true;
+                        }
+                    }
+                }
+                // Google Cloud: usage.amount column (may need unit conversion)
+                if (toki<0 && qtyi<0 && awsUsageAmtIdx<0 && gcpUsageAmtIdx>=0) {
+                    var gcpAmt = parseFloat((rp[gcpUsageAmtIdx]||'').replace(/[,"]/g,''));
+                    var gcpUnit = gcpUsageUnitIdx>=0 ? (rp[gcpUsageUnitIdx]||'').toLowerCase().trim() : '';
+                    if (!isNaN(gcpAmt) && gcpAmt > 0) {
+                        // Google reports in pricing units — convert based on unit (e.g., "1M tokens" means per million)
+                        var tokenMultiplier = 1;
+                        if (gcpUnit.indexOf('1m')>=0||gcpUnit.indexOf('million')>=0) tokenMultiplier = 1000000;
+                        else if (gcpUnit.indexOf('1k')>=0||gcpUnit.indexOf('thousand')>=0) tokenMultiplier = 1000;
+                        tokenData[rowModel].inputTokens += Math.round(gcpAmt * tokenMultiplier); tokenData[rowModel].hasTokens = true;
+                    }
+                }
                 // Invoice-style: Description has "Input Tokens"/"Output Tokens" and Quantity has token count
-                if (toki<0 && mni<0 && useDescParsing && qtyi>=0) {
+                if (toki<0 && mni<0 && awsUsageAmtIdx<0 && gcpUsageAmtIdx<0 && useDescParsing && qtyi>=0) {
                     var descText = rawRowModel.toLowerCase();
                     var descQty = parseInt((rp[qtyi]||'').replace(/[,"]/g,''));
                     if (!isNaN(descQty) && descQty > 0) {
@@ -1375,7 +1580,24 @@ function loadSample() {
             hasAllocData: true, isSample: true,
             allocRaw: {'Platform Engineering': 903561.45*0.387, 'AI Product Features': 903561.45*0.332, 'Data Science': 903561.45*0.122, 'Marketing Automation': 903561.45*0.055, 'Customer Success': 903561.45*0.044},
             totalAllocated: 903561.45*0.941, totalUnallocated: 903561.45*0.059,
-            allocColumn: 'ResourceGroup', tokenData: {}
+            allocColumn: 'ResourceGroup',
+            tokenData: {
+                'GPT-4o': {inputTokens: 68000000, outputTokens: 17000000},
+                'Claude Sonnet 4.5': {inputTokens: 42000000, outputTokens: 14000000},
+                'GPT-4o-mini': {inputTokens: 510000000, outputTokens: 170000000},
+                'Claude Opus 4.5': {inputTokens: 4800000, outputTokens: 1600000},
+                'Gemini 2.5 Pro': {inputTokens: 50000000, outputTokens: 10000000},
+                'o1': {inputTokens: 3000000, outputTokens: 750000},
+                'Gemini 2.5 Flash': {inputTokens: 250000000, outputTokens: 62500000},
+                'Azure GPT-4o': {inputTokens: 14400000, outputTokens: 3600000},
+                'Bedrock Claude': {inputTokens: 6000000, outputTokens: 2000000},
+                'GPT-4-Turbo': {inputTokens: 1800000, outputTokens: 430000}
+            },
+            billedPrices: {
+                'GPT-4o': 2.80, 'Claude Sonnet 4.5': 3.40, 'GPT-4o-mini': 0.18,
+                'Claude Opus 4.5': 16.50, 'Gemini 2.5 Pro': 1.25, 'o1': 15.00,
+                'Gemini 2.5 Flash': 0.15, 'Azure GPT-4o': 2.80, 'Bedrock Claude': 3.50, 'GPT-4-Turbo': 11.00
+            }
         };
         genAllocs(); genSkus(); genAnomalies(); genTrend(); genFocusScore();
         hideProcessing(); showResults();
@@ -1432,8 +1654,8 @@ function genSkus() {
     skus = invoice.models.map(function(m) {
         var p = pricingDb[m.model] || {input:2.00,output:8.00,reqAvg:0.010};
         var real = td[m.model];
-        var hasRealTokens = real && real.hasTokens;
-        var hasRealRequests = real && real.hasRequests;
+        var hasRealTokens = real && (real.hasTokens || (real.inputTokens > 0));
+        var hasRealRequests = real && (real.hasRequests || (real.requests > 0));
 
         var inputTokens = hasRealTokens ? real.inputTokens : null;
         var outputTokens = hasRealTokens ? real.outputTokens : null;
@@ -1559,6 +1781,63 @@ function genAnomalies() {
             text: '<strong>Month-over-month: ' + (momChg > 0 ? '+' : '') + momChg + '% change</strong>. AI spend went from $' + fmtK(prevT) + ' to $' + fmtK(currT) + '. Annualized: $' + annualized + '.',
             rec: momChg > 20 ? 'Set a budget alert at <strong>$' + fmtK(currT * 1.1) + '/mo</strong> to catch runaway spend before next close.' : 'Spend is stable. Set a <strong>monthly budget cap</strong> to maintain this trajectory.'
         });
+    }
+
+    // 8. Rate overpayment detection — compare billed unit price to published rates
+    var overpayRates = {
+        'gpt-4o': 2.50, 'gpt-4o-mini': 0.15, 'gpt-4-turbo': 10.00, 'gpt-4': 30.00,
+        'o1': 15.00, 'claude opus': 15.00, 'claude sonnet': 3.00, 'claude haiku': 0.25,
+        'gemini 2.5 pro': 1.25, 'gemini 2.5 flash': 0.15
+    };
+    skus.forEach(function(sku) {
+        if (!sku || sku.estimated) return;
+        var mn = sku.model.toLowerCase();
+        var pubRate = null;
+        Object.keys(overpayRates).forEach(function(k) { if (mn.indexOf(k) >= 0) pubRate = overpayRates[k]; });
+        if (!pubRate || !sku.inputPrice) return;
+        var markup = ((sku.inputPrice - pubRate) / pubRate * 100);
+        if (markup > 20 && sku.inputTokens > 0) {
+            var overpayAmount = (sku.inputTokens / 1000) * (sku.inputPrice - pubRate);
+            if (overpayAmount > 100) {
+                anomalies.push({
+                    type: 'warn', severity: 'Warning',
+                    text: '<strong>' + sku.model + ' billed ' + markup.toFixed(0) + '% above published rate.</strong> You\'re paying $' + sku.inputPrice.toFixed(2) + '/1K input tokens vs. the published rate of $' + pubRate.toFixed(2) + '/1K. Estimated overpayment: <strong>$' + fmtK(overpayAmount) + '</strong>.',
+                    rec: 'Check if you\'re being charged a marketplace premium (Azure Marketplace, AWS Marketplace). Direct API access is typically cheaper. Contact your provider to verify your rate tier.'
+                });
+            }
+        }
+    });
+
+    // 9. No efficiency-tier models detected — missing easy savings
+    var hasEfficiency = models.some(function(m) {
+        var mn = m.model.toLowerCase();
+        return mn.indexOf('mini')>=0 || mn.indexOf('haiku')>=0 || mn.indexOf('flash')>=0;
+    });
+    if (!hasEfficiency && models.length >= 2 && t > 5000) {
+        anomalies.push({
+            type: 'info', severity: 'Info',
+            text: '<strong>No efficiency-tier models in your stack.</strong> You\'re running ' + models.length + ' models but none are in the efficiency tier (GPT-4o-mini, Claude Haiku, Gemini Flash). These models cost 10-50x less and handle 60-80% of typical workloads.',
+            rec: 'Add GPT-4o-mini ($0.15/1K) or Claude Haiku ($0.25/1K) for classification, extraction, and summarization tasks. Most organizations route 40-60% of traffic to efficiency models.'
+        });
+    }
+
+    // 10. Cost-per-model statistical outlier (Z-score)
+    if (models.length >= 4) {
+        var mCosts = models.map(function(m){ return m.cost; });
+        var mMean = mCosts.reduce(function(a,b){return a+b},0) / mCosts.length;
+        var mStdDev = Math.sqrt(mCosts.reduce(function(s,c){return s+(c-mMean)*(c-mMean)},0)/mCosts.length);
+        if (mStdDev > 0) {
+            models.forEach(function(m) {
+                var z = (m.cost - mMean) / mStdDev;
+                if (z > 2.5 && m !== models[0]) { // Don't flag the obvious top model, only surprising outliers
+                    anomalies.push({
+                        type: 'info', severity: 'Info',
+                        text: '<strong>Statistical outlier: ' + m.model + '</strong> (z-score: ' + z.toFixed(1) + '). Spend of $' + fmtK(m.cost) + ' is ' + z.toFixed(1) + ' standard deviations above the mean ($' + fmtK(mMean) + '). This may indicate an unexpected workload surge or misconfigured routing.',
+                        rec: 'Review API logs for ' + m.model + ' over the last 7 days. Look for batch jobs, retry storms, or dev/test workloads accidentally using this model.'
+                    });
+                }
+            });
+        }
     }
 }
 
@@ -1686,20 +1965,53 @@ function showResults() {
     document.getElementById('rLineItems').textContent = invoice.items || 0;
 
     // ── Slootman: Savings estimate — transparent, line-itemized ──
-    // Known pricing tiers per 1K input tokens (public list prices)
+    // Known pricing tiers per 1K input tokens (public list prices, updated Feb 2026)
     var modelPricing = {
+        // OpenAI
         'gpt-4o': {in: 2.50, out: 10.00, tier: 'frontier'},
+        'gpt-4o-mini': {in: 0.15, out: 0.60, tier: 'efficiency'},
         'gpt-4-turbo': {in: 10.00, out: 30.00, tier: 'premium'},
         'gpt-4-32k': {in: 60.00, out: 120.00, tier: 'premium'},
         'gpt-4': {in: 30.00, out: 60.00, tier: 'premium'},
-        'gpt-4o-mini': {in: 0.15, out: 0.60, tier: 'efficiency'},
+        'gpt-3.5-turbo': {in: 0.50, out: 1.50, tier: 'efficiency'},
+        'gpt-3.5': {in: 0.50, out: 1.50, tier: 'efficiency'},
         'o1': {in: 15.00, out: 60.00, tier: 'premium'},
         'o1-pro': {in: 150.00, out: 600.00, tier: 'premium'},
+        'o1-mini': {in: 1.10, out: 4.40, tier: 'frontier'},
+        'o3': {in: 10.00, out: 40.00, tier: 'premium'},
+        'o3-mini': {in: 1.10, out: 4.40, tier: 'frontier'},
+        'o4-mini': {in: 1.10, out: 4.40, tier: 'frontier'},
+        // Anthropic
         'claude opus': {in: 15.00, out: 75.00, tier: 'premium'},
+        'opus 4.5': {in: 15.00, out: 75.00, tier: 'premium'},
         'claude sonnet': {in: 3.00, out: 15.00, tier: 'frontier'},
+        'sonnet 4.5': {in: 3.00, out: 15.00, tier: 'frontier'},
+        'sonnet 4': {in: 3.00, out: 15.00, tier: 'frontier'},
         'claude haiku': {in: 0.25, out: 1.25, tier: 'efficiency'},
+        'haiku 3.5': {in: 0.25, out: 1.25, tier: 'efficiency'},
+        // Google
         'gemini 2.5 pro': {in: 1.25, out: 10.00, tier: 'frontier'},
-        'gemini 2.5 flash': {in: 0.15, out: 0.60, tier: 'efficiency'}
+        'gemini 2.5 flash': {in: 0.15, out: 0.60, tier: 'efficiency'},
+        'gemini 1.5 pro': {in: 1.25, out: 5.00, tier: 'frontier'},
+        'gemini 1.5 flash': {in: 0.075, out: 0.30, tier: 'efficiency'},
+        'gemini pro': {in: 0.50, out: 1.50, tier: 'frontier'},
+        // Meta (via API providers)
+        'llama 3.1 405b': {in: 3.00, out: 3.00, tier: 'frontier'},
+        'llama 3.1 70b': {in: 0.88, out: 0.88, tier: 'frontier'},
+        'llama 3.1 8b': {in: 0.05, out: 0.05, tier: 'efficiency'},
+        'llama 3': {in: 0.50, out: 0.50, tier: 'frontier'},
+        // Mistral
+        'mistral large': {in: 2.00, out: 6.00, tier: 'frontier'},
+        'mistral medium': {in: 2.70, out: 8.10, tier: 'frontier'},
+        'mistral small': {in: 0.20, out: 0.60, tier: 'efficiency'},
+        'mixtral': {in: 0.60, out: 0.60, tier: 'frontier'},
+        // Cohere
+        'command r+': {in: 3.00, out: 15.00, tier: 'frontier'},
+        'command r': {in: 0.50, out: 1.50, tier: 'frontier'},
+        // Embeddings
+        'text-embedding-3-large': {in: 0.13, out: 0.13, tier: 'efficiency'},
+        'text-embedding-3-small': {in: 0.02, out: 0.02, tier: 'efficiency'},
+        'text-embedding-ada': {in: 0.10, out: 0.10, tier: 'efficiency'}
     };
     savingsTotal = 0;
     savingsLines = []; // reset each run
@@ -1742,8 +2054,65 @@ function showResults() {
         document.getElementById('rSavingsSub').textContent = topLine.from + ' \u2192 ' + topLine.to + ': ' + topLine.reason;
     } else {
         heroSavings.style.display = 'none';
-        document.querySelector('.hero-grid').style.gridTemplateColumns = '1fr';
     }
+
+    // ── Finault Health Score — composite metric from real signals ──
+    var heroHealth = document.getElementById('heroHealth');
+    var healthFactors = [];
+    var healthBreakdown = [];
+
+    // Factor 1: Model diversity (0-25 pts) — penalize single-model concentration
+    var topModelPctRaw = models.length > 0 ? (models[0].cost / t * 100) : 100;
+    var diversityScore = Math.max(0, Math.min(25, Math.round(25 * (1 - (topModelPctRaw - 30) / 70))));
+    if (topModelPctRaw < 30) diversityScore = 25;
+    healthFactors.push(diversityScore);
+    healthBreakdown.push('Diversity: ' + diversityScore + '/25');
+
+    // Factor 2: Cost optimization (0-25 pts) — do you use efficiency models?
+    var effModels = models.filter(function(m) {
+        var mn = m.model.toLowerCase();
+        return mn.indexOf('mini')>=0||mn.indexOf('haiku')>=0||mn.indexOf('flash')>=0||mn.indexOf('3.5')>=0;
+    });
+    var effPctRaw = effModels.reduce(function(s,m){return s+m.cost},0) / t * 100;
+    var optimizationScore = Math.min(25, Math.round(effPctRaw * 0.8)); // up to 25 pts for 30%+ efficiency usage
+    healthFactors.push(optimizationScore);
+    healthBreakdown.push('Optimization: ' + optimizationScore + '/25');
+
+    // Factor 3: Governance (0-25 pts) — cost centers, schema quality
+    var govScore = 0;
+    if (invoice.hasAllocData) govScore += 12; // has cost attribution
+    if (invoice.focusDetected > 10) govScore += 8; // decent schema
+    else if (invoice.focusDetected > 0) govScore += 4;
+    if (invoice.period) govScore += 5; // has date context
+    govScore = Math.min(25, govScore);
+    healthFactors.push(govScore);
+    healthBreakdown.push('Governance: ' + govScore + '/25');
+
+    // Factor 4: Risk (0-25 pts) — fewer anomalies = higher score
+    var criticals = anomalies.filter(function(a){return a.type==='critical'}).length;
+    var warnings = anomalies.filter(function(a){return a.type==='warn'}).length;
+    var riskDeductions = criticals * 10 + warnings * 3;
+    var riskScore = Math.max(0, 25 - riskDeductions);
+    healthFactors.push(riskScore);
+    healthBreakdown.push('Risk: ' + riskScore + '/25');
+
+    var totalHealth = healthFactors.reduce(function(a,b){return a+b},0);
+    var healthClass = totalHealth >= 70 ? 'score-good' : totalHealth >= 40 ? 'score-ok' : 'score-poor';
+    var healthLabel = totalHealth >= 70 ? 'Healthy' : totalHealth >= 40 ? 'Needs attention' : 'At risk';
+
+    heroHealth.style.display = '';
+    document.getElementById('rHealthScore').textContent = totalHealth;
+    document.getElementById('rHealthScore').className = 'value ' + healthClass;
+    document.getElementById('rHealthSub').textContent = healthLabel + ' \u2014 ' + healthBreakdown.join(' \u00b7 ');
+
+    // Update hero grid columns based on what's visible
+    var heroGrid = document.querySelector('.hero-grid');
+    var visibleHeroCols = 1; // spend always visible
+    if (heroHealth.style.display !== 'none') visibleHeroCols++;
+    if (heroSavings.style.display !== 'none') visibleHeroCols++;
+    if (visibleHeroCols === 3) heroGrid.classList.add('three-col');
+    else if (visibleHeroCols === 2) { heroGrid.classList.remove('three-col'); heroGrid.style.gridTemplateColumns = '1fr 1fr'; }
+    else { heroGrid.classList.remove('three-col'); heroGrid.style.gridTemplateColumns = '1fr'; }
 
     // ── Slootman: Executive summary ──
     var execEl = document.getElementById('execSummary');
@@ -2081,74 +2450,112 @@ function showResults() {
         var isLoggedIn = false;
         try { isLoggedIn = !!localStorage.getItem('finault_token'); } catch(e) {}
 
-        if (isLoggedIn) {
-            // User is already logged in — nudge to full dashboard
-            upsellEl.innerHTML =
-                '<h3>Continue in the Dashboard</h3>' +
-                '<p>Access the full platform &mdash; anomaly monitoring, budget alerts, reconciliation workflows, 20 AI agents, and 8 ERP integrations.' + (roiLine ? ' ' + roiLine : '') + '</p>' +
-                '<a href="https://app.finault.ai" class="btn btn-green" onclick="trackEvent(\'dashboard_cta_click\')" style="margin-right:12px;">Open Dashboard</a>' +
-                '<a href="/pricing" class="btn btn-outline" onclick="trackEvent(\'upgrade_cta_click\')" style="margin-top:8px;">See Pro &amp; Team Plans</a>' +
-                '<div class="upsell-features">' +
-                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> 20 AI agents</div>' +
-                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> 14 Diamond modules</div>' +
-                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> 8 ERP integrations</div>' +
-                '</div>';
-        } else {
-            // User is not logged in — nudge to create free account
-            upsellEl.innerHTML =
-                '<h3>Unlock the Full Platform</h3>' +
-                '<p>Create a free account to access the dashboard &mdash; anomaly monitoring, budget forecasts, reconciliation workflows, and 20 AI agents.' + (roiLine ? ' ' + roiLine : '') + '</p>' +
-                '<a href="/login?tab=signup&redirect=https://app.finault.ai" class="btn btn-green" onclick="trackEvent(\'signup_cta_click\')" style="margin-right:12px;">Create Free Account</a>' +
-                '<a href="/pricing" class="btn btn-outline" onclick="trackEvent(\'upgrade_cta_click\')" style="margin-top:8px;">See Pro &amp; Team Plans</a>' +
-                '<div class="upsell-features">' +
-                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Unlimited CSV audits</div>' +
-                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> HMAC-signed manifests</div>' +
-                '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Dashboard + 20 AI agents</div>' +
-                '</div>';
-        }
+        // Single CTA for all users — Talk to Bernie
+        upsellEl.innerHTML =
+            '<h3>Want Continuous Close?</h3>' +
+            '<p>This free audit is a one-time snapshot. Continuous Close gives you monthly audit-grade close packs, anomaly monitoring, reconciliation workflows, and CFO-ready reports &mdash; delivered automatically.' + (roiLine ? ' ' + roiLine : '') + '</p>' +
+            '<a href="mailto:bernard.cotter@finault.ai?subject=Interested%20in%20Continuous%20Close&body=Hi%20Bernie%2C%0A%0AI%20just%20ran%20a%20free%20audit%20on%20finault.ai%20and%20I%27d%20like%20to%20learn%20more%20about%20Continuous%20Close.%0A%0A" class="btn btn-green" onclick="trackEvent(\'talk_to_bernie_click\')" style="margin-right:12px;">Talk to Bernie</a>' +
+            '<div class="upsell-features">' +
+            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Monthly close packs</div>' +
+            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Anomaly monitoring</div>' +
+            '<div class="upsell-feat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Browser-native &mdash; data never leaves</div>' +
+            '</div>';
         upsellEl.style.display = '';
     }
 
-    // ── Reconciliation Health — surfaces reconciliation engine capabilities ──
+    // ── Reconciliation Health — REAL analysis from parsed data (no synthetic data) ──
     var reconSection = document.getElementById('reconSection');
     var reconDivider = document.getElementById('reconDivider');
     if (models.length >= 1 && invoice.items >= 5) {
         reconSection.style.display = '';
         reconDivider.style.display = '';
 
-        // Simulate reconciliation analysis from parsed data
+        // REAL reconciliation: compare billed prices to published rates
+        var reconFindings = [];
+        var modelsWithPricing = 0;
+        var modelsOverpaying = 0;
+        var modelsUnderpaying = 0;
+        var totalOverpayment = 0;
+        var reconPublished = {
+            'gpt-4o': {in: 2.50, out: 10.00}, 'gpt-4o-mini': {in: 0.15, out: 0.60},
+            'gpt-4-turbo': {in: 10.00, out: 30.00}, 'gpt-4': {in: 30.00, out: 60.00},
+            'o1': {in: 15.00, out: 60.00}, 'o1-pro': {in: 150.00, out: 600.00},
+            'o1-mini': {in: 1.10, out: 4.40}, 'o3': {in: 10.00, out: 40.00}, 'o3-mini': {in: 1.10, out: 4.40},
+            'claude opus': {in: 15.00, out: 75.00}, 'claude sonnet': {in: 3.00, out: 15.00}, 'claude haiku': {in: 0.25, out: 1.25},
+            'gemini 2.5 pro': {in: 1.25, out: 10.00}, 'gemini 2.5 flash': {in: 0.15, out: 0.60},
+            'text-embedding-3-large': {in: 0.13, out: 0.13}, 'text-embedding-3-small': {in: 0.02, out: 0.02}
+        };
+        // Compare each model's billed rate to published rate
+        skus.forEach(function(sku) {
+            if (!sku || sku.estimated) return;
+            var mn = sku.model.toLowerCase();
+            var pub = null;
+            Object.keys(reconPublished).forEach(function(k) { if (mn.indexOf(k) >= 0) pub = reconPublished[k]; });
+            if (!pub) return;
+            modelsWithPricing++;
+            var billedIn = sku.inputPrice;
+            var variance = ((billedIn - pub.in) / pub.in * 100);
+            if (Math.abs(variance) > 5) {
+                reconFindings.push({
+                    model: sku.model,
+                    billed: billedIn,
+                    published: pub.in,
+                    variance: variance,
+                    impact: sku.inputTokens ? (sku.inputTokens / 1000) * (billedIn - pub.in) : null
+                });
+                if (variance > 5) { modelsOverpaying++; totalOverpayment += (reconFindings[reconFindings.length-1].impact || 0); }
+                else { modelsUnderpaying++; }
+            }
+        });
+
+        // Real line-item analysis: check for duplicate charges
         var lineCount = invoice.items || 0;
-        var matchedLines = Math.round(lineCount * (0.82 + Math.random() * 0.15)); // 82-97% match rate
-        var matchRate = Math.round((matchedLines / lineCount) * 100);
-        var unmatchedLines = lineCount - matchedLines;
-        var varianceCount = anomalies.filter(function(a){ return a.text && (a.text.indexOf('spike') >= 0 || a.text.indexOf('Spike') >= 0 || a.text.indexOf('jump') >= 0 || a.text.indexOf('variance') >= 0); }).length;
-        if (varianceCount === 0) varianceCount = Math.max(1, Math.floor(anomalies.length * 0.4));
+        var linesWithCost = models.reduce(function(s,m){return s + (m.cost > 0 ? 1 : 0)}, 0);
 
-        // Finault Confidence Score (FCS) — multi-factor
-        var fcsFactors = [];
-        fcsFactors.push(invoice.period ? 0.95 : 0.60); // date match
-        fcsFactors.push(matchRate > 90 ? 0.95 : matchRate > 70 ? 0.80 : 0.65); // amount match
-        fcsFactors.push(models.length >= 2 ? 0.90 : 0.75); // model match
-        var fcsScore = Math.round(fcsFactors.reduce(function(a,b){return a+b},0) / fcsFactors.length * 100);
-        var fcsClass = fcsScore >= 85 ? 'bm-good' : fcsScore >= 70 ? 'bm-warn' : 'bm-bad';
-        var fcsLabel = fcsScore >= 85 ? 'High' : fcsScore >= 70 ? 'Moderate' : 'Low';
+        // Deterministic confidence score based on real data quality signals
+        var qualitySignals = [];
+        qualitySignals.push(invoice.period ? 1.0 : 0.5);           // Has date range
+        qualitySignals.push(invoice.hasAllocData ? 1.0 : 0.4);     // Has cost attribution
+        qualitySignals.push(modelsWithPricing > 0 ? 0.9 : 0.5);   // Can verify pricing
+        qualitySignals.push(lineCount > 10 ? 0.9 : 0.7);          // Sufficient data
+        qualitySignals.push(invoice.focusDetected > 5 ? 1.0 : invoice.focusDetected > 0 ? 0.7 : 0.4); // Schema quality
+        var fcsScore = Math.round(qualitySignals.reduce(function(a,b){return a+b},0) / qualitySignals.length * 100);
+        var fcsClass = fcsScore >= 80 ? 'bm-good' : fcsScore >= 60 ? 'bm-warn' : 'bm-bad';
+        var fcsLabel = fcsScore >= 80 ? 'High' : fcsScore >= 60 ? 'Moderate' : 'Low';
 
-        var reconCard1 = '<div class="benchmark-card"><div class="bm-label">Confidence Score (FCS)</div><div class="bm-value ' + fcsClass + '">' + fcsScore + '</div><div class="bm-context">' + fcsLabel + ' confidence &middot; ' + fcsFactors.length + '-factor analysis</div></div>';
-        var reconCard2 = '<div class="benchmark-card"><div class="bm-label">Line Match Rate</div><div class="bm-value ' + (matchRate >= 90 ? 'bm-good' : 'bm-warn') + '">' + matchRate + '%</div><div class="bm-context">' + matchedLines + ' of ' + lineCount + ' lines reconciled</div></div>';
-        var reconCard3 = '<div class="benchmark-card"><div class="bm-label">Variances Detected</div><div class="bm-value ' + (varianceCount > 3 ? 'bm-bad' : 'bm-warn') + '">' + varianceCount + '</div><div class="bm-context">' + unmatchedLines + ' unmatched lines for review</div></div>';
+        // Pricing verification card
+        var pricingVerified = modelsWithPricing > 0;
+        var pricingStatus = modelsOverpaying > 0 ? modelsOverpaying + ' above list' : modelsWithPricing > 0 ? 'At or below list' : 'Unable to verify';
+        var pricingClass = modelsOverpaying > 0 ? 'bm-bad' : modelsWithPricing > 0 ? 'bm-good' : 'bm-warn';
+
+        var reconCard1 = '<div class="benchmark-card"><div class="bm-label">Data Quality Score</div><div class="bm-value ' + fcsClass + '">' + fcsScore + '</div><div class="bm-context">' + fcsLabel + ' &middot; ' + qualitySignals.length + ' signals analyzed</div></div>';
+        var reconCard2 = '<div class="benchmark-card"><div class="bm-label">Rate Verification</div><div class="bm-value ' + pricingClass + '">' + pricingStatus + '</div><div class="bm-context">' + modelsWithPricing + ' of ' + models.length + ' models verified vs. published rates</div></div>';
+        var reconCard3 = totalOverpayment > 100
+            ? '<div class="benchmark-card"><div class="bm-label">Overpayment Found</div><div class="bm-value bm-bad">$' + fmtK(totalOverpayment) + '</div><div class="bm-context">Above published list price &middot; may indicate marketplace markup</div></div>'
+            : '<div class="benchmark-card"><div class="bm-label">Schema Coverage</div><div class="bm-value ' + (lineCount > 20 ? 'bm-good' : 'bm-warn') + '">' + lineCount + ' rows</div><div class="bm-context">' + models.length + ' models &middot; ' + (invoice.columnCount || 'unknown') + ' columns parsed</div></div>';
 
         document.getElementById('reconCards').innerHTML = reconCard1 + reconCard2 + reconCard3;
 
-        // Detail: show what Pro unlocks
-        document.getElementById('reconDetail').innerHTML =
-            '<div style="padding:14px 16px;background:var(--gray-50);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--gray-500);line-height:1.6;">' +
-            '<strong style="color:var(--gray-700);">What the reconciliation engine found:</strong> ' +
-            matchedLines + ' line items matched across ' + models.length + ' model' + (models.length > 1 ? 's' : '') + ' with ' + fcsScore + '% confidence. ' +
-            (unmatchedLines > 0 ? unmatchedLines + ' lines need exception review. ' : '') +
-            '<span style="color:var(--green);font-weight:600;">Pro unlocks:</span> continuous reconciliation, cross-provider matching, predictive reconciliation, and full audit trail.' +
-            '</div>';
+        // Detail: show real findings
+        var detailHtml = '<div style="padding:14px 16px;background:var(--gray-50);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--gray-500);line-height:1.6;">';
+        if (reconFindings.length > 0) {
+            detailHtml += '<strong style="color:var(--gray-700);">Rate discrepancies found:</strong><br>';
+            reconFindings.slice(0,3).forEach(function(f) {
+                var dir = f.variance > 0 ? 'above' : 'below';
+                detailHtml += '&bull; <strong>' + f.model + '</strong>: billed at $' + f.billed.toFixed(2) + '/1K vs. published $' + f.published.toFixed(2) + '/1K (' + Math.abs(f.variance).toFixed(0) + '% ' + dir + ')';
+                if (f.impact && Math.abs(f.impact) > 10) detailHtml += ' &mdash; <strong style="color:' + (f.variance > 0 ? '#dc2626' : '#16a34a') + ';">$' + fmtK(Math.abs(f.impact)) + ' ' + (f.variance > 0 ? 'overpayment' : 'discount') + '</strong>';
+                detailHtml += '<br>';
+            });
+            if (reconFindings.length > 3) detailHtml += '<em>' + (reconFindings.length - 3) + ' more discrepancies found.</em><br>';
+        } else if (modelsWithPricing > 0) {
+            detailHtml += '<strong style="color:var(--gray-700);">All verified models priced at or below published rates.</strong> No overpayment detected.';
+        } else {
+            detailHtml += '<strong style="color:var(--gray-700);">Rate verification requires token-level data.</strong> Upload a usage export (not just an invoice summary) to unlock per-model rate verification.';
+        }
+        detailHtml += '</div>';
+        document.getElementById('reconDetail').innerHTML = detailHtml;
 
-        trackEvent('recon_section_shown', { fcs: fcsScore, match_rate: matchRate, variances: varianceCount });
+        trackEvent('recon_section_shown', { fcs: fcsScore, models_verified: modelsWithPricing, overpaying: modelsOverpaying, overpayment: Math.round(totalOverpayment) });
     } else {
         reconSection.style.display = 'none';
         reconDivider.style.display = 'none';
@@ -2202,7 +2609,7 @@ function showResults() {
             '<div style="padding:14px 16px;background:var(--gray-50);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--gray-500);line-height:1.6;">' +
             '<strong style="color:var(--gray-700);">Compliance gaps identified:</strong> ' +
             'This audit covers ' + controlPct + '% of the 230-control SOC 2 registry. ' +
-            '<span style="color:var(--green);font-weight:600;">Pro unlocks:</span> ' + complianceItems.slice(0, 3).join(', ') + '.' +
+            '<span style="color:var(--green);font-weight:600;">Continuous Close unlocks:</span> ' + complianceItems.slice(0, 3).join(', ') + '.' +
             '</div>';
 
         trackEvent('compliance_section_shown', { focus: focusPctVal, controls_met: controlsMetByAudit, ai_risk: aiRiskLevel });
@@ -2268,13 +2675,215 @@ function showResults() {
             '<div style="padding:14px 16px;background:var(--gray-50);border:1px solid var(--border);border-radius:10px;font-size:12px;color:var(--gray-500);line-height:1.6;">' +
             '<strong style="color:var(--gray-700);">Unit economics breakdown:</strong> ' +
             roiDetails.join('. ') + '. ' +
-            '<span style="color:var(--green);font-weight:600;">Pro unlocks:</span> AI-generated budgets, dynamic alert thresholds, scenario planning, variance reports by cost center, and automated board deck generation.' +
+            '<span style="color:var(--green);font-weight:600;">Continuous Close unlocks:</span> AI-generated budgets, dynamic alert thresholds, scenario planning, variance reports by cost center, and automated board deck generation.' +
             '</div>';
 
         trackEvent('roi_section_shown', { cost_per_1k: Math.round(costPer1K * 100) / 100, savings_pct: savingsPct, forecast: forecastMonthly });
     } else {
         roiSection.style.display = 'none';
         roiDivider.style.display = 'none';
+    }
+
+    // ── Invoice Intelligence — discoveries only a parser would find ──
+    var intelSection = document.getElementById('intelSection');
+    var intelDivider = document.getElementById('intelDivider');
+    var intelFindings = [];
+
+    // Discovery 1: Token-to-cost verification (detects markup/discounts)
+    skus.forEach(function(sku) {
+        if (!sku || sku.estimated || !sku.inputTokens) return;
+        var mn = sku.model.toLowerCase();
+        var pubRate = null;
+        var pubRates = {
+            'gpt-4o': 2.50, 'gpt-4o-mini': 0.15, 'gpt-4-turbo': 10.00, 'gpt-4': 30.00,
+            'o1': 15.00, 'o1-pro': 150.00, 'claude opus': 15.00, 'claude sonnet': 3.00, 'claude haiku': 0.25,
+            'gemini 2.5 pro': 1.25, 'gemini 2.5 flash': 0.15
+        };
+        Object.keys(pubRates).forEach(function(k) { if (mn.indexOf(k) >= 0) pubRate = pubRates[k]; });
+        if (!pubRate) return;
+        var expectedCost = (sku.inputTokens / 1000) * pubRate + (sku.outputTokens / 1000) * (pubRate * 3);
+        var actualModel = models.find(function(m){ return m.model === sku.model; });
+        if (!actualModel) return;
+        var diff = actualModel.cost - expectedCost;
+        var diffPct = (diff / expectedCost * 100);
+        if (Math.abs(diffPct) > 15 && Math.abs(diff) > 50) {
+            intelFindings.push({
+                icon: diffPct > 0 ? 'warning' : 'savings',
+                emoji: diffPct > 0 ? '\u26a0\ufe0f' : '\u2705',
+                title: sku.model + ': ' + (diffPct > 0 ? 'billed ' + Math.abs(diffPct).toFixed(0) + '% above expected' : 'billed ' + Math.abs(diffPct).toFixed(0) + '% below list price'),
+                detail: 'Expected cost from token usage: <strong>$' + fmtK(expectedCost) + '</strong>. Actual billed: <strong>$' + fmtK(actualModel.cost) + '</strong>. Difference: <strong>$' + fmtK(Math.abs(diff)) + '</strong>.' +
+                    (diffPct > 0 ? ' This may indicate marketplace markup, committed spend amortization, or enterprise pricing surcharges.' : ' You may have negotiated volume pricing or be on a promotional tier.'),
+                badge: Math.abs(diffPct) > 30 ? 'high-impact' : 'medium-impact',
+                badgeText: '$' + fmtK(Math.abs(diff)) + (diffPct > 0 ? ' overpayment' : ' savings'),
+                priority: Math.abs(diff)
+            });
+        }
+    });
+
+    // Discovery 2: Model efficiency analysis (cost per output token)
+    if (skus.length >= 2) {
+        var skusWithOutput = skus.filter(function(s){ return s.outputTokens > 0 && !s.estimated; });
+        if (skusWithOutput.length >= 2) {
+            var cheapest = skusWithOutput.reduce(function(a,b){ return (a.outputPrice < b.outputPrice) ? a : b; });
+            var priciest = skusWithOutput.reduce(function(a,b){ return (a.outputPrice > b.outputPrice) ? a : b; });
+            if (priciest.outputPrice > cheapest.outputPrice * 3) {
+                var priceRatio = (priciest.outputPrice / cheapest.outputPrice).toFixed(0);
+                intelFindings.push({
+                    icon: 'insight',
+                    emoji: '\ud83d\udca1',
+                    title: priceRatio + 'x cost gap between your cheapest and priciest model',
+                    detail: '<strong>' + priciest.model + '</strong> costs $' + priciest.outputPrice.toFixed(2) + '/1K output tokens vs. <strong>' + cheapest.model + '</strong> at $' + cheapest.outputPrice.toFixed(2) + '/1K. If 30% of ' + priciest.model + ' workloads can tolerate ' + cheapest.model + ' quality, that\'s <strong>$' + fmtK(models.find(function(m){return m.model===priciest.model}).cost * 0.3 * (1 - cheapest.outputPrice/priciest.outputPrice)) + '/mo in savings</strong>.',
+                    badge: 'medium-impact',
+                    badgeText: 'Optimization',
+                    priority: 500
+                });
+            }
+        }
+    }
+
+    // Discovery 3: Billing period analysis
+    if (invoice.period && invoice.dateRange) {
+        var start = new Date(invoice.dateRange.start);
+        var end = new Date(invoice.dateRange.end);
+        if (!isNaN(start) && !isNaN(end)) {
+            var days = Math.round((end - start) / (1000*60*60*24));
+            if (days > 0) {
+                var dailyRate = t / days;
+                var annualized = dailyRate * 365;
+                intelFindings.push({
+                    icon: 'discovery',
+                    emoji: '\ud83d\udcc5',
+                    title: days + '-day billing period detected: $' + fmtK(dailyRate) + '/day',
+                    detail: 'Annualized AI spend: <strong>$' + fmtK(annualized) + '/year</strong>. Daily burn rate: <strong>$' + fmtK(dailyRate) + '</strong>. ' +
+                        (annualized > 1000000 ? 'At this rate, AI is a material line item requiring board-level visibility.' :
+                         annualized > 100000 ? 'At this rate, AI spend likely warrants a dedicated cost center and monthly review cadence.' :
+                         'At this rate, a quarterly review cadence is sufficient.'),
+                    badge: annualized > 500000 ? 'high-impact' : 'medium-impact',
+                    badgeText: '$' + fmtK(annualized) + '/yr',
+                    priority: 400
+                });
+            }
+        }
+    }
+
+    // Discovery 4: Provider lock-in risk (from model mix)
+    if (models.length >= 2) {
+        var providerSpend = {};
+        models.forEach(function(m) {
+            var mn = m.model.toLowerCase();
+            var p = 'Other';
+            if (mn.indexOf('gpt')>=0||mn.indexOf('o1')>=0||mn.indexOf('o3')>=0) p = 'OpenAI';
+            else if (mn.indexOf('claude')>=0) p = 'Anthropic';
+            else if (mn.indexOf('gemini')>=0||mn.indexOf('vertex')>=0) p = 'Google';
+            else if (mn.indexOf('bedrock')>=0) p = 'AWS Bedrock';
+            else if (mn.indexOf('azure')>=0) p = 'Azure OpenAI';
+            if (!providerSpend[p]) providerSpend[p] = 0;
+            providerSpend[p] += m.cost;
+        });
+        var providers = Object.keys(providerSpend).sort(function(a,b){return providerSpend[b]-providerSpend[a]});
+        if (providers.length === 1 && providerSpend[providers[0]] > 10000) {
+            intelFindings.push({
+                icon: 'warning',
+                emoji: '\ud83d\udd12',
+                title: '100% single-provider dependency: ' + providers[0],
+                detail: 'All $' + fmtK(t) + ' flows through <strong>' + providers[0] + '</strong>. If they experience an outage, rate limit changes, or price increase, you have no fallback. Consider routing 10-20% of non-critical workloads through a secondary provider.',
+                badge: 'high-impact',
+                badgeText: 'Vendor risk',
+                priority: 800
+            });
+        } else if (providers.length >= 2) {
+            var topProvPct = (providerSpend[providers[0]] / t * 100).toFixed(0);
+            if (topProvPct > 85) {
+                intelFindings.push({
+                    icon: 'insight',
+                    emoji: '\ud83d\udcca',
+                    title: topProvPct + '% provider concentration on ' + providers[0],
+                    detail: providers[0] + ': <strong>$' + fmtK(providerSpend[providers[0]]) + '</strong> (' + topProvPct + '%) vs. ' + providers[1] + ': <strong>$' + fmtK(providerSpend[providers[1]]) + '</strong> (' + (providerSpend[providers[1]]/t*100).toFixed(0) + '%). High concentration creates negotiation leverage but increases outage risk.',
+                    badge: 'medium-impact',
+                    badgeText: 'Concentration',
+                    priority: 300
+                });
+            }
+        }
+    }
+
+    // Discovery 5: Cost-per-model anomaly (statistical outlier detection)
+    if (models.length >= 3) {
+        var costs = models.map(function(m){ return m.cost; });
+        var mean = costs.reduce(function(a,b){return a+b},0) / costs.length;
+        var variance = costs.reduce(function(s,c){ return s + (c-mean)*(c-mean); },0) / costs.length;
+        var stdDev = Math.sqrt(variance);
+        if (stdDev > 0) {
+            models.forEach(function(m) {
+                var zScore = (m.cost - mean) / stdDev;
+                if (zScore > 2.0 && m.cost > 5000) {
+                    intelFindings.push({
+                        icon: 'discovery',
+                        emoji: '\ud83d\udd0d',
+                        title: m.model + ' spend is ' + zScore.toFixed(1) + ' standard deviations above average',
+                        detail: '<strong>' + m.model + '</strong> costs $' + fmtK(m.cost) + ' while the average across your ' + models.length + ' models is $' + fmtK(mean) + '. This is a statistical outlier (z-score: ' + zScore.toFixed(2) + '). Investigate whether this model is serving the right workloads or if cheaper alternatives exist.',
+                        badge: 'high-impact',
+                        badgeText: 'Outlier',
+                        priority: 700
+                    });
+                }
+            });
+        }
+    }
+
+    // Discovery 6: Token efficiency (if token data available)
+    var totalInputTokens = 0, totalOutputTokens = 0;
+    skus.forEach(function(s){ totalInputTokens += (s.inputTokens||0); totalOutputTokens += (s.outputTokens||0); });
+    if (totalInputTokens > 0 && totalOutputTokens > 0) {
+        var ioRatio = (totalInputTokens / totalOutputTokens).toFixed(1);
+        if (ioRatio > 10) {
+            intelFindings.push({
+                icon: 'insight',
+                emoji: '\u2699\ufe0f',
+                title: 'Input-heavy workload: ' + ioRatio + ':1 input-to-output ratio',
+                detail: '<strong>' + fmtInt(totalInputTokens) + '</strong> input tokens vs. <strong>' + fmtInt(totalOutputTokens) + '</strong> output tokens. A ' + ioRatio + ':1 ratio suggests large context windows or document processing. Consider <strong>prompt caching</strong> (Anthropic) or <strong>cached tokens</strong> (OpenAI) to reduce input costs by up to 90%.',
+                badge: 'positive',
+                badgeText: 'Up to 90% savings on inputs',
+                priority: 600
+            });
+        } else if (ioRatio < 0.5) {
+            intelFindings.push({
+                icon: 'insight',
+                emoji: '\u2699\ufe0f',
+                title: 'Output-heavy workload: 1:' + (totalOutputTokens/totalInputTokens).toFixed(1) + ' input-to-output ratio',
+                detail: 'You generate <strong>' + fmtInt(totalOutputTokens) + '</strong> output tokens from <strong>' + fmtInt(totalInputTokens) + '</strong> input tokens. Output tokens cost 2-4x more than input tokens. Consider setting <strong>max_tokens</strong> limits or using <strong>structured outputs</strong> to reduce verbosity.',
+                badge: 'medium-impact',
+                badgeText: 'Output cost optimization',
+                priority: 550
+            });
+        }
+    }
+
+    // Sort findings by priority and render
+    intelFindings.sort(function(a,b){ return b.priority - a.priority; });
+
+    if (intelFindings.length > 0) {
+        intelSection.style.display = '';
+        intelDivider.style.display = '';
+        var intelTitle = document.querySelector('#intelSection .result-section-title');
+        if (intelTitle) {
+            intelTitle.innerHTML = 'Invoice Intelligence <span style="display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:#7c3aed;color:white;font-size:11px;font-weight:700;margin-left:4px;">' + intelFindings.length + '</span>' +
+                '<span style="margin-left:auto;font-size:11px;font-weight:400;letter-spacing:0;text-transform:none;color:var(--gray-400);">discoveries only a parser would find</span>';
+        }
+        var ih = '';
+        intelFindings.slice(0, 6).forEach(function(f) {
+            ih += '<div class="intel-finding">';
+            ih += '<div class="intel-icon ' + f.icon + '">' + f.emoji + '</div>';
+            ih += '<div style="flex:1;min-width:0;">';
+            ih += '<div class="intel-title">' + f.title + '<span class="intel-badge ' + f.badge + '">' + f.badgeText + '</span></div>';
+            ih += '<div class="intel-detail">' + f.detail + '</div>';
+            ih += '</div></div>';
+        });
+        document.getElementById('intelFindings').innerHTML = ih;
+        trackEvent('intel_section_shown', { findings: intelFindings.length });
+    } else {
+        intelSection.style.display = 'none';
+        intelDivider.style.display = 'none';
     }
 
     document.getElementById('results').classList.add('visible');
@@ -2873,15 +3482,8 @@ function dismissAccountNudge() {
     trackEvent('account_nudge_dismissed');
 }
 
-// ── Smart nav auth link ──
-(function() {
-    var token = null;
-    try { token = localStorage.getItem('finault_token'); } catch(e) {}
-    if (token) {
-        var el = document.getElementById('navAuthLink');
-        if (el) { el.textContent = 'Dashboard'; el.href = 'https://app.finault.ai'; }
-    }
-})();
+// Auth link — no dashboard swap until there's a real dashboard
+// Re-enable when ready: el.textContent = 'Dashboard'; el.href = '/dashboard';
 </script>
 </body>
 </html>

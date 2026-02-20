@@ -1,0 +1,11 @@
+UsageDateTime,MeterCategory,MeterSubCategory,MeterName,Quantity,Cost,Currency,ResourceGroup,ResourceLocation
+2026-01-15T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Claude 3.5 Sonnet Input Tokens,3200000,9600.00,USD,finault-prod,us-east-1
+2026-01-15T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Claude 3.5 Sonnet Output Tokens,960000,14400.00,USD,finault-prod,us-east-1
+2026-01-16T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Claude 3.5 Haiku Input Tokens,15400000,1540.00,USD,finault-prod,us-east-1
+2026-01-16T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Claude 3.5 Haiku Output Tokens,4620000,2310.00,USD,finault-prod,us-east-1
+2026-01-17T00:00:00Z,Amazon Bedrock,Titan Embeddings,Titan Embeddings V2,11000000,1100.00,USD,finault-prod,us-east-1
+2026-01-18T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Claude 3.5 Sonnet Input Tokens,3370000,10110.00,USD,finault-prod,us-west-2
+2026-01-18T00:00:00Z,Amazon Bedrock,Claude 3.5 Sonnet,Claude 3.5 Sonnet Output Tokens,1011000,15165.00,USD,finault-prod,us-west-2
+2026-01-19T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Claude 3.5 Haiku Input Tokens,15400000,1540.00,USD,finault-staging,us-east-1
+2026-01-19T00:00:00Z,Amazon Bedrock,Claude 3.5 Haiku,Claude 3.5 Haiku Output Tokens,4620000,2310.00,USD,finault-staging,us-east-1
+2026-01-19T00:00:00Z,Amazon Bedrock,Titan Embeddings,Titan Embeddings V2,11000000,1100.00,USD,finault-staging,us-east-1

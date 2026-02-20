@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        :root{--green:#22c55e;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-600:#6b7280;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}
+        :root{--green:#16a34a;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-600:#6b7280;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}
         body{font-family:'Inter',-apple-system,sans-serif;background:var(--white);color:var(--gray-900);line-height:1.7}
 
         .docs-layout{display:flex;min-height:100vh}
@@ -123,7 +123,7 @@
             <div class="sidebar-header">
                 <a href="/" class="logo">
                     <span class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
                     </span>
                     Finault Docs
                 </a>
@@ -184,22 +184,26 @@
                 <p><strong>Don't write code yet?</strong> <a href="/demo">Upload an invoice</a> and see results in 60 seconds. No signup required.</p>
             </div>
 
+            <div class="callout" style="border-left:3px solid var(--green)">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                <p><strong>Free API access.</strong> Sign up, get a <code>fk_</code> key from your dashboard, and hit every endpoint. No credit card required.</p>
+            </div>
+
             <!-- Step 1 -->
             <div class="step-title"><span class="step-number">1</span> Get your API key <span class="step-time">2 min</span></div>
-            <p>Sign up at <a href="https://app.finault.ai">app.finault.ai</a> and copy your API key from the dashboard. Keys are scoped to your organization and track per-key usage automatically.</p>
+            <p><a href="/login?redirect=app">Sign up for free</a> and generate your API key from the dashboard under <strong>Keys</strong>. Keys are scoped to your organization and track per-key usage automatically.</p>
 
             <div class="code-block">
-<pre><code><span class="comment"># Your key lives in the dashboard under Settings &gt; API Keys</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxxxxxxxxxxx"</span></code></pre>
+<pre><code><span class="comment"># Your key from the dashboard</span>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_xxxxxxxxxxxxxxxxxxxx"</span></code></pre>
             </div>
 
             <table>
                 <thead>
-                    <tr><th>Key Prefix</th><th>Environment</th><th>Billing</th></tr>
+                    <tr><th>Key Prefix</th><th>Format</th><th>Access</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>fin_live_</code></td><td>Production</td><td>Real usage tracked</td></tr>
-                    <tr><td><code>fin_test_</code></td><td>Sandbox</td><td>No charges, full API</td></tr>
+                    <tr><td><code>fk_</code></td><td><code>fk_</code> + 32 hex characters</td><td><strong>Free — sign up and generate from dashboard</strong></td></tr>
                 </tbody>
             </table>
 
@@ -219,7 +223,7 @@
             <div class="lang-panel active" data-lang="curl" data-group="gateway">
 <pre><code><span class="comment"># Route OpenAI traffic through Finault</span>
 curl https://gateway.finault.ai/v1/chat/completions \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -H <span class="string">"X-Cost-Center: ENG-001"</span> \
   -H <span class="string">"X-Provider-Key: sk-proj-xxx"</span> \
   -d '{
@@ -250,7 +254,7 @@ console.<span class="fn">log</span>(response.usage);
             <div class="lang-panel" data-lang="python" data-group="gateway">
 <pre><code><span class="keyword">from</span> finault <span class="keyword">import</span> Finault
 
-client = <span class="fn">Finault</span>(api_key=<span class="string">"fin_live_xxx"</span>)
+client = <span class="fn">Finault</span>(api_key=<span class="string">"fk_xxx"</span>)
 
 <span class="comment"># Proxied request &mdash; same interface, full cost tracking</span>
 response = client.gateway.<span class="fn">chat</span>(
@@ -269,7 +273,7 @@ response = client.gateway.<span class="fn">chat</span>(
             <div class="lang-panel" data-lang="go" data-group="gateway">
 <pre><code><span class="keyword">import</span> <span class="string">"github.com/finault/finault-go"</span>
 
-client := finault.<span class="fn">NewClient</span>(<span class="string">"fin_live_xxx"</span>)
+client := finault.<span class="fn">NewClient</span>(<span class="string">"fk_xxx"</span>)
 
 resp, err := client.Gateway.<span class="fn">Chat</span>(ctx, &finault.ChatRequest{
     Provider:    <span class="string">"openai"</span>,
@@ -286,7 +290,7 @@ fmt.<span class="fn">Printf</span>(<span class="string">"Cost: $%.5f\n"</span>, 
 <pre><code><span class="keyword">import</span> ai.finault.sdk.FinaultClient;
 
 FinaultClient client = FinaultClient.<span class="fn">builder</span>()
-    .<span class="fn">apiKey</span>(<span class="string">"fin_live_xxx"</span>)
+    .<span class="fn">apiKey</span>(<span class="string">"fk_xxx"</span>)
     .<span class="fn">build</span>();
 
 ChatResponse response = client.<span class="fn">gateway</span>().<span class="fn">chat</span>(ChatRequest.<span class="fn">builder</span>()
@@ -303,7 +307,7 @@ System.out.<span class="fn">println</span>(response.<span class="fn">getUsage</s
             <div class="lang-panel" data-lang="ruby" data-group="gateway">
 <pre><code><span class="keyword">require</span> <span class="string">'finault'</span>
 
-client = Finault::Client.<span class="fn">new</span>(api_key: <span class="string">'fin_live_xxx'</span>)
+client = Finault::Client.<span class="fn">new</span>(api_key: <span class="string">'fk_xxx'</span>)
 
 response = client.gateway.<span class="fn">chat</span>(
   provider: <span class="string">'openai'</span>,
@@ -325,7 +329,7 @@ response = client.gateway.<span class="fn">chat</span>(
             <div class="code-block">
 <pre><code><span class="comment"># Query costs by cost center</span>
 curl https://gateway.finault.ai/v1/usage \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -G -d <span class="string">"cost_center=ENG-001"</span> -d <span class="string">"period=current_month"</span>
 
 <span class="comment"># Response</span>
@@ -390,11 +394,11 @@ curl https://gateway.finault.ai/v1/usage \
             <div class="code-block">
 <pre><code><span class="comment"># OpenAI SDK reads OPENAI_BASE_URL automatically</span>
 <span class="keyword">export</span> OPENAI_BASE_URL=<span class="string">"https://gateway.finault.ai/v1"</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxxxxxxxxxxx"</span>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_xxxxxxxxxxxx"</span>
 
 <span class="comment"># Anthropic SDK reads ANTHROPIC_BASE_URL automatically</span>
 <span class="keyword">export</span> ANTHROPIC_BASE_URL=<span class="string">"https://gateway.finault.ai/anthropic"</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fin_live_xxxxxxxxxxxx"</span></code></pre>
+<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_xxxxxxxxxxxx"</span></code></pre>
             </div>
 
 
@@ -408,7 +412,7 @@ curl https://gateway.finault.ai/v1/usage \
                     <tr><th>Header</th><th>Required</th><th>Description</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td><code>X-Finault-Key</code></td><td>Yes</td><td>Your Finault API key (or use Authorization header)</td></tr>
+                    <tr><td><code>X-Finault-API-Key</code></td><td>Yes</td><td>Your Finault API key (or use Authorization header)</td></tr>
                     <tr><td><code>X-Provider-Key</code></td><td>Yes</td><td>Your upstream provider API key</td></tr>
                     <tr><td><code>X-Cost-Center</code></td><td>No</td><td>Cost center code (e.g., <code>ENG-001</code>)</td></tr>
                     <tr><td><code>X-Project</code></td><td>No</td><td>Project identifier</td></tr>
@@ -438,7 +442,7 @@ curl https://gateway.finault.ai/v1/usage \
             <div class="code-block">
 <pre><code><span class="comment"># Create a budget</span>
 curl -X POST https://gateway.finault.ai/v1/budgets \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -d '{
     <span class="string">"name"</span>: <span class="string">"Platform Team Monthly"</span>,
     <span class="string">"cost_center"</span>: <span class="string">"ENG-001"</span>,
@@ -459,7 +463,7 @@ curl -X POST https://gateway.finault.ai/v1/budgets \
             <div class="code-block">
 <pre><code><span class="comment"># Upload and analyze an invoice</span>
 curl -X POST https://gateway.finault.ai/v1/invoices/analyze \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -F <span class="string">"file=@openai-january-2026.csv"</span>
 
 <span class="comment"># Response</span>
@@ -516,14 +520,14 @@ curl -X POST https://gateway.finault.ai/v1/invoices/analyze \
             <div class="code-block">
 <pre><code><span class="comment"># Generate a close pack</span>
 curl -X POST https://gateway.finault.ai/v1/closepack \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -F <span class="string">"files=@openai-jan.csv"</span> \
   -F <span class="string">"files=@anthropic-jan.csv"</span> \
   -o close-pack-jan-2026.zip
 
 <span class="comment"># Or generate from gateway data (no invoice upload needed)</span>
 curl -X POST https://gateway.finault.ai/v1/closepack/generate \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -d '{ <span class="string">"period"</span>: <span class="string">"2026-01"</span>, <span class="string">"anchor_blockchain"</span>: <span class="keyword">true</span> }' \
   -o close-pack-jan-2026.zip</code></pre>
             </div>
@@ -575,7 +579,7 @@ curl -X POST https://gateway.finault.ai/v1/verify \
             <div class="code-block">
 <pre><code><span class="comment"># List recent anomalies</span>
 curl https://gateway.finault.ai/v1/anomalies \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -G -d <span class="string">"severity=high"</span> -d <span class="string">"limit=10"</span>
 
 <span class="comment"># Response</span>
@@ -603,7 +607,7 @@ curl https://gateway.finault.ai/v1/anomalies \
             <div class="code-block">
 <pre><code><span class="comment"># Run reconciliation for a period</span>
 curl -X POST https://gateway.finault.ai/v1/reconcile \
-  -H <span class="string">"Authorization: Bearer fin_live_xxx"</span> \
+  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
   -F <span class="string">"invoice=@openai-jan-2026.csv"</span> \
   -d <span class="string">"period=2026-01"</span>
 
@@ -661,14 +665,14 @@ curl -X POST https://gateway.finault.ai/v1/reconcile \
             <!-- Authentication -->
             <h2 id="auth">Authentication</h2>
 
-            <p>All API requests require a Finault API key. Pass it as a Bearer token in the Authorization header or via the <code>X-Finault-Key</code> header.</p>
+            <p>All API requests require a Finault API key. Pass it as a Bearer token in the Authorization header or via the <code>X-Finault-API-Key</code> header.</p>
 
             <div class="code-block">
 <pre><code><span class="comment"># Option A: Authorization header</span>
-Authorization: Bearer fin_live_xxxxxxxxxxxx
+Authorization: Bearer fk_xxxxxxxxxxxx
 
 <span class="comment"># Option B: Custom header</span>
-X-Finault-Key: fin_live_xxxxxxxxxxxx</code></pre>
+X-Finault-API-Key: fk_xxxxxxxxxxxx</code></pre>
             </div>
 
             <p>Enterprise deployments support SSO via SAML and OIDC with four access roles: admin, finance, analyst, and viewer.</p>
@@ -834,7 +838,7 @@ X-Finault-Key: fin_live_xxxxxxxxxxxx</code></pre>
             <!-- Contact -->
             <div class="callout info" style="margin-top:3rem">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                <p>Questions? Email <a href="mailto:hello@finault.ai">hello@finault.ai</a> &middot; Full API spec: <a href="/openapi.yaml">OpenAPI 3.0</a> &middot; <a href="/security">Security &amp; Compliance</a></p>
+                <p>Questions? Email <a href="mailto:bernard.cotter@finault.ai">bernard.cotter@finault.ai</a> &middot; Full API spec: <a href="/openapi.yaml">OpenAPI 3.0</a> &middot; <a href="/security">Security &amp; Compliance</a></p>
             </div>
         </main>
     </div>

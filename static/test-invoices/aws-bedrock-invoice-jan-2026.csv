@@ -1,0 +1,14 @@
+Vendor,Amazon Web Services
+Invoice Number,INV-AWS-2026-0089
+Invoice Date,2026-01-31
+Bill To,Finault Inc.
+Currency,USD
+
+Description,Quantity,Unit Price,Amount
+Amazon Bedrock - Claude 3.5 Sonnet Input Tokens (6.57M),6570000,0.0030,19710.00
+Amazon Bedrock - Claude 3.5 Sonnet Output Tokens (1.97M),1971000,0.0150,29565.00
+Amazon Bedrock - Claude 3.5 Haiku Input Tokens (30.8M),30800000,0.0001,3080.00
+Amazon Bedrock - Claude 3.5 Haiku Output Tokens (9.24M),9240000,0.0005,4620.00
+Amazon Bedrock - Titan Embeddings V2 (22.0M tokens),22000000,0.0001,2200.00
+
+Total Amount Due,,,59175.00

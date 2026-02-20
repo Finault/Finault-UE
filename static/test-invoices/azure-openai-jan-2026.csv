@@ -1,0 +1,16 @@
+UsageDateTime,MeterCategory,MeterSubCategory,MeterName,Quantity,Cost,Currency,ResourceGroup,ResourceLocation
+2026-01-15T00:00:00Z,Azure OpenAI Service,GPT-4o,GPT-4o Input Tokens,4850000,12125.00,USD,rg-finault-prod,eastus2
+2026-01-15T00:00:00Z,Azure OpenAI Service,GPT-4o,GPT-4o Output Tokens,1620000,16200.00,USD,rg-finault-prod,eastus2
+2026-01-15T00:00:00Z,Azure OpenAI Service,GPT-4o-mini,GPT-4o-mini Input Tokens,12400000,1860.00,USD,rg-finault-prod,eastus2
+2026-01-15T00:00:00Z,Azure OpenAI Service,GPT-4o-mini,GPT-4o-mini Output Tokens,3100000,1860.00,USD,rg-finault-prod,eastus2
+2026-01-16T00:00:00Z,Azure OpenAI Service,Embeddings,text-embedding-3-large,8900000,1157.00,USD,rg-finault-prod,eastus2
+2026-01-16T00:00:00Z,Azure OpenAI Service,GPT-4o,GPT-4o Input Tokens,890000,2225.00,USD,rg-finault-staging,eastus2
+2026-01-16T00:00:00Z,Azure OpenAI Service,GPT-4o,GPT-4o Output Tokens,267000,2670.00,USD,rg-finault-staging,eastus2
+2026-01-17T00:00:00Z,Azure OpenAI Service,GPT-4o-mini,GPT-4o-mini Input Tokens,5600000,840.00,USD,rg-finault-prod,westus3
+2026-01-17T00:00:00Z,Azure OpenAI Service,GPT-4o-mini,GPT-4o-mini Output Tokens,1400000,840.00,USD,rg-finault-prod,westus3
+2026-01-18T00:00:00Z,Azure OpenAI Service,GPT-4o,GPT-4o Input Tokens,2100000,5250.00,USD,rg-finault-prod,westus3
+2026-01-18T00:00:00Z,Azure OpenAI Service,GPT-4o,GPT-4o Output Tokens,630000,6300.00,USD,rg-finault-prod,westus3
+2026-01-19T00:00:00Z,Azure OpenAI Service,GPT-4,GPT-4-Turbo Input Tokens,1200000,12000.00,USD,rg-finault-ml,eastus2
+2026-01-19T00:00:00Z,Azure OpenAI Service,GPT-4,GPT-4-Turbo Output Tokens,360000,10800.00,USD,rg-finault-ml,eastus2
+2026-01-19T00:00:00Z,Azure OpenAI Service,Embeddings,text-embedding-3-large,15000000,1950.00,USD,rg-finault-ml,eastus2
+2026-01-19T00:00:00Z,Azure OpenAI Service,Embeddings,text-embedding-3-small,25000000,500.00,USD,rg-finault-ml,eastus2
