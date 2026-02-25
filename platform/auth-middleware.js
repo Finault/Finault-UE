@@ -28,6 +28,8 @@ const PUBLIC_ENDPOINTS = [
   '/health/status',
   '/api/health',
   '/v1/health',
+  '/v1/pricing',            // Public model pricing reference
+  '/v1/closepack/validate', // Public Close Pack schema validation
   '/v1/verify/*',           // Public proof verification
   '/v1/registry/*',         // Public registry lookup
   '/v1/verify',             // Allow variations
@@ -85,6 +87,7 @@ const PERMISSION_MATRIX = {
     'manage:integrations',
     'view:audit',
     'manage:roles',
+    'manage:team',
   ],
   'owner': [
     'read:invoices',
@@ -101,6 +104,7 @@ const PERMISSION_MATRIX = {
     'manage:integrations',
     'view:audit',
     'manage:roles',
+    'manage:team',
     'manage:organization',
     'manage:billing',
     'delete:data',

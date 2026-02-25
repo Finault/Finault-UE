@@ -15,6 +15,7 @@ import {
 import { Sidebar } from '@/components/layout/Sidebar';
 import { Header } from '@/components/layout/Header';
 import { useFinaultStore } from '@/lib/store';
+import { api } from '@/lib/api';
 
 interface TeamMember {
   id: string;
@@ -157,8 +158,7 @@ const demoTeamMembers: TeamMember[] = [
   },
 ];
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+// FIX 6 (RESOLVED): Removed direct Supabase credentials — all operations now go through gateway API
 
 function mapRole(role: string | undefined): TeamMember['role'] {
   if (!role) return 'Viewer';
@@ -225,30 +225,9 @@ const STRINGS = {
 /**
  * TeamPage Component
  * Displays team member management interface with invite, edit role, and remove capabilities.
- * MEDIUM: Added error boundary via React error handling in try-catch
  *
- * FIX 6 (CRITICAL): Architecture Gap - Direct Supabase API Calls
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
- * KNOWN ISSUE: This component makes direct Supabase API calls which bypass the gateway's RBAC
- * (Role-Based Access Control) system. In a production environment, ALL Supabase calls below should
- * be migrated to use the gateway API endpoints (e.g., /v1/team, /v1/team/invite, /v1/team/role,
- * /v1/team/remove) or Next.js API routes with proper authorization checks.
- *
- * Current Direct Calls:
- * - getTeamMembers: GET ${SUPABASE_URL}/rest/v1/users (line 251)
- * - inviteUser: POST ${SUPABASE_URL}/auth/v1/invite (line 319)
- * - updateRole: PATCH ${SUPABASE_URL}/rest/v1/users (line 367)
- * - removeUser: PATCH ${SUPABASE_URL}/rest/v1/users (line 398)
- *
- * Migration Plan:
- * 1. Create Next.js API routes in /api/team/* that route through the gateway
- * 2. Move RBAC validation to the gateway (already implemented there)
- * 3. Remove direct Supabase anon key usage from client
- * 4. Implement proper request signing/validation in Next.js API layer
- *
- * Security Note: The anon key is exposed via environment variables and should not be used
- * for sensitive operations. The gateway enforces RLS with a service key, which is more secure.
- * ═══════════════════════════════════════════════════════════════════════════════════════════════════
+ * FIX 6 (RESOLVED): All CRUD operations now route through the gateway API (/v1/team endpoints)
+ * with RBAC enforcement, org-scoped queries, and service-key auth. No direct Supabase calls remain.
  */
 export default function TeamPage() {
   const { sidebarOpen } = useFinaultStore();
@@ -259,60 +238,37 @@ export default function TeamPage() {
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(false);
 
-  // FIX 7 (HIGH): CSRF Protection - Simple anti-CSRF pattern
-  const [csrfToken, setCsrfToken] = useState<string>('');
-
   useEffect(() => {
-    // FIX 7 (HIGH): Generate CSRF token on mount
-    const token = crypto.randomUUID?.() || Math.random().toString(36).substring(2, 15);
-    setCsrfToken(token);
-
     const loadTeam = async () => {
       try {
         setIsLoading(true);
-        // CRITICAL: SUPABASE_URL must be configured via environment variables
-        if (!SUPABASE_URL) {
-          console.warn('SUPABASE_URL not configured. Using demo data only.');
-          setIsLoading(false);
-          return;
-        }
-        // TODO (FIX 6): This should be routed through the gateway API (/v1/team) or Next.js API routes
-        // Direct Supabase calls expose the anon key and should be replaced with authenticated API calls
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/users?select=*&limit=${PAGE_SIZE}&offset=${page * PAGE_SIZE}&order=created_at.desc`, {
-          headers: {
-            apikey: SUPABASE_ANON_KEY || '',
-            Authorization: `Bearer ${SUPABASE_ANON_KEY || ''}`,
-            'Content-Type': 'application/json',
-          } as HeadersInit,
-        });
+        const result = await api.getTeamMembers({ limit: PAGE_SIZE, offset: page * PAGE_SIZE });
 
-        if (res.ok) {
-          const profiles = await res.json();
-          if (Array.isArray(profiles)) {
-            const mapped: TeamMember[] = profiles.map((p: any, index: number) => {
-              const name = p.full_name || p.name || p.email?.split('@')[0] || 'Unknown';
-              const nameParts = name.split(' ');
-              const initials = nameParts.length >= 2
-                ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
-                : name.substring(0, 2).toUpperCase();
+        if (result.success && Array.isArray(result.members)) {
+          const mapped: TeamMember[] = result.members.map((p: any, index: number) => {
+            const name = p.name || p.email?.split('@')[0] || 'Unknown';
+            const nameParts = name.split(' ');
+            const initials = nameParts.length >= 2
+              ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+              : name.substring(0, 2).toUpperCase();
 
-              return {
-                id: p.id || String(index),
-                name,
-                email: p.email || 'no-email@company.com',
-                role: mapRole(p.role),
-                status: p.status === 'inactive' ? 'Inactive' as const : p.status === 'pending' ? 'Pending' as const : 'Active' as const,
-                lastActive: p.last_login ? formatLastActive(p.last_login) : p.updated_at ? formatLastActive(p.updated_at) : 'Never',
-                initials,
-                joinedDate: p.created_at ? new Date(p.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown',
-              };
-            });
-            setTeamMembers(mapped);
-            setHasMore(profiles.length === PAGE_SIZE);
-          }
+            return {
+              id: p.id || String(index),
+              name,
+              email: p.email || 'no-email@company.com',
+              role: mapRole(p.role),
+              status: p.status === 'inactive' ? 'Inactive' as const : p.status === 'pending' ? 'Pending' as const : 'Active' as const,
+              lastActive: p.lastActive ? formatLastActive(p.lastActive) : 'Never',
+              initials,
+              joinedDate: p.joinedDate ? new Date(p.joinedDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Unknown',
+            };
+          });
+          setTeamMembers(mapped);
+          setHasMore(result.hasMore);
         }
       } catch (error) {
-        console.error('Failed to load team:', error);
+        console.error('Failed to load team from API, using demo data:', error);
+        // Falls back to demoTeamMembers which is already set as initial state
       } finally {
         setIsLoading(false);
       }
@@ -332,41 +288,24 @@ export default function TeamPage() {
     // Validate email format (MEDIUM)
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(inviteEmail)) {
-      alert('Please enter a valid email address');
+      alert(STRINGS.VALID_EMAIL);
       return;
     }
 
-    // FIX 6 & 7 (HIGH): Sanitize email input and include CSRF token
     const sanitizedEmail = inviteEmail.trim().toLowerCase();
 
     setIsSaving(true);
     try {
-      // TODO (FIX 6): SECURITY - This uses direct Supabase admin API calls with the anon key
-      // This should be routed through the gateway API (/v1/team/invite) or Next.js API routes
-      // which will enforce RBAC and validate API keys properly. For now, this works but is not secure.
-      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        alert('System not configured. Please contact administrator.');
-        return;
-      }
-      // Invite via Supabase Auth admin API (invites the user by email)
-      // FIX 7 (HIGH): Include CSRF token in mutation request
-      const res = await fetch(`${SUPABASE_URL}/auth/v1/invite`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({ email: sanitizedEmail }),
-      });
+      // FIX 6 (RESOLVED): Now routes through gateway API with RBAC enforcement
+      const result = await api.inviteTeamMember(sanitizedEmail, inviteRole);
 
-      if (res.ok) {
-        // Add pending member to local state
-        const initials = sanitizedEmail.substring(0, 2).toUpperCase();
+      if (result.success) {
+        // Add pending member to local state from gateway response
+        const name = sanitizedEmail.split('@')[0];
+        const initials = name.substring(0, 2).toUpperCase();
         setTeamMembers(prev => [...prev, {
-          id: crypto.randomUUID(),
-          name: sanitizedEmail.split('@')[0],
+          id: result.member?.id || crypto.randomUUID(),
+          name,
           email: sanitizedEmail,
           role: mapRole(inviteRole) as TeamMember['role'],
           status: 'Pending',
@@ -378,77 +317,48 @@ export default function TeamPage() {
         setInviteEmail('');
         setInviteRole('viewer');
       } else {
-        const err = await res.json().catch(() => ({}));
-        alert(`Invite failed: ${(err as any).message || 'Unknown error'}`);
+        alert(`${STRINGS.INVITE_FAILED} ${(result as any).error || 'Unknown error'}`);
       }
     } catch (error) {
-      alert('Failed to send invite. Please try again.');
+      alert(STRINGS.SEND_INVITE_FAILED);
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleEditRole = async (memberId: string, newRole: string) => {
-    // Add role change confirmation (LOW)
-    if (!confirm(`Change role to ${newRole}?`)) return;
+    if (!confirm(`${STRINGS.CHANGE_ROLE} ${newRole}?`)) return;
 
     try {
-      // TODO (FIX 6): SECURITY - This uses direct Supabase calls which bypass the gateway's RBAC
-      // Route through the gateway API (/v1/team/role) or Next.js API routes instead
-      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        alert('System not configured. Please contact administrator.');
-        return;
-      }
-      // FIX 7 (HIGH): Include CSRF token in mutation request
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${memberId}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=representation',
-          'X-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
+      // FIX 6 (RESOLVED): Now routes through gateway API with RBAC + org isolation
+      const result = await api.updateTeamMember(memberId, { role: newRole });
 
-      if (res.ok) {
+      if (result.success) {
         setTeamMembers(prev => prev.map(m =>
           m.id === memberId ? { ...m, role: mapRole(newRole) as TeamMember['role'] } : m
         ));
+      } else {
+        alert(STRINGS.UPDATE_ROLE_FAILED);
       }
     } catch (error) {
-      alert('Failed to update role.');
+      alert(STRINGS.UPDATE_ROLE_FAILED);
     }
     setActiveDropdown(null);
   };
 
   const handleRemoveUser = async (memberId: string) => {
-    if (!confirm('Are you sure you want to remove this user?')) return;
+    if (!confirm(STRINGS.REMOVE_USER_CONFIRM)) return;
     try {
-      // TODO (FIX 6): SECURITY - This uses direct Supabase calls which bypass the gateway's RBAC
-      // Route through the gateway API (/v1/team/remove) or Next.js API routes instead
-      if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-        alert('System not configured. Please contact administrator.');
-        return;
-      }
-      // FIX 7 (HIGH): Include CSRF token in mutation request
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/users?id=eq.${memberId}`, {
-        method: 'PATCH',
-        headers: {
-          'apikey': SUPABASE_ANON_KEY,
-          'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-          'Content-Type': 'application/json',
-          'X-CSRF-Token': csrfToken,
-        },
-        body: JSON.stringify({ is_active: false }),
-      });
+      // FIX 6 (RESOLVED): Now routes through gateway API with RBAC + org isolation
+      const result = await api.removeTeamMember(memberId);
 
-      if (res.ok) {
+      if (result.success) {
         setTeamMembers(prev => prev.filter(m => m.id !== memberId));
+      } else {
+        alert(STRINGS.REMOVE_USER_FAILED);
       }
     } catch (error) {
-      alert('Failed to remove user.');
+      alert(STRINGS.REMOVE_USER_FAILED);
     }
     setActiveDropdown(null);
   };

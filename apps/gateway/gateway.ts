@@ -317,6 +317,9 @@ async function generateAuditHash(data: unknown): Promise<string> {
 interface LogEntry {
   requestId: string;
   timestamp: string;
+  method: string;
+  endpoint: string;
+  statusCode: number;
   provider: string;
   model: string;
   inputTokens: number;
@@ -370,19 +373,29 @@ class LogQueue {
         },
         body: JSON.stringify(entries.map(e => ({
           request_id: e.requestId,
-          timestamp: e.timestamp,
-          provider: e.provider,
-          model: e.model,
-          input_tokens: e.inputTokens,
-          output_tokens: e.outputTokens,
-          cost_cents: e.costCents,
-          cost_center_code: e.attribution.costCenterCode,
-          gl_account: e.attribution.glAccount,
-          confidence: e.attribution.confidence,
           organization_id: e.metadata.orgId,
-          metadata: e.metadata,
-          latency_ms: e.latencyMs,
-          audit_hash: e.auditHash,
+          method: e.method || 'POST',
+          endpoint: e.endpoint || '/v1/chat/completions',
+          status_code: e.statusCode || 200,
+          response_time_ms: e.latencyMs,
+          metadata: {
+            provider: e.provider,
+            model: e.model,
+            input_tokens: e.inputTokens,
+            output_tokens: e.outputTokens,
+            cost_cents: e.costCents,
+            cost_dollars: (e.costCents / 100).toFixed(6),
+            cost_center_code: e.attribution.costCenterCode,
+            gl_account: e.attribution.glAccount,
+            confidence: e.attribution.confidence,
+            audit_hash: e.auditHash,
+            team: e.metadata.team,
+            project: e.metadata.project,
+            feature: e.metadata.feature,
+            environment: e.metadata.environment,
+            user: e.metadata.user,
+          },
+          created_at: e.timestamp,
         }))),
         signal: controller.signal,
       });
@@ -435,12 +448,15 @@ async function proxyToProvider(
 
   let url = PROVIDER_ENDPOINTS[provider];
 
+  // Use X-Provider-Key if supplied, otherwise fall back to env secrets
+  const providerKey = request.headers.get('X-Provider-Key') || '';
+
   switch (provider) {
     case 'openai':
-      headers['Authorization'] = request.headers.get('Authorization') || `Bearer ${env.OPENAI_API_KEY}`;
+      headers['Authorization'] = providerKey ? `Bearer ${providerKey}` : `Bearer ${env.OPENAI_API_KEY}`;
       break;
     case 'anthropic':
-      headers['x-api-key'] = request.headers.get('x-api-key') || env.ANTHROPIC_API_KEY || '';
+      headers['x-api-key'] = providerKey || request.headers.get('x-api-key') || env.ANTHROPIC_API_KEY || '';
       headers['anthropic-version'] = '2023-06-01';
       break;
     case 'google':
@@ -662,6 +678,613 @@ async function checkRateLimit(env: Env, orgId: string, path: string): Promise<Ra
 }
 
 // ============================================================================
+// API KEY GENERATION — Stripe-style onboarding (Bearer token → first fk_ key)
+// ============================================================================
+
+async function handleCreateApiKey(request: Request, env: Env, requestId: string): Promise<Response> {
+  // Validate Supabase Bearer token
+  const authHeader = request.headers.get('Authorization') || '';
+  const match = authHeader.match(/^Bearer\s+(\S+)$/);
+  if (!match || match[1].startsWith('fk_')) {
+    return jsonResponse({ success: false, error: 'Bearer token required (Supabase auth)', requestId }, 401, request);
+  }
+
+  const token = match[1];
+
+  // Verify the token with Supabase to get user info
+  try {
+    const userRes = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'apikey': env.SUPABASE_SERVICE_KEY,
+      },
+    });
+
+    if (!userRes.ok) {
+      return jsonResponse({ success: false, error: 'Invalid or expired token. Please sign in again.', requestId }, 401, request);
+    }
+
+    const user = await userRes.json() as { id: string; email?: string; user_metadata?: { full_name?: string; company?: string } };
+    if (!user.id) {
+      return jsonResponse({ success: false, error: 'Could not verify user identity', requestId }, 401, request);
+    }
+
+    // Parse request body
+    let body: { name?: string } = {};
+    try { body = await request.json() as { name?: string }; } catch { /* empty body ok */ }
+
+    const userName = user.user_metadata?.full_name || user.email || 'User';
+    const userEmail = user.email || '';
+    const now = new Date().toISOString();
+
+    // Auto-create organization if it doesn't exist (Stripe-style zero-friction onboarding)
+    const orgCheck = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/organizations?id=eq.${user.id}&select=id`,
+      {
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        },
+      }
+    );
+    const orgs = await orgCheck.json() as Array<{ id: string }>;
+
+    if (!orgs || orgs.length === 0) {
+      const slug = userEmail.split('@')[0].replace(/[^a-z0-9]/gi, '-').toLowerCase() || 'org-' + user.id.substring(0, 8);
+      const orgInsert = await fetch(`${env.SUPABASE_URL}/rest/v1/organizations`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({
+          id: user.id,
+          name: userName,
+          slug: slug,
+          plan_type: 'starter',
+          billing_email: userEmail,
+          currency: 'USD',
+          timezone: 'UTC',
+          language: 'en',
+          is_active: true,
+          created_at: now,
+          updated_at: now,
+        }),
+      });
+
+      if (!orgInsert.ok) {
+        const orgErr = await orgInsert.text();
+        return jsonResponse({ success: false, error: 'Failed to create organization', details: orgErr, requestId }, 500, request);
+      }
+    }
+
+    // Auto-create user record if it doesn't exist
+    const userCheck = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/users?id=eq.${user.id}&select=id`,
+      {
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        },
+      }
+    );
+    const users = await userCheck.json() as Array<{ id: string }>;
+
+    if (!users || users.length === 0) {
+      const nameParts = userName.split(' ');
+      const userInsert = await fetch(`${env.SUPABASE_URL}/rest/v1/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'return=minimal',
+        },
+        body: JSON.stringify({
+          id: user.id,
+          auth_id: user.id,
+          email: userEmail,
+          email_verified: true,
+          first_name: nameParts[0] || '',
+          last_name: nameParts.slice(1).join(' ') || '',
+          organization_id: user.id,
+          role: 'admin',
+          is_active: true,
+          created_at: now,
+          updated_at: now,
+        }),
+      });
+
+      if (!userInsert.ok) {
+        const userErr = await userInsert.text();
+        return jsonResponse({ success: false, error: 'Failed to create user record', details: userErr, requestId }, 500, request);
+      }
+    }
+
+    // Generate the fk_ key
+    const rawKey = `fk_${crypto.randomUUID().replace(/-/g, '')}`;
+    const hashBuf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(rawKey));
+    const keyHash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+
+    const keyId = crypto.randomUUID();
+
+    // Store in Supabase
+    const insertRes = await fetch(`${env.SUPABASE_URL}/rest/v1/api_keys`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': env.SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        'Prefer': 'return=minimal',
+      },
+      body: JSON.stringify({
+        id: keyId,
+        organization_id: user.id,
+        user_id: user.id,
+        name: body.name || 'My First Key',
+        key_hash: keyHash,
+        is_active: true,
+        scopes: ['keys:admin'],
+        created_at: now,
+      }),
+    });
+
+    if (!insertRes.ok) {
+      const errText = await insertRes.text();
+      return jsonResponse({ success: false, error: 'Failed to store API key', details: errText, requestId }, 500, request);
+    }
+
+    return jsonResponse({
+      success: true,
+      key: {
+        id: keyId,
+        name: body.name || 'My First Key',
+        secret: rawKey,
+        key_prefix: rawKey.substring(0, 12) + '...',
+        is_active: true,
+        created_at: now,
+      },
+      warning: 'Store this key securely. It will not be shown again.',
+      requestId,
+    }, 201, request);
+  } catch (err: any) {
+    return jsonResponse({ success: false, error: err.message || 'Key generation failed', requestId }, 500, request);
+  }
+}
+
+// ============================================================================
+// DASHBOARD AUTH — accepts both fk_ API key and Supabase Bearer token
+// ============================================================================
+
+async function validateDashboardAuth(
+  request: Request,
+  env: Env
+): Promise<{ valid: true; orgId: string; userId: string } | { valid: false; error: string }> {
+  const authHeader = request.headers.get('Authorization') || '';
+
+  // Try fk_ key auth
+  if (authHeader.startsWith('Bearer fk_')) {
+    const auth = await validateApiKey(request, env);
+    if (auth.valid) return { valid: true, orgId: auth.orgId, userId: auth.userId };
+    return { valid: false, error: auth.error };
+  }
+
+  // Try Supabase Bearer token
+  const match = authHeader.match(/^Bearer\s+(\S+)$/);
+  if (match) {
+    const token = match[1];
+    try {
+      const userRes = await fetch(`${env.SUPABASE_URL}/auth/v1/user`, {
+        headers: { 'Authorization': `Bearer ${token}`, 'apikey': env.SUPABASE_SERVICE_KEY },
+      });
+      if (userRes.ok) {
+        const user = await userRes.json() as { id: string; email?: string };
+        if (user.id) return { valid: true, orgId: user.id, userId: user.id };
+      }
+    } catch { /* fall through */ }
+    return { valid: false, error: 'Invalid or expired token' };
+  }
+
+  return { valid: false, error: 'Authorization required. Send Bearer fk_... or Supabase token.' };
+}
+
+// ============================================================================
+// DASHBOARD HANDLERS — power the dashboard.finault.ai UI
+// ============================================================================
+
+async function handleDashboardOverview(orgId: string, env: Env, request: Request, requestId: string): Promise<Response> {
+  const now = new Date();
+  const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01T00:00:00Z`;
+
+  try {
+    const logsRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/gateway_logs?organization_id=eq.${orgId}&created_at=gte.${monthStart}&order=created_at.desc&limit=1000`,
+      {
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        },
+      }
+    );
+
+    if (!logsRes.ok) {
+      return jsonResponse({ error: 'Failed to fetch data', requestId }, 500, request);
+    }
+
+    const logs = await logsRes.json() as Array<any>;
+
+    // Aggregate in-memory (MVP; later use SQL aggregates / materialized views)
+    let totalCostCents = 0;
+    let totalTokens = 0;
+    let totalLatencyMs = 0;
+    const modelCosts: Record<string, { costCents: number; requests: number; tokens: number }> = {};
+    const dailyCosts: Record<string, number> = {};
+    const dailyRequests: Record<string, number> = {};
+
+    for (const log of logs) {
+      const meta = log.metadata || {};
+      const costCents = meta.cost_cents || 0;
+      const tokens = (meta.input_tokens || 0) + (meta.output_tokens || 0);
+      const model = meta.model || 'unknown';
+      const day = (log.created_at || '').substring(0, 10);
+
+      totalCostCents += costCents;
+      totalTokens += tokens;
+      totalLatencyMs += log.response_time_ms || 0;
+
+      if (!modelCosts[model]) modelCosts[model] = { costCents: 0, requests: 0, tokens: 0 };
+      modelCosts[model].costCents += costCents;
+      modelCosts[model].requests += 1;
+      modelCosts[model].tokens += tokens;
+
+      dailyCosts[day] = (dailyCosts[day] || 0) + costCents;
+      dailyRequests[day] = (dailyRequests[day] || 0) + 1;
+    }
+
+    const totalRequests = logs.length;
+
+    return jsonResponse({
+      totalSpendCents: totalCostCents,
+      totalSpendDollars: (totalCostCents / 100).toFixed(2),
+      totalRequests,
+      totalTokens,
+      avgCostCents: totalRequests > 0 ? Math.round((totalCostCents / totalRequests) * 100) / 100 : 0,
+      avgCostDollars: totalRequests > 0 ? (totalCostCents / totalRequests / 100).toFixed(6) : '0.00',
+      avgLatencyMs: totalRequests > 0 ? Math.round(totalLatencyMs / totalRequests) : 0,
+      modelCosts: Object.entries(modelCosts)
+        .map(([model, data]) => ({ model, ...data, costDollars: (data.costCents / 100).toFixed(4) }))
+        .sort((a, b) => b.costCents - a.costCents),
+      dailyCosts: Object.entries(dailyCosts)
+        .map(([date, cents]) => ({ date, costCents: cents, costDollars: (cents / 100).toFixed(4) }))
+        .sort((a, b) => a.date.localeCompare(b.date)),
+      dailyRequests: Object.entries(dailyRequests)
+        .map(([date, count]) => ({ date, count }))
+        .sort((a, b) => a.date.localeCompare(b.date)),
+      period: { start: monthStart, end: now.toISOString() },
+      requestId,
+    }, 200, request);
+  } catch (err: any) {
+    return jsonResponse({ error: err.message || 'Overview failed', requestId }, 500, request);
+  }
+}
+
+async function handleDashboardRequests(orgId: string, url: URL, env: Env, request: Request, requestId: string): Promise<Response> {
+  const limit = Math.min(parseInt(url.searchParams.get('limit') || '50'), 200);
+  const offset = parseInt(url.searchParams.get('offset') || '0');
+
+  try {
+    const logsRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/gateway_logs?organization_id=eq.${orgId}&order=created_at.desc&limit=${limit}&offset=${offset}&select=*`,
+      {
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Prefer': 'count=exact',
+        },
+      }
+    );
+
+    if (!logsRes.ok) {
+      return jsonResponse({ error: 'Failed to fetch requests', requestId }, 500, request);
+    }
+
+    const contentRange = logsRes.headers.get('Content-Range') || '';
+    const totalMatch = contentRange.match(/\/(\d+|\*)/);
+    const total = totalMatch && totalMatch[1] !== '*' ? parseInt(totalMatch[1]) : 0;
+
+    const logs = await logsRes.json() as Array<any>;
+
+    const requests = logs.map((log: any) => {
+      const meta = log.metadata || {};
+      return {
+        id: log.id,
+        requestId: log.request_id,
+        timestamp: log.created_at,
+        method: log.method,
+        endpoint: log.endpoint,
+        statusCode: log.status_code,
+        latencyMs: log.response_time_ms,
+        provider: meta.provider || '—',
+        model: meta.model || '—',
+        inputTokens: meta.input_tokens || 0,
+        outputTokens: meta.output_tokens || 0,
+        costCents: meta.cost_cents || 0,
+        costDollars: ((meta.cost_cents || 0) / 100).toFixed(6),
+        costCenter: meta.cost_center_code || '—',
+        glAccount: meta.gl_account || '—',
+        auditHash: meta.audit_hash || '—',
+        team: meta.team || '—',
+        project: meta.project || '—',
+        environment: meta.environment || '—',
+      };
+    });
+
+    return jsonResponse({ requests, pagination: { limit, offset, total }, requestId }, 200, request);
+  } catch (err: any) {
+    return jsonResponse({ error: err.message || 'Requests failed', requestId }, 500, request);
+  }
+}
+
+async function handleDashboardKeys(orgId: string, env: Env, request: Request, requestId: string): Promise<Response> {
+  try {
+    const keysRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/api_keys?organization_id=eq.${orgId}&order=created_at.desc&select=id,name,is_active,scopes,created_at,expires_at`,
+      {
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        },
+      }
+    );
+
+    if (!keysRes.ok) {
+      return jsonResponse({ error: 'Failed to fetch keys', requestId }, 500, request);
+    }
+
+    const keys = await keysRes.json() as Array<any>;
+
+    return jsonResponse({
+      keys: keys.map((k: any) => ({
+        id: k.id,
+        name: k.name,
+        isActive: k.is_active,
+        scopes: k.scopes,
+        createdAt: k.created_at,
+        expiresAt: k.expires_at,
+      })),
+      requestId,
+    }, 200, request);
+  } catch (err: any) {
+    return jsonResponse({ error: err.message || 'Keys failed', requestId }, 500, request);
+  }
+}
+
+// ============================================================================
+// TEAM MANAGEMENT HANDLERS — power the dashboard Team page
+// ============================================================================
+
+/**
+ * GET /v1/team — List team members for the org
+ * Query params: limit (default 25), offset (default 0)
+ */
+async function handleGetTeamMembers(orgId: string, url: URL, env: Env, request: Request, requestId: string): Promise<Response> {
+  try {
+    const limit = Math.min(parseInt(url.searchParams.get('limit') || '25', 10), 100);
+    const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+
+    // Fetch users belonging to this organization
+    const usersRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/users?organization_id=eq.${orgId}&is_active=eq.true&order=created_at.desc&limit=${limit + 1}&offset=${offset}&select=id,name,email,role,status,last_sign_in_at,created_at`,
+      {
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        },
+      }
+    );
+
+    if (!usersRes.ok) {
+      return jsonResponse({ success: false, error: 'Failed to fetch team members', requestId }, 500, request);
+    }
+
+    const users = await usersRes.json() as Array<any>;
+    const hasMore = users.length > limit;
+    const members = (hasMore ? users.slice(0, limit) : users).map((u: any) => ({
+      id: u.id,
+      name: u.name || u.email?.split('@')[0] || 'Unknown',
+      email: u.email,
+      role: u.role || 'viewer',
+      status: u.status || 'active',
+      lastActive: u.last_sign_in_at || null,
+      joinedDate: u.created_at,
+    }));
+
+    return jsonResponse({
+      success: true,
+      members,
+      count: members.length,
+      hasMore,
+      requestId,
+    }, 200, request);
+  } catch (err: any) {
+    return jsonResponse({ success: false, error: err.message || 'Failed to fetch team', requestId }, 500, request);
+  }
+}
+
+/**
+ * POST /v1/team — Invite a new team member
+ * Body: { email: string, role: string }
+ */
+async function handleInviteTeamMember(orgId: string, env: Env, request: Request, requestId: string): Promise<Response> {
+  try {
+    const body = await request.json() as { email?: string; role?: string };
+    const email = body.email?.trim().toLowerCase();
+    const role = body.role || 'viewer';
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return jsonResponse({ success: false, error: 'Valid email is required', code: 'VALIDATION_ERROR', requestId }, 400, request);
+    }
+
+    const allowedRoles = ['viewer', 'editor', 'admin'];
+    if (!allowedRoles.includes(role)) {
+      return jsonResponse({ success: false, error: `Role must be one of: ${allowedRoles.join(', ')}`, code: 'VALIDATION_ERROR', requestId }, 400, request);
+    }
+
+    // Invite via Supabase Auth admin API (using service key for admin-level invite)
+    const inviteRes = await fetch(`${env.SUPABASE_URL}/auth/v1/invite`, {
+      method: 'POST',
+      headers: {
+        'apikey': env.SUPABASE_SERVICE_KEY,
+        'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!inviteRes.ok) {
+      const err = await inviteRes.json().catch(() => ({})) as any;
+      return jsonResponse({ success: false, error: err.message || 'Invite failed', code: 'INVITE_FAILED', requestId }, inviteRes.status, request);
+    }
+
+    const inviteData = await inviteRes.json() as { id?: string };
+
+    // If invite succeeded, upsert the user record with the assigned role and org
+    if (inviteData.id) {
+      await fetch(`${env.SUPABASE_URL}/rest/v1/users`, {
+        method: 'POST',
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'resolution=merge-duplicates',
+        },
+        body: JSON.stringify({
+          id: inviteData.id,
+          email,
+          role,
+          organization_id: orgId,
+          status: 'pending',
+          is_active: true,
+        }),
+      });
+    }
+
+    return jsonResponse({
+      success: true,
+      member: {
+        id: inviteData.id || crypto.randomUUID(),
+        email,
+        role,
+        status: 'pending',
+      },
+      requestId,
+    }, 201, request);
+  } catch (err: any) {
+    return jsonResponse({ success: false, error: err.message || 'Invite failed', requestId }, 500, request);
+  }
+}
+
+/**
+ * PUT /v1/team/:memberId — Update a team member (role, status, name)
+ * Body: { role?: string, status?: string, name?: string }
+ */
+async function handleUpdateTeamMember(memberId: string, orgId: string, env: Env, request: Request, requestId: string): Promise<Response> {
+  try {
+    const body = await request.json() as { role?: string; status?: string; name?: string };
+    const updates: Record<string, string> = {};
+
+    if (body.role) {
+      const allowedRoles = ['viewer', 'editor', 'admin'];
+      if (!allowedRoles.includes(body.role)) {
+        return jsonResponse({ success: false, error: `Role must be one of: ${allowedRoles.join(', ')}`, code: 'VALIDATION_ERROR', requestId }, 400, request);
+      }
+      updates.role = body.role;
+    }
+    if (body.status) updates.status = body.status;
+    if (body.name) updates.name = body.name;
+
+    if (Object.keys(updates).length === 0) {
+      return jsonResponse({ success: false, error: 'No valid fields to update', code: 'VALIDATION_ERROR', requestId }, 400, request);
+    }
+
+    // Update user record, scoped to org for multi-tenant isolation
+    const updateRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/users?id=eq.${memberId}&organization_id=eq.${orgId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify(updates),
+      }
+    );
+
+    if (!updateRes.ok) {
+      return jsonResponse({ success: false, error: 'Failed to update member', requestId }, 500, request);
+    }
+
+    const updated = await updateRes.json() as Array<any>;
+    if (!updated.length) {
+      return jsonResponse({ success: false, error: 'Member not found in organization', code: 'NOT_FOUND', requestId }, 404, request);
+    }
+
+    return jsonResponse({
+      success: true,
+      member: {
+        id: updated[0].id,
+        name: updated[0].name,
+        email: updated[0].email,
+        role: updated[0].role,
+        status: updated[0].status,
+      },
+      requestId,
+    }, 200, request);
+  } catch (err: any) {
+    return jsonResponse({ success: false, error: err.message || 'Update failed', requestId }, 500, request);
+  }
+}
+
+/**
+ * DELETE /v1/team/:memberId — Remove a team member (soft delete)
+ */
+async function handleRemoveTeamMember(memberId: string, orgId: string, env: Env, request: Request, requestId: string): Promise<Response> {
+  try {
+    // Soft delete: set is_active to false, scoped to org
+    const deleteRes = await fetch(
+      `${env.SUPABASE_URL}/rest/v1/users?id=eq.${memberId}&organization_id=eq.${orgId}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'apikey': env.SUPABASE_SERVICE_KEY,
+          'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation',
+        },
+        body: JSON.stringify({ is_active: false, status: 'inactive' }),
+      }
+    );
+
+    if (!deleteRes.ok) {
+      return jsonResponse({ success: false, error: 'Failed to remove member', requestId }, 500, request);
+    }
+
+    const deleted = await deleteRes.json() as Array<any>;
+    if (!deleted.length) {
+      return jsonResponse({ success: false, error: 'Member not found in organization', code: 'NOT_FOUND', requestId }, 404, request);
+    }
+
+    return jsonResponse({ success: true, requestId }, 200, request);
+  } catch (err: any) {
+    return jsonResponse({ success: false, error: err.message || 'Remove failed', requestId }, 500, request);
+  }
+}
+
+// ============================================================================
 // MAIN ENTRY POINT
 // ============================================================================
 
@@ -687,6 +1310,64 @@ export default {
         capabilities: ['attribution', 'cost_calculation', 'audit_trail', 'multi_provider', 'api_key_auth'],
         requestId,
       }, 200, request);
+    }
+
+    try {
+    // ──── API Key Generation — uses Supabase Bearer token, not fk_ key ────
+    if (url.pathname === '/v1/keys' && request.method === 'POST') {
+      return handleCreateApiKey(request, env, requestId);
+    }
+
+    // ──── Dashboard endpoints — accept both fk_ key and Supabase token ────
+    if (url.pathname.startsWith('/v1/dashboard/')) {
+      const dashAuth = await validateDashboardAuth(request, env);
+      if (!dashAuth.valid) {
+        return jsonResponse({ error: dashAuth.error, code: 'AUTH_REQUIRED', requestId }, 401, request);
+      }
+
+      if (url.pathname === '/v1/dashboard/overview' && request.method === 'GET') {
+        return handleDashboardOverview(dashAuth.orgId, env, request, requestId);
+      }
+      if (url.pathname === '/v1/dashboard/requests' && request.method === 'GET') {
+        return handleDashboardRequests(dashAuth.orgId, url, env, request, requestId);
+      }
+      if (url.pathname === '/v1/dashboard/keys' && request.method === 'GET') {
+        return handleDashboardKeys(dashAuth.orgId, env, request, requestId);
+      }
+
+      return jsonResponse({ error: 'Not found', code: 'ENDPOINT_NOT_FOUND', requestId }, 404, request);
+    }
+
+    // ──── Team Management endpoints — accept both fk_ key and Supabase token ────
+    if (url.pathname === '/v1/team' || url.pathname.startsWith('/v1/team/')) {
+      const teamAuth = await validateDashboardAuth(request, env);
+      if (!teamAuth.valid) {
+        return jsonResponse({ error: teamAuth.error, code: 'AUTH_REQUIRED', requestId }, 401, request);
+      }
+
+      // GET /v1/team — list members (read:dashboard is sufficient)
+      if (url.pathname === '/v1/team' && request.method === 'GET') {
+        return handleGetTeamMembers(teamAuth.orgId, url, env, request, requestId);
+      }
+
+      // POST /v1/team — invite member (requires manage:team → admin/owner)
+      if (url.pathname === '/v1/team' && request.method === 'POST') {
+        return handleInviteTeamMember(teamAuth.orgId, env, request, requestId);
+      }
+
+      // PUT /v1/team/:id — update member
+      const putMatch = url.pathname.match(/^\/v1\/team\/([a-zA-Z0-9-]+)$/);
+      if (putMatch && request.method === 'PUT') {
+        return handleUpdateTeamMember(putMatch[1], teamAuth.orgId, env, request, requestId);
+      }
+
+      // DELETE /v1/team/:id — remove member
+      const deleteMatch = url.pathname.match(/^\/v1\/team\/([a-zA-Z0-9-]+)$/);
+      if (deleteMatch && request.method === 'DELETE') {
+        return handleRemoveTeamMember(deleteMatch[1], teamAuth.orgId, env, request, requestId);
+      }
+
+      return jsonResponse({ error: 'Not found', code: 'ENDPOINT_NOT_FOUND', requestId }, 404, request);
     }
 
     // ──── All endpoints below require a valid API key ────
@@ -878,14 +1559,26 @@ export default {
         body: JSON.stringify(body),
       });
       // Pass requestId to handleProxy via header
+      const proxyHeaders = new Headers(headers);
+      proxyHeaders.set('X-Finault-Request-Id', requestId);
       return handleProxy(new Request(request.url, {
         method: request.method,
-        headers: new Headers(headers).set('X-Finault-Request-Id', requestId),
+        headers: proxyHeaders,
         body: JSON.stringify(body),
       }), env, ctx, startTime, body);
     }
 
     return jsonResponse({ error: 'Not Found', code: 'ENDPOINT_NOT_FOUND', requestId }, 404, request);
+    } catch (err: any) {
+      // Ensure CORS headers are always returned, even on unhandled errors
+      return new Response(JSON.stringify({ error: err.message || 'Internal server error', requestId }), {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+          ...getCorsHeaders(request),
+        },
+      });
+    }
   },
 };
 
@@ -995,6 +1688,9 @@ async function handleProxy(
     ctx.waitUntil(logQueue.log({
       requestId,
       timestamp: new Date().toISOString(),
+      method: 'POST',
+      endpoint: request.url.includes('/v1/messages') ? '/v1/messages' : '/v1/chat/completions',
+      statusCode: providerResponse.status,
       provider,
       model,
       inputTokens: usage.inputTokens,
@@ -1051,6 +1747,8 @@ function sanitizeHeaderValue(value: string | null | undefined): string {
 
 // FIX #12: Configurable CORS origin allowlist (no more wildcard *)
 const ALLOWED_ORIGINS = new Set([
+  'https://finault.ai',
+  'https://dashboard.finault.ai',
   'https://app.finault.ai',
   'https://staging.finault.ai',
   'https://audit.finault.ai',
@@ -1064,9 +1762,10 @@ function getCorsHeaders(request?: Request): Record<string, string> {
   const allowedOrigin = ALLOWED_ORIGINS.has(origin) ? origin : '';
 
   const headers: Record<string, string> = {
-    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Finault-Cost-Center, X-Finault-Project, X-Finault-Team, X-Finault-Environment, X-Finault-Feature, X-Finault-User, X-Finault-Org, X-Finault-Provider, X-Finault-API-Key, x-api-key',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Finault-Cost-Center, X-Finault-Project, X-Finault-Team, X-Finault-Environment, X-Finault-Feature, X-Finault-User, X-Finault-Org, X-Finault-Provider, X-Finault-API-Key, X-Provider-Key, x-api-key',
     'Access-Control-Max-Age': '86400',
+    'Access-Control-Expose-Headers': 'X-Finault-Request-Id, X-Finault-Cost-Center, X-Finault-GL-Account, X-Finault-Cost-Cents, X-Finault-Cost-Dollars, X-Finault-Confidence, X-Finault-Rule-Matched, X-Finault-Audit-Hash, X-Finault-Latency-Ms, X-Finault-Streaming',
     'Vary': 'Origin',
   };
 
