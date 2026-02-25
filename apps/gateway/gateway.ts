@@ -1456,18 +1456,29 @@ export default {
       delete (body as any).__proto__;
       delete (body as any).constructor;
 
-      // ──── FIX #8: Budget Enforcement (pre-request) ────
+      // ──── FIX #8: Budget Enforcement (pre-request with output estimation) ────
       try {
         const costCenter = request.headers.get('X-Finault-Cost-Center') || 'default';
 
-        // Estimate cost from message content
+        // Estimate INPUT cost from message content (~4 chars per token)
         const messages = (body.messages || body.prompt || []) as Array<{ content?: string }>;
         const charCount = Array.isArray(messages)
           ? messages.reduce((sum, m) => sum + (typeof m.content === 'string' ? m.content.length : 0), 0)
           : 0;
-        const estimatedTokens = Math.ceil(charCount / 4); // ~4 chars per token
+        const estimatedInputTokens = Math.ceil(charCount / 4);
         const pricing = validModels[model];
-        const estimatedCostCents = Math.ceil((estimatedTokens * pricing.input / 1000) * 100);
+        const inputCostCents = Math.ceil((estimatedInputTokens * pricing.input / 1000) * 100);
+
+        // Estimate OUTPUT cost from max_tokens / max_completion_tokens
+        // Use the explicit cap if provided, otherwise assume a conservative default
+        // based on typical completion ratios (50% of input or 1024 tokens, whichever is larger)
+        const maxOutputTokens = Number(body.max_tokens || body.max_completion_tokens || 0);
+        const estimatedOutputTokens = maxOutputTokens > 0
+          ? maxOutputTokens
+          : Math.max(Math.ceil(estimatedInputTokens * 0.5), 1024);
+        const outputCostCents = Math.ceil((estimatedOutputTokens * pricing.output / 1000) * 100);
+
+        const estimatedCostCents = inputCostCents + outputCostCents;
 
         // Add timeout for budget fetch
         const budgetController = new AbortController();
@@ -1530,6 +1541,9 @@ export default {
                       code: 'BUDGET_EXCEEDED',
                       costCenter,
                       currentSpend: `$${(currentSpendCents / 100).toFixed(2)}`,
+                      estimatedRequestCost: `$${(estimatedCostCents / 100).toFixed(4)}`,
+                      estimatedInputCost: `$${(inputCostCents / 100).toFixed(4)}`,
+                      estimatedOutputCost: `$${(outputCostCents / 100).toFixed(4)}`,
                       monthlyLimit: `$${budget.monthly_limit.toFixed(2)}`,
                       usagePercent: Math.round(usagePct),
                       requestId,
