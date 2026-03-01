@@ -221,8 +221,7 @@
             font-weight: 600;
             color: var(--gray-900);
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
+            letter-spacing: 0.01em;
         }
 
         .form-input {
@@ -443,7 +442,7 @@
             <span class="nav-logo-text">Finault</span>
         </a>
         <div class="nav-right">
-            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/app" class="nav-link">Free Audit</a>
             <a href="/pricing" class="nav-link">Pricing</a>
             <a href="/docs" class="nav-link">Docs</a>
             <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
@@ -458,11 +457,11 @@
                 <p class="config-warning-text">Authentication is being configured. Please check back soon.</p>
             </div>
 
-            <!-- Sandbox Pitch -->
+            <!-- Value Prop -->
             <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 1.5rem;background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.15);border-radius:12px">
                 <p style="font-size:.9rem;color:var(--gray-600);margin:0;line-height:1.5">
-                    <strong style="color:#16a34a">Free API key on signup.</strong><br>
-                    230 endpoints. 5 SDKs. No credit card. Hit the gateway in 2 minutes.
+                    <strong style="color:#16a34a">Upload. Allocate. Close.</strong><br>
+                    AI cost allocation and audit-ready Close Packs in 60 seconds. No credit card.
                 </p>
             </div>
 
@@ -536,20 +535,10 @@
             const params = new URLSearchParams(window.location.search);
             const redirect = params.get('redirect');
             if (redirect === 'pricing') return '/pricing';
-            if (redirect === 'app') return '/welcome';
-            if (redirect === 'welcome') return '/welcome';
-            if (redirect === 'dashboard') {
-                var token = localStorage.getItem('finault_token');
-                return token
-                    ? 'https://dashboard.finault.ai/dashboard#access_token=' + encodeURIComponent(token)
-                    : '/dashboard';
-            }
-            // Allow full URLs to dashboard.finault.ai or app.finault.ai
-            if (redirect && redirect.startsWith('https://dashboard.finault.ai')) return redirect;
-            if (redirect && redirect.startsWith('https://app.finault.ai')) return redirect;
+            if (redirect === 'app') return '/app';
             // Allow relative paths
             if (redirect && redirect.startsWith('/')) return redirect;
-            return '/welcome';
+            return '/app';
         }
 
         // Check if already logged in — verify token is still valid before redirecting
@@ -704,13 +693,29 @@
                     return;
                 }
 
-                // Store token and user info
+                // Store tokens and user info
                 localStorage.setItem('finault_token', data.access_token);
+                if (data.refresh_token) {
+                    localStorage.setItem('finault_refresh_token', data.refresh_token);
+                }
                 if (data.user) {
                     localStorage.setItem('finault_user', JSON.stringify(data.user));
                 }
 
-                // Redirect to intended page or dashboard
+                // Also set the Supabase SDK session key so /app can read it
+                // The Supabase JS SDK stores sessions under this key
+                const sbSessionKey = 'sb-bejoptgsrhmklmllkobu-auth-token';
+                const sbSession = {
+                    access_token: data.access_token,
+                    refresh_token: data.refresh_token || '',
+                    expires_in: data.expires_in || 3600,
+                    expires_at: data.expires_at || Math.floor(Date.now() / 1000) + 3600,
+                    token_type: 'bearer',
+                    user: data.user
+                };
+                localStorage.setItem(sbSessionKey, JSON.stringify(sbSession));
+
+                // Redirect to the app
                 window.location.href = getRedirectUrl();
             } catch (err) {
                 showError(errorEl, 'An error occurred. Please try again.');

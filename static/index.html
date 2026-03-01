@@ -10,10 +10,10 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finault — Turn Your AI Invoice Into a CFO-Ready Close Pack in 60 Seconds</title>
-    <meta name="description" content="Upload your AI billing CSV. Get back an audit-ready close pack with journal entries, reconciliation, and cryptographic certification. Browser-native. Data never leaves your machine. Free.">
-    <meta property="og:title" content="Finault — AI Invoice to Close Pack in 60 Seconds">
-    <meta property="og:description" content="Upload your AI billing CSV. Get back a CFO-ready close pack. Browser-native. Free.">
+    <title>Finault — AI Unit Economics Platform | Are Your AI Features Profitable?</title>
+    <meta name="description" content="Know your AI margin per customer, per feature, per dollar of revenue. Real-time unit economics that turn spend data into pricing decisions.">
+    <meta property="og:title" content="Finault — AI Unit Economics Platform">
+    <meta property="og:description" content="Are your AI features making money — or quietly killing your margins? Know your cost-to-serve per customer in real time.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://finault.ai">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -151,7 +151,7 @@
         .demo-csv.visible { opacity: 1; transform: translateY(0); }
         .demo-csv-header {
             font-size: 11px; font-weight: 600; color: var(--gray-400);
-            text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px;
+            letter-spacing: 0.03em; margin-bottom: 8px;
         }
         .demo-csv-table {
             width: 100%; font-size: 12px; border-collapse: collapse;
@@ -327,8 +327,8 @@
         }
         .how-inner { max-width: 960px; margin: 0 auto; }
         .section-label {
-            font-size: 13px; font-weight: 600; letter-spacing: 0.06em;
-            text-transform: uppercase; color: var(--green); margin-bottom: 12px;
+            font-size: 13px; font-weight: 600; letter-spacing: 0.02em;
+            color: var(--green); margin-bottom: 12px;
         }
         .section-title {
             font-size: clamp(28px, 4.5vw, 40px); font-weight: 700;
@@ -442,8 +442,8 @@
             border-radius: 12px; border: 1px solid var(--gray-200);
         }
         .buyer-role {
-            font-size: 12px; font-weight: 600; letter-spacing: 0.04em;
-            text-transform: uppercase; color: var(--green); margin-bottom: 10px;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.02em;
+            color: var(--green); margin-bottom: 10px;
         }
         .buyer-quote {
             font-size: 15px; line-height: 1.55; color: var(--gray-600); font-style: italic;
@@ -494,6 +494,97 @@
             .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
             .provider-logos { gap: 16px; }
         }
+
+        /* ===== MARGIN ANALYSIS ===== */
+        .margin-input-section {
+            margin-top: 24px; padding: 20px; border-radius: 10px;
+            background: var(--gray-50); border: 1px solid var(--gray-200);
+            opacity: 0; transform: translateY(8px);
+            transition: all 0.5s ease;
+        }
+        .margin-input-section.visible { opacity: 1; transform: translateY(0); }
+        .margin-input-label {
+            font-size: 14px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px;
+        }
+        .margin-input-sub { font-size: 12px; color: var(--gray-500); margin-bottom: 12px; }
+        .margin-input-row { display: flex; gap: 10px; align-items: center; }
+        .margin-input-field {
+            flex: 1; padding: 10px 14px; border: 1px solid var(--gray-200); border-radius: 8px;
+            font-size: 14px; font-family: inherit; background: var(--white);
+            transition: border-color 0.2s;
+        }
+        .margin-input-field:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(22,163,74,0.1); }
+        .margin-input-btn {
+            padding: 10px 20px; background: var(--green); color: var(--white);
+            border: none; border-radius: 8px; font-size: 14px; font-weight: 600;
+            cursor: pointer; white-space: nowrap; transition: opacity 0.2s;
+        }
+        .margin-input-btn:hover { opacity: 0.9; }
+
+        .margin-results {
+            display: none; margin-top: 20px;
+            opacity: 0; transform: translateY(8px);
+            transition: all 0.5s ease;
+        }
+        .margin-results.visible { display: block; opacity: 1; transform: translateY(0); }
+
+        .margin-verdict {
+            padding: 16px 20px; border-radius: 10px; margin-bottom: 16px;
+            font-size: 14px; line-height: 1.6;
+        }
+        .margin-verdict.positive { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+        .margin-verdict.warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
+        .margin-verdict.negative { background: #fef2f2; border: 1px solid #fecaca; color: #991b1b; }
+        .margin-verdict strong { font-weight: 700; }
+
+        .margin-metrics {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;
+        }
+        .margin-metric {
+            padding: 16px; border-radius: 10px; text-align: center;
+            border: 1px solid var(--gray-200); background: var(--white);
+        }
+        .margin-metric-value {
+            font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+        }
+        .margin-metric-value.green { color: var(--green); }
+        .margin-metric-value.red { color: #dc2626; }
+        .margin-metric-value.amber { color: #d97706; }
+        .margin-metric-label { font-size: 11px; color: var(--gray-500); margin-top: 4px; }
+
+        .bessemer-gauge { margin-bottom: 16px; padding: 16px; background: var(--white); border: 1px solid var(--gray-200); border-radius: 10px; }
+        .bessemer-title { font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 12px; }
+        .bessemer-track { height: 24px; background: var(--gray-100); border-radius: 12px; position: relative; overflow: hidden; display: flex; }
+        .bessemer-zone { height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; letter-spacing: 0.05em; color: rgba(255,255,255,0.9); }
+        .bessemer-zone-danger { width: 25%; background: #ef4444; }
+        .bessemer-zone-supernova { width: 15%; background: #f59e0b; }
+        .bessemer-zone-shooting { width: 20%; background: #22c55e; }
+        .bessemer-zone-saas { width: 40%; background: #16a34a; }
+        .bessemer-marker {
+            position: absolute; top: -4px; width: 3px; height: 32px;
+            background: var(--gray-900); border-radius: 2px; z-index: 2;
+            transition: left 0.8s ease;
+        }
+        .bessemer-label {
+            position: absolute; top: 30px; transform: translateX(-50%);
+            font-size: 11px; font-weight: 600; color: var(--gray-900); white-space: nowrap;
+            transition: left 0.8s ease;
+        }
+        .bessemer-labels { display: flex; justify-content: space-between; margin-top: 8px; font-size: 10px; color: var(--gray-500); }
+
+        .margin-model-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .margin-model-table th {
+            text-align: left; padding: 8px 10px; font-size: 10px; font-weight: 600;
+            letter-spacing: 0.03em; color: var(--gray-500);
+            border-bottom: 1px solid var(--gray-200); background: var(--gray-50);
+        }
+        .margin-model-table td { padding: 8px 10px; border-bottom: 1px solid var(--gray-100); color: var(--gray-600); }
+        .margin-model-table .impact { font-size: 11px; color: var(--gray-500); font-style: italic; }
+
+        @media (max-width: 768px) {
+            .margin-metrics { grid-template-columns: 1fr; }
+            .margin-input-row { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -502,7 +593,8 @@
     <nav>
         <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
         <div class="nav-right">
-            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/app" class="nav-link">Free Audit</a>
+            <a href="/sdk" class="nav-link">SDK</a>
             <a href="/pricing" class="nav-link">Pricing</a>
             <a href="/docs" class="nav-link">Docs</a>
             <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
@@ -511,16 +603,16 @@
 
     <!-- Hero: The Stripe moment. One headline. One CTA. -->
     <section class="hero">
-        <h1>Turn your AI invoice into a <span class="accent">CFO-ready close pack</span> in 60 seconds.</h1>
-        <p class="hero-sub">Upload a billing CSV from any AI provider. Get back a reconciliation statement, journal entries, and a cryptographically sealed audit certificate. In your browser. Free.</p>
+        <h1>Are your AI features making money — <span class="accent">or quietly killing your margins?</span></h1>
+        <p class="hero-sub">Know your cost-to-serve per customer, per feature, per dollar of revenue. The AI unit economics platform that turns spend data into pricing decisions.</p>
         <div class="hero-cta-group">
-            <a href="/audit" class="btn-primary">
-                Run Your Free Audit
+            <a href="/app" class="btn-primary">
+                Check Your Margins — Free
                 <svg class="btn-arrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
             <a href="/login?redirect=app" class="btn-secondary">Get Your API Key</a>
         </div>
-        <p class="hero-proof">Free API access. No credit card. <strong>Hit the gateway in under 5 minutes.</strong></p>
+        <p class="hero-proof">No signup. No credit card. See your margins in 60 seconds.</p>
     </section>
 
     <!-- LIVE DEMO: The aha moment. Product runs on the page. -->
@@ -600,12 +692,59 @@
                             <div class="demo-cp-title">Close Pack Ready</div>
                             <div class="demo-cp-sub">4 artifacts &middot; SHA-256 sealed &middot; HMAC signed</div>
                         </div>
-                        <a href="/audit" class="demo-cp-btn">Try with your data</a>
+                        <a href="/app" class="demo-cp-btn">Try with your data</a>
+                    </div>
+
+                    <!-- Margin Analysis Input -->
+                    <div id="marginInput" class="margin-input-section">
+                        <div class="margin-input-label">Want to see your margin analysis?</div>
+                        <div class="margin-input-sub">Optional — enter your monthly AI-related revenue to see if you're charging enough.</div>
+                        <div class="margin-input-row">
+                            <span style="font-size:16px; color:var(--gray-400); font-weight:600;">$</span>
+                            <input id="revenueInput" class="margin-input-field" type="number" placeholder="e.g. 150000" min="0" step="1000">
+                            <button id="marginBtn" class="margin-input-btn" onclick="showMargins()">Show My Margins</button>
+                        </div>
+                    </div>
+
+                    <!-- Margin Analysis Results -->
+                    <div id="marginResults" class="margin-results">
+                        <div id="marginVerdict" class="margin-verdict positive"></div>
+                        <div class="margin-metrics">
+                            <div class="margin-metric">
+                                <div id="mmCostPct" class="margin-metric-value">0%</div>
+                                <div class="margin-metric-label">AI Cost as % of Revenue</div>
+                            </div>
+                            <div class="margin-metric">
+                                <div id="mmMarginPct" class="margin-metric-value green">0%</div>
+                                <div class="margin-metric-label">Estimated AI Gross Margin</div>
+                            </div>
+                            <div class="margin-metric">
+                                <div id="mmNetMonthly" class="margin-metric-value green">$0</div>
+                                <div class="margin-metric-label">Monthly Net (Revenue - AI Cost)</div>
+                            </div>
+                        </div>
+                        <div class="bessemer-gauge">
+                            <div class="bessemer-title">Bessemer AI Margin Benchmark</div>
+                            <div style="position:relative;">
+                                <div class="bessemer-track">
+                                    <div class="bessemer-zone bessemer-zone-danger">DANGER</div>
+                                    <div class="bessemer-zone bessemer-zone-supernova">EARLY</div>
+                                    <div class="bessemer-zone bessemer-zone-shooting">STRONG</div>
+                                    <div class="bessemer-zone bessemer-zone-saas">EXCEPTIONAL</div>
+                                </div>
+                                <div id="bessemerMarker" class="bessemer-marker" style="left:0%"></div>
+                                <div id="bessemerLabel" class="bessemer-label" style="left:0%">You: 0%</div>
+                            </div>
+                            <div class="bessemer-labels">
+                                <span>Negative</span><span>25%</span><span>40%</span><span>60%</span><span>80%+</span>
+                            </div>
+                        </div>
+                        <div id="marginModelTable"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <p class="demo-label">This is live output from sample data. <a href="/audit">Upload your own CSV</a> for real results.</p>
+        <p class="demo-label">This is live output from sample data. <a href="/app">Upload your own CSV</a> for real results.</p>
     </section>
 
     <!-- Browser-Native Banner: The Plaid differentiator. -->
@@ -645,62 +784,73 @@
     <section class="how" id="how">
         <div class="how-inner">
             <p class="section-label">How It Works</p>
-            <h2 class="section-title">Three steps. Sixty seconds. Audit-ready.</h2>
-            <p class="section-desc">No configuration. No integration. Upload one CSV and get a complete close pack.</p>
+            <h2 class="section-title">Three steps. Sixty seconds. Margin clarity.</h2>
+            <p class="section-desc">No configuration. No integration. Upload one CSV and know exactly which customers are profitable.</p>
             <div class="steps-grid">
                 <div class="step">
                     <div class="step-number">1</div>
                     <h3>Upload your billing CSV</h3>
-                    <p>Drag and drop your AI provider billing export. We support AWS Bedrock, Azure OpenAI, OpenAI, Google Vertex AI, and Anthropic. Format is detected automatically.</p>
+                    <p>Drag and drop your AI provider billing export. We support AWS, Azure, OpenAI, Google, and Anthropic. Format is detected automatically.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3>We reconcile every line item</h3>
-                    <p>Each SKU is matched against our 40+ model pricing database. Costs are verified, anomalies are flagged, and savings opportunities are surfaced. All computed from your data.</p>
+                    <h3>We calculate your margins</h3>
+                    <p>Each SKU is matched against our 40+ model pricing database. Costs are broken down by customer and feature, margin metrics calculated against Bessemer benchmarks, and unprofitable customers flagged.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3>Download your close pack</h3>
-                    <p>A sealed ZIP with your audit PDF, GL journal entries, close certificate, and SHA-256 hashed manifest. Hand it to your CFO or auditor as-is.</p>
+                    <h3>Know who's profitable</h3>
+                    <p>See your AI margin per customer, health scores for every account, Bessemer benchmark comparison, and exactly which customers are subsidized. Pricing simulator included.</p>
+                </div>
+            </div>
+
+            <div style="text-align:center; margin-top:48px; padding:28px; background:var(--gray-50); border-radius:12px; border:1px solid var(--border);">
+                <p style="font-size:15px; color:var(--gray-600); margin-bottom:12px;">
+                    <strong>Want real-time cost tracking instead?</strong> Install the SDK — one line, every AI call tracked automatically.
+                </p>
+                <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+                    <a href="/sdk" style="color:var(--green); font-weight:600; font-size:14px; text-decoration:none;">Install the SDK &rarr;</a>
+                    <span style="color:var(--gray-400);">&middot;</span>
+                    <a href="/sdk" style="color:var(--green); font-weight:600; font-size:14px; text-decoration:none;">Learn more &rarr;</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- What You Get: The Close Pack is the product. -->
+    <!-- What You Get: The real capabilities -->
     <section class="deliverables">
         <div class="deliverables-inner">
-            <p class="section-label">The Close Pack</p>
-            <h2 class="section-title">Four documents. Zero manual work.</h2>
-            <p class="section-desc">Everything your CFO, controller, and auditor need. Generated from your billing data in seconds.</p>
+            <p class="section-label">What You Get</p>
+            <h2 class="section-title">Real-time AI unit economics. Not another dashboard.</h2>
+            <p class="section-desc">Everything you need to know which customers are profitable — and protect the ones that aren't.</p>
             <div class="del-grid">
+                <div class="del-card">
+                    <div class="del-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+                    </div>
+                    <h4>Margin Dashboard</h4>
+                    <p>See your AI margin per customer, per feature, per dollar of revenue. Green/Yellow/Red health scores for every account, updated in real time.</p>
+                </div>
+                <div class="del-card">
+                    <div class="del-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                    </div>
+                    <h4>Customer Health Scores</h4>
+                    <p>Automatic classification based on Bessemer benchmarks. Get alerted before any customer goes unprofitable. Per-customer budget caps included.</p>
+                </div>
+                <div class="del-card">
+                    <div class="del-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    </div>
+                    <h4>Pricing Simulator</h4>
+                    <p>Model the impact of price changes before you ship them. See exactly how margins shift across your customer base with one click.</p>
+                </div>
                 <div class="del-card">
                     <div class="del-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                     </div>
-                    <h4>Audit PDF</h4>
-                    <p>Full reconciliation report with per-model cost breakdown, anomaly flags, savings opportunities, and Finault Health Score.</p>
-                </div>
-                <div class="del-card">
-                    <div class="del-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                    </div>
-                    <h4>Journal Entry CSV</h4>
-                    <p>Debit per cost center, credit to AP. Ready for NetSuite, QuickBooks, Xero, or Sage. Posts directly to your GL.</p>
-                </div>
-                <div class="del-card">
-                    <div class="del-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                    </div>
-                    <h4>Close Certificate</h4>
-                    <p>Tamper-evident PDF with SHA-256 hashes and HMAC signature. Independently verifiable by your auditor.</p>
-                </div>
-                <div class="del-card">
-                    <div class="del-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                    </div>
-                    <h4>Cryptographic Manifest</h4>
-                    <p>JSON manifest with artifact hashes, FOCUS columns detected, and HMAC-SHA256 signature for audit chain integrity.</p>
+                    <h4>Board Deck Generator</h4>
+                    <p>One click: an 8-slide board deck with spend trends, margin analysis, customer health distribution, and forward projections. CFO-ready.</p>
                 </div>
             </div>
         </div>
@@ -709,8 +859,8 @@
     <!-- The Gap: Perret's infrastructure positioning -->
     <section class="gap">
         <div class="gap-inner">
-            <p class="gap-text">Every other tool stops at the <span class="accent">dashboard</span>.<br>Finault goes to the <span class="accent">journal entry</span>.</p>
-            <p style="font-size:15px;color:var(--gray-500);margin-top:20px;line-height:1.6;">We're not building another analytics tool. We're building the invisible infrastructure layer between your AI billing and your general ledger — the reconciliation road that every invoice travels on its way to the books.</p>
+            <p class="gap-text">Every other tool tells you <span class="accent">what you spent</span>.<br>Finault tells you <span class="accent">what you earned</span>.</p>
+            <p style="font-size:15px;color:var(--gray-500);margin-top:20px;line-height:1.6;">Cost dashboards are table stakes. Finault is the AI unit economics platform — the layer between your AI spend and your pricing decisions. We don't just show you the bill. We tell you which customers to reprice, which features to optimize, and when your margins are about to go negative.</p>
         </div>
     </section>
 
@@ -776,15 +926,15 @@
             <div class="buyers-grid">
                 <div class="buyer-card">
                     <p class="buyer-role">Controller</p>
-                    <p class="buyer-quote">"Month-end close takes 3 days of manual reconciliation across 4 AI providers. I need journal entries that post directly to our ERP."</p>
+                    <p class="buyer-quote">The board asks "what are our AI unit economics?" and nobody can answer. Finault gives you margin data by customer that goes straight into your board deck — not another cost dashboard.</p>
                 </div>
                 <div class="buyer-card">
-                    <p class="buyer-role">FinOps Practitioner</p>
-                    <p class="buyer-quote">"I reconcile AI invoices in spreadsheets for 35 hours a month. I need a tool that does this in 60 seconds, not 60 hours."</p>
+                    <p class="buyer-role">Head of Product</p>
+                    <p class="buyer-quote">You launched AI features with no idea if they're profitable. Finault shows you which features have healthy margins and which ones are losing money — so you can reprice before it compounds.</p>
                 </div>
                 <div class="buyer-card">
                     <p class="buyer-role">VP Finance</p>
-                    <p class="buyer-quote">"AI is our fastest-growing line item and the least governed. I need attribution for every dollar before the board asks."</p>
+                    <p class="buyer-quote">AI costs are growing faster than revenue. You need per-customer margin data, not aggregate spend. Finault attributes every dollar of AI cost to the customer and feature that triggered it.</p>
                 </div>
             </div>
         </div>
@@ -792,15 +942,15 @@
 
     <!-- CTA: The Collison Installation. Try it now. -->
     <section class="cta">
-        <h2>See it yourself. Sixty seconds.</h2>
-        <p class="cta-sub">Upload your billing CSV. Download your close pack. Hand it to your CFO.</p>
+        <h2>Know your AI margins. Protect them automatically.</h2>
+        <p class="cta-sub">See your cost-to-serve per customer, simulate pricing changes, and get alerted before margins go negative.</p>
         <div class="hero-cta-group">
-            <a href="/audit" class="btn-primary">
-                Run Your Free Audit
+            <a href="/app" class="btn-primary">
+                Check Your Margins — Free
                 <svg class="btn-arrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
         </div>
-        <p class="hero-proof" style="margin-top:20px">No credit card. No signup. <strong>Your data never leaves your browser.</strong></p>
+        <p class="hero-proof" style="margin-top:20px">No credit card. No signup. <strong>See your margins in 60 seconds.</strong></p>
     </section>
 
     <!-- Footer -->
@@ -808,18 +958,25 @@
         <div class="footer-inner">
             <span class="footer-copy">&copy; 2026 Finault. All rights reserved.</span>
             <div class="footer-links">
+                <a href="/sdk">SDK</a>
                 <a href="/pricing">Pricing</a>
+                <a href="/docs">Docs</a>
                 <a href="/security">Security</a>
                 <a href="mailto:bernard.cotter@finault.ai">Contact</a>
-                <a href="/privacy">Privacy</a>
-                <a href="/terms">Terms</a>
             </div>
         </div>
     </footer>
 
     <script>
-    // Auth link — no dashboard swap until there's a real dashboard to show
-    // When a dashboard exists, re-enable: el.textContent = 'Dashboard'; el.href = '/dashboard';
+    // Auth link — swap Sign In to Dashboard when logged in
+    (function() {
+        var token = localStorage.getItem('finault_token');
+        var el = document.getElementById('navAuthLink');
+        if (token && el) {
+            el.textContent = 'Dashboard';
+            el.href = 'https://dashboard.finault.ai/dashboard';
+        }
+    })();
 
     // ── Live Demo Animation ──
     (function() {
@@ -959,7 +1116,86 @@
             // Fallback: run after 2s
             setTimeout(runDemo, 2000);
         }
+
+        // Show margin input section after close pack
+        setTimeout(function() {
+            document.getElementById('marginInput').classList.add('visible');
+        }, 2200);
     })();
+
+    // Margin Analysis
+    function showMargins() {
+        var revenue = parseFloat(document.getElementById('revenueInput').value);
+        if (!revenue || revenue <= 0) {
+            document.getElementById('revenueInput').style.borderColor = '#ef4444';
+            return;
+        }
+        document.getElementById('revenueInput').style.borderColor = '';
+
+        var totalSpend = 903561; // demo data total
+        var costPct = (totalSpend / revenue * 100);
+        var marginPct = ((revenue - totalSpend) / revenue * 100);
+        var netMonthly = revenue - totalSpend;
+
+        // Update metrics
+        var costEl = document.getElementById('mmCostPct');
+        costEl.textContent = costPct.toFixed(1) + '%';
+        costEl.className = 'margin-metric-value ' + (costPct > 60 ? 'red' : costPct > 40 ? 'amber' : 'green');
+
+        var marginEl = document.getElementById('mmMarginPct');
+        marginEl.textContent = marginPct.toFixed(1) + '%';
+        marginEl.className = 'margin-metric-value ' + (marginPct < 0 ? 'red' : marginPct < 40 ? 'amber' : 'green');
+
+        var netEl = document.getElementById('mmNetMonthly');
+        netEl.textContent = (netMonthly < 0 ? '-' : '') + '$' + Math.abs(Math.round(netMonthly)).toLocaleString();
+        netEl.className = 'margin-metric-value ' + (netMonthly < 0 ? 'red' : 'green');
+
+        // Verdict
+        var verdict = document.getElementById('marginVerdict');
+        if (marginPct >= 40) {
+            verdict.className = 'margin-verdict positive';
+            verdict.innerHTML = '<strong>Your AI features are profitable.</strong> Your margin (' + marginPct.toFixed(0) + '%) puts you in ' + (marginPct >= 60 ? 'SaaS-like' : 'Shooting Star') + ' territory. But are you leaving money on the table? Your highest-cost model accounts for 23.5% of spend.';
+        } else if (marginPct >= 0) {
+            var optimizedMargin = ((revenue - totalSpend * 0.85) / revenue * 100).toFixed(0);
+            verdict.className = 'margin-verdict warning';
+            verdict.innerHTML = '<strong>Your margins are thin.</strong> At ' + marginPct.toFixed(0) + '%, you\'re in ' + (marginPct >= 25 ? 'Supernova' : 'Danger Zone') + ' territory. A 15% reduction in inference costs (via model optimization) would lift your margin to ' + optimizedMargin + '%.';
+        } else {
+            var annualLoss = Math.abs(Math.round(netMonthly * 12)).toLocaleString();
+            verdict.className = 'margin-verdict negative';
+            verdict.innerHTML = '<strong>Your AI features are losing money.</strong> You\'re spending $' + (totalSpend / revenue).toFixed(2) + ' for every $1.00 of AI revenue. Without changes, you\'ll burn $' + annualLoss + ' in the next year on AI alone.';
+        }
+
+        // Bessemer gauge
+        var gaugePos = Math.max(0, Math.min(100, (marginPct + 10) / 110 * 100));
+        document.getElementById('bessemerMarker').style.left = gaugePos + '%';
+        document.getElementById('bessemerLabel').style.left = gaugePos + '%';
+        document.getElementById('bessemerLabel').textContent = 'You: ' + marginPct.toFixed(0) + '%';
+
+        // Model margin table
+        var models = [
+            {name: 'GPT-4o', cost: 212500, pct: 23.5, cpr: 0.031},
+            {name: 'Claude Sonnet 4.5', cost: 171000, pct: 18.9, cpr: 0.018},
+            {name: 'GPT-4o-mini', cost: 127500, pct: 14.1, cpr: 0.003},
+            {name: 'Claude Opus 4.5', cost: 91200, pct: 10.1, cpr: 0.045},
+            {name: 'Gemini 2.5 Pro', cost: 78125, pct: 8.6, cpr: 0.012},
+            {name: 'o1', cost: 56250, pct: 6.2, cpr: 0.028}
+        ];
+        var tableHtml = '<table class="margin-model-table"><thead><tr><th>Model</th><th>Spend</th><th>% of Total</th><th>Cost/Request</th><th>Margin Impact</th></tr></thead><tbody>';
+        models.forEach(function(m) {
+            var impact;
+            if (m.pct > 35) impact = 'Highest cost driver — consider routing lighter tasks to GPT-4o-mini';
+            else if (m.pct > 15) impact = 'Moderate — good cost/quality balance';
+            else impact = 'Efficient — expand usage where quality allows';
+            tableHtml += '<tr><td><strong>' + m.name + '</strong></td><td>$' + (m.cost).toLocaleString() + '</td><td>' + m.pct + '%</td><td>$' + m.cpr.toFixed(3) + '</td><td class="impact">' + impact + '</td></tr>';
+        });
+        tableHtml += '</tbody></table>';
+        document.getElementById('marginModelTable').innerHTML = tableHtml;
+
+        // Show results
+        var results = document.getElementById('marginResults');
+        results.style.display = 'block';
+        setTimeout(function() { results.classList.add('visible'); }, 50);
+    }
     </script>
 </body>
 </html>

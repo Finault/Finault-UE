@@ -286,8 +286,10 @@
     <nav>
         <a href="/" class="logo">Finault</a>
         <div class="nav-right">
+            <a href="/sdk" class="nav-link">SDK</a>
             <a href="/pricing" class="nav-link">Pricing</a>
             <a href="/docs" class="nav-link">Docs</a>
+            <a href="/security" class="nav-link">Security</a>
             <a href="#" onclick="goToDashboard();return false" class="nav-link" style="color:var(--green);font-weight:600">Dashboard</a>
         </div>
     </nav>
@@ -329,10 +331,17 @@
                 <div class="step-num">2</div>
                 <div class="step-title">Try it live</div>
             </div>
-            <p>Paste your OpenAI key below. We'll route one request through Finault and show you exactly what it cost — in real time.</p>
+            <p>Paste your API key below. We'll route one request through Finault and show you exactly what it cost — in real time.</p>
 
             <div class="key-box" id="tryBox">
                 <div id="tryForm">
+                    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+                        <button id="provOpenAI" onclick="setProvider('openai')" style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--green);background:var(--green-light);color:var(--green);transition:all 0.15s;">OpenAI</button>
+                        <button id="provAnthropic" onclick="setProvider('anthropic')" style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--gray-500);transition:all 0.15s;">Anthropic</button>
+                        <button id="provGoogle" onclick="setProvider('google')" style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--gray-500);transition:all 0.15s;">Google Gemini</button>
+                        <button id="provAzure" onclick="setProvider('azure')" style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--gray-500);transition:all 0.15s;">Azure OpenAI</button>
+                        <button id="provBedrock" onclick="setProvider('bedrock')" style="padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;border:1px solid var(--border);background:var(--white);color:var(--gray-500);transition:all 0.15s;">AWS Bedrock</button>
+                    </div>
                     <div style="display:flex;gap:8px;margin-bottom:12px">
                         <input type="password" class="key-field" id="providerKey" placeholder="sk-... (your OpenAI key)" style="flex:1">
                         <button class="generate-btn" id="tryBtn" onclick="tryLive()" style="white-space:nowrap">
@@ -356,8 +365,10 @@
                             <div style="font-size:12px;color:var(--gray-500);margin-top:4px">Latency</div>
                         </div>
                     </div>
-                    <div style="padding:12px 16px;background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;margin-bottom:12px">
-                        <p style="font-size:13px;color:var(--green);font-weight:600;margin:0" id="resultMessage">Finault tracked this request.</p>
+                    <div style="padding:14px 18px;background:var(--green-light);border:1px solid var(--green-border);border-radius:8px;margin-bottom:12px">
+                        <p style="font-size:15px;color:var(--green);font-weight:700;margin:0 0 4px 0;">Your first governed request.</p>
+                        <p style="font-size:13px;color:var(--green);font-weight:500;margin:0" id="resultMessage">Finault tracked this request. Audit-ready.</p>
+                        <p style="font-size:12px;color:var(--green);font-weight:400;margin:8px 0 0 0" id="unitEconomicsMessage"></p>
                     </div>
                     <div style="font-size:13px;color:var(--gray-500)">
                         <strong style="color:var(--gray-900)">AI response:</strong> <span id="resultAI">—</span>
@@ -365,7 +376,8 @@
                     <div style="margin-top:12px;font-size:12px;color:var(--gray-400)">
                         Request ID: <code id="resultRequestId">—</code> &middot; Audit hash: <code id="resultHash">—</code>
                     </div>
-                    <button class="generate-btn" onclick="resetTry()" style="margin-top:16px;background:var(--gray-900)">Try another</button>
+                    <a href="#" onclick="goToDashboard();return false;" style="display:block;text-align:center;margin-top:20px;padding:14px 24px;background:var(--green);color:white;text-decoration:none;border-radius:10px;font-size:15px;font-weight:600;transition:opacity 0.2s;box-shadow:0 2px 8px rgba(22,163,74,0.25);" onmouseover="this.style.opacity='0.9'" onmouseout="this.style.opacity='1'">See it in your dashboard &rarr;</a>
+                    <button class="generate-btn" onclick="resetTry()" style="margin-top:12px;background:var(--gray-900);width:100%;justify-content:center;">Try another request</button>
                 </div>
                 <p class="key-error hidden" id="tryError"></p>
             </div>
@@ -379,16 +391,28 @@
             </div>
             <p>Replace your provider's base URL with the Finault gateway. Your existing code works without modification — every request is tracked, attributed, and auditable.</p>
 
-            <div class="code-block">
-<pre><span class="comment"># Before (direct to OpenAI)</span>
-curl https://api.openai.com/v1/chat/completions ...
+            <div style="display:flex;gap:0;flex-wrap:wrap;">
+                <button class="code-tab active" onclick="switchCodeTab('python',this)" style="padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;border-radius:8px 8px 0 0;font-family:inherit;background:var(--gray-900);color:#e5e7eb;transition:all 0.15s;">Python</button>
+                <button class="code-tab" onclick="switchCodeTab('node',this)" style="padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;border-radius:8px 8px 0 0;font-family:inherit;background:var(--gray-100);color:var(--gray-500);transition:all 0.15s;">Node.js</button>
+                <button class="code-tab" onclick="switchCodeTab('curl',this)" style="padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;border-radius:8px 8px 0 0;font-family:inherit;background:var(--gray-100);color:var(--gray-500);transition:all 0.15s;">curl</button>
+                <button class="code-tab" onclick="switchCodeTab('azure',this)" style="padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;border-radius:8px 8px 0 0;font-family:inherit;background:var(--gray-100);color:var(--gray-500);transition:all 0.15s;">Azure</button>
+                <button class="code-tab" onclick="switchCodeTab('bedrock',this)" style="padding:8px 16px;font-size:12px;font-weight:600;cursor:pointer;border:none;border-radius:8px 8px 0 0;font-family:inherit;background:var(--gray-100);color:var(--gray-500);transition:all 0.15s;">Bedrock</button>
+            </div>
+            <div class="code-block" style="border-radius:0 10px 10px 10px;position:relative;">
+                <button onclick="copyCodeBlock()" style="position:absolute;top:10px;right:10px;padding:4px 10px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);border-radius:5px;color:#e5e7eb;font-size:11px;cursor:pointer;font-family:inherit;">Copy</button>
+<pre id="step3Code"><span class="comment"># pip install openai</span>
+<span class="comment">from</span> openai <span class="comment">import</span> OpenAI
 
-<span class="comment"># After (through Finault — same payload, full visibility)</span>
-curl https://api.finault.ai/v1/chat/completions \
-  -H <span class="string">"Authorization: Bearer fk_your_key_here"</span> \
-  -H <span class="string">"X-Provider-Key: sk-your-openai-key"</span> \
-  -H <span class="string">"Content-Type: application/json"</span> \
-  -d <span class="string">'{"model":"gpt-4o","messages":[{"role":"user","content":"hello"}]}'</span></pre>
+client = OpenAI(
+    base_url=<span class="string">"https://api.finault.ai/v1"</span>,
+    default_headers={<span class="string">"X-Finault-API-Key"</span>: <span class="string">"fk_your_key_here"</span>}
+)
+
+<span class="comment"># That's it — your existing code works as-is</span>
+resp = client.chat.completions.create(
+    model=<span class="string">"gpt-4o"</span>,
+    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello"</span>}]
+)</pre>
             </div>
         </div>
 
@@ -400,7 +424,7 @@ curl https://api.finault.ai/v1/chat/completions \
                     <div class="link-card-title">Documentation</div>
                     <div class="link-card-desc">Full API reference, SDKs, and guides</div>
                 </a>
-                <a href="/demo" class="link-card">
+                <a href="/app" class="link-card">
                     <div class="link-card-title">Run a free audit</div>
                     <div class="link-card-desc">Upload a CSV and see results instantly</div>
                 </a>
@@ -409,15 +433,131 @@ curl https://api.finault.ai/v1/chat/completions \
     </div>
 
     <footer>
+        <a href="/sdk">SDK</a> &nbsp;&middot;&nbsp;
         <a href="/pricing">Pricing</a> &nbsp;&middot;&nbsp;
         <a href="/docs">Docs</a> &nbsp;&middot;&nbsp;
         <a href="/security">Security</a> &nbsp;&middot;&nbsp;
-        <a href="/privacy">Privacy</a> &nbsp;&middot;&nbsp;
-        <a href="/terms">Terms</a>
+        <a href="mailto:bernard.cotter@finault.ai">Contact</a>
         <p style="margin-top:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</p>
     </footer>
 
     <script>
+        // Provider toggle
+        var selectedProvider = 'openai';
+        var providerConfig = {
+            openai: { placeholder: 'sk-... (your OpenAI key)', model: 'gpt-4o', path: '/v1/chat/completions' },
+            anthropic: { placeholder: 'sk-ant-... (your Anthropic key)', model: 'claude-sonnet-4-5-20250929', path: '/v1/anthropic/v1/messages' },
+            google: { placeholder: 'AIza... (your Google AI key)', model: 'gemini-1.5-flash', path: '/v1/google' },
+            azure: { placeholder: 'your Azure OpenAI key', model: 'gpt-4o', path: '/v1/azure/openai/deployments/gpt-4o/chat/completions?api-version=2024-02-01' },
+            bedrock: { placeholder: 'AWS access key (we also need secret key)', model: 'anthropic.claude-sonnet-4-5-20250929-v1:0', path: '/v1/bedrock/model/anthropic.claude-sonnet-4-5-20250929-v1:0/invoke' }
+        };
+
+        function setProvider(p) {
+            selectedProvider = p;
+            document.getElementById('providerKey').placeholder = providerConfig[p].placeholder;
+            document.getElementById('providerKey').type = 'password';
+            // Update button styles
+            var btns = ['provOpenAI', 'provAnthropic', 'provGoogle', 'provAzure', 'provBedrock'];
+            var map = { openai: 'provOpenAI', anthropic: 'provAnthropic', google: 'provGoogle', azure: 'provAzure', bedrock: 'provBedrock' };
+            btns.forEach(function(id) {
+                var el = document.getElementById(id);
+                if (id === map[p]) {
+                    el.style.border = '1px solid var(--green)'; el.style.background = 'var(--green-light)'; el.style.color = 'var(--green)';
+                } else {
+                    el.style.border = '1px solid var(--border)'; el.style.background = 'var(--white)'; el.style.color = 'var(--gray-500)';
+                }
+            });
+        }
+
+        // Step 3 code tabs
+        var fkKeyValue = 'fk_your_key_here';
+        var step3Templates = {
+            python: function(k) {
+                return '<span class="comment"># pip install openai</span>\n' +
+                    '<span class="comment">from</span> openai <span class="comment">import</span> OpenAI\n\n' +
+                    'client = OpenAI(\n' +
+                    '    base_url=<span class="string">"https://api.finault.ai/v1"</span>,\n' +
+                    '    default_headers={<span class="string">"X-Finault-API-Key"</span>: <span class="string">"' + k + '"</span>}\n' +
+                    ')\n\n' +
+                    '<span class="comment"># That\'s it — your existing code works as-is</span>\n' +
+                    'resp = client.chat.completions.create(\n' +
+                    '    model=<span class="string">"gpt-4o"</span>,\n' +
+                    '    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello"</span>}]\n' +
+                    ')';
+            },
+            node: function(k) {
+                return '<span class="comment">// npm install openai</span>\n' +
+                    '<span class="comment">import</span> OpenAI <span class="comment">from</span> <span class="string">"openai"</span>;\n\n' +
+                    '<span class="comment">const</span> client = <span class="comment">new</span> OpenAI({\n' +
+                    '  baseURL: <span class="string">"https://api.finault.ai/v1"</span>,\n' +
+                    '  defaultHeaders: { <span class="string">"X-Finault-API-Key"</span>: <span class="string">"' + k + '"</span> }\n' +
+                    '});\n\n' +
+                    '<span class="comment">// That\'s it — your existing code works as-is</span>\n' +
+                    '<span class="comment">const</span> resp = <span class="comment">await</span> client.chat.completions.create({\n' +
+                    '  model: <span class="string">"gpt-4o"</span>,\n' +
+                    '  messages: [{ role: <span class="string">"user"</span>, content: <span class="string">"Hello"</span> }]\n' +
+                    '});';
+            },
+            curl: function(k) {
+                return 'curl https://api.finault.ai/v1/chat/completions \\\n' +
+                    '  -H <span class="string">"X-Finault-API-Key: ' + k + '"</span> \\\n' +
+                    '  -H <span class="string">"X-Provider-Key: sk-your-openai-key"</span> \\\n' +
+                    '  -H <span class="string">"Content-Type: application/json"</span> \\\n' +
+                    '  -d <span class="string">\'{"model":"gpt-4o","messages":[{"role":"user","content":"Hello"}]}\'</span>';
+            },
+            azure: function(k) {
+                return '<span class="comment"># Azure OpenAI via Finault gateway</span>\n' +
+                    '<span class="comment">from</span> openai <span class="comment">import</span> AzureOpenAI\n\n' +
+                    'client = AzureOpenAI(\n' +
+                    '    azure_endpoint=<span class="string">"https://api.finault.ai/v1/azure"</span>,\n' +
+                    '    api_version=<span class="string">"2024-02-01"</span>,\n' +
+                    '    api_key=<span class="string">"your-azure-key"</span>,\n' +
+                    '    default_headers={<span class="string">"X-Finault-API-Key"</span>: <span class="string">"' + k + '"</span>}\n' +
+                    ')\n\n' +
+                    '<span class="comment"># Same OpenAI SDK — just pointed at Finault</span>\n' +
+                    'resp = client.chat.completions.create(\n' +
+                    '    model=<span class="string">"gpt-4o"</span>,\n' +
+                    '    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello"</span>}]\n' +
+                    ')';
+            },
+            bedrock: function(k) {
+                return '<span class="comment"># AWS Bedrock via Finault gateway</span>\n' +
+                    '<span class="comment">import</span> requests\n\n' +
+                    'resp = requests.post(\n' +
+                    '    <span class="string">"https://api.finault.ai/v1/bedrock/model/anthropic.claude-sonnet-4-5-20250929-v1:0/invoke"</span>,\n' +
+                    '    headers={\n' +
+                    '        <span class="string">"X-Finault-API-Key"</span>: <span class="string">"' + k + '"</span>,\n' +
+                    '        <span class="string">"X-AWS-Access-Key"</span>: <span class="string">"your-aws-access-key"</span>,\n' +
+                    '        <span class="string">"X-AWS-Secret-Key"</span>: <span class="string">"your-aws-secret-key"</span>,\n' +
+                    '        <span class="string">"X-AWS-Region"</span>: <span class="string">"us-east-1"</span>\n' +
+                    '    },\n' +
+                    '    json={\n' +
+                    '        <span class="string">"anthropic_version"</span>: <span class="string">"bedrock-2023-05-31"</span>,\n' +
+                    '        <span class="string">"max_tokens"</span>: 256,\n' +
+                    '        <span class="string">"messages"</span>: [{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello"</span>}]\n' +
+                    '    }\n' +
+                    ')';
+            }
+        };
+
+        function switchCodeTab(lang, btn) {
+            document.querySelectorAll('.code-tab').forEach(function(t) {
+                t.style.background = 'var(--gray-100)'; t.style.color = 'var(--gray-500)';
+            });
+            btn.style.background = 'var(--gray-900)'; btn.style.color = '#e5e7eb';
+            document.getElementById('step3Code').innerHTML = step3Templates[lang](fkKeyValue);
+        }
+
+        function copyCodeBlock() {
+            var el = document.getElementById('step3Code');
+            var text = el.textContent || el.innerText;
+            navigator.clipboard.writeText(text).then(function() {
+                var btn = document.querySelector('.code-block button');
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+
         async function generateKey() {
             const btn = document.getElementById('generateBtn');
             const errorEl = document.getElementById('keyError');
@@ -455,10 +595,13 @@ curl https://api.finault.ai/v1/chat/completions \
                     document.getElementById('postGenerate').classList.remove('hidden');
                     document.getElementById('keyBox').classList.add('key-box-generated');
 
-                    // Update the curl examples with the real key
-                    document.querySelectorAll('pre').forEach(pre => {
-                        pre.innerHTML = pre.innerHTML.replace(/fk_your_key_here/g, data.key.secret);
-                    });
+                    // Store key for Explorer and other pages
+                    localStorage.setItem('finault_api_key', data.key.secret);
+                    localStorage.setItem('finault_explorer_fk', data.key.secret);
+
+                    // Update all code examples with the real key
+                    fkKeyValue = data.key.secret;
+                    document.getElementById('step3Code').innerHTML = step3Templates.python(fkKeyValue);
                 } else {
                     throw new Error((data.error || 'Failed to generate key') + (data.details ? ' — ' + data.details : ''));
                 }
@@ -481,7 +624,8 @@ curl https://api.finault.ai/v1/chat/completions \
             errorEl.classList.add('hidden');
 
             if (!providerKey) {
-                errorEl.textContent = 'Paste your OpenAI API key to try it.';
+                var providerNames = { openai: 'OpenAI', anthropic: 'Anthropic', google: 'Google AI', azure: 'Azure OpenAI', bedrock: 'AWS' };
+                errorEl.textContent = 'Paste your ' + (providerNames[selectedProvider] || 'provider') + ' key to try it.';
                 errorEl.classList.remove('hidden');
                 return;
             }
@@ -495,17 +639,30 @@ curl https://api.finault.ai/v1/chat/completions \
             btn.disabled = true;
 
             try {
-                const resp = await fetch('https://api.finault.ai/v1/chat/completions', {
+                var cfg = providerConfig[selectedProvider];
+                var reqBody;
+                var reqHeaders = {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + fkKey,
+                    'X-Provider-Key': providerKey
+                };
+                if (selectedProvider === 'anthropic') {
+                    reqBody = { model: cfg.model, max_tokens: 100, messages: [{ role: 'user', content: 'Say hello in one sentence.' }] };
+                } else if (selectedProvider === 'google') {
+                    reqBody = { model: cfg.model, contents: [{ parts: [{ text: 'Say hello in one sentence.' }] }] };
+                } else if (selectedProvider === 'azure') {
+                    reqBody = { messages: [{ role: 'user', content: 'Say hello in one sentence.' }] };
+                    reqHeaders['api-key'] = providerKey;
+                } else if (selectedProvider === 'bedrock') {
+                    reqBody = { anthropic_version: 'bedrock-2023-05-31', max_tokens: 100, messages: [{ role: 'user', content: 'Say hello in one sentence.' }] };
+                } else {
+                    reqBody = { model: cfg.model, messages: [{ role: 'user', content: 'Say hello in one sentence.' }] };
+                }
+
+                const resp = await fetch('https://api.finault.ai' + cfg.path, {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer ' + fkKey,
-                        'X-Provider-Key': providerKey,
-                    },
-                    body: JSON.stringify({
-                        model: 'gpt-4o',
-                        messages: [{ role: 'user', content: 'Say hello in one sentence.' }]
-                    })
+                    headers: reqHeaders,
+                    body: JSON.stringify(reqBody)
                 });
 
                 // Extract Finault headers
@@ -521,8 +678,24 @@ curl https://api.finault.ai/v1/chat/completions \
                     throw new Error(data.error || 'Request failed');
                 }
 
-                const totalTokens = data.usage?.total_tokens || 0;
-                const aiMessage = data.choices?.[0]?.message?.content || '—';
+                var totalTokens = 0;
+                var aiMessage = '—';
+                if (selectedProvider === 'anthropic') {
+                    totalTokens = (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0);
+                    aiMessage = data.content?.[0]?.text || '—';
+                } else if (selectedProvider === 'google') {
+                    totalTokens = (data.usageMetadata?.promptTokenCount || 0) + (data.usageMetadata?.candidatesTokenCount || 0);
+                    aiMessage = data.candidates?.[0]?.content?.parts?.[0]?.text || '—';
+                } else if (selectedProvider === 'azure') {
+                    totalTokens = data.usage?.total_tokens || 0;
+                    aiMessage = data.choices?.[0]?.message?.content || '—';
+                } else if (selectedProvider === 'bedrock') {
+                    totalTokens = (data.usage?.input_tokens || 0) + (data.usage?.output_tokens || 0);
+                    aiMessage = data.content?.[0]?.text || '—';
+                } else {
+                    totalTokens = data.usage?.total_tokens || 0;
+                    aiMessage = data.choices?.[0]?.message?.content || '—';
+                }
                 const costDisplay = parseFloat(costDollars) < 0.01
                     ? '$' + parseFloat(costDollars).toFixed(4)
                     : '$' + parseFloat(costDollars).toFixed(2);
@@ -535,6 +708,13 @@ curl https://api.finault.ai/v1/chat/completions \
                 document.getElementById('resultHash').textContent = auditHash.substring(0, 12) + '...';
                 document.getElementById('resultMessage').textContent =
                     'Finault tracked this request. ' + totalTokens + ' tokens, ' + costDisplay + ', audit-ready.';
+
+                // Calculate and display unit economics
+                var costCentsVal = parseFloat(costCents);
+                var costDollarsVal = parseFloat(costDollars);
+                var requestCostPerMonth = (costDollarsVal * 10000).toFixed(2);
+                var unitEconomicsMsg = 'That request cost ' + costDisplay + '. If your customer makes 10,000 of these/month, their cost-to-serve is $' + requestCostPerMonth + '. What do you charge them?';
+                document.getElementById('unitEconomicsMessage').textContent = unitEconomicsMsg;
 
                 document.getElementById('tryForm').classList.add('hidden');
                 document.getElementById('tryResult').classList.remove('hidden');

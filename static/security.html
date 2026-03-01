@@ -294,6 +294,157 @@
             font-size: 0.9rem;
         }
 
+        /* Pipeline section */
+        .pipeline-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .pipeline-step {
+            display: flex;
+            gap: 2rem;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            align-items: flex-start;
+            background: #fff;
+            transition: all 0.3s;
+        }
+
+        .pipeline-step:hover {
+            background: rgba(22, 163, 74, 0.02);
+            border-left: 4px solid var(--green);
+            padding-left: calc(2rem - 3px);
+        }
+
+        .pipeline-step:last-child {
+            border-bottom: 1px solid var(--border);
+        }
+
+        .pipeline-step-number {
+            min-width: 50px;
+            height: 50px;
+            background: var(--green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .pipeline-step-content h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 0.5rem;
+        }
+
+        .pipeline-step-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Incident response table */
+        .response-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1.5rem;
+        }
+
+        .response-table thead {
+            background: var(--bg-light);
+        }
+
+        .response-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 700;
+            color: var(--black);
+            border: 1px solid var(--border);
+            font-size: 0.95rem;
+        }
+
+        .response-table td {
+            padding: 1rem;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .response-table tr:hover td {
+            background: rgba(22, 163, 74, 0.02);
+        }
+
+        .severity-critical {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .severity-high {
+            color: #ea580c;
+            font-weight: 600;
+        }
+
+        .severity-medium {
+            color: #eab308;
+            font-weight: 600;
+        }
+
+        .severity-low {
+            color: var(--green);
+            font-weight: 600;
+        }
+
+        .incident-commitment {
+            background: rgba(22, 163, 74, 0.05);
+            padding: 1.5rem;
+            border-left: 4px solid var(--green);
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+
+        .incident-commitment ul {
+            list-style: none;
+            margin: 0;
+        }
+
+        .incident-commitment li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .incident-commitment li:before {
+            content: "✓ ";
+            color: var(--green);
+            font-weight: 700;
+            margin-right: 0.5rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 2rem;
+            margin-top: 0;
+        }
+
+        .section-subtitle {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--black);
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             nav {
@@ -346,7 +497,7 @@
         <div class="nav-container">
             <a href="/" class="nav-logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
             <div class="nav-right">
-                <a href="/audit" class="nav-link">Free Audit</a>
+                <a href="/app" class="nav-link">Free Audit</a>
                 <a href="/pricing" class="nav-link">Pricing</a>
                 <a href="/docs" class="nav-link">Docs</a>
                 <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
@@ -404,18 +555,208 @@
 
                     <div class="compliance-item">
                         <strong>SOC 2 Type II</strong>
-                        <p>In progress — targeting Q3 2026</p>
+                        <p>Planned — architecture designed for compliance</p>
                     </div>
 
                     <div class="compliance-item">
-                        <strong>GDPR Compliant</strong>
-                        <p>No PII collection, no tracking, no cookies</p>
+                        <strong>GDPR Aligned</strong>
+                        <p>No PII stored in proxy pipeline. No prompt/response logging.</p>
                     </div>
 
                     <div class="compliance-item">
                         <strong>Open Audit Trail</strong>
                         <p>Every close pack is its own audit trail</p>
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 13-Step Pipeline section -->
+        <section class="section">
+            <div class="section-container">
+                <h2 class="section-title">13-Step Request Security Pipeline</h2>
+                <p class="card-text" style="margin-bottom: 2rem;">Every API request passing through Finault's gateway undergoes a rigorous 13-step security pipeline. This architecture ensures cryptographic validation, rate limiting, authentication, and input sanitization before any request reaches your data.</p>
+
+                <div class="pipeline-container">
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">1</div>
+                        <div class="pipeline-step-content">
+                            <h3>Module Initialization</h3>
+                            <p>Load 49 wired modules (security, billing, compliance) and establish baseline security context.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">2</div>
+                        <div class="pipeline-step-content">
+                            <h3>Error Tracking</h3>
+                            <p>Initialize Sentry-compatible error boundaries for incident detection and logging.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">3</div>
+                        <div class="pipeline-step-content">
+                            <h3>CORS Enforcement</h3>
+                            <p>Validate origin against allowlist (finault.ai, app.finault.ai, dashboard.finault.ai).</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">4</div>
+                        <div class="pipeline-step-content">
+                            <h3>Request ID Generation</h3>
+                            <p>Assign unique request ID for full traceability throughout the entire request lifecycle.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">5</div>
+                        <div class="pipeline-step-content">
+                            <h3>Database Observability</h3>
+                            <p>Connect monitoring to Supabase with circuit breaker pattern for resilience.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">6</div>
+                        <div class="pipeline-step-content">
+                            <h3>IP Rate Limiting</h3>
+                            <p>KV-backed per-IP rate limits to prevent abuse and distributed attack patterns.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">7</div>
+                        <div class="pipeline-step-content">
+                            <h3>Authentication</h3>
+                            <p>Validate JWT or fk_ API key (SHA-256 hashed, never stored in plaintext).</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">8</div>
+                        <div class="pipeline-step-content">
+                            <h3>Token Revocation Check</h3>
+                            <p>Cross-reference against KV revocation list for invalidated credentials.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">9</div>
+                        <div class="pipeline-step-content">
+                            <h3>Organization Rate Limiting</h3>
+                            <p>Apply per-org tiered rate limits based on subscription tier.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">10</div>
+                        <div class="pipeline-step-content">
+                            <h3>IP Allowlisting</h3>
+                            <p>Verify request IP against org's allowlist (if configured for enhanced security).</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">11</div>
+                        <div class="pipeline-step-content">
+                            <h3>Replay Protection</h3>
+                            <p>Detect and block duplicate request IDs to prevent replay attacks.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">12</div>
+                        <div class="pipeline-step-content">
+                            <h3>Session Fingerprinting</h3>
+                            <p>Validate session integrity and detect anomalous access patterns.</p>
+                        </div>
+                    </div>
+
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-number">13</div>
+                        <div class="pipeline-step-content">
+                            <h3>Input Sanitization</h3>
+                            <p>Validate and sanitize request body before proxying to downstream services.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Incident Response section -->
+        <section class="section">
+            <div class="section-container">
+                <h2 class="section-title">Incident Response</h2>
+
+                <div class="incident-commitment">
+                    <p style="font-weight: 600; color: var(--black); margin-top: 0; margin-bottom: 1rem;">Our Commitment</p>
+                    <ul>
+                        <li>Automated health checks every 5 minutes (cron: */5 * * * *)</li>
+                        <li>Circuit breaker pattern: graceful degradation if database is unreachable</li>
+                        <li>Failover chains across providers (OpenAI → Anthropic → Google)</li>
+                    </ul>
+                </div>
+
+                <h3 class="section-subtitle">Response Timeline</h3>
+                <table class="response-table">
+                    <thead>
+                        <tr>
+                            <th>Severity</th>
+                            <th>Detection</th>
+                            <th>Response</th>
+                            <th>Communication</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="severity-critical">Critical (gateway down)</span></td>
+                            <td>Automated, &lt;5 min</td>
+                            <td>Immediate failover</td>
+                            <td>Status page + email within 15 min</td>
+                        </tr>
+                        <tr>
+                            <td><span class="severity-high">High (degraded performance)</span></td>
+                            <td>Automated, &lt;10 min</td>
+                            <td>Investigation within 30 min</td>
+                            <td>Status page within 1 hour</td>
+                        </tr>
+                        <tr>
+                            <td><span class="severity-medium">Medium (single endpoint)</span></td>
+                            <td>Monitoring alert</td>
+                            <td>Fix within 4 hours</td>
+                            <td>Status page update</td>
+                        </tr>
+                        <tr>
+                            <td><span class="severity-low">Low (cosmetic/docs)</span></td>
+                            <td>User report</td>
+                            <td>Fix within 24 hours</td>
+                            <td>Changelog entry</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 class="section-subtitle">Post-Incident Process</h3>
+                <div class="card" style="background: #fff; border: 1px solid var(--border);">
+                    <p class="card-text" style="margin-bottom: 0;">
+                        <strong style="color: var(--black); display: block; margin-bottom: 1rem;">Root Cause Analysis</strong>
+                        Completed within 48 hours with detailed findings and remediation steps.
+                    </p>
+                    <p class="card-text" style="margin-bottom: 0;">
+                        <strong style="color: var(--black); display: block; margin-bottom: 1rem; margin-top: 1rem;">Public Postmortem</strong>
+                        Published for all Critical and High severity incidents with transparency around impact and preventive measures.
+                    </p>
+                    <p class="card-text" style="margin: 1rem 0 0 0;">
+                        <strong style="color: var(--black); display: block; margin-bottom: 0.5rem; margin-top: 1rem;">Preventive Documentation</strong>
+                        All measures documented and implemented to prevent recurrence.
+                    </p>
+                </div>
+
+                <div class="incident-commitment" style="margin-top: 2rem;">
+                    <p style="font-weight: 600; color: var(--black); margin: 0 0 0.5rem 0;">Security & Status Contact</p>
+                    <p style="margin: 0.5rem 0; color: var(--text-secondary);">Report security issues: <a href="mailto:security@finault.ai" style="color: var(--green); text-decoration: none; font-weight: 600;">security@finault.ai</a></p>
+                    <p style="margin: 0.5rem 0; color: var(--text-secondary);">Real-time system status: <a href="https://status.finault.ai" style="color: var(--green); text-decoration: none; font-weight: 600;">status.finault.ai</a></p>
                 </div>
             </div>
         </section>
@@ -438,7 +779,7 @@
                     <ul>
                         <li><a href="/pricing">Pricing</a></li>
                         <li><a href="/security">Security</a></li>
-                        <li><a href="/verify">Verify a Pack</a></li>
+                        <li><a href="/docs">Verify a Pack</a></li>
                     </ul>
                 </div>
 

@@ -11,7 +11,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finault — Shared Audit</title>
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
     <style>
         :root {
             --gray-50: #fafafa; --gray-100: #f5f5f5; --gray-200: #e5e5e5;
@@ -67,18 +68,41 @@
         <div class="empty" id="emptyState">
             <h2>No audit data found</h2>
             <p>This link may have expired or is invalid.</p>
-            <a href="/demo" style="color:var(--green);text-decoration:none;font-weight:600;">Run your own free audit &rarr;</a>
+            <a href="/app" style="color:var(--green);text-decoration:none;font-weight:600;">Run your own free audit &rarr;</a>
         </div>
     </div>
     <script>
     function fmtK(n) { return n >= 1000000 ? (n/1000000).toFixed(1)+'M' : n >= 1000 ? (n/1000).toFixed(1)+'K' : n.toFixed(0); }
+    function esc(s) { var d = document.createElement('div'); d.textContent = String(s || ''); return d.innerHTML; }
+    function safeDotClass(t) { return ['critical','warn','info'].indexOf(t) >= 0 ? t : 'info'; }
     try {
         var hash = window.location.hash;
         if (!hash || hash.indexOf('#d=') < 0) throw new Error('no data');
         var b64 = hash.slice(3);
-        var json = decodeURIComponent(escape(atob(b64)));
-        var d = JSON.parse(json);
+
+        // Decode with specific error handling
+        var json;
+        try {
+            json = decodeURIComponent(escape(atob(b64)));
+        } catch(decodeErr) {
+            document.getElementById('emptyState').querySelector('p').textContent = 'This audit link appears to be corrupted or truncated.';
+            throw new Error('decode_failed');
+        }
+
+        var d;
+        try {
+            d = JSON.parse(json);
+        } catch(parseErr) {
+            document.getElementById('emptyState').querySelector('p').textContent = 'Audit data could not be read. The link may have been modified.';
+            throw new Error('parse_failed');
+        }
+
+        // Validate required fields
         if (!d.t || !d.m) throw new Error('invalid');
+        if (!Array.isArray(d.m) || d.m.some(function(m) { return typeof m.n === 'undefined' || typeof m.c === 'undefined'; })) {
+            document.getElementById('emptyState').querySelector('p').textContent = 'Audit data is incomplete — model information is missing or malformed.';
+            throw new Error('invalid_models');
+        }
 
         document.getElementById('emptyState').style.display = 'none';
         var page = document.getElementById('page');
@@ -89,7 +113,7 @@
 
         // Verification ribbon
         h += '<div class="ribbon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>';
-        h += '<span>Audit <strong style="color:var(--gray-700);">#' + (d.id||'—') + '</strong> &middot; ' + (d.ts||'') + ' &middot; ' + (d.items||0) + ' rows &middot; ' + (d.pr||'Multi-provider') + '</span></div>';
+        h += '<span>Audit <strong style="color:var(--gray-700);">#' + esc(d.id||'—') + '</strong> &middot; ' + esc(d.ts||'') + ' &middot; ' + esc(d.items||0) + ' rows &middot; ' + esc(d.pr||'Multi-provider') + '</span></div>';
 
         // Hero numbers
         h += '<div class="hero-grid"><div class="hero dark"><div class="label">Total AI Spend</div><div class="value">$' + fmtK(d.t) + '</div></div>';
@@ -101,7 +125,7 @@
             h += '<div class="models"><div class="section-title">Spend by Model</div>';
             d.m.forEach(function(m) {
                 var pct = Math.max((m.c / d.t) * 100, 3);
-                h += '<div class="model-row"><span class="model-name">' + m.n + '</span><div class="model-bar"><div class="model-fill" style="width:' + pct + '%">' + ((m.c/d.t)*100).toFixed(1) + '%</div></div><span class="model-amount">$' + fmtK(m.c) + '</span></div>';
+                h += '<div class="model-row"><span class="model-name">' + esc(m.n) + '</span><div class="model-bar"><div class="model-fill" style="width:' + pct + '%">' + ((m.c/d.t)*100).toFixed(1) + '%</div></div><span class="model-amount">$' + fmtK(m.c) + '</span></div>';
             });
             h += '</div>';
         }
@@ -110,7 +134,7 @@
         if (d.a && d.a.length > 0) {
             h += '<div class="anomalies"><div class="section-title">Anomalies (' + d.a.length + ')</div>';
             d.a.forEach(function(a) {
-                h += '<div class="anomaly"><div class="dot ' + a.t + '"></div><div>' + a.x + '</div></div>';
+                h += '<div class="anomaly"><div class="dot ' + safeDotClass(a.t) + '"></div><div>' + esc(a.x) + '</div></div>';
             });
             h += '</div>';
         }
@@ -144,7 +168,7 @@
                 var ts = d.sl[0];
                 h += '<div style="display:flex;gap:12px;padding:14px;background:var(--white);border:1px solid var(--border);border-radius:8px;">';
                 h += '<div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:var(--green);color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">' + step + '</div>';
-                h += '<div><div style="font-size:13px;font-weight:600;color:var(--gray-900);">Route classification workloads from ' + ts.f + ' to ' + ts.to + '</div>';
+                h += '<div><div style="font-size:13px;font-weight:600;color:var(--gray-900);">Route classification workloads from ' + esc(ts.f) + ' to ' + esc(ts.to) + '</div>';
                 h += '<div style="font-size:12px;color:var(--gray-500);margin-top:2px;">Potential savings: $' + (ts.amt >= 1000 ? Math.round(ts.amt/1000) + 'K' : ts.amt) + '/mo</div></div></div>';
                 step++;
             }
@@ -160,7 +184,20 @@
         }
 
         // CTA
-        h += '<div class="cta"><h3>Upload your own invoice</h3><p>Drop a billing CSV and get your spend breakdown in 60 seconds. Data never leaves your browser.</p><a href="/demo">Run free audit &rarr;</a></div>';
+        // Bridge CTA — connect free audit to the paid API/SDK funnel
+        h += '<div class="cta" style="text-align:center;">';
+        h += '<h3 style="margin-bottom:8px;">Want this tracked automatically?</h3>';
+        h += '<p style="margin-bottom:20px;">This audit is a snapshot. The Finault SDK tracks every AI call in real time — margins, health scores, and alerts, per customer, continuously.</p>';
+        h += '<div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;">';
+        h += '<a href="/sdk" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:var(--green);color:white;text-decoration:none;font-size:15px;font-weight:600;border-radius:10px;">Install the SDK &rarr;</a>';
+        h += '<a href="/login?redirect=app" style="display:inline-flex;align-items:center;gap:8px;padding:14px 28px;background:white;color:var(--gray-600);text-decoration:none;font-size:15px;font-weight:500;border-radius:10px;border:1px solid var(--border);">Get Your API Key</a>';
+        h += '</div>';
+        h += '<div style="background:var(--gray-50);border:1px solid var(--border);border-radius:10px;padding:16px;max-width:520px;margin:0 auto;">';
+        h += '<div style="font-size:12px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">One line. Every AI call tracked.</div>';
+        h += '<code style="display:block;background:var(--gray-900);color:var(--green);padding:12px 16px;border-radius:8px;font-size:13px;text-align:left;">pip install finault</code>';
+        h += '</div>';
+        h += '<p style="margin-top:12px;font-size:13px;color:var(--gray-400);">Free tier: 10,000 requests/month. No credit card required.</p>';
+        h += '</div>';
 
         page.innerHTML = h;
     } catch(e) {

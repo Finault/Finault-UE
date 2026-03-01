@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Interactive API Explorer</title>
+    <meta name="description" content="Try the Finault API live. Send real requests through the governance gateway and see cost attribution, audit hashes, and latency headers in real time.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #111; --white: #fff; --green: #16a34a; --green-light: #f0fdf4;
+            --green-border: #bbf7d0; --gray-50: #fafafa; --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5; --gray-400: #a3a3a3; --gray-500: #737373;
+            --gray-600: #525252; --gray-900: #171717; --border: #e5e5e5;
+            --code-bg: #0f172a; --code-alt: #1e293b;
+            --amber: #d97706; --red: #dc2626; --blue: #2563eb;
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--white); color: var(--gray-900); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+
+        /* Top Navigation */
+        .top-nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 40px; height: 64px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--green); font-weight: 600; }
+        .nav-cta { color: var(--white); background: var(--green); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: opacity 0.2s; border: none; cursor: pointer; }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* Layout */
+        .app { display: flex; height: calc(100vh - 64px); margin-top: 64px; }
+
+        /* Sidebar */
+        .sidebar { width: 240px; min-width: 240px; border-right: 1px solid var(--border); background: var(--gray-50); overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-content { flex: 1; padding: 16px 0; overflow-y: auto; }
+        .sidebar-section { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); padding: 12px 16px 6px; margin-top: 8px; }
+        .sidebar-section:first-child { margin-top: 0; }
+        .sidebar-item { display: flex; align-items: center; gap: 8px; padding: 8px 16px; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--gray-600); transition: all 0.15s; border-left: 3px solid transparent; user-select: none; }
+        .sidebar-item:hover { background: var(--gray-100); color: var(--gray-900); }
+        .sidebar-item.active { background: var(--green-light); color: var(--green); border-left-color: var(--green); font-weight: 600; }
+        .sidebar-item-path { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+        .method-badge { font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 4px; flex-shrink: 0; }
+        .method-badge.get { background: #dbeafe; color: #1d4ed8; }
+        .method-badge.post { background: var(--green-light); color: var(--green); }
+
+        /* Quick Start Section */
+        .quick-start { padding: 16px; border-top: 1px solid var(--border); background: var(--white); }
+        .quick-start-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 12px; }
+        .quick-start-card { background: var(--gray-50); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
+        .quick-start-card:hover { border-color: var(--green); background: var(--green-light); }
+        .quick-start-card-title { font-size: 12px; font-weight: 600; color: var(--gray-900); margin-bottom: 4px; }
+        .quick-start-card-desc { font-size: 11px; color: var(--gray-500); line-height: 1.4; }
+
+        /* Main */
+        .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+        /* Endpoint header */
+        .ep-header { padding: 20px 24px; border-bottom: 1px solid var(--border); background: var(--gray-50); }
+        .ep-title { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .ep-title h2 { font-size: 18px; font-weight: 700; }
+        .ep-path { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gray-500); }
+        .ep-desc { font-size: 14px; color: var(--gray-500); margin-top: 8px; line-height: 1.5; }
+        .ep-auth-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: var(--green-light); color: var(--green); font-size: 11px; font-weight: 600; border-radius: 6px; margin-top: 8px; }
+        .ep-auth-badge.required { background: #fef2f2; color: var(--red); }
+
+        /* Panels */
+        .panels { flex: 1; display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; gap: 0; }
+        .panel { overflow-y: auto; padding: 20px 24px; }
+        .panel-left { border-right: 1px solid var(--border); }
+        .panel-label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--gray-400); margin-bottom: 16px; margin-top: 16px; }
+        .panel-label:first-child { margin-top: 0; }
+
+        /* Auth Section */
+        .auth-section { background: var(--green-light); border: 1px solid var(--green-border); border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+        .auth-section h4 { font-size: 13px; font-weight: 600; margin-bottom: 12px; color: var(--green); }
+        .auth-section .field { margin-bottom: 12px; }
+        .auth-section .field:last-child { margin-bottom: 0; }
+        .auth-note { font-size: 11px; color: var(--gray-500); margin-top: 10px; }
+        .auth-section.not-needed { background: var(--gray-50); border: 1px solid var(--border); }
+        .auth-section.not-needed h4 { color: var(--gray-600); }
+        .no-auth-badge { display: inline-flex; align-items: center; gap: 6px; background: var(--green-light); color: var(--green); padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+
+        /* Form fields */
+        .field { margin-bottom: 16px; }
+        .field label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: var(--gray-600); }
+        .field input, .field select, .field textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; font-family: inherit; transition: border-color 0.15s; background: var(--white); color: var(--gray-900); }
+        .field input:focus, .field select:focus, .field textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1); }
+        .field textarea { font-family: 'JetBrains Mono', monospace; font-size: 13px; min-height: 100px; resize: vertical; line-height: 1.6; }
+        .field .hint { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+        .key-input-group { position: relative; }
+        .show-key-toggle { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--gray-400); font-size: 12px; padding: 4px 8px; }
+        .show-key-toggle:hover { color: var(--gray-600); }
+
+        /* Send button */
+        .send-row { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; margin-top: 20px; }
+        .send-btn { padding: 11px 28px; background: var(--green); color: var(--white); border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .send-btn:hover:not(:disabled) { opacity: 0.9; transform: translateY(-1px); }
+        .send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .send-time { font-size: 13px; color: var(--gray-400); font-family: 'JetBrains Mono', monospace; }
+
+        /* Code generation */
+        .code-tabs { display: flex; gap: 0; margin-bottom: -1px; flex-wrap: wrap; }
+        .code-tab { padding: 8px 16px; font-size: 12px; font-weight: 600; cursor: pointer; background: var(--gray-100); color: var(--gray-500); border: 1px solid var(--border); border-bottom: none; border-radius: 8px 8px 0 0; transition: all 0.15s; user-select: none; }
+        .code-tab:hover { background: var(--gray-200); }
+        .code-tab.active { background: var(--code-bg); color: #e2e8f0; border-color: var(--code-bg); }
+        .code-panel { display: none; }
+        .code-panel.active { display: block; }
+        .code-block { background: var(--code-bg); border-radius: 10px; padding: 16px; overflow-x: auto; position: relative; margin-bottom: 16px; }
+        .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; color: #e2e8f0; margin: 0; white-space: pre-wrap; word-wrap: break-word; overflow-wrap: break-word; }
+        .code-block .kw { color: #c084fc; }
+        .code-block .str { color: #86efac; }
+        .code-block .cmt { color: #64748b; }
+        .copy-btn { position: absolute; top: 12px; right: 12px; padding: 6px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: #94a3b8; font-size: 11px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .copy-btn:hover { background: rgba(255,255,255,0.15); }
+        .copy-btn.copied { background: rgba(34, 197, 94, 0.2); color: #86efac; border-color: rgba(34, 197, 94, 0.3); }
+
+        /* Response */
+        .resp-status { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700; padding: 8px 14px; border-radius: 8px; }
+        .resp-status.s2xx { background: var(--green-light); color: var(--green); }
+        .resp-status.s4xx { background: #fffbeb; color: var(--amber); }
+        .resp-status.s5xx { background: #fef2f2; color: var(--red); }
+        .resp-status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+        .resp-status.s2xx .resp-status-dot { background: var(--green); }
+        .resp-status.s4xx .resp-status-dot { background: var(--amber); }
+        .resp-status.s5xx .resp-status-dot { background: var(--red); }
+
+        /* Headers display */
+        .resp-headers { margin-bottom: 20px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--border); overflow: hidden; }
+        .header-row { display: flex; font-family: 'JetBrains Mono', monospace; font-size: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+        .header-row:last-child { border-bottom: none; }
+        .header-name { color: var(--gray-500); min-width: 200px; font-weight: 600; }
+        .header-value { color: var(--gray-900); word-break: break-all; flex: 1; }
+        .header-row.finault { background: var(--green-light); }
+        .header-row.finault .header-name { color: var(--green); font-weight: 700; }
+
+        /* Response body */
+        .resp-body { }
+        .resp-body pre { font-family: 'JetBrains Mono', monospace; font-size: 12px; line-height: 1.7; color: var(--gray-900); background: var(--gray-50); padding: 16px; border-radius: 8px; overflow-x: auto; }
+
+        /* Error Card */
+        .error-card { background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+        .error-card-title { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--red); margin-bottom: 8px; }
+        .error-card-desc { font-size: 13px; color: var(--red); margin-bottom: 12px; line-height: 1.5; }
+        .error-card-steps { font-size: 13px; color: var(--gray-600); margin-bottom: 12px; }
+        .error-card-steps ol { margin-left: 20px; margin-top: 8px; }
+        .error-card-steps li { margin-bottom: 6px; }
+        .error-docs-link { display: inline-flex; align-items: center; gap: 6px; color: var(--red); text-decoration: none; font-size: 13px; font-weight: 600; }
+        .error-docs-link:hover { text-decoration: underline; }
+
+        /* Mock example badge */
+        .example-badge { display: inline-flex; align-items: center; gap: 6px; background: #dbeafe; color: #1d4ed8; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; margin-bottom: 12px; }
+
+        /* Empty state */
+        .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--gray-400); text-align: center; padding: 40px; }
+        .empty-state svg { width: 48px; height: 48px; margin-bottom: 16px; opacity: 0.4; }
+        .empty-state p { font-size: 14px; line-height: 1.6; }
+
+        /* Loading spinner */
+        .spinner { width: 18px; height: 18px; border: 2px solid var(--green); border-top-color: transparent; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; min-width: 100%; height: auto; max-height: 40vh; border-right: none; border-bottom: 1px solid var(--border); }
+            .panels { grid-template-columns: 1fr; }
+            .panel-left { border-right: none; border-bottom: 1px solid var(--border); }
+            .top-nav { padding: 0 16px; }
+            .nav-right { gap: 16px; font-size: 13px; }
+            .nav-link { font-size: 13px; }
+            .ep-header { padding: 16px; }
+            .ep-title h2 { font-size: 16px; }
+            .panel { padding: 16px; }
+            .code-tabs { gap: 0; }
+            .code-tab { padding: 6px 12px; font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Navigation -->
+    <div class="top-nav">
+        <a href="/" class="logo">Finault</a>
+        <div class="nav-right">
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/sdk" class="nav-link">SDK</a>
+            <a href="/explorer" class="nav-link active">Explorer</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/dashboard" class="nav-cta" id="navAuthLink">Dashboard</a>
+        </div>
+    </div>
+
+    <div class="app">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-content">
+                <div class="sidebar-section">Gateway Proxy</div>
+                <div class="sidebar-item active" onclick="selectEndpoint('openai')">
+                    <span class="method-badge post">POST</span> OpenAI
+                </div>
+                <div class="sidebar-item" onclick="selectEndpoint('anthropic')">
+                    <span class="method-badge post">POST</span> Anthropic
+                </div>
+                <div class="sidebar-item" onclick="selectEndpoint('google')">
+                    <span class="method-badge post">POST</span> Google Gemini
+                </div>
+                <div class="sidebar-item" onclick="selectEndpoint('azure')">
+                    <span class="method-badge post">POST</span> Azure OpenAI
+                </div>
+                <div class="sidebar-item" onclick="selectEndpoint('bedrock')">
+                    <span class="method-badge post">POST</span> AWS Bedrock
+                </div>
+
+                <div class="sidebar-section">Public (No Auth)</div>
+                <div class="sidebar-item" onclick="selectEndpoint('pricing')">
+                    <span class="method-badge get">GET</span> Model Pricing
+                </div>
+                <div class="sidebar-item" onclick="selectEndpoint('health')">
+                    <span class="method-badge get">GET</span> Health Check
+                </div>
+                <div class="sidebar-item" onclick="selectEndpoint('validator')">
+                    <span class="method-badge post">POST</span> Schema Validator
+                </div>
+            </div>
+
+            <!-- Quick Start Examples -->
+            <div class="quick-start">
+                <div class="quick-start-title">Quick Start</div>
+                <div class="quick-start-card" onclick="quickStartPublicData()">
+                    <div class="quick-start-card-title">Test Public Data</div>
+                    <div class="quick-start-card-desc">Load /v1/pricing — no API key needed</div>
+                </div>
+                <div class="quick-start-card" onclick="quickStartHelloWorld()">
+                    <div class="quick-start-card-title">Hello World</div>
+                    <div class="quick-start-card-desc">Pre-filled OpenAI with demo prompt</div>
+                </div>
+                <div class="quick-start-card" onclick="quickStartCostAttribution()">
+                    <div class="quick-start-card-title">Cost Attribution</div>
+                    <div class="quick-start-card-desc">See X-Finault-Cost headers in action</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main content -->
+        <div class="main">
+            <div class="ep-header">
+                <div class="ep-title">
+                    <span class="method-badge post" id="epMethod">POST</span>
+                    <h2 id="epName">OpenAI Chat Completions</h2>
+                </div>
+                <div class="ep-path" id="epPath">api.finault.ai/v1/chat/completions</div>
+                <div class="ep-desc" id="epDesc">Proxy requests to OpenAI's Chat Completions API through the Finault governance gateway.</div>
+                <div id="authBadge"></div>
+            </div>
+
+            <div class="panels">
+                <!-- Request panel -->
+                <div class="panel panel-left">
+                    <div class="panel-label">Request Builder</div>
+
+                    <div class="auth-section" id="authSection">
+                        <h4>Authentication</h4>
+                        <div class="field" style="margin-bottom:10px;">
+                            <label>Finault API Key</label>
+                            <div class="key-input-group">
+                                <input type="password" id="finaultKey" placeholder="fk_live_..." value="">
+                                <button class="show-key-toggle" onclick="toggleKeyVisibility('finaultKey')">Show</button>
+                            </div>
+                        </div>
+                        <div class="field" id="providerKeyField" style="margin-bottom:0;">
+                            <label id="providerKeyLabel">OpenAI API Key</label>
+                            <div class="key-input-group">
+                                <input type="password" id="providerKey" placeholder="sk-...">
+                                <button class="show-key-toggle" onclick="toggleKeyVisibility('providerKey')">Show</button>
+                            </div>
+                        </div>
+                        <div class="auth-note">Keys are stored in your browser only. Never sent to Finault servers.</div>
+                    </div>
+
+                    <div id="noAuthSection" style="display:none;">
+                        <div class="no-auth-badge">👋 No API key needed for public endpoints</div>
+                    </div>
+
+                    <div class="field" id="modelField">
+                        <label>Model</label>
+                        <select id="modelSelect" onchange="updateCodeGen()">
+                            <option value="gpt-4o">gpt-4o</option>
+                            <option value="gpt-4o-mini">gpt-4o-mini</option>
+                            <option value="gpt-4-turbo">gpt-4-turbo</option>
+                            <option value="o4-mini">o4-mini</option>
+                        </select>
+                    </div>
+
+                    <div class="field" id="promptField">
+                        <label>Prompt</label>
+                        <textarea id="promptInput" oninput="updateCodeGen()">Say hello in one sentence.</textarea>
+                    </div>
+
+                    <div class="field" id="costCenterField">
+                        <label>Cost Center <span style="color:var(--gray-400);font-weight:400;">(optional)</span></label>
+                        <input type="text" id="costCenterInput" placeholder="Engineering" oninput="updateCodeGen()">
+                        <div class="hint">Sent as X-Finault-Cost-Center header</div>
+                    </div>
+
+                    <div class="send-row">
+                        <button class="send-btn" id="sendBtn" onclick="sendRequest()">
+                            <span>Send Request</span>
+                        </button>
+                        <span class="send-time" id="sendTime"></span>
+                    </div>
+
+                    <div class="panel-label">Code Generation</div>
+                    <div class="code-tabs">
+                        <div class="code-tab active" onclick="switchCodeTab('curl')">curl</div>
+                        <div class="code-tab" onclick="switchCodeTab('python')">Python</div>
+                        <div class="code-tab" onclick="switchCodeTab('node')">Node.js</div>
+                        <div class="code-tab" onclick="switchCodeTab('go')">Go</div>
+                        <div class="code-tab" onclick="switchCodeTab('java')">Java</div>
+                        <div class="code-tab" onclick="switchCodeTab('ruby')">Ruby</div>
+                    </div>
+                    <div class="code-panel active" id="codePanel-curl">
+                        <div class="code-block"><button class="copy-btn" onclick="copyCode('curl')">Copy</button><pre id="codeCurl"></pre></div>
+                    </div>
+                    <div class="code-panel" id="codePanel-python">
+                        <div class="code-block"><button class="copy-btn" onclick="copyCode('python')">Copy</button><pre id="codePython"></pre></div>
+                    </div>
+                    <div class="code-panel" id="codePanel-node">
+                        <div class="code-block"><button class="copy-btn" onclick="copyCode('node')">Copy</button><pre id="codeNode"></pre></div>
+                    </div>
+                    <div class="code-panel" id="codePanel-go">
+                        <div class="code-block"><button class="copy-btn" onclick="copyCode('go')">Copy</button><pre id="codeGo"></pre></div>
+                    </div>
+                    <div class="code-panel" id="codePanel-java">
+                        <div class="code-block"><button class="copy-btn" onclick="copyCode('java')">Copy</button><pre id="codeJava"></pre></div>
+                    </div>
+                    <div class="code-panel" id="codePanel-ruby">
+                        <div class="code-block"><button class="copy-btn" onclick="copyCode('ruby')">Copy</button><pre id="codeRuby"></pre></div>
+                    </div>
+                </div>
+
+                <!-- Response panel -->
+                <div class="panel">
+                    <div class="panel-label">Response</div>
+                    <div id="responseArea">
+                        <div class="empty-state">
+                            <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
+                            <p>Send a request to see the response here.<br>Finault headers will be highlighted in green.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // Conversion tracking utility for Clarity
+    function trackExplorerConversion(eventName, extraData) {
+        if (typeof clarity !== 'undefined' && clarity) {
+            try {
+                clarity('set', 'conversion_event', eventName);
+                if (extraData && typeof extraData === 'object') {
+                    Object.keys(extraData).forEach(function(k) {
+                        clarity('set', eventName + '_' + k, extraData[k]);
+                    });
+                }
+            } catch(e) {}
+        }
+        console.log('[Finault Explorer Conversion]', eventName, extraData);
+    }
+
+    // Track page view
+    window.addEventListener('load', function() {
+        trackExplorerConversion('explorer_page_view');
+    });
+
+    const API_BASE = 'https://api.finault.ai';
+
+    const endpoints = {
+        openai: {
+            method: 'POST', name: 'OpenAI Chat Completions',
+            path: '/v1/chat/completions',
+            desc: 'Proxy requests to OpenAI\'s Chat Completions API through the Finault governance gateway. Adds cost attribution, audit hashing, and latency tracking.',
+            providerLabel: 'OpenAI API Key', providerPlaceholder: 'sk-...',
+            models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'o4-mini'],
+            needsAuth: true,
+            buildBody: function(model, prompt) {
+                return JSON.stringify({ model: model, messages: [{ role: 'user', content: prompt }] }, null, 2);
+            },
+            buildHeaders: function(fk, pk) {
+                return { 'Authorization': 'Bearer ' + pk, 'Content-Type': 'application/json', 'X-Finault-API-Key': fk };
+            },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-cost-dollars': '0.00125',
+                    'x-finault-cost-cents': '0',
+                    'x-finault-tokens': '47',
+                    'x-finault-latency-ms': '245',
+                    'x-finault-request-id': 'req_8f7k9c3x2m',
+                    'x-finault-audit-hash': 'hash_4b7f8a2c',
+                    'x-finault-model': 'gpt-4o',
+                    'x-finault-provider': 'openai'
+                },
+                body: {
+                    id: 'chatcmpl-8vJz4c9aX2k3mN7pQrStUv',
+                    object: 'chat.completion',
+                    created: 1707298234,
+                    model: 'gpt-4o',
+                    choices: [{
+                        index: 0,
+                        message: {
+                            role: 'assistant',
+                            content: 'Hello! I\'m here to help you with anything you need.'
+                        },
+                        finish_reason: 'stop'
+                    }],
+                    usage: { prompt_tokens: 8, completion_tokens: 14, total_tokens: 22 }
+                }
+            }
+        },
+        anthropic: {
+            method: 'POST', name: 'Anthropic Messages',
+            path: '/v1/anthropic/v1/messages',
+            desc: 'Proxy requests to Anthropic\'s Messages API. Supports Claude Opus, Sonnet, and Haiku models.',
+            providerLabel: 'Anthropic API Key', providerPlaceholder: 'sk-ant-...',
+            models: ['claude-opus-4.6-20250514', 'claude-sonnet-4-20250514', 'claude-haiku-4-5-20251001'],
+            needsAuth: true,
+            buildBody: function(model, prompt) {
+                return JSON.stringify({ model: model, max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }, null, 2);
+            },
+            buildHeaders: function(fk, pk) {
+                return { 'x-api-key': pk, 'Content-Type': 'application/json', 'anthropic-version': '2023-06-01', 'X-Finault-API-Key': fk };
+            },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-cost-dollars': '0.00250',
+                    'x-finault-cost-cents': '0',
+                    'x-finault-tokens': '52',
+                    'x-finault-latency-ms': '318',
+                    'x-finault-request-id': 'req_7x3j8k2m9n',
+                    'x-finault-audit-hash': 'hash_2k8m3n7x',
+                    'x-finault-model': 'claude-opus-4.6-20250514',
+                    'x-finault-provider': 'anthropic'
+                },
+                body: {
+                    id: 'msg_3x4m8k7n2j9p',
+                    type: 'message',
+                    role: 'assistant',
+                    content: [{ type: 'text', text: 'Hello! I\'m Claude, made by Anthropic. How can I assist you today?' }],
+                    model: 'claude-opus-4.6-20250514',
+                    stop_reason: 'end_turn',
+                    stop_sequence: null,
+                    usage: { input_tokens: 10, output_tokens: 16 }
+                }
+            }
+        },
+        google: {
+            method: 'POST', name: 'Google Gemini',
+            path: '/v1/google',
+            desc: 'Proxy requests to Google\'s Generative AI API. Supports Gemini Pro, Flash, and experimental models.',
+            providerLabel: 'Google AI API Key', providerPlaceholder: 'AIza...',
+            models: ['gemini-2.0-flash', 'gemini-1.5-pro', 'gemini-1.5-flash'],
+            needsAuth: true,
+            buildBody: function(model, prompt) {
+                return JSON.stringify({ model: model, contents: [{ parts: [{ text: prompt }] }] }, null, 2);
+            },
+            buildHeaders: function(fk, pk) {
+                return { 'x-goog-api-key': pk, 'Content-Type': 'application/json', 'X-Finault-API-Key': fk };
+            },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-cost-dollars': '0.00075',
+                    'x-finault-cost-cents': '0',
+                    'x-finault-tokens': '38',
+                    'x-finault-latency-ms': '287',
+                    'x-finault-request-id': 'req_2m7k9c3x',
+                    'x-finault-audit-hash': 'hash_8x2m7c',
+                    'x-finault-model': 'gemini-2.0-flash',
+                    'x-finault-provider': 'google'
+                },
+                body: {
+                    candidates: [{
+                        content: {
+                            parts: [{ text: 'Hello! I\'m Gemini, Google\'s AI assistant. How can I help?' }],
+                            role: 'model'
+                        },
+                        finish_reason: 'STOP',
+                        index: 0
+                    }],
+                    usage_metadata: { prompt_token_count: 4, candidates_token_count: 13, total_token_count: 17 }
+                }
+            }
+        },
+        azure: {
+            method: 'POST', name: 'Azure OpenAI',
+            path: '/v1/azure/openai/deployments/{model}/chat/completions?api-version=2024-02-01',
+            desc: 'Proxy requests to Azure OpenAI Service deployments through the Finault gateway.',
+            providerLabel: 'Azure OpenAI API Key', providerPlaceholder: 'your-azure-key',
+            models: ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo'],
+            needsAuth: true,
+            buildBody: function(model, prompt) {
+                return JSON.stringify({ messages: [{ role: 'user', content: prompt }] }, null, 2);
+            },
+            buildHeaders: function(fk, pk) {
+                return { 'api-key': pk, 'Content-Type': 'application/json', 'X-Finault-API-Key': fk };
+            },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-cost-dollars': '0.00140',
+                    'x-finault-cost-cents': '0',
+                    'x-finault-tokens': '48',
+                    'x-finault-latency-ms': '267',
+                    'x-finault-request-id': 'req_4k2m8x9n',
+                    'x-finault-audit-hash': 'hash_9n4k2x',
+                    'x-finault-model': 'gpt-4o',
+                    'x-finault-provider': 'azure'
+                },
+                body: {
+                    id: 'chatcmpl-azure-8vJz4c9',
+                    object: 'chat.completion',
+                    created: 1707298234,
+                    model: 'gpt-4o',
+                    choices: [{
+                        index: 0,
+                        message: {
+                            role: 'assistant',
+                            content: 'Hello! I\'m ready to help you with any questions or tasks.'
+                        },
+                        finish_reason: 'stop'
+                    }],
+                    usage: { prompt_tokens: 8, completion_tokens: 13, total_tokens: 21 }
+                }
+            }
+        },
+        bedrock: {
+            method: 'POST', name: 'AWS Bedrock',
+            path: '/v1/bedrock/model/{model}/invoke',
+            desc: 'Proxy requests to AWS Bedrock model invocations through the Finault gateway.',
+            providerLabel: 'AWS Access Key', providerPlaceholder: 'AKIA...',
+            models: ['anthropic.claude-sonnet-4-5-20250929-v1:0', 'amazon.titan-text-express-v1', 'meta.llama3-70b-instruct-v1:0'],
+            needsAuth: true,
+            buildBody: function(model, prompt) {
+                return JSON.stringify({ anthropic_version: 'bedrock-2023-05-31', max_tokens: 1024, messages: [{ role: 'user', content: prompt }] }, null, 2);
+            },
+            buildHeaders: function(fk, pk) {
+                return { 'Content-Type': 'application/json', 'X-Finault-API-Key': fk };
+            },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-cost-dollars': '0.00180',
+                    'x-finault-cost-cents': '0',
+                    'x-finault-tokens': '44',
+                    'x-finault-latency-ms': '412',
+                    'x-finault-request-id': 'req_8x3k7m2',
+                    'x-finault-audit-hash': 'hash_3m8x7k',
+                    'x-finault-model': 'anthropic.claude-sonnet-4-5-20250929-v1:0',
+                    'x-finault-provider': 'bedrock'
+                },
+                body: {
+                    content: [{ type: 'text', text: 'Hello! I\'m Claude running on AWS Bedrock. How may I assist you?' }],
+                    stop_reason: 'end_turn',
+                    usage: { input_tokens: 11, output_tokens: 15 }
+                }
+            }
+        },
+        pricing: {
+            method: 'GET', name: 'Model Pricing',
+            path: '/v1/pricing',
+            desc: 'Returns live pricing data for all 40+ AI models across all supported providers. No authentication required.',
+            needsAuth: false, models: [], providerLabel: '', providerPlaceholder: '',
+            buildBody: function() { return ''; },
+            buildHeaders: function() { return {}; },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'cache-control': 'max-age=3600',
+                    'x-finault-request-id': 'req_5m2k8n9x'
+                },
+                body: {
+                    models: [
+                        { id: 'gpt-4o', provider: 'openai', input_per_1m: 2.50, output_per_1m: 10.00 },
+                        { id: 'gpt-4o-mini', provider: 'openai', input_per_1m: 0.15, output_per_1m: 0.60 },
+                        { id: 'claude-opus-4.6-20250514', provider: 'anthropic', input_per_1m: 3.00, output_per_1m: 15.00 },
+                        { id: 'claude-sonnet-4-20250514', provider: 'anthropic', input_per_1m: 3.00, output_per_1m: 15.00 },
+                        { id: 'gemini-2.0-flash', provider: 'google', input_per_1m: 0.075, output_per_1m: 0.30 },
+                        { id: 'gemini-1.5-pro', provider: 'google', input_per_1m: 1.25, output_per_1m: 5.00 }
+                    ],
+                    updated_at: new Date().toISOString()
+                }
+            }
+        },
+        health: {
+            method: 'GET', name: 'Health Check',
+            path: '/v1/health',
+            desc: 'Returns the current health status of the Finault gateway. No authentication required.',
+            needsAuth: false, models: [], providerLabel: '', providerPlaceholder: '',
+            buildBody: function() { return ''; },
+            buildHeaders: function() { return {}; },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-request-id': 'req_9x7k2m'
+                },
+                body: {
+                    status: 'ok',
+                    db: { healthy: true, latency_ms: 12, circuit_state: 'CLOSED' },
+                    version: '4.1.0-gold',
+                    timestamp: new Date().toISOString()
+                }
+            }
+        },
+        validator: {
+            method: 'POST', name: 'Schema Validator',
+            path: '/v1/closepack/validate',
+            desc: 'Validates request payloads against AI provider schemas. Useful for catching errors before sending expensive API calls.',
+            needsAuth: false, models: [], providerLabel: '', providerPlaceholder: '',
+            buildBody: function() { return JSON.stringify({ provider: 'openai', schema: { model: 'gpt-4o', messages: [{ role: 'user', content: 'test' }] } }, null, 2); },
+            buildHeaders: function() { return { 'Content-Type': 'application/json' }; },
+            mockResponse: {
+                status: 200,
+                statusText: 'OK',
+                headers: {
+                    'content-type': 'application/json',
+                    'x-finault-request-id': 'req_3m9k7x'
+                },
+                body: {
+                    valid: true,
+                    errors: [],
+                    warnings: [],
+                    provider: 'openai',
+                    timestamp: new Date().toISOString()
+                }
+            }
+        }
+    };
+
+    let currentEndpoint = 'openai';
+
+    function selectEndpoint(id) {
+        currentEndpoint = id;
+        const ep = endpoints[id];
+
+        // Update sidebar
+        document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+
+        // Update header
+        document.getElementById('epMethod').textContent = ep.method;
+        document.getElementById('epMethod').className = 'method-badge ' + ep.method.toLowerCase();
+        document.getElementById('epName').textContent = ep.name;
+        document.getElementById('epPath').textContent = 'api.finault.ai' + ep.path;
+        document.getElementById('epDesc').textContent = ep.desc;
+
+        // Update auth badge
+        const authBadgeEl = document.getElementById('authBadge');
+        if (ep.needsAuth) {
+            authBadgeEl.innerHTML = '<div class="ep-auth-badge required">🔐 Requires Authentication</div>';
+        } else {
+            authBadgeEl.innerHTML = '<div class="ep-auth-badge">🟢 Public Endpoint</div>';
+        }
+
+        // Toggle auth section
+        document.getElementById('authSection').style.display = ep.needsAuth ? 'block' : 'none';
+        document.getElementById('noAuthSection').style.display = ep.needsAuth ? 'none' : 'block';
+        if (ep.needsAuth) {
+            document.getElementById('providerKeyLabel').textContent = ep.providerLabel;
+            document.getElementById('providerKey').placeholder = ep.providerPlaceholder;
+        }
+
+        // Toggle model field
+        document.getElementById('modelField').style.display = ep.models.length > 0 ? 'block' : 'none';
+        if (ep.models.length > 0) {
+            const sel = document.getElementById('modelSelect');
+            sel.innerHTML = ep.models.map(m => '<option value="' + m + '">' + m + '</option>').join('');
+        }
+
+        // Toggle prompt & cost center
+        document.getElementById('promptField').style.display = ep.needsAuth ? 'block' : 'none';
+        document.getElementById('costCenterField').style.display = ep.needsAuth ? 'block' : 'none';
+
+        // Show mock response
+        showMockResponse(ep);
+
+        document.getElementById('sendTime').textContent = '';
+
+        updateCodeGen();
+    }
+
+    function showMockResponse(ep) {
+        const area = document.getElementById('responseArea');
+        const mockResp = ep.mockResponse;
+        let html = '<div class="example-badge">📋 Example Response</div>';
+
+        // Status badge
+        const statusClass = mockResp.status < 300 ? 's2xx' : mockResp.status < 500 ? 's4xx' : 's5xx';
+        html += '<div class="resp-status ' + statusClass + '">';
+        html += '<span class="resp-status-dot"></span>';
+        html += mockResp.status + ' ' + mockResp.statusText;
+        html += '</div>';
+
+        // Headers
+        html += '<div class="panel-label" style="margin-top:16px;">Response Headers</div><div class="resp-headers">';
+        const finaultHeaders = ['x-finault-cost-dollars', 'x-finault-cost-cents', 'x-finault-tokens', 'x-finault-latency-ms', 'x-finault-request-id', 'x-finault-audit-hash', 'x-finault-model', 'x-finault-provider', 'x-finault-cost-center'];
+        for (const [name, value] of Object.entries(mockResp.headers)) {
+            const isFinault = finaultHeaders.indexOf(name.toLowerCase()) > -1;
+            html += '<div class="header-row' + (isFinault ? ' finault' : '') + '">';
+            html += '<span class="header-name">' + name + '</span>';
+            html += '<span class="header-value">' + escapeHtml(value) + '</span>';
+            html += '</div>';
+        }
+        html += '</div>';
+
+        // Body
+        html += '<div class="panel-label" style="margin-top:16px;">Response Body</div>';
+        html += '<div class="resp-body"><pre>' + escapeHtml(JSON.stringify(mockResp.body, null, 2)) + '</pre></div>';
+
+        area.innerHTML = html;
+    }
+
+    function getRequestDetails() {
+        const ep = endpoints[currentEndpoint];
+        const model = document.getElementById('modelSelect')?.value || '';
+        const prompt = document.getElementById('promptInput')?.value || 'Hello';
+        const fk = document.getElementById('finaultKey')?.value || 'fk_your_key';
+        const pk = document.getElementById('providerKey')?.value || 'your_provider_key';
+        const cc = document.getElementById('costCenterInput')?.value || '';
+
+        const path = ep.path.replace('{model}', model);
+        const headers = ep.needsAuth ? ep.buildHeaders(fk, pk) : ep.buildHeaders();
+        if (cc && ep.needsAuth) headers['X-Finault-Cost-Center'] = cc;
+
+        return { ep: ep, model: model, prompt: prompt, path: path, headers: headers, body: ep.buildBody(model, prompt), fk: fk, pk: pk, cc: cc };
+    }
+
+    function updateCodeGen() {
+        const r = getRequestDetails();
+        const url = API_BASE + r.path;
+
+        // curl
+        let curl = 'curl -X ' + r.ep.method + ' ' + url;
+        for (const h in r.headers) {
+            curl += ' \\\n  -H "' + h + ': ' + r.headers[h] + '"';
+        }
+        if (r.body) {
+            curl += ' \\\n  -d \'' + r.body.replace(/'/g, "'\\''") + '\'';
+        }
+        document.getElementById('codeCurl').textContent = curl;
+
+        // Python
+        let py = 'import requests\n\nresponse = requests.' + r.ep.method.toLowerCase() + '(\n    "' + url + '",\n';
+        if (Object.keys(r.headers).length > 0) {
+            py += '    headers={\n';
+            for (const h in r.headers) {
+                py += '        "' + h + '": "' + r.headers[h] + '",\n';
+            }
+            py += '    },\n';
+        }
+        if (r.body) {
+            py += '    json=' + r.body.replace(/\n/g, '\n    ') + ',\n';
+        }
+        py += ')\n\ndata = response.json()\n';
+        py += 'print(f"Cost: ${response.headers.get(\'X-Finault-Cost-Dollars\', \'N/A\')}")\n';
+        py += 'print(f"Audit: {response.headers.get(\'X-Finault-Audit-Hash\', \'N/A\')}")\n';
+        py += 'print(data)\n';
+        document.getElementById('codePython').textContent = py;
+
+        // Node.js
+        let nd = 'const response = await fetch("' + url + '", {\n';
+        nd += '  method: "' + r.ep.method + '",\n';
+        if (Object.keys(r.headers).length > 0) {
+            nd += '  headers: {\n';
+            for (const h in r.headers) {
+                nd += '    "' + h + '": "' + r.headers[h] + '",\n';
+            }
+            nd += '  },\n';
+        }
+        if (r.body) {
+            nd += '  body: JSON.stringify(' + r.body + '),\n';
+        }
+        nd += '});\n\nconst data = await response.json();\n';
+        nd += 'console.log(`Cost: $${response.headers.get("X-Finault-Cost-Dollars")}`);\n';
+        nd += 'console.log(data);\n';
+        document.getElementById('codeNode').textContent = nd;
+
+        // Go
+        let go = 'package main\n\nimport (\n    "bytes"\n    "encoding/json"\n    "fmt"\n    "net/http"\n)\n\nfunc main() {\n';
+        if (r.body) {
+            go += '    body, _ := json.Marshal(' + r.body.replace(/\n/g, ' ').replace(/\"/g, '\\"') + ')\n';
+        } else {
+            go += '    body := []byte("")\n';
+        }
+        go += '    req, _ := http.NewRequest("' + r.ep.method + '", "' + url + '", bytes.NewBuffer(body))\n';
+        for (const h in r.headers) {
+            go += '    req.Header.Set("' + h + '", "' + r.headers[h] + '")\n';
+        }
+        go += '    resp, _ := http.DefaultClient.Do(req)\n';
+        go += '    fmt.Printf("Status: %s\\n", resp.Status)\n';
+        go += '    fmt.Printf("Cost: $%s\\n", resp.Header.Get("X-Finault-Cost-Dollars"))\n';
+        go += '}\n';
+        document.getElementById('codeGo').textContent = go;
+
+        // Java
+        let java = 'OkHttpClient client = new OkHttpClient();\n';
+        java += 'String json = "' + r.body.replace(/"/g, '\\"').replace(/\n/g, '') + '";\n\n';
+        java += 'Request request = new Request.Builder()\n';
+        java += '    .url("' + url + '")\n';
+        for (const h in r.headers) {
+            java += '    .addHeader("' + h + '", "' + r.headers[h] + '")\n';
+        }
+        java += '    .post(RequestBody.create(json, MediaType.parse("application/json")))\n';
+        java += '    .build();\n\n';
+        java += 'Response response = client.newCall(request).execute();\n';
+        java += 'System.out.println("Status: " + response.code());\n';
+        java += 'System.out.println("Cost: $" + response.header("X-Finault-Cost-Dollars"));\n';
+        document.getElementById('codeJava').textContent = java;
+
+        // Ruby
+        let rb = 'require "net/http"\nrequire "json"\n\nuri = URI("' + url + '")\nhttp = Net::HTTP.new(uri.host, uri.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::' + (r.ep.method === 'GET' ? 'Get' : 'Post') + '.new(uri)\n';
+        for (const h in r.headers) {
+            rb += 'request["' + h + '"] = "' + r.headers[h] + '"\n';
+        }
+        if (r.body) {
+            rb += 'request.body = ' + r.body.replace(/\n/g, ' ') + '\n';
+        }
+        rb += '\nresponse = http.request(request)\nputs "Status: #{response.code}"\nputs "Cost: $#{response[\'X-Finault-Cost-Dollars\']}"\n';
+        document.getElementById('codeRuby').textContent = rb;
+    }
+
+    function switchCodeTab(tab) {
+        document.querySelectorAll('.code-tab').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.code-panel').forEach(el => el.classList.remove('active'));
+        event.currentTarget.classList.add('active');
+        document.getElementById('codePanel-' + tab).classList.add('active');
+    }
+
+    function copyCode(tab) {
+        trackExplorerConversion('explorer_code_copied', {language: tab});
+        const codeIds = {
+            'curl': 'codeCurl',
+            'python': 'codePython',
+            'node': 'codeNode',
+            'go': 'codeGo',
+            'java': 'codeJava',
+            'ruby': 'codeRuby'
+        };
+        const id = codeIds[tab];
+        const text = document.getElementById(id).textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            const btn = event.currentTarget;
+            btn.classList.add('copied');
+            btn.textContent = '✓ Copied!';
+            setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.textContent = 'Copy';
+            }, 2000);
+        });
+    }
+
+    async function sendRequest() {
+        const r = getRequestDetails();
+        trackExplorerConversion('explorer_request_sent', {endpoint: r.ep.path, method: r.ep.method});
+        const btn = document.getElementById('sendBtn');
+        const area = document.getElementById('responseArea');
+        const timeEl = document.getElementById('sendTime');
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Sending...';
+        area.innerHTML = '<div style="text-align:center;padding:40px;color:var(--gray-400);"><span class="spinner"></span> Sending request...</div>';
+
+        const startTime = performance.now();
+
+        try {
+            const fetchOpts = {
+                method: r.ep.method,
+                headers: r.headers
+            };
+            if (r.body && r.ep.method === 'POST') {
+                fetchOpts.body = r.body;
+                if (!fetchOpts.headers['Content-Type']) fetchOpts.headers['Content-Type'] = 'application/json';
+            }
+
+            const resp = await fetch(API_BASE + r.path, fetchOpts);
+            const elapsed = Math.round(performance.now() - startTime);
+            timeEl.textContent = elapsed + 'ms';
+
+            let data;
+            try { data = await resp.json(); } catch(e) { data = { error: 'Non-JSON response' }; }
+
+            // Status badge
+            const statusClass = resp.status < 300 ? 's2xx' : resp.status < 500 ? 's4xx' : 's5xx';
+            let html = '<div class="resp-status ' + statusClass + '">';
+            html += '<span class="resp-status-dot"></span>';
+            html += resp.status + ' ' + resp.statusText;
+            html += '</div>';
+
+            // Headers
+            html += '<div class="panel-label" style="margin-top:16px;">Response Headers</div><div class="resp-headers">';
+            const finaultHeaders = ['x-finault-cost-dollars', 'x-finault-cost-cents', 'x-finault-tokens', 'x-finault-latency-ms', 'x-finault-request-id', 'x-finault-audit-hash', 'x-finault-model', 'x-finault-provider', 'x-finault-cost-center'];
+            resp.headers.forEach((value, name) => {
+                const isFinault = finaultHeaders.indexOf(name.toLowerCase()) > -1;
+                html += '<div class="header-row' + (isFinault ? ' finault' : '') + '">';
+                html += '<span class="header-name">' + name + '</span>';
+                html += '<span class="header-value">' + escapeHtml(value) + '</span>';
+                html += '</div>';
+            });
+            html += '</div>';
+
+            // Body
+            html += '<div class="panel-label" style="margin-top:16px;">Response Body</div>';
+            html += '<div class="resp-body"><pre>' + escapeHtml(JSON.stringify(data, null, 2)) + '</pre></div>';
+
+            area.innerHTML = html;
+        } catch (err) {
+            const elapsed2 = Math.round(performance.now() - startTime);
+            timeEl.textContent = elapsed2 + 'ms';
+            let html = '<div class="error-card">';
+            html += '<div class="error-card-title">❌ Request Failed</div>';
+            html += '<div class="error-card-desc">' + escapeHtml(err.message) + '</div>';
+            html += '<div class="error-card-steps"><strong>Troubleshooting:</strong><ol>';
+            html += '<li>Check your API keys are correct</li>';
+            html += '<li>Ensure the gateway is accessible</li>';
+            html += '<li>Review server logs for details</li>';
+            html += '</ol></div>';
+            html += '</div>';
+            area.innerHTML = html;
+        }
+
+        btn.disabled = false;
+        btn.innerHTML = '<span>Send Request</span>';
+    }
+
+    function toggleKeyVisibility(fieldId) {
+        const field = document.getElementById(fieldId);
+        const btn = event.currentTarget;
+        if (field.type === 'password') {
+            field.type = 'text';
+            btn.textContent = 'Hide';
+        } else {
+            field.type = 'password';
+            btn.textContent = 'Show';
+        }
+    }
+
+    function quickStartPublicData() {
+        selectEndpoint('pricing');
+        setTimeout(() => sendRequest(), 100);
+    }
+
+    function quickStartHelloWorld() {
+        selectEndpoint('openai');
+        document.getElementById('promptInput').value = 'Hello, Finault!';
+        updateCodeGen();
+    }
+
+    function quickStartCostAttribution() {
+        selectEndpoint('openai');
+        document.getElementById('costCenterInput').value = 'Engineering';
+        document.getElementById('promptInput').value = 'Show me an example response with cost attribution headers.';
+        updateCodeGen();
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // Init
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCodeGen();
+        showMockResponse(endpoints.openai);
+
+        // Restore keys from localStorage
+        const savedFk = localStorage.getItem('finault_explorer_fk') || localStorage.getItem('finault_api_key');
+        if (savedFk) document.getElementById('finaultKey').value = savedFk;
+
+        // Auto-save on change
+        document.getElementById('finaultKey').addEventListener('change', function() {
+            localStorage.setItem('finault_explorer_fk', this.value);
+        });
+    });
+    </script>
+
+</body>
+</html>

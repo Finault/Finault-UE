@@ -4,11 +4,16 @@
 # Route API requests to api.finault.ai
 /api/* https://api.finault.ai/api/:splat 301
 
-# Redirect /audit to /demo (audit needs hash parameter, demo is main CTA)
-/audit /demo 301
+# /audit serves audit.html (shared results viewer, renders #d=base64 data)
+# The actual upload tool is in /app (the dashboard)
 
-# Redirect dead pages to homepage
-/app / 301
+# Auth convenience redirects
+/signup /login 301
+/register /login 301
+/sign-up /login 301
+
+# Redirect dead and premature pages to homepage
+# Dead: never had real content
 /blog / 301
 /changelog / 301
 /compare / 301
@@ -18,6 +23,16 @@
 /roadmap / 301
 /support / 301
 /webhooks / 301
+# Premature: real code exists but sets expectations we can't meet yet
+/demo / 301
+/explorer / 301
+/benchmark / 301
+/research / 301
+/scan / 301
+/close-pack / 301
+/close-pack-spec / 301
+/verify / 301
+/api / 301
 
 # Note: Clean URL rewrites (/foo -> /foo.html) are NOT needed here.
 # Cloudflare Pages automatically serves foo.html at /foo natively.

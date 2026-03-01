@@ -177,7 +177,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           # FIX #11: Branch-based deployment (staging branch → preview, main → production)
-          command: pages deploy static --project-name finault --branch ${{ github.ref_name }}
+          command: pages deploy static --project-name finault-site --branch ${{ github.ref_name }}
 
   deploy-verifier:
     name: Deploy Verifier → Fly.io

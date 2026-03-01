@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Find Ungoverned AI Calls in Your Code</title>
+    <meta name="description" content="Upload your code. Finault identifies every OpenAI, Anthropic, and Google API call and shows you what it's costing — ungoverned.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #111; --white: #fff; --green: #16a34a; --green-light: #f0fdf4;
+            --green-border: #bbf7d0; --gray-50: #fafafa; --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5; --gray-400: #a3a3a3; --gray-500: #737373;
+            --gray-600: #525252; --gray-900: #171717; --border: #e5e5e5;
+            --code-bg: #0f172a; --red: #dc2626; --amber: #d97706; --blue: #2563eb;
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--white); color: var(--gray-900); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 40px; height: 64px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--green); font-weight: 600; }
+        .nav-cta { color: var(--white); background: var(--green); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+        .nav-cta:hover { opacity: 0.9; }
+
+        .main { max-width: 800px; margin: 0 auto; padding: 140px 24px 80px; }
+
+        /* Hero */
+        .hero-badge { display: inline-block; font-size: 12px; font-weight: 600; color: var(--green); background: var(--green-light); border: 1px solid var(--green-border); padding: 4px 14px; border-radius: 999px; margin-bottom: 20px; }
+        h1 { font-size: 36px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.15; margin-bottom: 12px; }
+        h1 span { color: var(--green); }
+        .subtitle { font-size: 16px; color: var(--gray-500); margin-bottom: 32px; }
+        .privacy-note { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--green); font-weight: 600; background: var(--green-light); border: 1px solid var(--green-border); padding: 6px 14px; border-radius: 8px; margin-bottom: 32px; }
+
+        /* Upload */
+        .upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 40px; text-align: center; transition: all 0.2s; cursor: pointer; margin-bottom: 16px; }
+        .upload-zone:hover, .upload-zone.dragover { border-color: var(--green); background: var(--green-light); }
+        .upload-zone h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .upload-zone p { font-size: 13px; color: var(--gray-500); }
+        .upload-input { display: none; }
+
+        .paste-zone { margin-bottom: 16px; }
+        .paste-zone textarea { width: 100%; min-height: 200px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; border: 1px solid var(--border); border-radius: 12px; resize: vertical; color: var(--gray-900); }
+        .paste-zone textarea:focus { outline: none; border-color: var(--green); }
+        .paste-zone textarea::placeholder { color: var(--gray-400); }
+
+        .scan-actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        .scan-btn { padding: 12px 28px; background: var(--green); color: var(--white); border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+        .scan-btn:hover { opacity: 0.9; }
+        .scan-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .sample-btn { padding: 12px 20px; background: var(--white); color: var(--green); border: 1px solid var(--green); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .sample-btn:hover { background: var(--green-light); }
+
+        /* Processing */
+        .processing { text-align: center; padding: 60px 0; }
+        .spinner { width: 40px; height: 40px; border: 3px solid var(--gray-200); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 16px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .processing p { font-size: 15px; color: var(--gray-500); font-weight: 500; }
+
+        /* Results */
+        .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+        .stat-card { text-align: center; padding: 24px; border-radius: 12px; border: 1px solid var(--border); }
+        .stat-value { font-size: 36px; font-weight: 800; letter-spacing: -0.03em; }
+        .stat-value.green { color: var(--green); }
+        .stat-value.red { color: var(--red); }
+        .stat-value.amber { color: var(--amber); }
+        .stat-label { font-size: 13px; color: var(--gray-500); font-weight: 500; margin-top: 4px; }
+
+        /* Provider cards */
+        .provider-results { display: grid; gap: 16px; margin-bottom: 32px; }
+        .prov-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+        .prov-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .prov-name { font-size: 16px; font-weight: 700; }
+        .prov-count { font-size: 14px; font-weight: 600; color: var(--green); background: var(--green-light); padding: 4px 12px; border-radius: 999px; }
+        .prov-models { font-size: 13px; color: var(--gray-600); margin-bottom: 8px; }
+        .prov-lines { font-size: 12px; color: var(--gray-400); font-family: 'JetBrains Mono', monospace; }
+
+        /* Findings */
+        .finding { padding: 16px 20px; border-radius: 10px; margin-bottom: 12px; border-left: 4px solid; }
+        .finding.critical { background: #fef2f2; border-color: var(--red); }
+        .finding.warning { background: #fffbeb; border-color: var(--amber); }
+        .finding.info { background: #eff6ff; border-color: var(--blue); }
+        .finding-title { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .finding-desc { font-size: 13px; color: var(--gray-600); }
+
+        /* Fix section */
+        .fix-section { background: var(--gray-900); border-radius: 16px; padding: 32px; margin: 32px 0; color: var(--white); }
+        .fix-section h3 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+        .fix-section p { font-size: 14px; color: #a3a3a3; margin-bottom: 20px; }
+        .fix-code { background: var(--code-bg); border-radius: 10px; padding: 20px; margin-bottom: 20px; font-family: 'JetBrains Mono', monospace; font-size: 14px; line-height: 1.8; color: #e2e8f0; }
+        .fix-code .kw { color: #c084fc; }
+        .fix-code .str { color: #86efac; }
+        .fix-code .cmt { color: #64748b; }
+        .fix-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+        .fix-btn-primary { display: inline-block; padding: 14px 28px; background: var(--green); color: var(--white); text-decoration: none; border-radius: 10px; font-size: 15px; font-weight: 600; transition: opacity 0.2s; }
+        .fix-btn-primary:hover { opacity: 0.9; }
+        .fix-btn-secondary { display: inline-block; padding: 14px 28px; background: transparent; color: var(--white); text-decoration: none; border-radius: 10px; font-size: 14px; font-weight: 600; border: 1px solid rgba(255,255,255,0.2); transition: all 0.2s; }
+        .fix-btn-secondary:hover { border-color: rgba(255,255,255,0.5); }
+
+        /* CTA */
+        .bottom-cta { text-align: center; padding: 48px 0; border-top: 1px solid var(--border); margin-top: 48px; }
+        .bottom-cta h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+        .bottom-cta p { font-size: 14px; color: var(--gray-500); margin-bottom: 20px; }
+        .bottom-cta a { display: inline-block; padding: 12px 24px; background: var(--green); color: white; text-decoration: none; border-radius: 10px; font-size: 14px; font-weight: 600; margin: 0 6px; transition: opacity 0.2s; }
+        .bottom-cta a:hover { opacity: 0.9; }
+        .bottom-cta a.secondary { background: var(--white); color: var(--gray-900); border: 1px solid var(--border); }
+
+        footer { max-width: 800px; margin: 0 auto; padding: 40px 24px; text-align: center; font-size: 13px; color: var(--gray-400); }
+        footer a { color: var(--gray-400); text-decoration: none; }
+        footer a:hover { color: var(--gray-600); }
+
+        .hidden { display: none; }
+
+        @media (max-width: 640px) {
+            nav { padding: 0 20px; }
+            h1 { font-size: 28px; }
+            .stat-grid { grid-template-columns: 1fr; }
+            .fix-btns { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">Finault</a>
+        <div class="nav-right">
+            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/sdk" class="nav-link">SDK</a>
+            <a href="/scan" class="nav-link active">Scan Code</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/explorer" class="nav-link">Explorer</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+        </div>
+    </nav>
+
+    <div class="main">
+        <!-- Hero -->
+        <div class="hero-badge">Code intelligence</div>
+        <h1>Find every <span>ungoverned AI call</span></h1>
+        <p class="subtitle">Paste your code or upload files. We'll identify every OpenAI, Anthropic, and Google API call — and show you what it's costing, ungoverned.</p>
+        <div class="privacy-note">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Runs in your browser. Your code never leaves your machine.
+        </div>
+
+        <!-- Upload Section -->
+        <div id="uploadSection">
+            <div class="paste-zone">
+                <textarea id="codeInput" placeholder="# Paste your Python, Node.js, or Go code here...&#10;&#10;from openai import OpenAI&#10;client = OpenAI(api_key='sk-...')&#10;response = client.chat.completions.create(&#10;    model='gpt-4o',&#10;    messages=[{'role': 'user', 'content': 'Hello'}]&#10;)"></textarea>
+            </div>
+
+            <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+                <h3>Or drop files here</h3>
+                <p>.py, .js, .ts, .go, .java, .rb — any code file</p>
+                <input type="file" class="upload-input" id="fileInput" multiple accept=".py,.js,.ts,.jsx,.tsx,.go,.java,.rb,.rs,.php,.cs">
+            </div>
+
+            <div class="scan-actions">
+                <button class="scan-btn" id="scanBtn" onclick="runScan()">Scan code</button>
+                <button class="sample-btn" onclick="loadSample()">Try with sample code</button>
+            </div>
+        </div>
+
+        <!-- Processing -->
+        <div id="processingSection" class="hidden">
+            <div class="processing">
+                <div class="spinner"></div>
+                <p id="processingText">Scanning for AI API calls...</p>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div id="resultsSection" class="hidden">
+            <!-- Summary stats -->
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-value green" id="totalCalls">0</div>
+                    <div class="stat-label">AI API calls found</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value red" id="ungoverned">0</div>
+                    <div class="stat-label">Ungoverned</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value amber" id="estSpend">$0</div>
+                    <div class="stat-label">Est. monthly spend</div>
+                </div>
+            </div>
+
+            <!-- Provider breakdown -->
+            <div class="provider-results" id="providerResults"></div>
+
+            <!-- Findings -->
+            <div id="findingsSection"></div>
+
+            <!-- Fix it -->
+            <div class="fix-section">
+                <h3>Govern all <span id="fixCount">0</span> calls with one line</h3>
+                <p>Install the Finault SDK. Every detected AI call is automatically tracked, attributed, and auditable.</p>
+                <div class="fix-code">
+                    <span class="kw">import</span> finault<br>
+                    finault.init(<span class="str">"fk_your_key"</span>)<br><br>
+                    <span class="cmt"># That's it. All <span id="fixCount2">0</span> AI calls are now governed.</span><br>
+                    <span class="cmt"># No other code changes needed.</span>
+                </div>
+                <div class="fix-btns">
+                    <a href="/sdk" class="fix-btn-primary">Install the SDK &rarr;</a>
+                    <a href="/docs#frameworks" class="fix-btn-secondary">See framework integrations</a>
+                </div>
+            </div>
+
+            <!-- Try again -->
+            <button class="sample-btn" onclick="resetScan()" style="width:100%;margin-top:16px;">Scan different code</button>
+
+            <!-- Bottom CTA -->
+            <div class="bottom-cta">
+                <h3>Ready to govern your AI spend?</h3>
+                <p>Get your API key and start routing through Finault in minutes.</p>
+                <a href="/login">Get API Key</a>
+                <a href="/audit" class="secondary">Free Audit Tool</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <a href="/sdk">SDK</a> &nbsp;&middot;&nbsp;
+        <a href="/scan">Scan Code</a> &nbsp;&middot;&nbsp;
+        <a href="/pricing">Pricing</a> &nbsp;&middot;&nbsp;
+        <a href="/docs">Docs</a> &nbsp;&middot;&nbsp;
+        <a href="mailto:bernard.cotter@finault.ai">Contact</a>
+        <p style="margin-top:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</p>
+    </footer>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    // SCANNER ENGINE — regex-based AI API call detection
+    // ═══════════════════════════════════════════════════════════════
+
+    var scanPatterns = {
+        openai: {
+            label: 'OpenAI',
+            imports: [/from\s+openai\s+import/g, /import\s+.*OpenAI/g, /require\s*\(\s*['"]openai['"]\s*\)/g, /new\s+OpenAI\s*\(/g],
+            calls: [/\.chat\.completions\.create/g, /\.completions\.create/g, /\.embeddings\.create/g, /\.images\.generate/g],
+            models: /['"](gpt-4o|gpt-4o-mini|gpt-4-turbo|gpt-4|gpt-3\.5-turbo|o1-mini|o1|o3-mini|o3|o4-mini|text-embedding-3-(?:large|small)|davinci|curie)[^'"]*['"]/gi,
+            keys: /['"]sk-[a-zA-Z0-9]{20,}['"]/g
+        },
+        anthropic: {
+            label: 'Anthropic',
+            imports: [/from\s+anthropic\s+import/g, /import\s+.*Anthropic/g, /require\s*\(\s*['"]@anthropic-ai\/sdk['"]\s*\)/g, /new\s+Anthropic\s*\(/g],
+            calls: [/\.messages\.create/g, /\.completions\.create/g],
+            models: /['"](claude-opus-4[^'"]*|claude-sonnet-4[^'"]*|claude-haiku-[^'"]*|claude-3[^'"]*|claude-2[^'"]*)['"]/gi,
+            keys: /['"]sk-ant-[a-zA-Z0-9]{20,}['"]/g
+        },
+        google: {
+            label: 'Google',
+            imports: [/from\s+google[\.\s].*generativeai/gi, /import.*GoogleGenerativeAI/g, /require\s*\(\s*['"]@google\/generative-ai['"]\s*\)/g],
+            calls: [/\.generateContent/g, /GenerativeModel\s*\(/g, /\.generate_content/g],
+            models: /['"](gemini-2\.5[^'"]*|gemini-2\.0[^'"]*|gemini-1\.5[^'"]*|gemini-pro[^'"]*)['"]/gi,
+            keys: /['"]AIza[a-zA-Z0-9_-]{30,}['"]/g
+        },
+        azure: {
+            label: 'Azure OpenAI',
+            imports: [/AzureOpenAI/g, /azure_endpoint/g, /azure\.openai/gi],
+            calls: [/\.chat\.completions\.create/g],
+            models: /['"](gpt-4o|gpt-4-turbo|gpt-4|gpt-35-turbo)[^'"]*['"]/gi,
+            keys: null
+        },
+        bedrock: {
+            label: 'AWS Bedrock',
+            imports: [/bedrock-runtime/g, /BedrockRuntime/g, /bedrock_runtime/g],
+            calls: [/invoke_model/g, /\.invoke\s*\(/g],
+            models: /['"](anthropic\.claude[^'"]*|amazon\.titan[^'"]*|meta\.llama[^'"]*|mistral\.[^'"]*)['"]/gi,
+            keys: null
+        }
+    };
+
+    // Per-token pricing (per 1M tokens) for cost estimation
+    var modelCosts = {
+        'gpt-4o': 6.25, 'gpt-4o-mini': 0.375, 'gpt-4-turbo': 20, 'gpt-4': 45,
+        'gpt-3.5-turbo': 1.0, 'o1': 37.5, 'o1-mini': 2.75, 'o3': 25, 'o3-mini': 2.75, 'o4-mini': 2.75,
+        'claude-opus': 45, 'claude-sonnet': 9, 'claude-haiku': 1.25,
+        'gemini-2.5-pro': 5.625, 'gemini-2.5-flash': 0.375, 'gemini-1.5-pro': 3.125, 'gemini-1.5-flash': 0.1875,
+        'gemini-pro': 1.0, 'anthropic.claude': 9, 'meta.llama': 3, 'amazon.titan': 1,
+        '_default': 5.0
+    };
+
+    function getModelCost(modelName) {
+        var mn = modelName.toLowerCase();
+        for (var key in modelCosts) {
+            if (mn.indexOf(key) >= 0) return modelCosts[key];
+        }
+        return modelCosts['_default'];
+    }
+
+    function scanCode(code) {
+        var lines = code.split('\n');
+        var results = {};
+
+        for (var prov in scanPatterns) {
+            var p = scanPatterns[prov];
+            var r = { label: p.label, imports: 0, calls: 0, models: [], lines: [], keys: [] };
+
+            lines.forEach(function(line, idx) {
+                var lineNum = idx + 1;
+                // Check imports
+                p.imports.forEach(function(rx) {
+                    rx.lastIndex = 0;
+                    if (rx.test(line)) { r.imports++; r.lines.push({ line: lineNum, type: 'import', text: line.trim() }); }
+                });
+                // Check calls
+                p.calls.forEach(function(rx) {
+                    rx.lastIndex = 0;
+                    if (rx.test(line)) { r.calls++; r.lines.push({ line: lineNum, type: 'call', text: line.trim() }); }
+                });
+                // Check models
+                if (p.models) {
+                    p.models.lastIndex = 0;
+                    var mm;
+                    while ((mm = p.models.exec(line)) !== null) {
+                        if (r.models.indexOf(mm[1]) < 0) r.models.push(mm[1]);
+                    }
+                }
+                // Check keys
+                if (p.keys) {
+                    p.keys.lastIndex = 0;
+                    if (p.keys.test(line)) { r.keys.push(lineNum); }
+                }
+            });
+
+            r.total = r.imports + r.calls;
+            if (r.total > 0) results[prov] = r;
+        }
+
+        // Check for Finault SDK (governance detection) — require actual SDK usage, not just the word "finault"
+        var hasFinault = /import\s+finault/i.test(code) || /require\s*\(\s*['"]finault['"]\s*\)/i.test(code) ||
+            /finault\.init\s*\(/i.test(code) || /X-Finault-Key/i.test(code) ||
+            /api\.finault\.ai/i.test(code) || /from\s+finault\s+import/i.test(code);
+
+        return { providers: results, hasFinault: hasFinault };
+    }
+
+    function estimateMonthlyCost(results) {
+        var total = 0;
+        for (var prov in results.providers) {
+            var r = results.providers[prov];
+            var callCount = Math.max(r.calls, 1);
+            // Assume 10,000 monthly invocations per detected call site, avg 1500 tokens per request
+            r.models.forEach(function(m) {
+                var costPer1M = getModelCost(m);
+                total += callCount * 10000 * 1500 * (costPer1M / 1000000);
+            });
+            if (r.models.length === 0 && r.total > 0) {
+                total += callCount * 10000 * 1500 * (modelCosts['_default'] / 1000000);
+            }
+        }
+        return Math.round(total);
+    }
+
+    function runScan() {
+        var code = document.getElementById('codeInput').value;
+        if (!code.trim()) { alert('Paste some code or upload a file first.'); return; }
+
+        document.getElementById('uploadSection').classList.add('hidden');
+        document.getElementById('processingSection').classList.remove('hidden');
+        document.getElementById('resultsSection').classList.add('hidden');
+
+        setTimeout(function() {
+            var results = scanCode(code);
+            displayResults(results);
+        }, 800);
+    }
+
+    function displayResults(results) {
+        document.getElementById('processingSection').classList.add('hidden');
+        document.getElementById('resultsSection').classList.remove('hidden');
+
+        var totalCalls = 0;
+        var allKeys = [];
+        for (var prov in results.providers) {
+            totalCalls += results.providers[prov].total;
+            allKeys = allKeys.concat(results.providers[prov].keys);
+        }
+
+        // Direct API calls are ungoverned even if Finault SDK is partially present
+        // Only calls routed through api.finault.ai count as governed
+        var ungoverned = totalCalls;
+        var governed = 0;
+        var estCost = estimateMonthlyCost(results);
+
+        // Summary stats
+        document.getElementById('totalCalls').textContent = totalCalls;
+        document.getElementById('ungoverned').textContent = ungoverned;
+        document.getElementById('ungoverned').className = 'stat-value ' + (ungoverned > 0 ? 'red' : 'green');
+        document.getElementById('estSpend').textContent = '$' + estCost.toLocaleString();
+        document.getElementById('fixCount').textContent = totalCalls;
+        document.getElementById('fixCount2').textContent = totalCalls;
+
+        // Provider cards
+        var provHtml = '';
+        for (var p in results.providers) {
+            var r = results.providers[p];
+            var modelsStr = r.models.length > 0 ? r.models.join(', ') : 'Models not specified in code';
+            var linesStr = r.lines.slice(0, 5).map(function(l) { return 'L' + l.line; }).join(', ');
+            if (r.lines.length > 5) linesStr += ' +' + (r.lines.length - 5) + ' more';
+
+            provHtml += '<div class="prov-card">' +
+                '<div class="prov-header"><span class="prov-name">' + r.label + '</span><span class="prov-count">' + r.total + ' calls</span></div>' +
+                '<div class="prov-models"><strong>Models:</strong> ' + modelsStr + '</div>' +
+                '<div class="prov-lines">Lines: ' + linesStr + '</div></div>';
+        }
+        document.getElementById('providerResults').innerHTML = provHtml;
+
+        // Findings
+        var findings = '';
+        if (allKeys.length > 0) {
+            findings += '<div class="finding critical"><div class="finding-title">Hardcoded API keys detected</div><div class="finding-desc">Found ' + allKeys.length + ' hardcoded API key(s) on line(s) ' + allKeys.join(', ') + '. These should be moved to environment variables.</div></div>';
+        }
+        if (totalCalls > 0 && !results.hasFinault) {
+            findings += '<div class="finding warning"><div class="finding-title">No cost governance detected</div><div class="finding-desc">All ' + totalCalls + ' AI call(s) hit provider APIs directly. Spend is untracked, unattributed, and not audit-ready.</div></div>';
+        }
+        if (totalCalls > 0 && results.hasFinault) {
+            findings += '<div class="finding warning"><div class="finding-title">Finault SDK found, but ' + totalCalls + ' direct API call(s) remain</div><div class="finding-desc">Finault is installed but these calls still use provider clients directly. Run <code>finault.init()</code> before any API calls to auto-instrument them, or route through <code>api.finault.ai</code>.</div></div>';
+        }
+        var callSites = 0;
+        for (var pp in results.providers) { callSites += results.providers[pp].calls; }
+        if (callSites > 3) {
+            findings += '<div class="finding info"><div class="finding-title">' + callSites + ' API call sites detected</div><div class="finding-desc">Consider batching requests or using async patterns to reduce per-request overhead and optimize throughput.</div></div>';
+        }
+        document.getElementById('findingsSection').innerHTML = findings;
+    }
+
+    function resetScan() {
+        document.getElementById('uploadSection').classList.remove('hidden');
+        document.getElementById('resultsSection').classList.add('hidden');
+        document.getElementById('processingSection').classList.add('hidden');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function loadSample() {
+        document.getElementById('codeInput').value =
+            '# AI-powered support chatbot — no cost governance\n' +
+            'import os\n' +
+            'from openai import OpenAI\n' +
+            'from anthropic import Anthropic\n\n' +
+            '# WARNING: hardcoded API keys\n' +
+            'openai_client = OpenAI(api_key="sk-proj-abc123def456ghi789jkl012mno345")\n' +
+            'anthropic_client = Anthropic(api_key="sk-ant-api03-xYz789AbC012DeF345GhI678")\n\n' +
+            'def classify_ticket(text):\n' +
+            '    """Use GPT-4o-mini for fast ticket classification"""\n' +
+            '    response = openai_client.chat.completions.create(\n' +
+            '        model="gpt-4o-mini",\n' +
+            '        messages=[{"role": "user", "content": f"Classify: {text}"}]\n' +
+            '    )\n' +
+            '    return response.choices[0].message.content\n\n' +
+            'def generate_response(ticket, classification):\n' +
+            '    """Use Claude Sonnet for high-quality responses"""\n' +
+            '    response = anthropic_client.messages.create(\n' +
+            '        model="claude-sonnet-4-5-20250929",\n' +
+            '        max_tokens=1024,\n' +
+            '        messages=[{"role": "user", "content": f"Respond to {classification} ticket: {ticket}"}]\n' +
+            '    )\n' +
+            '    return response.content[0].text\n\n' +
+            'def generate_summary(tickets):\n' +
+            '    """Weekly summary with GPT-4o"""\n' +
+            '    response = openai_client.chat.completions.create(\n' +
+            '        model="gpt-4o",\n' +
+            '        messages=[{"role": "user", "content": f"Summarize {len(tickets)} tickets"}]\n' +
+            '    )\n' +
+            '    return response.choices[0].message.content\n\n' +
+            'def embed_for_search(text):\n' +
+            '    """Embed tickets for semantic search"""\n' +
+            '    response = openai_client.embeddings.create(\n' +
+            '        model="text-embedding-3-small",\n' +
+            '        input=text\n' +
+            '    )\n' +
+            '    return response.data[0].embedding\n';
+        runScan();
+    }
+
+    // File upload handling
+    var dropZone = document.getElementById('dropZone');
+    var fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('dragover'); });
+    dropZone.addEventListener('dragleave', function() { dropZone.classList.remove('dragover'); });
+    dropZone.addEventListener('drop', function(e) {
+        e.preventDefault(); dropZone.classList.remove('dragover');
+        handleFiles(e.dataTransfer.files);
+    });
+    fileInput.addEventListener('change', function() { handleFiles(fileInput.files); });
+
+    function handleFiles(files) {
+        if (files.length === 0) return;
+        var allCode = '';
+        var loaded = 0;
+        Array.from(files).forEach(function(file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                allCode += '\n// === ' + file.name + ' ===\n' + e.target.result;
+                loaded++;
+                if (loaded === files.length) {
+                    document.getElementById('codeInput').value = allCode;
+                    runScan();
+                }
+            };
+            reader.readAsText(file);
+        });
+    }
+
+    // Auth link
+    (function() {
+        var token = localStorage.getItem('finault_token');
+        var el = document.getElementById('navAuthLink');
+        if (token && el) { el.textContent = 'Dashboard'; el.href = 'https://dashboard.finault.ai/dashboard'; }
+    })();
+    </script>
+</body>
+</html>

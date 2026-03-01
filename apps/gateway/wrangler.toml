@@ -4,7 +4,7 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
-# Production route (commented out - already deployed)
+# Route already bound to a different worker name — deploy with --name finault-gateway instead
 # routes = [
 #   { pattern = "api.finault.ai/*", zone_name = "finault.ai" }
 # ]
@@ -29,9 +29,9 @@ workers_dev = true
 # NEVER commit real production IDs to version control.
 # ═══════════════════════════════════════════════════════════════════════════════════════════════════
 kv_namespaces = [
-  { binding = "CACHE", id = "" },
-  { binding = "KV_CACHE", id = "" },
-  { binding = "SESSIONS", id = "" }
+  { binding = "CACHE", id = "9c42d13f96b9485db9b39896e534761b" },
+  { binding = "KV_CACHE", id = "9c42d13f96b9485db9b39896e534761b" },
+  { binding = "SESSIONS", id = "139978519f58407f89418bdd96a3513c" }
 ]
 
 # Environment variables (set via wrangler secret or dashboard)
@@ -43,12 +43,13 @@ ANCHOR_MODE = "LIVE"           # LIVE = real blockchain txns, SOFT = hash-only s
 # ============================================================================
 # CRON TRIGGERS - Autopilot Recovery System + WAL Processing
 # ============================================================================
-[triggers]
-crons = [
-  "*/5 * * * *",  # Every 5 minutes - Process WAL entries (GAP #2 SOLUTION)
-  "0 9 * * *",    # Daily at 9 AM UTC - Check disputes, send reminders
-  "0 14 * * 1"    # Mondays at 2 PM UTC - Weekly escalation check
-]
+# [triggers]
+# crons = [
+#   "*/5 * * * *",  # Every 5 minutes - Process WAL entries (GAP #2 SOLUTION)
+#   "0 9 * * *",    # Daily at 9 AM UTC - Check disputes, send reminders
+#   "0 14 * * 1"    # Mondays at 2 PM UTC - Weekly escalation check
+# ]
+# NOTE: Commented out — free plan has 5 cron trigger limit. Re-enable on paid plan.
 
 # Required secrets (set via `wrangler secret put`):
 # - SUPABASE_URL: Supabase project URL (e.g., https://xyzabc.supabase.co)
@@ -91,12 +92,11 @@ crons = [
 # For development
 [env.development]
 workers_dev = true
-# MEDIUM: KV IDs must be configured via environment variables or wrangler.toml override
-# Error if not set: wrangler will fail with helpful message
-kv_namespaces = [
-  { binding = "CACHE", id = "" },
-  { binding = "SESSIONS", id = "" }
-]
+# KV namespaces — add IDs after creating them (see top-level comment)
+# kv_namespaces = [
+#   { binding = "CACHE", id = "<paste-cache-id>" },
+#   { binding = "SESSIONS", id = "<paste-sessions-id>" }
+# ]
 
 [env.development.vars]
 GATEWAY_VERSION = "4.0.0-gold-dev"
@@ -104,12 +104,11 @@ GATEWAY_VERSION = "4.0.0-gold-dev"
 # For staging
 [env.staging]
 workers_dev = true
-# MEDIUM: KV IDs must be configured via environment variables or wrangler.toml override
-# Error if not set: wrangler will fail with helpful message
-kv_namespaces = [
-  { binding = "CACHE", id = "" },
-  { binding = "SESSIONS", id = "" }
-]
+# KV namespaces — add IDs after creating them (see top-level comment)
+# kv_namespaces = [
+#   { binding = "CACHE", id = "<paste-cache-id>" },
+#   { binding = "SESSIONS", id = "<paste-sessions-id>" }
+# ]
 
 [env.staging.vars]
 GATEWAY_VERSION = "4.0.0-gold-staging"
@@ -117,12 +116,11 @@ GATEWAY_VERSION = "4.0.0-gold-staging"
 # For production
 [env.production]
 workers_dev = false
-# FIX 8 (CRITICAL): KV IDs MUST be set via environment variables or secrets - NOT hardcoded
-# Production deployment MUST use actual namespace IDs obtained from Cloudflare dashboard
-kv_namespaces = [
-  { binding = "CACHE", id = "" },
-  { binding = "SESSIONS", id = "" }
-]
+# KV namespaces — add IDs after creating them (see top-level comment)
+# kv_namespaces = [
+#   { binding = "CACHE", id = "<paste-cache-id>" },
+#   { binding = "SESSIONS", id = "<paste-sessions-id>" }
+# ]
 
 [env.production.vars]
 GATEWAY_VERSION = "4.0.0-gold-production"

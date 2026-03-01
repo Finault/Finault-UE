@@ -10,875 +10,2185 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Developer Quickstart - Finault | AI Cost Governance</title>
-    <meta name="description" content="Go from zero to seeing your AI costs in under 10 minutes. Gateway integration, SDK examples in 5 languages, and API reference.">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Developer Docs - Finault</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        *{box-sizing:border-box;margin:0;padding:0}
-        :root{--green:#16a34a;--green-dark:#16a34a;--green-light:#dcfce7;--black:#000;--gray-900:#111827;--gray-700:#374151;--gray-600:#6b7280;--gray-500:#6b7280;--gray-400:#9ca3af;--gray-200:#e5e7eb;--gray-100:#f3f4f6;--gray-50:#f9fafb;--white:#fff}
-        body{font-family:'Inter',-apple-system,sans-serif;background:var(--white);color:var(--gray-900);line-height:1.7}
+        :root {
+            --green: #16a34a;
+            --black: #111;
+            --text-secondary: #666;
+            --text-tertiary: #999;
+            --border: #e5e5e5;
+            --bg-light: #f9f9f9;
+            --bg-code: #0f172a;
+            --bg-code-alt: #1e293b;
+            --text-code: #e2e8f0;
+            --text-string: #a3e635;
+            --text-comment: #64748b;
+            --text-number: #fb7185;
+        }
 
-        .docs-layout{display:flex;min-height:100vh}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--black);
+            background: #fff;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            z-index: 1000;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+
+        .nav-logo {
+            font-weight: 700;
+            font-size: 18px;
+            color: var(--black);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--green);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .nav-cta {
+            background: var(--green);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav-cta:hover {
+            background: #15803d;
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--black);
+        }
+
+        /* Layout */
+        .container {
+            display: flex;
+            margin-top: 64px;
+            min-height: calc(100vh - 64px);
+        }
 
         /* Sidebar */
-        .docs-sidebar{width:260px;background:var(--gray-50);border-right:1px solid var(--gray-200);position:fixed;height:100vh;overflow-y:auto;padding:1.5rem 0}
-        .sidebar-header{padding:0 1.5rem 1.5rem;border-bottom:1px solid var(--gray-200);margin-bottom:1rem}
-        .logo{display:flex;align-items:center;gap:.5rem;font-weight:700;font-size:1.125rem;color:var(--black);text-decoration:none}
-        .logo-icon{width:28px;height:28px;background:var(--gray-900);border-radius:6px;display:flex;align-items:center;justify-content:center}
-        .logo-icon svg{width:16px;height:16px}
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 64px;
+            width: 260px;
+            height: calc(100vh - 64px);
+            background: #fafafa;
+            border-right: 1px solid var(--border);
+            overflow-y: auto;
+            padding: 24px 0;
+        }
 
-        .sidebar-nav{padding:0 .75rem}
-        .nav-section{margin-bottom:1.5rem}
-        .nav-section-title{font-size:.6875rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gray-400);padding:0 .75rem;margin-bottom:.5rem}
-        .nav-link{display:block;padding:.5rem .75rem;color:#6b7280;text-decoration:none;font-size:.875rem;border-radius:.375rem;transition:all .15s}
-        .nav-link:hover{background:var(--gray-200);color:var(--gray-900)}
-        .nav-link.active{background:var(--gray-900);color:var(--white);font-weight:500}
+        .sidebar-search {
+            padding: 0 16px 16px;
+            margin-bottom: 16px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-tertiary);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        .sidebar-section {
+            margin-bottom: 4px;
+        }
+
+        .sidebar-section-title {
+            padding: 8px 16px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-tertiary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .sidebar-section-title:hover {
+            color: var(--text-secondary);
+        }
+
+        .sidebar-section.collapsed .sidebar-links {
+            display: none;
+        }
+
+        .chevron {
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+
+        .sidebar-section.collapsed .chevron {
+            transform: rotate(-90deg);
+        }
+
+        .sidebar-links {
+            padding: 4px 0;
+        }
+
+        .sidebar-links a {
+            display: block;
+            padding: 8px 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar-links a:hover {
+            color: var(--green);
+            background: rgba(22, 163, 74, 0.05);
+        }
+
+        .sidebar-links a.active {
+            color: var(--green);
+            background: rgba(22, 163, 74, 0.05);
+            border-left-color: var(--green);
+            font-weight: 600;
+        }
 
         /* Main content */
-        .docs-main{flex:1;margin-left:260px;padding:2rem 3rem;max-width:900px}
+        .main {
+            margin-left: 260px;
+            flex: 1;
+            padding: 48px 64px;
+            max-width: 100%;
+        }
 
-        h1{font-size:2.5rem;font-weight:700;letter-spacing:-0.02em;margin-bottom:1rem}
-        h2{font-size:1.75rem;font-weight:600;margin:3rem 0 1rem;padding-top:2rem;border-top:1px solid var(--gray-200)}
-        h3{font-size:1.25rem;font-weight:600;margin:2rem 0 .75rem}
-        h4{font-size:1rem;font-weight:600;margin:1.5rem 0 .5rem}
+        .main section {
+            margin-bottom: 80px;
+        }
 
-        p{margin-bottom:1rem;color:var(--gray-700)}
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: var(--black);
+        }
 
-        .lead{font-size:1.125rem;color:var(--gray-600);margin-bottom:2rem}
+        h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--black);
+            padding-top: 40px;
+            margin-top: 0;
+        }
 
-        code{font-family:'JetBrains Mono',monospace;font-size:.875em;background:var(--gray-100);padding:.25rem .5rem;border-radius:.25rem;color:var(--gray-900)}
+        h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--black);
+        }
 
-        pre{background:var(--gray-900);border-radius:.5rem;padding:1.5rem;overflow-x:auto;margin:1rem 0 1.5rem;border:1px solid var(--gray-700);position:relative}
-        pre code{background:none;padding:0;color:#e5e7eb;font-size:.875rem;line-height:1.7;display:block;white-space:pre;word-break:normal}
-        .comment{color:#9ca3af}
-        .string{color:#86efac}
-        .keyword{color:#93c5fd}
-        .number{color:#f9a8d4}
-        .fn{color:#fbbf24}
+        .section-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.7;
+        }
 
-        pre code::selection{background:#4b5563;color:#fff}
-        pre code::-moz-selection{background:#4b5563;color:#fff}
+        /* Steps */
+        .step {
+            margin-bottom: 48px;
+            padding: 24px;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
 
-        /* Copy button */
-        .code-block{position:relative}
-        .copy-btn{position:absolute;top:.75rem;right:.75rem;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.15);color:#9ca3af;padding:.375rem .625rem;border-radius:.375rem;font-size:.6875rem;font-family:'JetBrains Mono',monospace;cursor:pointer;transition:all .15s}
-        .copy-btn:hover{background:rgba(255,255,255,0.2);color:#fff}
+        .step-number {
+            display: inline-block;
+            width: 32px;
+            height: 32px;
+            background: var(--green);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 32px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
 
-        .endpoint{background:var(--gray-50);border:1px solid var(--gray-200);border-radius:.5rem;padding:1.25rem;margin:1rem 0}
-        .endpoint-header{display:flex;align-items:center;gap:.75rem;margin-bottom:.75rem}
-        .method{display:inline-flex;padding:.25rem .625rem;border-radius:.25rem;font-size:.75rem;font-weight:600;font-family:'JetBrains Mono',monospace}
-        .method.get{background:#dbeafe;color:#1d4ed8}
-        .method.post{background:var(--green-light);color:var(--green-dark)}
-        .method.delete{background:#fee2e2;color:#dc2626}
-        .method.put{background:#fef3c7;color:#b45309}
-        .endpoint-path{font-family:'JetBrains Mono',monospace;font-size:.9375rem;color:var(--gray-700)}
-        .endpoint-desc{font-size:.9375rem;color:var(--gray-600);margin:0}
+        .step h3 {
+            margin-top: 0;
+            margin-bottom: 12px;
+        }
 
-        table{width:100%;border-collapse:collapse;margin:1rem 0 1.5rem}
-        th,td{padding:.75rem 1rem;text-align:left;border-bottom:1px solid var(--gray-200)}
-        th{font-size:.75rem;font-weight:600;text-transform:uppercase;letter-spacing:.03em;color:var(--gray-500);background:var(--gray-50)}
-        td{font-size:.9375rem}
-        td code{font-size:.8125rem}
+        .step p {
+            color: var(--text-secondary);
+            margin-bottom: 16px;
+        }
 
-        .callout{padding:1rem 1.25rem;border-radius:.5rem;margin:1.5rem 0;display:flex;gap:.75rem}
-        .callout.info{background:#dbeafe;border-left:4px solid #3b82f6}
-        .callout.warning{background:#fef3c7;border-left:4px solid #f59e0b}
-        .callout.success{background:var(--green-light);border-left:4px solid var(--green)}
-        .callout svg{flex-shrink:0;margin-top:.125rem}
-        .callout p{margin:0;font-size:.9375rem}
+        /* Code blocks */
+        .code-block {
+            position: relative;
+            margin: 16px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--bg-code);
+            border: 1px solid var(--bg-code-alt);
+        }
 
-        ul,ol{margin:1rem 0 1.5rem 1.5rem}
-        li{margin-bottom:.5rem}
+        .code-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-code-alt);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-        /* Tab switcher for SDK languages */
-        .lang-tabs{display:flex;gap:0;border-bottom:2px solid var(--gray-200);margin-bottom:0}
-        .lang-tab{padding:.625rem 1rem;font-size:.8125rem;font-weight:500;color:var(--gray-400);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:'Inter',sans-serif}
-        .lang-tab:hover{color:var(--gray-700)}
-        .lang-tab.active{color:var(--gray-900);border-bottom-color:var(--gray-900);font-weight:600}
-        .lang-panel{display:none}
-        .lang-panel.active{display:block}
-        .lang-panel pre{margin-top:0;border-top-left-radius:0;border-top-right-radius:0}
+        .code-block-language {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-comment);
+            text-transform: uppercase;
+        }
 
-        /* Timeline / Steps */
-        .step-number{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;background:var(--gray-900);color:var(--white);border-radius:50%;font-size:.8125rem;font-weight:600;margin-right:.5rem;flex-shrink:0}
-        .step-title{display:flex;align-items:center;font-size:1.25rem;font-weight:600;margin:2rem 0 .75rem}
-        .step-time{font-size:.75rem;font-weight:500;color:var(--gray-400);margin-left:.75rem;background:var(--gray-100);padding:.25rem .625rem;border-radius:1rem}
+        .code-block-copy {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-code);
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
 
-        /* Response field table */
-        .field-table td:first-child{font-family:'JetBrains Mono',monospace;font-size:.8125rem;white-space:nowrap}
+        .code-block-copy:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
 
-        /* Back to home link */
-        .back-link{display:inline-flex;align-items:center;gap:.375rem;color:var(--gray-400);text-decoration:none;font-size:.8125rem;margin-bottom:.5rem;transition:color .15s}
-        .back-link:hover{color:var(--gray-700)}
+        .code-block-copy.copied {
+            color: var(--text-string);
+        }
 
-        @media(max-width:1024px){
-            .docs-sidebar{display:none}
-            .docs-main{margin-left:0;padding:1.5rem}
+        pre {
+            padding: 16px;
+            overflow-x: auto;
+            margin: 0;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--text-code);
+        }
+
+        .code-keyword { color: #f472b6; }
+        .code-string { color: var(--text-string); }
+        .code-number { color: var(--text-number); }
+        .code-comment { color: var(--text-comment); }
+        .code-attribute { color: #93c5fd; }
+        .code-property { color: #a78bfa; }
+
+        /* Inline code */
+        p code, li code {
+            background: var(--bg-light);
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 13px;
+            color: #d83131;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: var(--bg-light);
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--black);
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: rgba(22, 163, 74, 0.02);
+        }
+
+        /* Method badge */
+        .method-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            margin-right: 8px;
+        }
+
+        .method-post { background: #dbeafe; color: #0369a1; }
+        .method-get { background: #dcfce7; color: #166534; }
+        .method-put { background: #fef3c7; color: #92400e; }
+        .method-delete { background: #fee2e2; color: #991b1b; }
+
+        /* API endpoint */
+        .api-endpoint {
+            margin: 32px 0;
+            padding: 24px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--green);
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--black);
+            flex: 1;
+        }
+
+        .endpoint-auth {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            background: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .endpoint-description {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        /* Response headers */
+        .response-headers {
+            background: var(--bg-code);
+            padding: 16px;
+            border-radius: 6px;
+            margin: 16px 0;
+            border: 1px solid var(--bg-code-alt);
+        }
+
+        .response-headers .header-label {
+            font-size: 12px;
+            color: var(--text-comment);
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            margin-top: 12px;
+        }
+
+        .response-headers .header-label:first-child {
+            margin-top: 0;
+        }
+
+        .response-header-row {
+            display: flex;
+            gap: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .header-name {
+            color: #93c5fd;
+            font-weight: 600;
+        }
+
+        .header-value {
+            color: var(--text-string);
+        }
+
+        .header-finault {
+            color: var(--text-string);
+            background: rgba(22, 163, 74, 0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        /* Try button */
+        .try-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--green);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .try-button:hover {
+            background: #15803d;
+        }
+
+        .try-button-icon {
+            width: 16px;
+            height: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Provider cards */
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin: 32px 0;
+        }
+
+        .provider-card {
+            padding: 24px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .provider-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--black);
+        }
+
+        .provider-card p {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        /* Error table */
+        .error-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        .error-table thead {
+            background: var(--bg-light);
+        }
+
+        .error-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .error-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .error-code {
+            font-family: 'JetBrains Mono', monospace;
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        .error-status {
+            font-weight: 600;
+        }
+
+        .error-status.status-401 { color: #dc2626; }
+        .error-status.status-403 { color: #dc2626; }
+        .error-status.status-429 { color: #ea580c; }
+        .error-status.status-400 { color: #dc2626; }
+        .error-status.status-502 { color: #ea580c; }
+
+        /* Footer */
+        footer {
+            background: var(--black);
+            color: #fff;
+            padding: 48px 64px;
+            margin-left: 260px;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .footer-section a {
+            display: block;
+            color: #999;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 8px;
+            transition: color 0.2s;
+        }
+
+        .footer-section a:hover {
+            color: var(--green);
+        }
+
+        .footer-divider {
+            border-top: 1px solid #333;
+            margin-bottom: 24px;
+        }
+
+        .footer-bottom {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 16px;
+            }
+
+            .nav-links {
+                display: none;
+            }
+
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .sidebar {
+                position: absolute;
+                left: -260px;
+                width: 260px;
+                height: auto;
+                max-height: calc(100vh - 64px);
+                transition: left 0.3s;
+                z-index: 999;
+            }
+
+            .sidebar.open {
+                left: 0;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 32px 20px;
+            }
+
+            footer {
+                margin-left: 0;
+                padding: 32px 20px;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 24px;
+            }
+
+            .code-block pre {
+                font-size: 11px;
+            }
+        }
+
+        /* Hidden search results */
+        .search-hidden {
+            display: none;
+        }
+
+        .search-match {
+            background: rgba(22, 163, 74, 0.15);
+        }
+
+        /* No results message */
+        .no-results {
+            padding: 24px 16px;
+            text-align: center;
+            color: var(--text-tertiary);
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-    <div class="docs-layout">
-        <aside class="docs-sidebar">
-            <div class="sidebar-header">
-                <a href="/" class="logo">
-                    <span class="logo-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"><path d="M4 6h16M4 12h12M4 18h8"/></svg>
-                    </span>
-                    Finault Docs
-                </a>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <a href="/" class="nav-logo">Finault</a>
+            <ul class="nav-links">
+                <li><a href="/pricing">Pricing</a></li>
+                <li><a href="/sdk">SDK</a></li>
+                <li><a href="/docs">Docs</a></li>
+                <li><a href="/dashboard">Dashboard</a></li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <a href="/login" class="nav-cta">Sign In</a>
+            <button class="mobile-menu-btn" id="menuBtn">☰</button>
+        </div>
+    </nav>
+
+    <!-- Main layout -->
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-search">
+                <input type="text" class="search-input" id="searchInput" placeholder="Search docs...">
+                <small style="font-size: 12px; color: var(--text-tertiary); display: block; margin-top: 8px;">⌘K / Ctrl+K</small>
             </div>
 
-            <nav class="sidebar-nav">
-                <div class="nav-section">
-                    <div class="nav-section-title">Getting Started</div>
-                    <a href="#quickstart" class="nav-link active">Developer Quickstart</a>
-                    <a href="#concepts" class="nav-link">Core Concepts</a>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>Getting Started</span>
+                    <span class="chevron">▶</span>
                 </div>
+                <div class="sidebar-links">
+                    <a href="#intro">Introduction</a>
+                    <a href="#first-request">5 Minutes to First Request</a>
+                    <a href="#api-key">Get Your API Key</a>
+                    <a href="#first-proxied">Make Your First Proxied Request</a>
+                    <a href="#cost-headers">Read Cost Headers</a>
+                    <a href="#dashboard-check">Check Your Dashboard</a>
+                </div>
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">Gateway</div>
-                    <a href="#gateway" class="nav-link">Connect Gateway</a>
-                    <a href="#headers" class="nav-link">Attribution Headers</a>
-                    <a href="#budgets" class="nav-link">Budget Enforcement</a>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>API Reference</span>
+                    <span class="chevron">▶</span>
                 </div>
+                <div class="sidebar-links">
+                    <a href="#proxy-routes">Proxy Routes</a>
+                    <a href="#public-endpoints">Public Endpoints</a>
+                    <a href="#dashboard-api">Dashboard & Analytics</a>
+                </div>
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">Invoices & Close</div>
-                    <a href="#invoices" class="nav-link">Invoice Intelligence</a>
-                    <a href="#closepack" class="nav-link">Close Packs</a>
-                    <a href="#verify" class="nav-link">Verification</a>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>Response Examples</span>
+                    <span class="chevron">▶</span>
                 </div>
+                <div class="sidebar-links">
+                    <a href="#openai-response">OpenAI Response</a>
+                    <a href="#anthropic-response">Anthropic Response</a>
+                    <a href="#google-response">Google Response</a>
+                </div>
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">Intelligence</div>
-                    <a href="#anomalies" class="nav-link">Anomaly Detection</a>
-                    <a href="#reconciliation" class="nav-link">Reconciliation</a>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>SDKs & Code</span>
+                    <span class="chevron">▶</span>
                 </div>
+                <div class="sidebar-links">
+                    <a href="#curl">cURL</a>
+                    <a href="#python">Python</a>
+                    <a href="#nodejs">Node.js</a>
+                    <a href="#go">Go</a>
+                    <a href="#java">Java</a>
+                    <a href="#ruby">Ruby</a>
+                </div>
+            </div>
 
-                <div class="nav-section">
-                    <div class="nav-section-title">SDK</div>
-                    <a href="#sdk" class="nav-link">Install SDKs</a>
-                    <a href="#auth" class="nav-link">Authentication</a>
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>Error Reference</span>
+                    <span class="chevron">▶</span>
                 </div>
-
-                <div class="nav-section">
-                    <div class="nav-section-title">Reference</div>
-                    <a href="#api" class="nav-link">API Endpoints</a>
-                    <a href="#providers" class="nav-link">Supported Providers</a>
-                    <a href="#erp" class="nav-link">ERP Integration</a>
+                <div class="sidebar-links">
+                    <a href="#error-codes">Error Codes</a>
+                    <a href="#auth-errors">Authentication</a>
+                    <a href="#rate-limits">Rate Limiting</a>
+                    <a href="#provider-errors">Provider Errors</a>
                 </div>
-            </nav>
+            </div>
         </aside>
 
-        <main class="docs-main">
-            <a href="/" class="back-link">
-                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                finault.ai
-            </a>
-            <h1 id="quickstart">Developer Quickstart</h1>
-            <p class="lead">Go from zero to seeing your AI costs in under 10 minutes. Three steps: get a key, point your traffic, see costs.</p>
+        <!-- Main content -->
+        <main class="main">
+            <!-- Getting Started -->
+            <section id="intro">
+                <h1>Developer Documentation</h1>
+                <p class="section-description">
+                    Welcome to Finault's developer documentation. Learn how to integrate with our API to proxy AI requests through multiple providers, track costs, and optimize your AI spending. Get up and running in minutes.
+                </p>
+            </section>
 
-            <div class="callout success">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <p><strong>Don't write code yet?</strong> <a href="/demo">Upload an invoice</a> and see results in 60 seconds. No signup required.</p>
-            </div>
+            <section id="first-request">
+                <h2>5 Minutes to First Request</h2>
+                <p class="section-description">
+                    Follow these five steps to go from zero to your first successful API call with full cost tracking.
+                </p>
 
-            <div class="callout" style="border-left:3px solid var(--green)">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
-                <p><strong>Free API access.</strong> Sign up, get a <code>fk_</code> key from your dashboard, and hit every endpoint. No credit card required.</p>
-            </div>
+                <!-- Step 1 -->
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>No API Key Needed — Try the Public Pricing Endpoint</h3>
+                    <p>Start by fetching our public pricing data. No authentication required.</p>
 
-            <!-- Step 1 -->
-            <div class="step-title"><span class="step-number">1</span> Get your API key <span class="step-time">2 min</span></div>
-            <p><a href="/login?redirect=app">Sign up for free</a> and generate your API key from the dashboard under <strong>Keys</strong>. Keys are scoped to your organization and track per-key usage automatically.</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl https://api.finault.ai/v1/pricing</code></pre>
+                    </div>
 
-            <div class="code-block">
-<pre><code><span class="comment"># Your key from the dashboard</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_xxxxxxxxxxxxxxxxxxxx"</span></code></pre>
-            </div>
+                    <p style="margin-top: 16px; font-size: 14px;">Response (abbreviated):</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">json</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>{
+  <span class="code-string">"models"</span>: [
+    {
+      <span class="code-string">"id"</span>: <span class="code-string">"gpt-4o"</span>,
+      <span class="code-string">"provider"</span>: <span class="code-string">"openai"</span>,
+      <span class="code-string">"input_cost_per_1m_tokens"</span>: 5.00,
+      <span class="code-string">"output_cost_per_1m_tokens"</span>: 15.00
+    },
+    {
+      <span class="code-string">"id"</span>: <span class="code-string">"claude-3-5-sonnet"</span>,
+      <span class="code-string">"provider"</span>: <span class="code-string">"anthropic"</span>,
+      <span class="code-string">"input_cost_per_1m_tokens"</span>: 3.00,
+      <span class="code-string">"output_cost_per_1m_tokens"</span>: 15.00
+    },
+    {
+      <span class="code-string">"id"</span>: <span class="code-string">"gemini-2-0-flash"</span>,
+      <span class="code-string">"provider"</span>: <span class="code-string">"google"</span>,
+      <span class="code-string">"input_cost_per_1m_tokens"</span>: 0.075,
+      <span class="code-string">"output_cost_per_1m_tokens"</span>: 0.30
+    }
+  ],
+  <span class="code-string">"provider_count"</span>: <span class="code-number">6</span>,
+  <span class="code-string">"model_count"</span>: <span class="code-number">17</span>
+}</code></pre>
+                    </div>
 
-            <table>
-                <thead>
-                    <tr><th>Key Prefix</th><th>Format</th><th>Access</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>fk_</code></td><td><code>fk_</code> + 32 hex characters</td><td><strong>Free — sign up and generate from dashboard</strong></td></tr>
-                </tbody>
-            </table>
+                    <p style="margin-top: 16px; font-size: 13px; color: var(--text-tertiary);">You'll see real-time pricing for 17 models across 6 providers: OpenAI, Anthropic, Google, Azure, Bedrock, and our intelligent router.</p>
+                </div>
 
-            <!-- Step 2 -->
-            <div class="step-title"><span class="step-number">2</span> Route traffic through the gateway <span class="step-time">5 min</span></div>
-            <p>Change one environment variable. Your existing OpenAI, Anthropic, or Azure code works without modification &mdash; the gateway proxies to the upstream provider and tracks every token, cost, and latency metric automatically.</p>
+                <!-- Step 2 -->
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Get Your API Key</h3>
+                    <p>Sign up or log in to get your unique API key for authenticated requests.</p>
 
-            <div class="lang-tabs" data-group="gateway">
-                <button class="lang-tab active" data-lang="curl">cURL</button>
-                <button class="lang-tab" data-lang="typescript">TypeScript</button>
-                <button class="lang-tab" data-lang="python">Python</button>
-                <button class="lang-tab" data-lang="go">Go</button>
-                <button class="lang-tab" data-lang="java">Java</button>
-                <button class="lang-tab" data-lang="ruby">Ruby</button>
-            </div>
+                    <div style="background: white; padding: 16px; border-radius: 6px; border: 1px solid var(--border); margin: 16px 0;">
+                        <ol style="margin-left: 20px; color: var(--text-secondary);">
+                            <li style="margin-bottom: 8px;">Visit <code>finault.ai/login</code></li>
+                            <li style="margin-bottom: 8px;">Sign up with your email or log in</li>
+                            <li style="margin-bottom: 8px;">Navigate to <code>finault.ai/welcome</code></li>
+                            <li style="margin-bottom: 8px;">Copy your API key (starts with <code>fk_live_</code> for production)</li>
+                        </ol>
+                    </div>
 
-            <div class="lang-panel active" data-lang="curl" data-group="gateway">
-<pre><code><span class="comment"># Route OpenAI traffic through Finault</span>
-curl https://gateway.finault.ai/v1/chat/completions \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -H <span class="string">"X-Cost-Center: ENG-001"</span> \
-  -H <span class="string">"X-Provider-Key: sk-proj-xxx"</span> \
-  -d '{
-    <span class="string">"model"</span>: <span class="string">"gpt-4o"</span>,
-    <span class="string">"messages"</span>: [{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello"</span>}]
-  }'</code></pre>
-            </div>
+                    <p style="font-size: 13px; color: var(--text-tertiary); background: #fef3c7; padding: 12px; border-radius: 6px; border-left: 3px solid #f59e0b;">
+                        <strong>Tip:</strong> Keep this key secret. Never commit it to version control. Use environment variables or secrets management.
+                    </p>
+                </div>
 
-            <div class="lang-panel" data-lang="typescript" data-group="gateway">
-<pre><code><span class="keyword">import</span> Finault <span class="keyword">from</span> <span class="string">'@finault/sdk'</span>;
+                <!-- Step 3 -->
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Make Your First Proxied Request</h3>
+                    <p>Send a chat completion request through Finault to OpenAI, Anthropic, or any supported provider.</p>
 
-<span class="keyword">const</span> finault = <span class="keyword">new</span> <span class="fn">Finault</span>({ apiKey: process.env.FINAULT_API_KEY });
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/chat/completions \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer fk_live_xxxxx"</span> \
+  -H <span class="code-string">"X-Provider-Key: sk-openai-xxxxx"</span> \
+  -d <span class="code-string">{
+    "model": "gpt-4o",
+    "messages": [
+      {"role": "user", "content": "What is the capital of France?"}
+    ],
+    "max_tokens": 100
+  }'</span></code></pre>
+                    </div>
 
-<span class="comment">// Proxied request &mdash; same OpenAI interface, full cost tracking</span>
-<span class="keyword">const</span> response = <span class="keyword">await</span> finault.gateway.<span class="fn">chat</span>({
-  provider: <span class="string">'openai'</span>,
-  providerKey: process.env.OPENAI_API_KEY,
-  model: <span class="string">'gpt-4o'</span>,
-  messages: [{ role: <span class="string">'user'</span>, content: <span class="string">'Hello'</span> }],
-  costCenter: <span class="string">'ENG-001'</span>,
+                    <div style="margin-top: 16px;">
+                        <button class="try-button" onclick="trackDocsConversion('docs_try_explorer_clicked', {endpoint: 'chat.completions'}); window.open('/explorer?endpoint=chat.completions', '_blank')">
+                            <span class="try-button-icon">→</span>
+                            Try in Explorer
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Read the Cost Headers</h3>
+                    <p>Every response includes detailed cost and audit information in response headers.</p>
+
+                    <div class="response-headers">
+                        <div class="header-label">Finault Response Headers</div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Cost-Dollars:</span>
+                            <span class="header-finault">0.0035</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Cost-Cents:</span>
+                            <span class="header-finault">0.35</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Tokens:</span>
+                            <span class="header-finault">127</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Latency-Ms:</span>
+                            <span class="header-finault">42</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Audit-Hash:</span>
+                            <span class="header-finault">sha256:a1b2c3d4e5f6...</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Request-Id:</span>
+                            <span class="header-finault">req_abc123def456</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Model:</span>
+                            <span class="header-finault">gpt-4o</span>
+                        </div>
+                        <div class="response-header-row">
+                            <span class="header-name">X-Finault-Provider:</span>
+                            <span class="header-finault">openai</span>
+                        </div>
+                    </div>
+
+                    <p style="margin-top: 16px; font-size: 14px; color: var(--text-secondary);">
+                        These headers give you instant visibility into what you paid, how long it took, and full audit trails for compliance and cost allocation.
+                    </p>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <h3>Check Your Dashboard</h3>
+                    <p>View all your requests, costs, and usage analytics in real-time.</p>
+
+                    <div style="background: white; padding: 16px; border-radius: 6px; border: 1px solid var(--border); margin: 16px 0; text-align: center;">
+                        <p style="margin-bottom: 16px; color: var(--text-secondary);">
+                            Visit your dashboard to see spend trends, provider breakdowns, and cost optimization recommendations.
+                        </p>
+                        <a href="https://finault.ai/dashboard" target="_blank" class="try-button">
+                            <span class="try-button-icon">→</span>
+                            Open Dashboard
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Reference -->
+            <section id="proxy-routes">
+                <h2>API Reference</h2>
+                <p class="section-description">Complete reference for all Finault API endpoints.</p>
+
+                <h3>Proxy Routes</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Send requests to any supported AI provider through Finault's unified proxy layer.</p>
+
+                <!-- OpenAI -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/chat/completions</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        OpenAI chat completion proxy. Supports gpt-4o, gpt-4-turbo, gpt-3.5-turbo, and other OpenAI models.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/chat/completions \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer fk_live_..."</span> \
+  -H <span class="code-string">"X-Provider-Key: sk-proj-..."</span> \
+  -d <span class="code-string">{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello"}],
+    "max_tokens": 100
+  }'</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Anthropic -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/anthropic/v1/messages</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Anthropic messages API proxy. Supports claude-3.5-sonnet, claude-3-opus, claude-3-haiku, and other Anthropic models.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/anthropic/v1/messages \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer fk_live_..."</span> \
+  -H <span class="code-string">"X-Provider-Key: sk-ant-..."</span> \
+  -d <span class="code-string">{
+    "model": "claude-3-5-sonnet-20241022",
+    "max_tokens": 1024,
+    "messages": [{"role": "user", "content": "Hello"}]
+  }'</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Google -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/google/v1beta/models/{model}/generateContent</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Google Gemini API proxy. Supports gemini-2-0-flash, gemini-1.5-pro, and other Google models.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/google/v1beta/models/gemini-2-0-flash/generateContent \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer fk_live_..."</span> \
+  -H <span class="code-string">"X-Provider-Key: AIza..."</span> \
+  -d <span class="code-string">{
+    "contents": [{
+      "parts": [{"text": "Hello"}]
+    }]
+  }'</span></code></pre>
+                    </div>
+                </div>
+
+                <!-- Intelligent Router -->
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/route</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Intelligent router. Automatically selects the best provider based on cost, latency, and quality metrics. Routes to gpt-4o, claude-3.5-sonnet, gemini-2.0-flash, or other configured models.
+                    </div>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/route \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer fk_live_..."</span> \
+  -H <span class="code-string">"X-Provider-Key: sk-openai-... X-Provider-Key-Anthropic: sk-ant-..."</span> \
+  -d <span class="code-string">{
+    "messages": [{"role": "user", "content": "What is ML?"}],
+    "max_tokens": 150,
+    "optimization": "cost"
+  }'</span></code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Public Endpoints -->
+            <section id="public-endpoints">
+                <h3>Public Endpoints (No Authentication)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">These endpoints require no API key and are available to everyone.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/pricing</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get current pricing for all supported models and providers. Updated in real-time.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/health</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Gateway health status. Returns 200 if all services are operational.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/closepack/validate</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Validate JSON schema without authentication. Useful for pre-request validation.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/magic/parse</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Parse unstructured invoice or document data anonymously. No user data is retained.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/transparency/log</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        View anonymized public audit log of system events. Useful for status and incident tracking.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dashboard & Analytics -->
+            <section id="dashboard-api">
+                <h3>Dashboard & Analytics (Auth Required)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Authenticated endpoints for analytics, budgets, and cost optimization.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/dashboard</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get comprehensive spend analytics, provider breakdown, and cost trends for your organization.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/budgets</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Create, update, and manage cost budgets with alerts. Get notified when approaching limits.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/anomalies</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Detect unusual spending patterns and potential cost anomalies using ML-based analysis.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/savings/analyze</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Analyze your usage patterns and get AI-powered recommendations for cost savings and optimization.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Response Examples -->
+            <section id="openai-response">
+                <h2>Real Response Examples</h2>
+                <p class="section-description">See exactly what responses look like, including all Finault tracking headers.</p>
+
+                <h3 id="openai-response">OpenAI Chat Completion Response</h3>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">http</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>HTTP/1.1 200 OK
+<span class="code-comment">Finault Headers (highlighted):</span>
+<span class="header-finault">X-Finault-Cost-Dollars: 0.0035</span>
+<span class="header-finault">X-Finault-Cost-Cents: 0.35</span>
+<span class="header-finault">X-Finault-Tokens: 127</span>
+<span class="header-finault">X-Finault-Latency-Ms: 42</span>
+<span class="header-finault">X-Finault-Audit-Hash: sha256:a1b2c3d4e5f6g7h8i9j0</span>
+<span class="header-finault">X-Finault-Request-Id: req_abc123def456</span>
+<span class="header-finault">X-Finault-Model: gpt-4o</span>
+<span class="header-finault">X-Finault-Provider: openai</span>
+
+Standard Headers:
+Content-Type: application/json
+Date: Wed, 26 Feb 2026 14:32:15 GMT
+
+<span class="code-comment">Response Body:</span>
+{
+  <span class="code-string">"id"</span>: <span class="code-string">"chatcmpl-abc123xyz789"</span>,
+  <span class="code-string">"object"</span>: <span class="code-string">"chat.completion"</span>,
+  <span class="code-string">"created"</span>: <span class="code-number">1740506535</span>,
+  <span class="code-string">"model"</span>: <span class="code-string">"gpt-4o"</span>,
+  <span class="code-string">"choices"</span>: [
+    {
+      <span class="code-string">"index"</span>: <span class="code-number">0</span>,
+      <span class="code-string">"message"</span>: {
+        <span class="code-string">"role"</span>: <span class="code-string">"assistant"</span>,
+        <span class="code-string">"content"</span>: <span class="code-string">"The capital of France is Paris. It's the largest city in the country and serves as the political, economic, and cultural center of France."</span>
+      },
+      <span class="code-string">"finish_reason"</span>: <span class="code-string">"stop"</span>
+    }
+  ],
+  <span class="code-string">"usage"</span>: {
+    <span class="code-string">"prompt_tokens"</span>: <span class="code-number">12</span>,
+    <span class="code-string">"completion_tokens"</span>: <span class="code-number">28</span>,
+    <span class="code-string">"total_tokens"</span>: <span class="code-number">40</span>
+  }
+}</code></pre>
+                </div>
+
+                <h3 id="anthropic-response">Anthropic Messages Response</h3>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">http</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>HTTP/1.1 200 OK
+<span class="code-comment">Finault Headers (highlighted):</span>
+<span class="header-finault">X-Finault-Cost-Dollars: 0.0052</span>
+<span class="header-finault">X-Finault-Cost-Cents: 0.52</span>
+<span class="header-finault">X-Finault-Tokens: 156</span>
+<span class="header-finault">X-Finault-Latency-Ms: 287</span>
+<span class="header-finault">X-Finault-Audit-Hash: sha256:d4c3b2a1f6e5h4i3j2k1</span>
+<span class="header-finault">X-Finault-Request-Id: req_def456ghi789</span>
+<span class="header-finault">X-Finault-Model: claude-3-5-sonnet</span>
+<span class="header-finault">X-Finault-Provider: anthropic</span>
+
+Content-Type: application/json
+
+{
+  <span class="code-string">"id"</span>: <span class="code-string">"msg-abc123xyz789def456"</span>,
+  <span class="code-string">"type"</span>: <span class="code-string">"message"</span>,
+  <span class="code-string">"role"</span>: <span class="code-string">"assistant"</span>,
+  <span class="code-string">"model"</span>: <span class="code-string">"claude-3-5-sonnet-20241022"</span>,
+  <span class="code-string">"content"</span>: [
+    {
+      <span class="code-string">"type"</span>: <span class="code-string">"text"</span>,
+      <span class="code-string">"text"</span>: <span class="code-string">"Paris is the capital and largest city of France. Located in north-central France along the Seine River, it has been a major center of human settlement since the 3rd century BC..."</span>
+    }
+  ],
+  <span class="code-string">"stop_reason"</span>: <span class="code-string">"end_turn"</span>,
+  <span class="code-string">"stop_sequence"</span>: <span class="code-keyword">null</span>,
+  <span class="code-string">"usage"</span>: {
+    <span class="code-string">"input_tokens"</span>: <span class="code-number">12</span>,
+    <span class="code-string">"output_tokens"</span>: <span class="code-number">144</span>
+  }
+}</code></pre>
+                </div>
+
+                <h3 id="google-response">Google Gemini Response</h3>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">http</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>HTTP/1.1 200 OK
+<span class="code-comment">Finault Headers (highlighted):</span>
+<span class="header-finault">X-Finault-Cost-Dollars: 0.0001</span>
+<span class="header-finault">X-Finault-Cost-Cents: 0.01</span>
+<span class="header-finault">X-Finault-Tokens: 89</span>
+<span class="header-finault">X-Finault-Latency-Ms: 156</span>
+<span class="header-finault">X-Finault-Audit-Hash: sha256:h4i3j2k1l0m9n8o7p6q5</span>
+<span class="header-finault">X-Finault-Request-Id: req_ghi789jkl012</span>
+<span class="header-finault">X-Finault-Model: gemini-2-0-flash</span>
+<span class="header-finault">X-Finault-Provider: google</span>
+
+Content-Type: application/json
+
+{
+  <span class="code-string">"candidates"</span>: [
+    {
+      <span class="code-string">"content"</span>: {
+        <span class="code-string">"parts"</span>: [
+          {
+            <span class="code-string">"text"</span>: <span class="code-string">"The capital of France is Paris. It's located in the north-central part of the country on the Seine River and is known as the City of Light. Paris is the center of French politics, culture, and economics."</span>
+          }
+        ],
+        <span class="code-string">"role"</span>: <span class="code-string">"model"</span>
+      },
+      <span class="code-string">"finishReason"</span>: <span class="code-string">"STOP"</span>,
+      <span class="code-string">"safetyRatings"</span>: []
+    }
+  ],
+  <span class="code-string">"usageMetadata"</span>: {
+    <span class="code-string">"promptTokenCount"</span>: <span class="code-number">12</span>,
+    <span class="code-string">"candidatesTokenCount"</span>: <span class="code-number">45</span>,
+    <span class="code-string">"totalTokenCount"</span>: <span class="code-number">57</span>
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- SDKs -->
+            <section id="curl">
+                <h2>SDKs & Code Examples</h2>
+                <p class="section-description">Get started quickly with code in your preferred language. All examples show cost tracking.</p>
+
+                <h3 id="curl">cURL</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">cURL is available on most systems. No installation needed.</p>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Simple Request:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/chat/completions \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer $FINAULT_API_KEY"</span> \
+  -H <span class="code-string">"X-Provider-Key: $OPENAI_API_KEY"</span> \
+  -d <span class="code-string">{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Hello"}],
+    "max_tokens": 100
+  }'</span></code></pre>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">With Cost Center (for billing allocation):</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code>curl -X POST https://api.finault.ai/v1/chat/completions \
+  -H <span class="code-string">"Content-Type: application/json"</span> \
+  -H <span class="code-string">"Authorization: Bearer $FINAULT_API_KEY"</span> \
+  -H <span class="code-string">"X-Provider-Key: $OPENAI_API_KEY"</span> \
+  -H <span class="code-string">"X-Finault-Cost-Center: team-alpha"</span> \
+  -d <span class="code-string">{
+    "model": "gpt-4o",
+    "messages": [{"role": "user", "content": "Analyze this data"}],
+    "max_tokens": 500
+  }'</span></code></pre>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Error Handling with Retry:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">bash</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">#!/bin/bash</span>
+
+<span class="code-keyword">function</span> call_finault() {
+  local retry_count=<span class="code-number">0</span>
+  local max_retries=<span class="code-number">3</span>
+
+  <span class="code-keyword">while</span> [ $retry_count -lt $max_retries ]; <span class="code-keyword">do</span>
+    response=$(curl -s -w <span class="code-string">"\n%{http_code}"</span> \
+      -X POST https://api.finault.ai/v1/chat/completions \
+      -H <span class="code-string">"Content-Type: application/json"</span> \
+      -H <span class="code-string">"Authorization: Bearer $FINAULT_API_KEY"</span> \
+      -H <span class="code-string">"X-Provider-Key: $OPENAI_API_KEY"</span> \
+      -d <span class="code-string">'{
+        "model": "gpt-4o",
+        "messages": [{"role": "user", "content": "Hello"}]
+      }'</span>)
+
+    http_code=$(echo <span class="code-string">"$response"</span> | tail -n1)
+    body=$(echo <span class="code-string">"$response"</span> | sed <span class="code-string">'$ d'</span>)
+
+    <span class="code-keyword">if</span> [ $http_code -eq <span class="code-number">200</span> ]; <span class="code-keyword">then</span>
+      echo <span class="code-string">"$body"</span>
+      <span class="code-keyword">return</span> <span class="code-number">0</span>
+    <span class="code-keyword">elif</span> [ $http_code -eq <span class="code-number">429</span> ]; <span class="code-keyword">then</span>
+      retry_count=$((retry_count + <span class="code-number">1</span>))
+      sleep $((2 ** retry_count))
+    <span class="code-keyword">else</span>
+      echo <span class="code-string">"Error: $http_code"</span> >&2
+      <span class="code-keyword">return</span> <span class="code-number">1</span>
+    <span class="code-keyword">fi</span>
+  <span class="code-keyword">done</span>
+}
+
+call_finault</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="python">
+                <h3>Python</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Install with <code>pip install requests</code></p>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Simple Request:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">python</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">import</span> requests
+<span class="code-keyword">import</span> os
+
+api_key = os.getenv(<span class="code-string">"FINAULT_API_KEY"</span>)
+provider_key = os.getenv(<span class="code-string">"OPENAI_API_KEY"</span>)
+
+response = requests.post(
+    <span class="code-string">"https://api.finault.ai/v1/chat/completions"</span>,
+    headers={
+        <span class="code-string">"Authorization"</span>: <span class="code-string">f"Bearer {api_key}"</span>,
+        <span class="code-string">"X-Provider-Key"</span>: provider_key,
+        <span class="code-string">"Content-Type"</span>: <span class="code-string">"application/json"</span>
+    },
+    json={
+        <span class="code-string">"model"</span>: <span class="code-string">"gpt-4o"</span>,
+        <span class="code-string">"messages"</span>: [{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello"}],
+        <span class="code-string">"max_tokens"</span>: <span class="code-number">100</span>
+    }
+)
+
+data = response.json()
+<span class="code-keyword">print</span>(data[<span class="code-string">"choices"</span>][<span class="code-number">0</span>][<span class="code-string">"message"</span>][<span class="code-string">"content"</span>])
+
+<span class="code-comment"># Access cost from headers</span>
+cost = response.headers.get(<span class="code-string">"X-Finault-Cost-Dollars"</span>)
+<span class="code-keyword">print</span>(<span class="code-string">f"Cost: ${cost}"</span>)</code></pre>
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">With Cost Center & Error Handling:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">python</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">import</span> requests
+<span class="code-keyword">import</span> time
+<span class="code-keyword">from</span> typing <span class="code-keyword">import</span> Optional
+
+<span class="code-keyword">def</span> <span class="code-property">call_finault</span>(
+    prompt: str,
+    cost_center: Optional[str] = None,
+    max_retries: int = <span class="code-number">3</span>
+) -> dict:
+    <span class="code-string">"""Call Finault API with automatic retry on rate limit."""</span>
+
+    headers = {
+        <span class="code-string">"Authorization"</span>: <span class="code-string">f"Bearer {os.getenv('FINAULT_API_KEY')}"</span>,
+        <span class="code-string">"X-Provider-Key"</span>: os.getenv(<span class="code-string">"OPENAI_API_KEY"</span>),
+        <span class="code-string">"Content-Type"</span>: <span class="code-string">"application/json"</span>
+    }
+
+    <span class="code-keyword">if</span> cost_center:
+        headers[<span class="code-string">"X-Finault-Cost-Center"</span>] = cost_center
+
+    payload = {
+        <span class="code-string">"model"</span>: <span class="code-string">"gpt-4o"</span>,
+        <span class="code-string">"messages"</span>: [{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: prompt}],
+        <span class="code-string">"max_tokens"</span>: <span class="code-number">500</span>
+    }
+
+    <span class="code-keyword">for</span> attempt <span class="code-keyword">in</span> <span class="code-property">range</span>(max_retries):
+        <span class="code-keyword">try</span>:
+            response = requests.post(
+                <span class="code-string">"https://api.finault.ai/v1/chat/completions"</span>,
+                headers=headers,
+                json=payload,
+                timeout=<span class="code-number">30</span>
+            )
+
+            <span class="code-keyword">if</span> response.status_code == <span class="code-number">429</span>:
+                wait_time = int(response.headers.get(<span class="code-string">"Retry-After"</span>, <span class="code-number">2</span> ** attempt))
+                time.sleep(wait_time)
+                <span class="code-keyword">continue</span>
+
+            response.raise_for_status()
+            <span class="code-keyword">return</span> response.json()
+
+        <span class="code-keyword">except</span> requests.exceptions.RequestException <span class="code-keyword">as</span> e:
+            <span class="code-keyword">if</span> attempt == max_retries - <span class="code-number">1</span>:
+                <span class="code-keyword">raise</span>
+            time.sleep(<span class="code-number">2</span> ** attempt)
+
+    <span class="code-keyword">return</span> {}
+
+<span class="code-comment"># Usage</span>
+result = call_finault(<span class="code-string">"What is AI?"</span>, cost_center=<span class="code-string">"research-team"</span>)
+<span class="code-keyword">print</span>(result[<span class="code-string">"choices"</span>][<span class="code-number">0</span>][<span class="code-string">"message"</span>][<span class="code-string">"content"</span>])</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="nodejs">
+                <h3>Node.js</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Install with <code>npm install node-fetch</code> (or use built-in fetch in Node 18+)</p>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Simple Request:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">javascript</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">const</span> response = <span class="code-keyword">await</span> <span class="code-property">fetch</span>(<span class="code-string">"https://api.finault.ai/v1/chat/completions"</span>, {
+  <span class="code-property">method</span>: <span class="code-string">"POST"</span>,
+  <span class="code-property">headers</span>: {
+    <span class="code-string">"Content-Type"</span>: <span class="code-string">"application/json"</span>,
+    <span class="code-string">"Authorization"</span>: <span class="code-string">`Bearer ${process.env.FINAULT_API_KEY}`</span>,
+    <span class="code-string">"X-Provider-Key"</span>: process.env.OPENAI_API_KEY
+  },
+  <span class="code-property">body</span>: <span class="code-property">JSON</span>.<span class="code-property">stringify</span>({
+    <span class="code-property">model</span>: <span class="code-string">"gpt-4o"</span>,
+    <span class="code-property">messages</span>: [{ <span class="code-property">role</span>: <span class="code-string">"user"</span>, <span class="code-property">content</span>: <span class="code-string">"Hello"</span> }],
+    <span class="code-property">max_tokens</span>: <span class="code-number">100</span>
+  })
 });
 
-console.<span class="fn">log</span>(response.usage);
-<span class="comment">// { prompt_tokens: 1, completion_tokens: 12, total_cost: 0.00004,</span>
-<span class="comment">//   budget_remaining: 49999.96, cache_hit: false }</span></code></pre>
-            </div>
+<span class="code-keyword">const</span> data = <span class="code-keyword">await</span> response.<span class="code-property">json</span>();
+<span class="code-property">console</span>.<span class="code-property">log</span>(data.choices[<span class="code-number">0</span>].message.content);
 
-            <div class="lang-panel" data-lang="python" data-group="gateway">
-<pre><code><span class="keyword">from</span> finault <span class="keyword">import</span> Finault
+<span class="code-comment">// Get cost from headers</span>
+<span class="code-keyword">const</span> cost = response.headers.<span class="code-property">get</span>(<span class="code-string">"x-finault-cost-dollars"</span>);
+<span class="code-property">console</span>.<span class="code-property">log</span>(<span class="code-string">`Cost: $${cost}`</span>);</code></pre>
+                    </div>
+                </div>
 
-client = <span class="fn">Finault</span>(api_key=<span class="string">"fk_xxx"</span>)
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">With Error Handling & Retry:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">javascript</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">async</span> <span class="code-keyword">function</span> <span class="code-property">callFinaultWithRetry</span>(
+  prompt,
+  costCenter = <span class="code-keyword">null</span>,
+  maxRetries = <span class="code-number">3</span>
+) {
+  <span class="code-keyword">for</span> (<span class="code-keyword">let</span> attempt = <span class="code-number">0</span>; attempt < maxRetries; attempt++) {
+    <span class="code-keyword">try</span> {
+      <span class="code-keyword">const</span> headers = {
+        <span class="code-string">"Content-Type"</span>: <span class="code-string">"application/json"</span>,
+        <span class="code-string">"Authorization"</span>: <span class="code-string">`Bearer ${process.env.FINAULT_API_KEY}`</span>,
+        <span class="code-string">"X-Provider-Key"</span>: process.env.OPENAI_API_KEY
+      };
 
-<span class="comment"># Proxied request &mdash; same interface, full cost tracking</span>
-response = client.gateway.<span class="fn">chat</span>(
-    provider=<span class="string">"openai"</span>,
-    provider_key=os.environ[<span class="string">"OPENAI_API_KEY"</span>],
-    model=<span class="string">"gpt-4o"</span>,
-    messages=[{<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"Hello"</span>}],
-    cost_center=<span class="string">"ENG-001"</span>,
+      <span class="code-keyword">if</span> (costCenter) {
+        headers[<span class="code-string">"X-Finault-Cost-Center"</span>] = costCenter;
+      }
+
+      <span class="code-keyword">const</span> response = <span class="code-keyword">await</span> <span class="code-property">fetch</span>(<span class="code-string">"https://api.finault.ai/v1/chat/completions"</span>, {
+        <span class="code-property">method</span>: <span class="code-string">"POST"</span>,
+        <span class="code-property">headers</span>,
+        <span class="code-property">body</span>: <span class="code-property">JSON</span>.<span class="code-property">stringify</span>({
+          <span class="code-property">model</span>: <span class="code-string">"gpt-4o"</span>,
+          <span class="code-property">messages</span>: [{ <span class="code-property">role</span>: <span class="code-string">"user"</span>, <span class="code-property">content</span>: prompt }],
+          <span class="code-property">max_tokens</span>: <span class="code-number">500</span>
+        })
+      });
+
+      <span class="code-keyword">if</span> (response.status === <span class="code-number">429</span>) {
+        <span class="code-keyword">const</span> retryAfter = parseInt(response.headers.<span class="code-property">get</span>(<span class="code-string">"retry-after"</span>) || <span class="code-number">2</span> ** attempt);
+        <span class="code-keyword">await</span> <span class="code-keyword">new</span> <span class="code-property">Promise</span>(r => <span class="code-property">setTimeout</span>(r, retryAfter * <span class="code-number">1000</span>));
+        <span class="code-keyword">continue</span>;
+      }
+
+      <span class="code-keyword">if</span> (!response.ok) {
+        <span class="code-keyword">throw</span> <span class="code-keyword">new</span> <span class="code-property">Error</span>(<span class="code-string">`API error: ${response.status}`</span>);
+      }
+
+      <span class="code-keyword">return</span> <span class="code-keyword">await</span> response.<span class="code-property">json</span>();
+    } <span class="code-keyword">catch</span> (error) {
+      <span class="code-keyword">if</span> (attempt === maxRetries - <span class="code-number">1</span>) <span class="code-keyword">throw</span> error;
+      <span class="code-keyword">await</span> <span class="code-keyword">new</span> <span class="code-property">Promise</span>(r => <span class="code-property">setTimeout</span>(r, <span class="code-number">2</span> ** attempt * <span class="code-number">1000</span>));
+    }
+  }
+}
+
+<span class="code-comment">// Usage</span>
+<span class="code-keyword">const</span> result = <span class="code-keyword">await</span> <span class="code-property">callFinaultWithRetry</span>(<span class="code-string">"What is ML?"</span>, <span class="code-string">"research-team"</span>);
+<span class="code-property">console</span>.<span class="code-property">log</span>(result.choices[<span class="code-number">0</span>].message.content);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="go">
+                <h3>Go</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Uses the built-in <code>net/http</code> package. No additional dependencies needed.</p>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Simple Request:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">go</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">package</span> main
+
+<span class="code-keyword">import</span> (
+    <span class="code-string">"bytes"</span>
+    <span class="code-string">"encoding/json"</span>
+    <span class="code-string">"fmt"</span>
+    <span class="code-string">"net/http"</span>
+    <span class="code-string">"os"</span>
 )
 
-<span class="fn">print</span>(response.usage)
-<span class="comment"># { prompt_tokens: 1, completion_tokens: 12, total_cost: 0.00004,</span>
-<span class="comment">#   budget_remaining: 49999.96, cache_hit: False }</span></code></pre>
-            </div>
+<span class="code-keyword">func</span> <span class="code-property">main</span>() {
+    payload := <span class="code-keyword">map</span>[<span class="code-keyword">string</span>]<span class="code-keyword">interface</span>{}{
+        <span class="code-string">"model"</span>: <span class="code-string">"gpt-4o"</span>,
+        <span class="code-string">"messages"</span>: []<span class="code-keyword">map</span>[<span class="code-keyword">string</span>]<span class="code-keyword">string</span>{
+            {<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: <span class="code-string">"Hello"</span>},
+        },
+        <span class="code-string">"max_tokens"</span>: <span class="code-number">100</span>,
+    }
 
-            <div class="lang-panel" data-lang="go" data-group="gateway">
-<pre><code><span class="keyword">import</span> <span class="string">"github.com/finault/finault-go"</span>
+    body, _ := <span class="code-property">json</span>.<span class="code-property">Marshal</span>(payload)
 
-client := finault.<span class="fn">NewClient</span>(<span class="string">"fk_xxx"</span>)
+    req, _ := http.<span class="code-property">NewRequest</span>(<span class="code-string">"POST"</span>,
+        <span class="code-string">"https://api.finault.ai/v1/chat/completions"</span>,
+        <span class="code-property">bytes</span>.<span class="code-property">NewBuffer</span>(body))
 
-resp, err := client.Gateway.<span class="fn">Chat</span>(ctx, &finault.ChatRequest{
-    Provider:    <span class="string">"openai"</span>,
-    ProviderKey: os.<span class="fn">Getenv</span>(<span class="string">"OPENAI_API_KEY"</span>),
-    Model:       <span class="string">"gpt-4o"</span>,
-    Messages:    []finault.Message{{Role: <span class="string">"user"</span>, Content: <span class="string">"Hello"</span>}},
-    CostCenter:  <span class="string">"ENG-001"</span>,
-})
+    req.<span class="code-property">Header</span>.<span class="code-property">Set</span>(<span class="code-string">"Content-Type"</span>, <span class="code-string">"application/json"</span>)
+    req.<span class="code-property">Header</span>.<span class="code-property">Set</span>(<span class="code-string">"Authorization"</span>,
+        <span class="code-string">fmt</span>.<span class="code-property">Sprintf</span>(<span class="code-string">"Bearer %s"</span>, os.<span class="code-property">Getenv</span>(<span class="code-string">"FINAULT_API_KEY"</span>)))
+    req.<span class="code-property">Header</span>.<span class="code-property">Set</span>(<span class="code-string">"X-Provider-Key"</span>,
+        os.<span class="code-property">Getenv</span>(<span class="code-string">"OPENAI_API_KEY"</span>))
 
-fmt.<span class="fn">Printf</span>(<span class="string">"Cost: $%.5f\n"</span>, resp.Usage.TotalCost)</code></pre>
-            </div>
+    client := &http.<span class="code-property">Client</span>{}
+    resp, _ := client.<span class="code-property">Do</span>(req)
 
-            <div class="lang-panel" data-lang="java" data-group="gateway">
-<pre><code><span class="keyword">import</span> ai.finault.sdk.FinaultClient;
+    <span class="code-comment">// Cost in headers</span>
+    cost := resp.<span class="code-property">Header</span>.<span class="code-property">Get</span>(<span class="code-string">"X-Finault-Cost-Dollars"</span>)
+    <span class="code-property">fmt</span>.<span class="code-property">Printf</span>(<span class="code-string">"Cost: $%s\n"</span>, cost)
+}</code></pre>
+                    </div>
+                </div>
+            </section>
 
-FinaultClient client = FinaultClient.<span class="fn">builder</span>()
-    .<span class="fn">apiKey</span>(<span class="string">"fk_xxx"</span>)
-    .<span class="fn">build</span>();
+            <section id="java">
+                <h3>Java</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Using the built-in <code>java.net.http</code> package (Java 11+).</p>
 
-ChatResponse response = client.<span class="fn">gateway</span>().<span class="fn">chat</span>(ChatRequest.<span class="fn">builder</span>()
-    .<span class="fn">provider</span>(<span class="string">"openai"</span>)
-    .<span class="fn">providerKey</span>(System.<span class="fn">getenv</span>(<span class="string">"OPENAI_API_KEY"</span>))
-    .<span class="fn">model</span>(<span class="string">"gpt-4o"</span>)
-    .<span class="fn">messages</span>(List.<span class="fn">of</span>(<span class="keyword">new</span> <span class="fn">Message</span>(<span class="string">"user"</span>, <span class="string">"Hello"</span>)))
-    .<span class="fn">costCenter</span>(<span class="string">"ENG-001"</span>)
-    .<span class="fn">build</span>());
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Simple Request:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">java</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">import</span> java.net.http.*;
+<span class="code-keyword">import</span> java.net.*;
 
-System.out.<span class="fn">println</span>(response.<span class="fn">getUsage</span>().<span class="fn">getTotalCost</span>());</code></pre>
-            </div>
+HttpClient client = HttpClient.<span class="code-property">newHttpClient</span>();
 
-            <div class="lang-panel" data-lang="ruby" data-group="gateway">
-<pre><code><span class="keyword">require</span> <span class="string">'finault'</span>
-
-client = Finault::Client.<span class="fn">new</span>(api_key: <span class="string">'fk_xxx'</span>)
-
-response = client.gateway.<span class="fn">chat</span>(
-  provider: <span class="string">'openai'</span>,
-  provider_key: ENV[<span class="string">'OPENAI_API_KEY'</span>],
-  model: <span class="string">'gpt-4o'</span>,
-  messages: [{ role: <span class="string">'user'</span>, content: <span class="string">'Hello'</span> }],
-  cost_center: <span class="string">'ENG-001'</span>,
-)
-
-<span class="fn">puts</span> response.usage.total_cost</code></pre>
-            </div>
-
-            <p>The gateway response includes everything the upstream provider returns, plus a <code>finault</code> metadata block with cost, budget status, and cache information.</p>
-
-            <!-- Step 3 -->
-            <div class="step-title"><span class="step-number">3</span> See your costs <span class="step-time">instant</span></div>
-            <p>Open your <a href="https://app.finault.ai">dashboard</a>. Every request is tracked in real time with cost attribution by team, model, and project. Anomaly detection activates automatically once you have 24 hours of data.</p>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Query costs by cost center</span>
-curl https://gateway.finault.ai/v1/usage \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -G -d <span class="string">"cost_center=ENG-001"</span> -d <span class="string">"period=current_month"</span>
-
-<span class="comment"># Response</span>
+String body = <span class="code-string">"""
 {
-  <span class="string">"cost_center"</span>: <span class="string">"ENG-001"</span>,
-  <span class="string">"period"</span>: <span class="string">"2026-02"</span>,
-  <span class="string">"total_cost"</span>: <span class="number">2847.32</span>,
-  <span class="string">"by_model"</span>: {
-    <span class="string">"gpt-4o"</span>: <span class="number">1923.10</span>,
-    <span class="string">"claude-sonnet-4-5"</span>: <span class="number">712.88</span>,
-    <span class="string">"gemini-1.5-pro"</span>: <span class="number">211.34</span>
+  "model": "gpt-4o",
+  "messages": [{"role": "user", "content": "Hello"}],
+  "max_tokens": 100
+}
+"""</span>;
+
+HttpRequest request = HttpRequest.<span class="code-property">newBuilder</span>()
+    .<span class="code-property">uri</span>(<span class="code-keyword">new</span> <span class="code-property">URI</span>(<span class="code-string">"https://api.finault.ai/v1/chat/completions"</span>))
+    .<span class="code-property">POST</span>(HttpRequest.<span class="code-property">BodyPublishers</span>.<span class="code-property">ofString</span>(body))
+    .<span class="code-property">header</span>(<span class="code-string">"Content-Type"</span>, <span class="code-string">"application/json"</span>)
+    .<span class="code-property">header</span>(<span class="code-string">"Authorization"</span>,
+        <span class="code-string">String</span>.<span class="code-property">format</span>(<span class="code-string">"Bearer %s"</span>, System.<span class="code-property">getenv</span>(<span class="code-string">"FINAULT_API_KEY"</span>)))
+    .<span class="code-property">header</span>(<span class="code-string">"X-Provider-Key"</span>,
+        System.<span class="code-property">getenv</span>(<span class="code-string">"OPENAI_API_KEY"</span>))
+    .<span class="code-property">build</span>();
+
+HttpResponse&lt;String&gt; response = client.<span class="code-property">send</span>(request,
+    HttpResponse.<span class="code-property">BodyHandlers</span>.<span class="code-property">ofString</span>());
+
+String cost = response.<span class="code-property">headers</span>().<span class="code-property">firstValue</span>(<span class="code-string">"X-Finault-Cost-Dollars"</span>)
+    .<span class="code-property">orElse</span>(<span class="code-string">"unknown"</span>);
+System.<span class="code-property">out</span>.<span class="code-property">printf</span>(<span class="code-string">"Cost: $%s%n"</span>, cost);</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section id="ruby">
+                <h3>Ruby</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Install with <code>gem install httparty</code></p>
+
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">Simple Request:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">ruby</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">require</span> <span class="code-string">'httparty'</span>
+<span class="code-keyword">require</span> <span class="code-string">'json'</span>
+
+response = HTTParty.<span class="code-property">post</span>(
+  <span class="code-string">'https://api.finault.ai/v1/chat/completions'</span>,
+  <span class="code-property">headers</span>: {
+    <span class="code-string">'Content-Type'</span> => <span class="code-string">'application/json'</span>,
+    <span class="code-string">'Authorization'</span> => <span class="code-string">"Bearer #{ENV['FINAULT_API_KEY']}"</span>,
+    <span class="code-string">'X-Provider-Key'</span> => ENV[<span class="code-string">'OPENAI_API_KEY'</span>]
   },
-  <span class="string">"budget_remaining"</span>: <span class="number">47152.68</span>,
-  <span class="string">"anomalies_detected"</span>: <span class="number">0</span>
-}</code></pre>
-            </div>
+  <span class="code-property">body</span>: {
+    <span class="code-property">model</span>: <span class="code-string">'gpt-4o'</span>,
+    <span class="code-property">messages</span>: [{ <span class="code-property">role</span>: <span class="code-string">'user'</span>, <span class="code-property">content</span>: <span class="code-string">'Hello'</span> }],
+    <span class="code-property">max_tokens</span>: <span class="code-number">100</span>
+  }.<span class="code-property">to_json</span>
+)
 
+puts response[<span class="code-string">'choices'</span>][<span class="code-number">0</span>][<span class="code-string">'message'</span>][<span class="code-string">'content'</span>]
 
-            <!-- Concepts -->
-            <h2 id="concepts">Core Concepts</h2>
+<span class="code-comment"># Cost from headers</span>
+cost = response.<span class="code-property">headers</span>[<span class="code-string">'X-Finault-Cost-Dollars'</span>]
+puts <span class="code-string">"Cost: $#{cost}"</span></code></pre>
+                    </div>
+                </div>
 
-            <h3>Gateway</h3>
-            <p>A transparent proxy that sits between your application and AI providers. Every request is logged with token counts, latency, cost, and attribution metadata. Your existing provider SDKs work unmodified &mdash; just change the base URL.</p>
+                <div style="margin-bottom: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 8px;">With Error Handling & Retry:</p>
+                    <div class="code-block">
+                        <div class="code-block-header">
+                            <span class="code-block-language">ruby</span>
+                            <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                        </div>
+                        <pre><code><span class="code-keyword">def</span> <span class="code-property">call_finault_with_retry</span>(prompt, cost_center = <span class="code-keyword">nil</span>, max_retries = <span class="code-number">3</span>)
+  headers = {
+    <span class="code-string">'Content-Type'</span> => <span class="code-string">'application/json'</span>,
+    <span class="code-string">'Authorization'</span> => <span class="code-string">"Bearer #{ENV['FINAULT_API_KEY']}"</span>,
+    <span class="code-string">'X-Provider-Key'</span> => ENV[<span class="code-string">'OPENAI_API_KEY'</span>]
+  }
+  headers[<span class="code-string">'X-Finault-Cost-Center'</span>] = cost_center <span class="code-keyword">if</span> cost_center
 
-            <h3>Cost Centers</h3>
-            <p>Organizational units (teams, projects, departments) that consume AI resources. Pass a cost center via the <code>X-Cost-Center</code> header or the SDK's <code>costCenter</code> parameter. Costs are attributed automatically.</p>
+  max_retries.<span class="code-property">times</span> <span class="code-keyword">do</span> |attempt|
+    <span class="code-keyword">begin</span>
+      response = HTTParty.<span class="code-property">post</span>(
+        <span class="code-string">'https://api.finault.ai/v1/chat/completions'</span>,
+        <span class="code-property">headers</span>: headers,
+        <span class="code-property">body</span>: {
+          <span class="code-property">model</span>: <span class="code-string">'gpt-4o'</span>,
+          <span class="code-property">messages</span>: [{ <span class="code-property">role</span>: <span class="code-string">'user'</span>, <span class="code-property">content</span>: prompt }],
+          <span class="code-property">max_tokens</span>: <span class="code-number">500</span>
+        }.<span class="code-property">to_json</span>
+      )
 
-            <h3>Close Packs</h3>
-            <p>Finance-ready audit packages generated at period end. Each pack includes an executive summary, journal entries for your ERP, a reconciliation certificate with SHA-256 hash verification, and an optional blockchain anchor for immutable proof.</p>
+      <span class="code-keyword">if</span> response.<span class="code-property">code</span> == <span class="code-number">429</span>
+        wait_time = (response.<span class="code-property">headers</span>[<span class="code-string">'Retry-After'</span>] || <span class="code-number">2</span> ** attempt).<span class="code-property">to_i</span>
+        sleep(wait_time)
+        <span class="code-keyword">next</span>
+      <span class="code-keyword">end</span>
 
-            <h3>Constitutional Governance</h3>
-            <p>Four principles enforced on every transaction: Immutability (INSERT-only operations, nothing is ever mutated or deleted), Determinism (identical inputs produce identical outputs), Audit Survivability (every pack includes a manifest and certificate of authenticity), and Finality (completed transactions are anchored to Ethereum and posted to your ERP).</p>
+      <span class="code-keyword">return</span> response <span class="code-keyword">if</span> response.<span class="code-property">success</span>?
+    <span class="code-keyword">rescue</span> => e
+      <span class="code-keyword">raise</span> e <span class="code-keyword">if</span> attempt == max_retries - <span class="code-number">1</span>
+      sleep(<span class="code-number">2</span> ** attempt)
+    <span class="code-keyword">end</span>
+  <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>
 
+<span class="code-comment"># Usage</span>
+result = call_finault_with_retry(<span class="code-string">"What is AI?"</span>, <span class="code-string">"research-team"</span>)
+puts result[<span class="code-string">'choices'</span>][<span class="code-number">0</span>][<span class="code-string">'message'</span>][<span class="code-string">'content'</span>]</code></pre>
+                    </div>
+                </div>
+            </section>
 
-            <!-- Gateway -->
-            <h2 id="gateway">Connect the Gateway</h2>
+            <!-- Error Reference -->
+            <section id="error-codes">
+                <h2>Error Reference</h2>
+                <p class="section-description">Complete guide to error codes and how to resolve them.</p>
 
-            <p>The gateway supports all major AI providers. Change your base URL and add your Finault key &mdash; everything else stays the same.</p>
+                <table class="error-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Status</th>
+                            <th>Meaning</th>
+                            <th>How to Fix</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="error-code">AUTH_FAILED</td>
+                            <td class="error-status status-401">401</td>
+                            <td>Invalid or missing Finault API key</td>
+                            <td>Verify your key starts with <code>fk_live_</code> or <code>fk_test_</code> and is not expired. Regenerate at finault.ai/welcome if needed.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">PROVIDER_KEY_INVALID</td>
+                            <td class="error-status status-401">401</td>
+                            <td>Invalid provider API key (OpenAI, Anthropic, etc.)</td>
+                            <td>Check that your provider key is correct and passed in <code>X-Provider-Key</code> header. Ensure it's not expired.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">TOKEN_REVOKED</td>
+                            <td class="error-status status-401">401</td>
+                            <td>API key has been revoked by admin</td>
+                            <td>Generate a new API key at finault.ai/welcome</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">IP_NOT_ALLOWED</td>
+                            <td class="error-status status-403">403</td>
+                            <td>Your IP is not in organization allowlist</td>
+                            <td>Add your IP to the security settings at finault.ai/dashboard → Settings → IP Allowlist</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">RATE_LIMIT_EXCEEDED</td>
+                            <td class="error-status status-429">429</td>
+                            <td>Organization or account rate limit exceeded</td>
+                            <td>Wait for <code>Retry-After</code> seconds before retrying. Implement exponential backoff. Upgrade plan for higher limits.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">QUOTA_EXCEEDED</td>
+                            <td class="error-status status-429">429</td>
+                            <td>Monthly token or spending quota exceeded</td>
+                            <td>View limits at finault.ai/dashboard → Quotas. Request increase or wait for quota reset on the 1st of next month.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">VALIDATION_ERROR</td>
+                            <td class="error-status status-400">400</td>
+                            <td>Request body is invalid (missing fields, wrong format)</td>
+                            <td>Check required fields in API reference. Validate JSON schema. See error details in response body.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">INVALID_MODEL</td>
+                            <td class="error-status status-400">400</td>
+                            <td>Model is not supported or not enabled</td>
+                            <td>Check available models at finault.ai/pricing or via <code>GET /v1/pricing</code>. Enable in dashboard if available.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">PROVIDER_ERROR</td>
+                            <td class="error-status status-502">502</td>
+                            <td>Upstream AI provider (OpenAI, Anthropic, etc.) returned error</td>
+                            <td>Check provider status. Retry with exponential backoff. Error details available in response body.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">PROVIDER_TIMEOUT</td>
+                            <td class="error-status status-502">502</td>
+                            <td>Provider took too long to respond</td>
+                            <td>Retry the request. Consider using router for failover to faster provider.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">SERVICE_UNAVAILABLE</td>
+                            <td class="error-status status-503">503</td>
+                            <td>Finault service temporarily unavailable</td>
+                            <td>Check finault.ai/status. Implement retry logic with exponential backoff.</td>
+                        </tr>
+                        <tr>
+                            <td class="error-code">SESSION_INVALIDATED</td>
+                            <td class="error-status status-401">401</td>
+                            <td>All sessions invalidated (security event)</td>
+                            <td>Re-authenticate. Generate new API key at finault.ai/welcome</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-            <table>
-                <thead>
-                    <tr><th>Provider</th><th>Base URL</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>OpenAI</td><td><code>https://gateway.finault.ai/v1</code></td></tr>
-                    <tr><td>Anthropic</td><td><code>https://gateway.finault.ai/anthropic</code></td></tr>
-                    <tr><td>Azure OpenAI</td><td><code>https://gateway.finault.ai/azure</code></td></tr>
-                    <tr><td>Google Vertex AI</td><td><code>https://gateway.finault.ai/vertex</code></td></tr>
-                    <tr><td>AWS Bedrock</td><td><code>https://gateway.finault.ai/bedrock</code></td></tr>
-                    <tr><td>Cohere</td><td><code>https://gateway.finault.ai/cohere</code></td></tr>
-                    <tr><td>Mistral</td><td><code>https://gateway.finault.ai/mistral</code></td></tr>
-                    <tr><td>Together AI</td><td><code>https://gateway.finault.ai/together</code></td></tr>
-                </tbody>
-            </table>
+                <h3 id="auth-errors" style="margin-top: 48px;">Common Authentication Errors</h3>
 
-            <div class="callout info">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                <p><strong>Zero-change integration:</strong> If you use the OpenAI or Anthropic Python/JS SDKs, set <code>base_url</code> to the gateway URL. Your existing code works without any other modification.</p>
-            </div>
+                <div style="background: #fef2f2; border-left: 4px solid #dc2626; padding: 16px; border-radius: 6px; margin: 16px 0;">
+                    <p style="font-weight: 600; margin-bottom: 8px; color: #991b1b;">401 Unauthorized: Missing or Invalid API Key</p>
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">This error occurs when your Finault API key is missing, invalid, or expired.</p>
+                    <p style="font-size: 13px; color: var(--text-secondary);"><strong>Solution:</strong> Verify you're passing the <code>Authorization: Bearer fk_live_...</code> header. Check the key hasn't been revoked. Generate a new key at finault.ai/welcome if needed.</p>
+                </div>
 
-            <h3>Environment variable approach</h3>
-            <div class="code-block">
-<pre><code><span class="comment"># OpenAI SDK reads OPENAI_BASE_URL automatically</span>
-<span class="keyword">export</span> OPENAI_BASE_URL=<span class="string">"https://gateway.finault.ai/v1"</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_xxxxxxxxxxxx"</span>
+                <h3 id="rate-limits" style="margin-top: 48px;">Rate Limiting</h3>
 
-<span class="comment"># Anthropic SDK reads ANTHROPIC_BASE_URL automatically</span>
-<span class="keyword">export</span> ANTHROPIC_BASE_URL=<span class="string">"https://gateway.finault.ai/anthropic"</span>
-<span class="keyword">export</span> FINAULT_API_KEY=<span class="string">"fk_xxxxxxxxxxxx"</span></code></pre>
-            </div>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">Finault enforces rate limits to ensure fair usage. When you hit a limit, you'll receive a 429 status with a <code>Retry-After</code> header.</p>
 
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">http</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>HTTP/1.1 429 Too Many Requests
+Retry-After: 60
+X-RateLimit-Limit: 1000
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1740506635
 
-            <!-- Headers -->
-            <h2 id="headers">Attribution Headers</h2>
-
-            <p>Add optional headers to enrich cost attribution. These headers are stripped before forwarding to the upstream provider.</p>
-
-            <table>
-                <thead>
-                    <tr><th>Header</th><th>Required</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><code>X-Finault-API-Key</code></td><td>Yes</td><td>Your Finault API key (or use Authorization header)</td></tr>
-                    <tr><td><code>X-Provider-Key</code></td><td>Yes</td><td>Your upstream provider API key</td></tr>
-                    <tr><td><code>X-Cost-Center</code></td><td>No</td><td>Cost center code (e.g., <code>ENG-001</code>)</td></tr>
-                    <tr><td><code>X-Project</code></td><td>No</td><td>Project identifier</td></tr>
-                    <tr><td><code>X-Budget-Id</code></td><td>No</td><td>Budget to charge against</td></tr>
-                    <tr><td><code>X-Environment</code></td><td>No</td><td>Environment tag (production, staging, dev)</td></tr>
-                </tbody>
-            </table>
-
-
-            <!-- Budgets -->
-            <h2 id="budgets">Budget Enforcement</h2>
-
-            <p>Set hard or soft spend limits by team, project, or time period. Budgets are enforced at the gateway level &mdash; overspend is physically prevented, not just reported.</p>
-
-            <h4>Three Escalation Tiers</h4>
-            <table>
-                <thead>
-                    <tr><th>Tier</th><th>Trigger</th><th>Action</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><strong>Soft Alert</strong></td><td>Configurable threshold (default 80%)</td><td>Webhook notification, email alert, Slack message</td></tr>
-                    <tr><td><strong>Throttle</strong></td><td>Configurable threshold (default 95%)</td><td>Downgrades to cheaper models automatically</td></tr>
-                    <tr><td><strong>Hard Cap</strong></td><td>100% of budget</td><td>Returns HTTP 402 &mdash; no request passes</td></tr>
-                </tbody>
-            </table>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Create a budget</span>
-curl -X POST https://gateway.finault.ai/v1/budgets \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -d '{
-    <span class="string">"name"</span>: <span class="string">"Platform Team Monthly"</span>,
-    <span class="string">"cost_center"</span>: <span class="string">"ENG-001"</span>,
-    <span class="string">"limit"</span>: <span class="number">50000</span>,
-    <span class="string">"period"</span>: <span class="string">"monthly"</span>,
-    <span class="string">"alert_threshold"</span>: <span class="number">0.8</span>,
-    <span class="string">"throttle_threshold"</span>: <span class="number">0.95</span>,
-    <span class="string">"hard_cap"</span>: <span class="keyword">true</span>
-  }'</code></pre>
-            </div>
-
-
-            <!-- Invoices -->
-            <h2 id="invoices">Invoice Intelligence</h2>
-
-            <p>Upload invoices from any supported provider in CSV, Excel, or JSON format. The parser automatically detects the provider, extracts line items with model-level granularity, and normalizes everything into a unified cost model.</p>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Upload and analyze an invoice</span>
-curl -X POST https://gateway.finault.ai/v1/invoices/analyze \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -F <span class="string">"file=@openai-january-2026.csv"</span>
-
-<span class="comment"># Response</span>
 {
-  <span class="string">"provider"</span>: <span class="string">"openai"</span>,
-  <span class="string">"confidence"</span>: <span class="number">0.98</span>,
-  <span class="string">"period"</span>: <span class="string">"2026-01"</span>,
-  <span class="string">"total_cost"</span>: <span class="number">23847.91</span>,
-  <span class="string">"line_items"</span>: <span class="number">1247</span>,
-  <span class="string">"models_detected"</span>: [<span class="string">"gpt-4o"</span>, <span class="string">"gpt-4o-mini"</span>, <span class="string">"o1-preview"</span>],
-  <span class="string">"anomalies_flagged"</span>: <span class="number">3</span>,
-  <span class="string">"allocation_ready"</span>: <span class="keyword">true</span>
+  <span class="code-string">"error"</span>: {
+    <span class="code-string">"code"</span>: <span class="code-string">"RATE_LIMIT_EXCEEDED"</span>,
+    <span class="code-string">"message"</span>: <span class="code-string">"Organization rate limit exceeded. Retry after 60 seconds."</span>
+  }
 }</code></pre>
-            </div>
+                    </div>
+                </div>
 
-            <h4>Supported Providers</h4>
-            <table>
-                <thead>
-                    <tr><th>Provider</th><th>Formats</th><th>Key Fields</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>OpenAI</td><td>CSV, JSON</td><td><code>cost_in_usd</code>, <code>project_name</code>, <code>model</code></td></tr>
-                    <tr><td>Anthropic</td><td>CSV, JSON</td><td><code>amount</code>, <code>workspace</code>, <code>model</code></td></tr>
-                    <tr><td>Azure OpenAI</td><td>CSV, Excel</td><td><code>Cost</code>, <code>ResourceGroup</code>, <code>ServiceName</code></td></tr>
-                    <tr><td>Google Vertex AI</td><td>CSV, JSON</td><td><code>cost</code>, <code>project.id</code>, <code>service.description</code></td></tr>
-                    <tr><td>AWS Bedrock</td><td>CSV</td><td><code>BlendedCost</code>, <code>LinkedAccount</code>, <code>UsageType</code></td></tr>
-                    <tr><td>Cohere</td><td>CSV</td><td><code>total_cost</code>, <code>model</code>, <code>api_key_name</code></td></tr>
-                    <tr><td>Mistral</td><td>CSV, JSON</td><td><code>cost</code>, <code>model_id</code>, <code>organization</code></td></tr>
-                    <tr><td>Together AI</td><td>CSV</td><td><code>cost</code>, <code>model</code>, <code>team_id</code></td></tr>
-                </tbody>
-            </table>
+                <p style="margin-top: 16px; color: var(--text-secondary); font-size: 14px;">
+                    Always implement exponential backoff in your client. Wait for the <code>Retry-After</code> header value before retrying. Upgrade your plan for higher rate limits.
+                </p>
 
+                <h3 id="provider-errors" style="margin-top: 48px;">Provider Errors</h3>
 
-            <!-- Close Packs -->
-            <h2 id="closepack">Close Packs</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 16px;">When the upstream provider (OpenAI, Anthropic, Google, etc.) returns an error, Finault passes it through with additional context.</p>
 
-            <p>Generate an audit-ready close pack for any period. Each pack is a sealed ZIP containing everything your finance team needs to close the books on AI spend.</p>
-
-            <h4>What's Inside</h4>
-            <table>
-                <thead>
-                    <tr><th>Document</th><th>Format</th><th>Purpose</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>Executive Summary</td><td>PDF</td><td>CFO-ready spend overview with trends and anomalies</td></tr>
-                    <tr><td>Journal Entries</td><td>CSV</td><td>Import-ready entries for your ERP (SAP, NetSuite, Xero, QuickBooks)</td></tr>
-                    <tr><td>Reconciliation Certificate</td><td>PDF</td><td>Three-way match with SHA-256 hash verification</td></tr>
-                    <tr><td>Controls Narrative</td><td>PDF</td><td>SOX-compliant control documentation</td></tr>
-                    <tr><td>Certificate of Authenticity</td><td>JSON</td><td>Cryptographic proof with optional blockchain anchor</td></tr>
-                    <tr><td>Manifest</td><td>JSON</td><td>Complete metadata, file inventory, and validation results</td></tr>
-                </tbody>
-            </table>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Generate a close pack</span>
-curl -X POST https://gateway.finault.ai/v1/closepack \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -F <span class="string">"files=@openai-jan.csv"</span> \
-  -F <span class="string">"files=@anthropic-jan.csv"</span> \
-  -o close-pack-jan-2026.zip
-
-<span class="comment"># Or generate from gateway data (no invoice upload needed)</span>
-curl -X POST https://gateway.finault.ai/v1/closepack/generate \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -d '{ <span class="string">"period"</span>: <span class="string">"2026-01"</span>, <span class="string">"anchor_blockchain"</span>: <span class="keyword">true</span> }' \
-  -o close-pack-jan-2026.zip</code></pre>
-            </div>
-
-            <!-- Verification -->
-            <h2 id="verify">Verification</h2>
-
-            <p>Verify the integrity of any close pack against its sealed artifacts. The verification service runs independently from the main platform &mdash; it cannot be influenced by the system that generated the pack.</p>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Verify a close pack</span>
-curl -X POST https://gateway.finault.ai/v1/verify \
-  -F <span class="string">"zip=@close-pack-jan-2026.zip"</span>
-
-<span class="comment"># Response</span>
-{
-  <span class="string">"result"</span>: <span class="string">"VERIFIED"</span>,
-  <span class="string">"close_id"</span>: <span class="string">"FIN-CL-20260131-A7B3"</span>,
-  <span class="string">"checks_passed"</span>: <span class="number">6</span>,
-  <span class="string">"checks_failed"</span>: <span class="number">0</span>,
-  <span class="string">"blockchain_anchor"</span>: <span class="string">"0x4a3b...c8f1"</span>,
-  <span class="string">"tamper_detected"</span>: <span class="keyword">false</span>
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">json</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code>{
+  <span class="code-string">"error"</span>: {
+    <span class="code-string">"code"</span>: <span class="code-string">"PROVIDER_ERROR"</span>,
+    <span class="code-string">"message"</span>: <span class="code-string">"OpenAI API error"</span>,
+    <span class="code-string">"provider"</span>: <span class="code-string">"openai"</span>,
+    <span class="code-string">"provider_error"</span>: {
+      <span class="code-string">"code"</span>: <span class="code-string">"invalid_request_error"</span>,
+      <span class="code-string">"message"</span>: <span class="code-string">"Tokens per minute limit exceeded"</span>,
+      <span class="code-string">"type"</span>: <span class="code-string">"invalid_request_error"</span>
+    }
+  },
+  <span class="code-string">"request_id"</span>: <span class="code-string">"req_xyz789abc123"</span>
 }</code></pre>
-            </div>
-
-            <p>A <a href="/verify">web-based verification tool</a> is also available for non-technical users.</p>
-
-
-            <!-- Anomalies -->
-            <h2 id="anomalies">Anomaly Detection</h2>
-
-            <p>Four statistical methods (Z-score, IQR, EWMA, CUSUM) run continuously on your gateway traffic. Anomalies activate automatically after 24 hours of baseline data.</p>
-
-            <h4>Anomaly Types</h4>
-            <table>
-                <thead>
-                    <tr><th>Type</th><th>Description</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td><strong>Cost Spike</strong></td><td>Single request or batch exceeds 3&sigma; of historical average</td></tr>
-                    <tr><td><strong>Volume Spike</strong></td><td>Request count jumps outside normal patterns</td></tr>
-                    <tr><td><strong>Unusual Model</strong></td><td>Traffic to a model not in the normal rotation</td></tr>
-                    <tr><td><strong>Off-Hours</strong></td><td>Significant activity outside business hours</td></tr>
-                    <tr><td><strong>Rate Anomaly</strong></td><td>Per-token cost deviates from provider rate card</td></tr>
-                    <tr><td><strong>Cost Drop</strong></td><td>Unexplained decrease (may indicate broken pipeline)</td></tr>
-                </tbody>
-            </table>
-
-            <div class="code-block">
-<pre><code><span class="comment"># List recent anomalies</span>
-curl https://gateway.finault.ai/v1/anomalies \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -G -d <span class="string">"severity=high"</span> -d <span class="string">"limit=10"</span>
-
-<span class="comment"># Response</span>
-{
-  <span class="string">"anomalies"</span>: [{
-    <span class="string">"type"</span>: <span class="string">"cost_spike"</span>,
-    <span class="string">"severity"</span>: <span class="string">"high"</span>,
-    <span class="string">"cost_center"</span>: <span class="string">"DATA-003"</span>,
-    <span class="string">"model"</span>: <span class="string">"gpt-4o"</span>,
-    <span class="string">"amount"</span>: <span class="number">1247.50</span>,
-    <span class="string">"expected"</span>: <span class="number">312.00</span>,
-    <span class="string">"deviation"</span>: <span class="string">"4.1&sigma;"</span>,
-    <span class="string">"detected_at"</span>: <span class="string">"2026-02-13T08:42:00Z"</span>,
-    <span class="string">"root_cause"</span>: <span class="string">"Batch job loop detected - 47x normal request volume"</span>
-  }]
-}</code></pre>
-            </div>
-
-
-            <!-- Reconciliation -->
-            <h2 id="reconciliation">Reconciliation</h2>
-
-            <p>Three-way matching compares your usage telemetry (gateway data), provider rate cards, and invoiced amounts. Variances beyond a configurable threshold (default 2%) are flagged automatically.</p>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Run reconciliation for a period</span>
-curl -X POST https://gateway.finault.ai/v1/reconcile \
-  -H <span class="string">"Authorization: Bearer fk_xxx"</span> \
-  -F <span class="string">"invoice=@openai-jan-2026.csv"</span> \
-  -d <span class="string">"period=2026-01"</span>
-
-<span class="comment"># Response</span>
-{
-  <span class="string">"status"</span>: <span class="string">"completed"</span>,
-  <span class="string">"match_rate"</span>: <span class="number">0.987</span>,
-  <span class="string">"total_invoiced"</span>: <span class="number">23847.91</span>,
-  <span class="string">"total_metered"</span>: <span class="number">23612.44</span>,
-  <span class="string">"variance"</span>: <span class="number">235.47</span>,
-  <span class="string">"variance_pct"</span>: <span class="number">0.99</span>,
-  <span class="string">"discrepancies"</span>: <span class="number">3</span>,
-  <span class="string">"within_threshold"</span>: <span class="keyword">true</span>
-}</code></pre>
-            </div>
-
-
-            <!-- SDK Installation -->
-            <h2 id="sdk">Install the SDK</h2>
-
-            <div class="lang-tabs" data-group="install">
-                <button class="lang-tab active" data-lang="typescript">TypeScript</button>
-                <button class="lang-tab" data-lang="python">Python</button>
-                <button class="lang-tab" data-lang="go">Go</button>
-                <button class="lang-tab" data-lang="java">Java</button>
-                <button class="lang-tab" data-lang="ruby">Ruby</button>
-            </div>
-
-            <div class="lang-panel active" data-lang="typescript" data-group="install">
-<pre><code>npm install @finault/sdk</code></pre>
-            </div>
-
-            <div class="lang-panel" data-lang="python" data-group="install">
-<pre><code>pip install finault</code></pre>
-            </div>
-
-            <div class="lang-panel" data-lang="go" data-group="install">
-<pre><code>go get github.com/finault/finault-go</code></pre>
-            </div>
-
-            <div class="lang-panel" data-lang="java" data-group="install">
-<pre><code><span class="comment">&lt;!-- Maven --&gt;</span>
-&lt;<span class="keyword">dependency</span>&gt;
-  &lt;<span class="keyword">groupId</span>&gt;ai.finault&lt;/<span class="keyword">groupId</span>&gt;
-  &lt;<span class="keyword">artifactId</span>&gt;finault-java&lt;/<span class="keyword">artifactId</span>&gt;
-  &lt;<span class="keyword">version</span>&gt;4.0.0&lt;/<span class="keyword">version</span>&gt;
-&lt;/<span class="keyword">dependency</span>&gt;</code></pre>
-            </div>
-
-            <div class="lang-panel" data-lang="ruby" data-group="install">
-<pre><code>gem install finault</code></pre>
-            </div>
-
-
-            <!-- Authentication -->
-            <h2 id="auth">Authentication</h2>
-
-            <p>All API requests require a Finault API key. Pass it as a Bearer token in the Authorization header or via the <code>X-Finault-API-Key</code> header.</p>
-
-            <div class="code-block">
-<pre><code><span class="comment"># Option A: Authorization header</span>
-Authorization: Bearer fk_xxxxxxxxxxxx
-
-<span class="comment"># Option B: Custom header</span>
-X-Finault-API-Key: fk_xxxxxxxxxxxx</code></pre>
-            </div>
-
-            <p>Enterprise deployments support SSO via SAML and OIDC with four access roles: admin, finance, analyst, and viewer.</p>
-
-
-            <!-- API Endpoints -->
-            <h2 id="api">API Endpoints</h2>
-
-            <p>Base URL: <code>https://gateway.finault.ai</code></p>
-
-            <h4>Gateway</h4>
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/chat/completions</span>
+                    </div>
                 </div>
-                <p class="endpoint-desc">Proxy to any provider's chat API with cost tracking.</p>
-            </div>
 
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/v1/usage</span>
-                </div>
-                <p class="endpoint-desc">Real-time usage and cost metrics. Filter by cost center, project, model, or time period.</p>
-            </div>
-
-            <h4>Invoices</h4>
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/invoices/analyze</span>
-                </div>
-                <p class="endpoint-desc">Upload and parse an invoice. Returns detected provider, line items, and anomalies.</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/invoices/allocate</span>
-                </div>
-                <p class="endpoint-desc">Run cost allocation on analyzed invoice data using your allocation rules.</p>
-            </div>
-
-            <h4>Close Packs</h4>
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/closepack</span>
-                </div>
-                <p class="endpoint-desc">Generate a close pack from uploaded invoices.</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/closepack/generate</span>
-                </div>
-                <p class="endpoint-desc">Generate a close pack from gateway data (no invoice upload needed).</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/v1/closepack/{close_id}</span>
-                </div>
-                <p class="endpoint-desc">Download a previously generated close pack.</p>
-            </div>
-
-            <h4>Intelligence</h4>
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/v1/anomalies</span>
-                </div>
-                <p class="endpoint-desc">List detected anomalies. Filter by severity, type, cost center.</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/reconcile</span>
-                </div>
-                <p class="endpoint-desc">Run three-way reconciliation between gateway data, rate cards, and invoices.</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/verify</span>
-                </div>
-                <p class="endpoint-desc">Verify close pack integrity against sealed artifacts.</p>
-            </div>
-
-            <h4>Budgets</h4>
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method post">POST</span>
-                    <span class="endpoint-path">/v1/budgets</span>
-                </div>
-                <p class="endpoint-desc">Create a budget with alert thresholds and hard caps.</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/v1/budgets</span>
-                </div>
-                <p class="endpoint-desc">List all budgets and their current utilization.</p>
-            </div>
-
-            <div class="endpoint">
-                <div class="endpoint-header">
-                    <span class="method get">GET</span>
-                    <span class="endpoint-path">/v1/budgets/{budget_id}</span>
-                </div>
-                <p class="endpoint-desc">Get budget details including spend history and alerts.</p>
-            </div>
-
-
-            <!-- Providers -->
-            <h2 id="providers">Supported Providers</h2>
-
-            <p>Finault natively integrates with 8 AI providers. The universal parser normalizes billing from any provider into a unified cost model.</p>
-
-            <table>
-                <thead>
-                    <tr><th>Provider</th><th>Gateway Proxy</th><th>Invoice Parsing</th><th>Rate Cards</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>OpenAI</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>Anthropic</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>Azure OpenAI</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>Google Vertex AI</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>AWS Bedrock</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>Cohere</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>Mistral</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                    <tr><td>Together AI</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
-                </tbody>
-            </table>
-
-
-            <!-- ERP -->
-            <h2 id="erp">ERP Integration</h2>
-
-            <p>Journal entries generated by close packs post directly to your general ledger. Integration is bidirectional &mdash; Finault reads your chart of accounts and fiscal calendar to ensure entries conform to your existing financial structure.</p>
-
-            <table>
-                <thead>
-                    <tr><th>ERP</th><th>Sync Method</th><th>Status</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>QuickBooks Online</td><td>REST API</td><td>Available</td></tr>
-                    <tr><td>QuickBooks Desktop</td><td>Web Connector</td><td>Available</td></tr>
-                    <tr><td>NetSuite</td><td>SuiteTalk REST</td><td>Available</td></tr>
-                    <tr><td>Xero</td><td>REST API</td><td>Available</td></tr>
-                    <tr><td>SAP</td><td>RFC / OData</td><td>Available</td></tr>
-                    <tr><td>Sage</td><td>REST API</td><td>Available</td></tr>
-                </tbody>
-            </table>
-
-
-            <!-- Contact -->
-            <div class="callout info" style="margin-top:3rem">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                <p>Questions? Email <a href="mailto:bernard.cotter@finault.ai">bernard.cotter@finault.ai</a> &middot; Full API spec: <a href="/openapi.yaml">OpenAPI 3.0</a> &middot; <a href="/security">Security &amp; Compliance</a></p>
-            </div>
+                <p style="margin-top: 16px; color: var(--text-secondary); font-size: 14px;">
+                    Check the <code>provider_error</code> field for details. Common issues: expired provider key, insufficient balance, rate limit on provider side, or unsupported parameters. Use the intelligent router to automatically failover to another provider on error.
+                </p>
+            </section>
         </main>
     </div>
 
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Product</h3>
+                    <a href="/pricing">Pricing</a>
+                    <a href="/sdk">SDK</a>
+                    <a href="/security">Security</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Developers</h3>
+                    <a href="/docs">Documentation</a>
+                    <a href="/dashboard">Dashboard</a>
+                    <a href="https://status.finault.ai">Status</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <a href="/security">Security</a>
+                    <a href="/terms">Terms</a>
+                    <a href="/privacy">Privacy</a>
+                </div>
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <a href="/security">Data Processing Agreement</a>
+                    <a href="/security">Security</a>
+                </div>
+            </div>
+            <div class="footer-divider"></div>
+            <div class="footer-bottom">
+                © 2026 Finault. All rights reserved. | Made for builders. | <a href="https://finault.ai" style="color: var(--green); text-decoration: none;">finault.ai</a>
+            </div>
+        </div>
+    </footer>
+
     <script>
-        // Language tab switching
-        document.querySelectorAll('.lang-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                const group = tab.closest('.lang-tabs').dataset.group;
-                const lang = tab.dataset.lang;
+        // Conversion tracking utility for Clarity
+        function trackDocsConversion(eventName, extraData) {
+            if (typeof clarity !== 'undefined' && clarity) {
+                try {
+                    clarity('set', 'conversion_event', eventName);
+                    if (extraData && typeof extraData === 'object') {
+                        Object.keys(extraData).forEach(function(k) {
+                            clarity('set', eventName + '_' + k, extraData[k]);
+                        });
+                    }
+                } catch(e) {}
+            }
+            console.log('[Finault Docs Conversion]', eventName, extraData);
+        }
 
-                // Update tabs in this group
-                tab.closest('.lang-tabs').querySelectorAll('.lang-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
+        // Track page view
+        window.addEventListener('load', function() {
+            trackDocsConversion('docs_page_view');
+        });
 
-                // Update panels in this group
-                document.querySelectorAll(`.lang-panel[data-group="${group}"]`).forEach(p => {
-                    p.classList.toggle('active', p.dataset.lang === lang);
-                });
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+
+        menuBtn?.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+        });
+
+        // Close sidebar when a link is clicked
+        document.querySelectorAll('.sidebar-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                sidebar.classList.remove('open');
             });
         });
 
-        // Highlight active nav link based on scroll
-        const sections = document.querySelectorAll('h2[id], h1[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
+        // Toggle sidebar sections
+        function toggleSection(titleEl) {
+            const section = titleEl.closest('.sidebar-section');
+            section.classList.toggle('collapsed');
+        }
 
-        window.addEventListener('scroll', () => {
-            let current = '';
+        // Keyboard shortcut for search
+        document.addEventListener('keydown', (e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        let searchTimeout;
+
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.toLowerCase();
+            if (query && query.length > 0) {
+                searchTimeout = setTimeout(function() {
+                    trackDocsConversion('docs_search_used', {query: query});
+                }, 1000);
+            }
+            const sections = document.querySelectorAll('.main > section');
+            let hasResults = false;
+
             sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                if (scrollY >= sectionTop - 100) {
-                    current = section.getAttribute('id');
+                const text = section.textContent.toLowerCase();
+                const matches = text.includes(query);
+
+                if (query && !matches) {
+                    section.classList.add('search-hidden');
+                } else {
+                    section.classList.remove('search-hidden');
+                    hasResults = true;
                 }
             });
 
-            navLinks.forEach(link => {
+            // Update sidebar links active state
+            document.querySelectorAll('.sidebar-links a').forEach(link => {
+                const href = link.getAttribute('href').substring(1);
+                const section = document.getElementById(href);
+
+                if (!query) {
+                    link.classList.remove('active');
+                } else if (section && !section.classList.contains('search-hidden')) {
+                    link.classList.add('search-match');
+                } else {
+                    link.classList.remove('search-match');
+                }
+            });
+        });
+
+        // Active section tracking on scroll
+        function updateActiveSection() {
+            const sections = document.querySelectorAll('.main > section');
+            const sidebarLinks = document.querySelectorAll('.sidebar-links a');
+
+            let currentSection = null;
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                if (rect.top < 200) {
+                    currentSection = section.id;
+                }
+            });
+
+            sidebarLinks.forEach(link => {
                 link.classList.remove('active');
-                if (link.getAttribute('href') === '#' + current) {
+                if (link.getAttribute('href').substring(1) === currentSection) {
                     link.classList.add('active');
                 }
+            });
+        }
+
+        window.addEventListener('scroll', updateActiveSection);
+
+        // Copy to clipboard
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('code').textContent;
+            const langClass = Array.from(codeBlock.classList).find(c => c.startsWith('language-')) || 'unknown';
+            const language = langClass.replace('language-', '');
+
+            navigator.clipboard.writeText(code).then(() => {
+                trackDocsConversion('docs_code_copied', {language: language});
+                const originalText = button.textContent;
+                button.textContent = '✓ Copied';
+                button.classList.add('copied');
+
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Highlight Finault headers on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.header-finault').forEach(el => {
+                el.style.background = 'rgba(22, 163, 74, 0.15)';
+                el.style.borderRadius = '3px';
             });
         });
     </script>

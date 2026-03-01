@@ -5,7 +5,10 @@ node_modules/
 # Build output
 dist/
 *.tsbuildinfo
-.next/cache/
+.next/
+dashboard/.next/
+dashboard/out/
+mcp-server/dist/
 
 # Wrangler
 .wrangler/

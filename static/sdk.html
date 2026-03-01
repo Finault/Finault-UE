@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault SDK — One Line. Every AI Call Governed.</title>
+    <meta name="description" content="Install the Finault SDK. Call init(). Your existing OpenAI, Anthropic, and Google code works unchanged — every call is tracked, attributed, and auditable.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #111; --white: #fff; --green: #16a34a; --green-light: #f0fdf4;
+            --green-border: #bbf7d0; --gray-50: #fafafa; --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5; --gray-400: #a3a3a3; --gray-500: #737373;
+            --gray-600: #525252; --gray-900: #171717; --border: #e5e5e5;
+            --code-bg: #0f172a; --code-alt: #1e293b;
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--white); color: var(--gray-900); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+
+        /* Nav */
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 40px; height: 64px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--green); font-weight: 600; }
+        .nav-cta { color: var(--white); background: var(--green); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* Sections */
+        .section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+        .section-border { border-bottom: 1px solid var(--border); }
+
+        /* Hero */
+        .hero { padding: 160px 24px 80px; max-width: 960px; margin: 0 auto; text-align: center; }
+        .hero-badge { display: inline-block; font-size: 12px; font-weight: 600; color: var(--green); background: var(--green-light); border: 1px solid var(--green-border); padding: 4px 14px; border-radius: 999px; margin-bottom: 24px; }
+        .hero h1 { font-size: 48px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 16px; }
+        .hero h1 span { color: var(--green); }
+        .hero p { font-size: 18px; color: var(--gray-500); max-width: 560px; margin: 0 auto 40px; }
+
+        /* Hero code */
+        .hero-code { background: var(--code-bg); border-radius: 12px; padding: 32px; text-align: left; max-width: 520px; margin: 0 auto; position: relative; }
+        .hero-code pre { font-family: 'JetBrains Mono', monospace; font-size: 15px; line-height: 1.8; color: #e2e8f0; margin: 0; }
+        .hero-code .kw { color: #c084fc; }
+        .hero-code .fn { color: #86efac; }
+        .hero-code .str { color: #86efac; }
+        .hero-code .cmt { color: #64748b; }
+        .hero-code .copy-btn { position: absolute; top: 12px; right: 12px; padding: 4px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+        .hero-code .copy-btn:hover { background: rgba(255,255,255,0.15); color: #e2e8f0; }
+
+        /* Step cards */
+        .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+        .step-card { padding: 28px; border: 1px solid var(--border); border-radius: 12px; transition: border-color 0.2s; }
+        .step-card:hover { border-color: var(--green); }
+        .step-num { width: 32px; height: 32px; border-radius: 50%; background: var(--green); color: var(--white); font-size: 14px; font-weight: 700; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .step-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .step-card p { font-size: 14px; color: var(--gray-500); line-height: 1.5; }
+        .step-card code { font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--gray-100); padding: 2px 8px; border-radius: 4px; color: var(--green); }
+
+        /* Tracked metrics */
+        .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px; }
+        .metric { text-align: center; padding: 20px; background: var(--gray-50); border-radius: 10px; border: 1px solid var(--border); }
+        .metric-value { font-size: 20px; font-weight: 700; color: var(--green); margin-bottom: 4px; }
+        .metric-label { font-size: 12px; color: var(--gray-500); font-weight: 500; }
+
+        /* SDK grid */
+        .sdk-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 32px; }
+        .sdk-card { padding: 24px; border: 1px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; gap: 12px; transition: border-color 0.2s; }
+        .sdk-card:hover { border-color: var(--green); }
+        .sdk-card-header { display: flex; justify-content: space-between; align-items: center; }
+        .sdk-lang { font-size: 16px; font-weight: 700; }
+        .sdk-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+        .sdk-badge.available { background: var(--green-light); color: var(--green); }
+        .sdk-badge.coming { background: var(--gray-100); color: var(--gray-500); }
+        .sdk-install { display: flex; gap: 8px; align-items: center; }
+        .sdk-install code { flex: 1; font-family: 'JetBrains Mono', monospace; font-size: 13px; background: var(--code-bg); color: #e2e8f0; padding: 10px 14px; border-radius: 8px; }
+        .sdk-install button { padding: 10px 14px; background: var(--gray-100); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.15s; color: var(--gray-600); }
+        .sdk-install button:hover { border-color: var(--green); color: var(--green); }
+        .sdk-desc { font-size: 13px; color: var(--gray-500); }
+
+        /* Before/After */
+        .comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+        .comp-card { border-radius: 12px; overflow: hidden; }
+        .comp-label { padding: 12px 20px; font-size: 13px; font-weight: 700; letter-spacing: 0.02em; }
+        .comp-before .comp-label { background: #fef2f2; color: #dc2626; }
+        .comp-after .comp-label { background: var(--green-light); color: var(--green); }
+        .comp-code { background: var(--code-bg); padding: 20px; }
+        .comp-code pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; margin: 0; }
+        .comp-code .str { color: #86efac; }
+        .comp-code .cmt { color: #64748b; }
+        .comp-code .kw { color: #c084fc; }
+        .comp-code .del { color: #f87171; text-decoration: line-through; opacity: 0.7; }
+
+        /* Env var */
+        .env-box { background: var(--gray-50); border: 1px solid var(--border); border-radius: 12px; padding: 32px; margin-top: 32px; }
+        .env-box h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+        .env-box p { font-size: 14px; color: var(--gray-500); margin-bottom: 16px; }
+        .env-code { background: var(--code-bg); border-radius: 8px; padding: 16px 20px; font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #86efac; }
+
+        /* Section titles */
+        .s-title { font-size: 28px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 8px; }
+        .s-subtitle { font-size: 15px; color: var(--gray-500); margin-bottom: 0; }
+
+        /* Cross-links */
+        .cross-links { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 32px; }
+        .cross-link { display: block; padding: 20px; border: 1px solid var(--border); border-radius: 12px; text-decoration: none; color: var(--gray-900); transition: border-color 0.2s; }
+        .cross-link:hover { border-color: var(--green); }
+        .cross-link h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .cross-link p { font-size: 13px; color: var(--gray-500); margin: 0; }
+
+        /* CTA */
+        .cta { text-align: center; padding: 80px 24px; background: var(--gray-900); color: var(--white); margin-top: 0; }
+        .cta h2 { font-size: 32px; font-weight: 700; letter-spacing: -0.03em; margin-bottom: 12px; }
+        .cta p { font-size: 16px; color: #a3a3a3; margin-bottom: 32px; }
+        .cta-btn { display: inline-block; padding: 14px 32px; background: var(--green); color: var(--white); text-decoration: none; border-radius: 10px; font-size: 16px; font-weight: 600; transition: opacity 0.2s; }
+        .cta-btn:hover { opacity: 0.9; }
+
+        /* Footer */
+        footer { max-width: 960px; margin: 0 auto; padding: 40px 24px; text-align: center; font-size: 13px; color: var(--gray-400); }
+        footer a { color: var(--gray-400); text-decoration: none; }
+        footer a:hover { color: var(--gray-600); }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .hero h1 { font-size: 32px; }
+            .steps { grid-template-columns: 1fr; }
+            .metrics { grid-template-columns: 1fr; }
+            .sdk-grid { grid-template-columns: 1fr; }
+            .comparison { grid-template-columns: 1fr; }
+            .cross-links { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo">Finault</a>
+        <div class="nav-right">
+            <a href="/app" class="nav-link">Free Audit</a>
+            <a href="/sdk" class="nav-link active">SDK</a>
+            <a href="/security" class="nav-link">Security</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-badge">Understand unit economics</div>
+        <h1>One line.<br><span>Every AI call attributed.</span></h1>
+        <p>Change your base URL to Finault. Your existing OpenAI, Anthropic, and Google code works unchanged — every request is tracked, attributed to customers, and auditable.</p>
+
+        <div class="hero-code">
+            <button class="copy-btn" onclick="copyHero()">Copy</button>
+<pre>client = OpenAI(
+    base_url=<span class="str">"https://api.finault.ai/v1"</span>,
+    default_headers={<span class="str">"X-Finault-API-Key"</span>: <span class="str">"fk_..."</span>}
+)
+<span class="cmt"># That's it. Every AI call is now governed.</span></pre>
+        </div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="section section-border">
+        <h2 class="s-title">Three steps. Zero dependencies.</h2>
+        <p class="s-subtitle">Change your base URL. Add one header. Every AI call is now governed, tracked, and auditable.</p>
+
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3>Get your key</h3>
+                <p>Sign up and generate your Finault API key. Takes 30 seconds.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>Change one line</h3>
+                <p>Point your AI provider's <code>base_url</code> to <code>api.finault.ai</code> and add your Finault key as a header. Your provider key stays the same.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Done</h3>
+                <p>Every request flows through Finault's transparent proxy. Cost, tokens, latency, and audit hashes are added automatically. Your AI responses are unchanged.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cost Attribution Recipes -->
+    <div class="section section-border">
+        <h2 class="s-title">Know your unit economics</h2>
+        <p class="s-subtitle">Tag every request with one simple header. Slice your costs by customer, feature, product line — or all three.</p>
+
+        <div class="steps">
+            <div class="step-card">
+                <div class="step-num">1</div>
+                <h3>Tag by Customer</h3>
+                <p>Know what each customer costs you</p>
+                <div style="background: var(--code-bg); border-radius: 8px; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #86efac; margin-top: 10px; line-height: 1.5;">headers = {"X-Finault-Cost-Center": f"customer:{customer_id}"}</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">2</div>
+                <h3>Tag by Feature</h3>
+                <p>Know what each feature costs you</p>
+                <div style="background: var(--code-bg); border-radius: 8px; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #86efac; margin-top: 10px; line-height: 1.5;">headers = {"X-Finault-Cost-Center": f"feature:summarization"}</div>
+            </div>
+            <div class="step-card">
+                <div class="step-num">3</div>
+                <h3>Tag by Product</h3>
+                <p>Know what each product costs you</p>
+                <div style="background: var(--code-bg); border-radius: 8px; padding: 12px 14px; font-family: 'JetBrains Mono', monospace; font-size: 12px; color: #86efac; margin-top: 10px; line-height: 1.5;">headers = {"X-Finault-Cost-Center": f"product:pro-tier"}</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 32px; padding: 28px; border: 1px solid var(--border); border-radius: 12px; background: var(--gray-50);">
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px;">Compound Tags</h3>
+            <p style="font-size: 14px; color: var(--gray-500); margin-bottom: 12px;">Combine tags for full revenue attribution</p>
+            <div style="background: var(--code-bg); border-radius: 8px; padding: 14px 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #86efac; line-height: 1.6;">headers = {"X-Finault-Cost-Center": f"customer:{cid}|feature:chat|product:enterprise"}</div>
+        </div>
+    </div>
+
+    <!-- What Gets Tracked -->
+    <div class="section section-border">
+        <h2 class="s-title">What gets tracked — automatically</h2>
+        <p class="s-subtitle">Every AI request that flows through the SDK is enriched with cost and audit metadata. No manual headers needed.</p>
+
+        <div class="metrics">
+            <div class="metric"><div class="metric-value">Tokens</div><div class="metric-label">Input + output counted per request</div></div>
+            <div class="metric"><div class="metric-value">Cost</div><div class="metric-label">Real-time $ attribution per call</div></div>
+            <div class="metric"><div class="metric-value">Latency</div><div class="metric-label">Provider response time in ms</div></div>
+            <div class="metric"><div class="metric-value">Model</div><div class="metric-label">Which model, which provider</div></div>
+            <div class="metric"><div class="metric-value">Audit Hash</div><div class="metric-label">SHA-256 proof of every request</div></div>
+            <div class="metric"><div class="metric-value">Cost Center</div><div class="metric-label">Auto-attributed to team/project</div></div>
+        </div>
+    </div>
+
+    <!-- Works with any language -->
+    <div class="section section-border">
+        <h2 class="s-title">Works with any language</h2>
+        <p class="s-subtitle">Finault is a transparent proxy — any HTTP client that talks to an AI provider works. Change the base URL, add the header, done.</p>
+
+        <div class="sdk-grid">
+            <div class="sdk-card">
+                <div class="sdk-card-header">
+                    <span class="sdk-lang">Python</span>
+                    <span class="sdk-badge available">Ready now</span>
+                </div>
+                <div class="sdk-install">
+                    <code>base_url="https://api.finault.ai/v1"</code>
+                </div>
+                <div class="sdk-desc">Works with openai, anthropic, and google-generativeai. Just change the base URL and add your Finault key header.</div>
+            </div>
+            <div class="sdk-card">
+                <div class="sdk-card-header">
+                    <span class="sdk-lang">Node.js</span>
+                    <span class="sdk-badge available">Ready now</span>
+                </div>
+                <div class="sdk-install">
+                    <code>baseURL: "https://api.finault.ai/v1"</code>
+                </div>
+                <div class="sdk-desc">Works with openai, @anthropic-ai/sdk, and @google/generative-ai. Same pattern — swap the URL.</div>
+            </div>
+            <div class="sdk-card">
+                <div class="sdk-card-header">
+                    <span class="sdk-lang">Go / Java / Ruby</span>
+                    <span class="sdk-badge available">Ready now</span>
+                </div>
+                <div class="sdk-install">
+                    <code>https://api.finault.ai/v1</code>
+                </div>
+                <div class="sdk-desc">Any language that makes HTTP requests to AI providers. Point to Finault's URL instead. That's it.</div>
+            </div>
+            <div class="sdk-card">
+                <div class="sdk-card-header">
+                    <span class="sdk-lang">curl / REST</span>
+                    <span class="sdk-badge available">Ready now</span>
+                </div>
+                <div class="sdk-install">
+                    <code>curl https://api.finault.ai/v1/...</code>
+                </div>
+                <div class="sdk-desc">Test from your terminal. Add <code>-H "X-Finault-API-Key: fk_..."</code> and your provider key. See it work in seconds.</div>
+            </div>
+        </div>
+
+        <div style="margin-top:40px; padding:24px; background:var(--gray-50); border-radius:12px; border:1px solid var(--border);">
+            <h3 style="font-size:16px; font-weight:600; margin-bottom:8px;">Auto-instrumentation SDKs — coming soon</h3>
+            <p style="font-size:14px; color:var(--gray-500); line-height:1.6;">We're building installable SDKs for Python (<code>pip install finault</code>) and Node.js (<code>npm install @finault/sdk</code>) that auto-instrument your AI libraries with zero code changes. Join the waitlist to get early access.</p>
+        </div>
+    </div>
+
+    <!-- Before/After -->
+    <div class="section section-border">
+        <h2 class="s-title">Before and after</h2>
+        <p class="s-subtitle">One line changes. Your AI responses are identical. But now every call is governed.</p>
+
+        <div class="comparison">
+            <div class="comp-card comp-before">
+                <div class="comp-label">Before — ungoverned</div>
+                <div class="comp-code">
+<pre><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI(
+    api_key=<span class="str">"sk-..."</span>
+)
+
+resp = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]
+)
+<span class="cmt"># No cost tracking. No audit trail. No attribution.</span></pre>
+                </div>
+            </div>
+            <div class="comp-card comp-after">
+                <div class="comp-label">After — governed by Finault</div>
+                <div class="comp-code">
+<pre><span class="kw">from</span> openai <span class="kw">import</span> OpenAI
+
+client = OpenAI(
+    api_key=<span class="str">"sk-..."</span>,
+    <span class="add">base_url=<span class="str">"https://api.finault.ai/v1"</span>,</span>
+    <span class="add">default_headers={<span class="str">"X-Finault-API-Key"</span>: <span class="str">"fk_..."</span>}</span>
+)
+
+resp = client.chat.completions.create(
+    model=<span class="str">"gpt-4o"</span>,
+    messages=[{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Hello"</span>}]
+)
+<span class="cmt"># Cost tracked. Audit hash attached. GL-attributed.</span></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Environment Variable Mode -->
+    <div class="section section-border">
+        <h2 class="s-title">Config via environment variables</h2>
+        <p class="s-subtitle">Store your Finault key in your environment. Reference it in code. Clean, secure, works everywhere.</p>
+
+        <div class="env-box">
+            <h3>Store your key securely</h3>
+            <p>Add your Finault API key to your environment or <code>.env</code> file. Reference it in your AI client config alongside your provider key.</p>
+            <div class="env-code">FINAULT_API_KEY=fk_live_abc123def456</div>
+        </div>
+
+        <div class="env-box" style="margin-top:16px;">
+            <h3>Works everywhere</h3>
+            <p>Docker, Kubernetes, Lambda, Railway, Vercel, Heroku — anywhere you set env vars.</p>
+            <div class="env-code" style="color:#e2e8f0;">
+                <span style="color:#64748b;"># Docker</span><br>
+                ENV FINAULT_API_KEY=fk_live_abc123def456<br><br>
+                <span style="color:#64748b;"># Kubernetes</span><br>
+                - name: FINAULT_API_KEY<br>
+                &nbsp;&nbsp;valueFrom:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;secretKeyRef: { name: finault, key: api-key }
+            </div>
+        </div>
+    </div>
+
+    <!-- Cross-links -->
+    <div class="section">
+        <h2 class="s-title">Go deeper</h2>
+        <p class="s-subtitle">The SDK is the start. Here's where to go next.</p>
+
+        <div class="cross-links">
+            <a href="/docs#frameworks" class="cross-link">
+                <h4>Framework integrations</h4>
+                <p>LangChain, LlamaIndex, Vercel AI SDK, LiteLLM, OpenTelemetry — see how Finault fits your stack.</p>
+            </a>
+            <a href="/app" class="cross-link">
+                <h4>Run a free audit</h4>
+                <p>Upload your AI billing CSV. Get a close pack with savings, anomalies, and GL journal entries.</p>
+            </a>
+            <a href="/docs" class="cross-link">
+                <h4>Full documentation</h4>
+                <p>API reference, cost attribution headers, supported providers, model pricing.</p>
+            </a>
+            <a href="/security" class="cross-link">
+                <h4>Security</h4>
+                <p>Enterprise-grade security, zero-trust architecture, and cryptographic integrity verification.</p>
+            </a>
+            <a href="/app" class="cross-link">
+                <h4>Free audit tool</h4>
+                <p>Upload your AI billing CSV. Get a close pack with savings, anomalies, and GL journal entries.</p>
+            </a>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+        <h2>Start with one dependency.</h2>
+        <p>Get your API key. Install the SDK. Every AI call governed in under 5 minutes.</p>
+        <a href="/login" class="cta-btn">Get Your API Key</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <a href="/sdk">SDK</a> &nbsp;&middot;&nbsp;
+        <a href="/security">Security</a> &nbsp;&middot;&nbsp;
+        <a href="/pricing">Pricing</a> &nbsp;&middot;&nbsp;
+        <a href="/docs">Docs</a> &nbsp;&middot;&nbsp;
+        <a href="mailto:bernard.cotter@finault.ai">Contact</a>
+        <p style="margin-top:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</p>
+    </footer>
+
+    <script>
+        function copyHero() {
+            var text = "client = OpenAI(\n    base_url=\"https://api.finault.ai/v1\",\n    default_headers={\"X-Finault-API-Key\": \"fk_...\"}\n)\n# That's it. Every AI call is now governed.";
+            navigator.clipboard.writeText(text).then(function() {
+                var btn = document.querySelector('.hero-code .copy-btn');
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+
+        function copyCmd(btn, cmd) {
+            navigator.clipboard.writeText(cmd).then(function() {
+                btn.textContent = 'Copied!';
+                setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+            });
+        }
+
+        // Auth link
+        (function() {
+            var token = localStorage.getItem('finault_token');
+            var el = document.getElementById('navAuthLink');
+            if (token && el) { el.textContent = 'Dashboard'; el.href = 'https://dashboard.finault.ai/dashboard'; }
+        })();
+    </script>
+</body>
+</html>

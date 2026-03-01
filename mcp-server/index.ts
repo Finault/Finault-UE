@@ -631,43 +631,44 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
 
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   const { name, arguments: args } = request.params;
+  const a = (args || {}) as Record<string, any>;
 
   try {
     switch (name) {
       case "get_spend_summary": {
-        const data = await apiCall(`/v1/spend/summary?period=${args?.period || 'month'}&group_by=${args?.group_by || 'cost_center'}`);
+        const data = await apiCall(`/v1/spend/summary?period=${a.period || 'month'}&group_by=${a.group_by || 'cost_center'}`);
         return formatSpendSummary(data);
       }
 
       case "get_team_spend": {
-        const data = await apiCall(`/v1/spend/team/${encodeURIComponent(args?.team || '')}?period=${args?.period || 'month'}`);
+        const data = await apiCall(`/v1/spend/team/${encodeURIComponent(a.team || '')}?period=${a.period || 'month'}`);
         return formatTeamSpend(data);
       }
 
       case "compare_spend": {
         const [data1, data2] = await Promise.all([
-          apiCall(`/v1/spend/summary?period=${args?.period1}`),
-          apiCall(`/v1/spend/summary?period=${args?.period2}`),
+          apiCall(`/v1/spend/summary?period=${a.period1}`),
+          apiCall(`/v1/spend/summary?period=${a.period2}`),
         ]);
-        return formatSpendComparison(data1, data2, args?.period1, args?.period2, args?.breakdown);
+        return formatSpendComparison(data1, data2, a.period1, a.period2, a.breakdown);
       }
 
       case "get_trends": {
-        const data = await apiCall(`/v1/forecast?horizon=${args?.horizon || 'month'}&scenarios=${args?.include_scenarios ?? true}`);
+        const data = await apiCall(`/v1/forecast?horizon=${a.horizon || 'month'}&scenarios=${a.include_scenarios ?? true}`);
         return formatTrends(data);
       }
 
       case "check_budget": {
-        const endpoint = args?.team ? `/v1/budgets?team=${encodeURIComponent(args.team)}` : '/v1/budgets';
+        const endpoint = a.team ? `/v1/budgets?team=${encodeURIComponent(a.team)}` : '/v1/budgets';
         const data = await apiCall(endpoint);
-        return formatBudgetStatus(data, args?.include_projections ?? true);
+        return formatBudgetStatus(data, a.include_projections ?? true);
       }
 
       case "set_budget_alert": {
         return {
           content: [{
             type: "text",
-            text: `## Budget Alert Configured ✅\n\n**Team:** ${args?.team}\n**Threshold:** ${args?.threshold_percent}%\n**Action:** ${args?.action || 'alert'}\n**Channels:** ${(args?.channels || ['email']).join(', ')}\n\nYou'll be notified when ${args?.team} reaches ${args?.threshold_percent}% of their monthly budget.`,
+            text: `## Budget Alert Configured ✅\n\n**Team:** ${a.team}\n**Threshold:** ${a.threshold_percent}%\n**Action:** ${a.action || 'alert'}\n**Channels:** ${(a.channels || ['email']).join(', ')}\n\nYou'll be notified when ${a.team} reaches ${a.threshold_percent}% of their monthly budget.`,
           }],
         };
       }
@@ -676,43 +677,43 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         return {
           content: [{
             type: "text",
-            text: `## Budget Increase Request Submitted 📝\n\n**Team:** ${args?.team}\n**Requested Amount:** $${((args?.requested_budget_cents || 0) / 100).toLocaleString()}\n**Justification:** ${args?.justification}\n\n_Request ID: BIR-${Date.now().toString(36).toUpperCase()}_\n\nYour request has been submitted for approval. You'll receive a notification when it's reviewed.`,
+            text: `## Budget Increase Request Submitted 📝\n\n**Team:** ${a.team}\n**Requested Amount:** $${((a.requested_budget_cents || 0) / 100).toLocaleString()}\n**Justification:** ${a.justification}\n\n_Request ID: BIR-${Date.now().toString(36).toUpperCase()}_\n\nYour request has been submitted for approval. You'll receive a notification when it's reviewed.`,
           }],
         };
       }
 
       case "get_recommendations": {
-        const data = await apiCall(`/v1/optimize/recommendations?focus=${args?.focus || 'all'}&min_savings=${args?.min_savings_cents || 10000}`);
+        const data = await apiCall(`/v1/optimize/recommendations?focus=${a.focus || 'all'}&min_savings=${a.min_savings_cents || 10000}`);
         return formatRecommendations(data);
       }
 
       case "simulate_model_switch": {
         const data = await apiCall('/v1/optimize/simulate', 'POST', {
-          from_model: args?.from_model,
-          to_model: args?.to_model,
-          scope: args?.scope || 'all',
+          from_model: a.from_model,
+          to_model: a.to_model,
+          scope: a.scope || 'all',
         });
-        return formatModelSimulation(args?.from_model, args?.to_model, data);
+        return formatModelSimulation(a.from_model, a.to_model, data);
       }
 
       case "calculate_roi": {
-        const data = await apiCall(`/v1/roi?period=${args?.period || 'month'}${args?.use_case ? `&use_case=${encodeURIComponent(args.use_case)}` : ''}`);
+        const data = await apiCall(`/v1/roi?period=${a.period || 'month'}${a.use_case ? `&use_case=${encodeURIComponent(a.use_case)}` : ''}`);
         return formatROI(data);
       }
 
       case "generate_close_pack": {
         const data = await apiCall('/v1/close-pack/generate', 'POST', {
-          period: args?.period,
-          format: args?.format || 'full',
-          erp_format: args?.erp_format || 'quickbooks',
-          include_attestation: args?.include_attestation ?? true,
+          period: a.period,
+          format: a.format || 'full',
+          erp_format: a.erp_format || 'quickbooks',
+          include_attestation: a.include_attestation ?? true,
         });
         return formatClosePackResult(data);
       }
 
       case "get_attestation": {
-        const data = await apiCall(`/v1/attestation?period=${args?.period}${args?.hash ? `&hash=${args.hash}` : ''}&chain=${args?.include_chain ?? true}`);
-        return formatAttestation(data, args?.period);
+        const data = await apiCall(`/v1/attestation?period=${a.period}${a.hash ? `&hash=${a.hash}` : ''}&chain=${a.include_chain ?? true}`);
+        return formatAttestation(data, a.period);
       }
 
       default:

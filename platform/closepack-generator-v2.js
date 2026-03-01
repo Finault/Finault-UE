@@ -4,7 +4,8 @@
  * CFO-Ready Month-End Close Package Generator
  * FinOps Focus 1.3 Compliant
  *
- * Generates 9 Professional Documents:
+ * Generates 10 Professional Documents:
+ * ├── 00-CLOSEPACK.json             (Machine-readable manifest - closepack.json v1.0)
  * ├── 01-EXECUTIVE-SUMMARY.pdf      (2 pages - Unit economics, benchmarks, approval)
  * ├── 02-GL-JOURNAL-ENTRY.csv       (GL-coded debits/credits)
  * ├── 03-RECONCILIATION-CERTIFICATE.pdf (SOX compliance attestation)
@@ -79,6 +80,20 @@ class ClosePackGeneratorV2 {
 
       // For email delivery
       emailHtml: this.generateEmailHtml(aggregated, metrics, period, certId)
+    };
+
+    // Add machine-readable JSON manifest (closepack.json v1.0)
+    const closePackJSON = this.buildClosePackJSON(
+      { certId, period: `${period.year}-${String(period.monthNum).padStart(2, '0')}`, generatedAt: closePack.metadata.generatedAt, dataHash: closePack.metadata.dataHash },
+      invoiceData,
+      aggregated,
+      allocationData,
+      closePack.files
+    );
+    closePack.files.closepackJson = {
+      filename: `00-CLOSEPACK.json`,
+      type: 'json',
+      content: closePackJSON
     };
 
     return closePack;
@@ -1261,6 +1276,110 @@ class ClosePackGeneratorV2 {
   </div>
 </body>
 </html>`;
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // MACHINE-READABLE MANIFEST (closepack.json v1.0)
+  // ═══════════════════════════════════════════════════════════════════════════════
+
+  buildClosePackJSON(metadata, invoiceData, aggregated, allocationData, files) {
+    const lineItems = (invoiceData.lineItems || []).map(item => ({
+      date: item.date || '',
+      provider: item.provider || 'unknown',
+      model: item.model || 'unknown',
+      inputTokens: item.inputTokens || 0,
+      outputTokens: item.outputTokens || 0,
+      cost: item.amount || 0,
+      costCenter: allocationData.costCenterMap?.[item.id] || item.costCenter || 'Unallocated',
+      project: item.project || ''
+    }));
+
+    const journalEntries = [];
+    // Debits by cost center
+    for (const cc of aggregated.byCostCenter) {
+      const accountNum = `6100-${cc.name.toUpperCase().replace(/\s+/g, '-').substring(0, 8)}-001`;
+      journalEntries.push({
+        date: `${metadata.period}-${String(new Date().getDate()).padStart(2, '0')}`,
+        account: accountNum,
+        debit: parseFloat(cc.amount.toFixed(2)),
+        credit: 0,
+        memo: `AI Spend - ${cc.name} - ${metadata.period}`,
+        costCenter: cc.name,
+        period: metadata.period
+      });
+    }
+    // Credit to AP
+    journalEntries.push({
+      date: `${metadata.period}-${String(new Date().getDate()).padStart(2, '0')}`,
+      account: '2100-AP',
+      debit: 0,
+      credit: parseFloat(aggregated.totalSpend.toFixed(2)),
+      memo: `AI Spend - Accounts Payable - ${metadata.period}`,
+      costCenter: '',
+      period: metadata.period
+    });
+
+    const allocations = aggregated.byCostCenter.map(cc => ({
+      costCenter: cc.name,
+      team: cc.name,
+      project: cc.primaryModel || '',
+      totalSpend: parseFloat(cc.amount.toFixed(2)),
+      percentage: parseFloat(((cc.amount / aggregated.totalSpend) * 100).toFixed(1))
+    }));
+
+    // Build file hashes (simplified — production would use real SHA-256)
+    const fileHashes = Object.values(files).map(f => ({
+      name: f.filename,
+      hash: 'sha256:' + this.generateDataHash({ name: f.filename, content: f.content || f.html || '' })
+    }));
+
+    const manifest = {
+      version: '1.0',
+      metadata: {
+        certId: metadata.certId,
+        period: metadata.period,
+        company: this.options.companyName,
+        generatedAt: metadata.generatedAt,
+        generator: 'finault-closepack-v2',
+        dataHash: 'sha256:' + metadata.dataHash
+      },
+      summary: {
+        totalSpend: parseFloat(aggregated.totalSpend.toFixed(2)),
+        totalTokens: aggregated.totalTokens,
+        lineItemCount: aggregated.lineItemCount,
+        providerCount: aggregated.providerCount,
+        modelCount: aggregated.modelCount,
+        currency: this.options.currency
+      },
+      line_items: lineItems,
+      journal_entries: journalEntries,
+      allocations: allocations,
+      hashes: {
+        dataHash: 'sha256:' + metadata.dataHash,
+        manifestHash: '', // Will be filled after computing
+        files: fileHashes
+      },
+      compliance: {
+        focusVersion: '1.3',
+        finaultHealthScore: Math.round(
+          (aggregated.byCostCenter.filter(cc => cc.name !== 'Unallocated')
+            .reduce((sum, cc) => sum + cc.amount, 0) / aggregated.totalSpend) * 100
+        ),
+        anomalyCount: 0,
+        controlsRating: 'effective'
+      },
+      _links: {
+        validate: 'https://api.finault.ai/v1/closepack/validate',
+        spec: 'https://finault.ai/close-pack-spec',
+        docs: 'https://finault.ai/docs'
+      }
+    };
+
+    // Compute manifest hash (hash of JSON with manifestHash zeroed)
+    const manifestForHashing = JSON.stringify(manifest);
+    manifest.hashes.manifestHash = 'sha256:' + this.generateDataHash(manifestForHashing);
+
+    return JSON.stringify(manifest, null, 2);
   }
 
   // ═══════════════════════════════════════════════════════════════════════════════

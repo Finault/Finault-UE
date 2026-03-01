@@ -1418,6 +1418,427 @@ export default {
       return jsonResponse({ message: 'Stats available', endpoints: ['/v1/stats/summary', '/v1/stats/by-cost-center'], requestId }, 200, request);
     }
 
+    // ──── Invoice Upload API ────
+    if (url.pathname === '/v1/invoices/upload' && request.method === 'POST') {
+      try {
+        const contentType = request.headers.get('content-type') || '';
+        let csvData: string;
+        let fileName: string;
+
+        if (contentType.includes('multipart/form-data')) {
+          const formData = await request.formData();
+          const file = formData.get('file') as File;
+          if (!file) return jsonResponse({ error: 'Missing file in form data', code: 'VALIDATION_ERROR', requestId }, 400, request);
+          csvData = await file.text();
+          fileName = file.name || 'upload.csv';
+        } else {
+          csvData = await request.text();
+          fileName = url.searchParams.get('filename') || 'upload.csv';
+        }
+
+        // Parse CSV — same logic as client-side parser
+        const lines = csvData.trim().split('\n');
+        const headers = lines[0].toLowerCase().split(',');
+        const costIdx = headers.findIndex((h: string) => h.includes('cost') || h.includes('amount'));
+        let projectIdx = headers.findIndex((h: string) => h === 'project_name');
+        if (projectIdx === -1) projectIdx = headers.findIndex((h: string) => h.includes('project_name'));
+        if (projectIdx === -1) projectIdx = headers.findIndex((h: string) => h.includes('project') && !h.includes('project_id'));
+        const modelIdx = headers.findIndex((h: string) => h === 'model');
+        const orgIdx = headers.findIndex((h: string) => h.includes('organization_name'));
+
+        let total = 0;
+        const projectCosts: Record<string, number> = {};
+        const modelCosts: Record<string, number> = {};
+        let detectedCompany: string | null = null;
+
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          const cost = parseFloat((values[costIdx] || '').replace(/[$,]/g, ''));
+          const project = values[projectIdx] || 'Unallocated';
+          const model = modelIdx >= 0 ? (values[modelIdx] || '').trim() : null;
+          if (orgIdx >= 0 && !detectedCompany) {
+            const org = (values[orgIdx] || '').trim();
+            if (org) detectedCompany = org;
+          }
+          if (!isNaN(cost)) {
+            total += cost;
+            projectCosts[project] = (projectCosts[project] || 0) + cost;
+            if (model) modelCosts[model] = (modelCosts[model] || 0) + cost;
+          }
+        }
+
+        // Build allocations using keyword matching
+        const keywordMap: Array<{ keywords: string[]; prefix: string; dept: string; confidence: number }> = [
+          { keywords: ['engineer', 'platform', 'infra', 'devops', 'backend', 'frontend'], prefix: 'ENG', dept: 'Engineering', confidence: 90 },
+          { keywords: ['product', 'feature', 'app', 'ux', 'ui', 'design'], prefix: 'PROD', dept: 'Product', confidence: 88 },
+          { keywords: ['data', 'analytics', 'pipeline', 'etl', 'warehouse'], prefix: 'DATA', dept: 'Data', confidence: 91 },
+          { keywords: ['support', 'customer', 'service', 'help', 'ticket'], prefix: 'SUP', dept: 'Support', confidence: 89 },
+          { keywords: ['ml', 'train', 'model', 'research', 'ai', 'experiment'], prefix: 'ML', dept: 'Research', confidence: 93 },
+          { keywords: ['clinical', 'health', 'medical', 'patient'], prefix: 'CLIN', dept: 'Clinical', confidence: 87 },
+          { keywords: ['sales', 'revenue', 'growth', 'marketing'], prefix: 'REV', dept: 'Revenue', confidence: 86 },
+          { keywords: ['security', 'compliance', 'audit', 'risk'], prefix: 'SEC', dept: 'Security', confidence: 90 },
+        ];
+
+        const allocations = Object.entries(projectCosts).map(([project, cost], idx) => {
+          const lower = project.toLowerCase();
+          let bestMatch: typeof keywordMap[0] | null = null;
+          let bestScore = 0;
+          for (const km of keywordMap) {
+            const score = km.keywords.filter(k => lower.includes(k)).length;
+            if (score > bestScore) { bestScore = score; bestMatch = km; }
+          }
+          const dept = bestMatch && bestScore > 0 ? bestMatch.dept : project;
+          const prefix = bestMatch && bestScore > 0 ? bestMatch.prefix : project.replace(/[^A-Za-z]/g, '').slice(0, 4).toUpperCase() || 'MISC';
+          const confidence = bestMatch && bestScore > 0 ? bestMatch.confidence : 75;
+
+          return {
+            project,
+            costCenter: `${prefix}-${String(idx + 1).padStart(3, '0')}`,
+            department: dept,
+            amount: cost,
+            percentage: (cost / total) * 100,
+            confidence,
+          };
+        }).sort((a, b) => b.amount - a.amount);
+
+        const modelBreakdown = Object.entries(modelCosts)
+          .map(([model, cost]) => ({ model, cost, pct: (cost / total) * 100 }))
+          .sort((a, b) => b.cost - a.cost);
+
+        // Store invoice in Supabase if DB available
+        let invoiceId: string | null = null;
+        try {
+          const invId = crypto.randomUUID();
+          await fetch(`${env.SUPABASE_URL}/rest/v1/invoices`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': env.SUPABASE_SERVICE_KEY,
+              'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+              'Prefer': 'return=minimal',
+            },
+            body: JSON.stringify({
+              id: invId,
+              org_id: auth.orgId,
+              provider: detectedCompany ? 'anthropic' : 'unknown',
+              status: 'parsed',
+              total_amount: total,
+              currency: 'USD',
+              period_start: new Date().toISOString().split('T')[0],
+              period_end: new Date().toISOString().split('T')[0],
+              uploaded_by: auth.userId || null,
+            }),
+          });
+          invoiceId = invId;
+        } catch { /* DB not required */ }
+
+        return jsonResponse({
+          invoice_id: invoiceId,
+          company: detectedCompany || 'Unknown',
+          fileName,
+          totalCost: total,
+          lineItems: lines.length - 1,
+          allocations,
+          modelBreakdown,
+          orgId: auth.orgId,
+          requestId,
+        }, 200, request);
+
+      } catch (e: any) {
+        return jsonResponse({ error: 'Failed to parse invoice: ' + (e.message || 'unknown'), code: 'PARSE_ERROR', requestId }, 400, request);
+      }
+    }
+
+    // ──── Close Pack Generation API ────
+    if (url.pathname === '/v1/close-packs/generate' && request.method === 'POST') {
+      try {
+        const body = await request.json() as Record<string, unknown>;
+        const period = String(body.period || new Date().toISOString().slice(0, 7));
+        const invoiceId = body.invoice_id ? String(body.invoice_id) : null;
+        const priorCloseIdParam = body.prior_close_id ? String(body.prior_close_id) : null;
+
+        // Generate Close ID
+        const bytes = new Uint8Array(6);
+        crypto.getRandomValues(bytes);
+        const newCloseId = 'FIN-CL-' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+        const sealedAt = new Date().toISOString();
+
+        // Compute chain hash
+        const chainInput = (priorCloseIdParam || 'GENESIS') + ':' + newCloseId + ':' + period;
+        const chainHashBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(chainInput));
+        const chainHash = Array.from(new Uint8Array(chainHashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16).toUpperCase();
+
+        // Store close pack in Supabase
+        let stored = false;
+        try {
+          await fetch(`${env.SUPABASE_URL}/rest/v1/close_packs`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': env.SUPABASE_SERVICE_KEY,
+              'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+              'Prefer': 'return=minimal',
+            },
+            body: JSON.stringify({
+              id: crypto.randomUUID(),
+              org_id: auth.orgId,
+              period,
+              close_id: newCloseId,
+              prior_close_id: priorCloseIdParam || null,
+              merkle_root: chainHash,
+              confidence_score: 0.85,
+              total_amount: body.total_amount || 0,
+              artifact_manifest: JSON.stringify({
+                manifest_version: '2.0',
+                close_id: newCloseId,
+                prior_close_id: priorCloseIdParam || null,
+                chain_hash: chainHash,
+              }),
+              sealed_at: sealedAt,
+            }),
+          });
+          stored = true;
+        } catch { /* DB not required for generation */ }
+
+        return jsonResponse({
+          close_id: newCloseId,
+          prior_close_id: priorCloseIdParam || null,
+          chain_hash: chainHash,
+          period,
+          sealed_at: sealedAt,
+          stored,
+          manifest_version: '2.0',
+          lineage: {
+            prior_close_id: priorCloseIdParam || null,
+            verification: priorCloseIdParam
+              ? `SHA-256("${priorCloseIdParam}:${newCloseId}:${period}") = ${chainHash}`
+              : 'GENESIS — first Close Pack in chain',
+          },
+          orgId: auth.orgId,
+          requestId,
+        }, 201, request);
+
+      } catch (e: any) {
+        return jsonResponse({ error: 'Failed to generate close pack: ' + (e.message || 'unknown'), code: 'GENERATION_ERROR', requestId }, 500, request);
+      }
+    }
+
+    // ──── Close Pack List API ────
+    if (url.pathname === '/v1/close-packs' && request.method === 'GET') {
+      try {
+        const res = await fetch(
+          `${env.SUPABASE_URL}/rest/v1/close_packs?org_id=eq.${auth.orgId}&order=sealed_at.desc&limit=50`,
+          {
+            headers: {
+              'apikey': env.SUPABASE_SERVICE_KEY,
+              'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+            },
+          }
+        );
+        const data = await res.json();
+        return jsonResponse({ close_packs: data, orgId: auth.orgId, requestId }, 200, request);
+      } catch {
+        return jsonResponse({ close_packs: [], orgId: auth.orgId, requestId }, 200, request);
+      }
+    }
+
+    // ──── Close Pack Verify API ────
+    if (url.pathname.match(/^\/v1\/close-packs\/[A-Z0-9-]+\/verify$/) && request.method === 'POST') {
+      const closeIdToVerify = url.pathname.split('/')[3];
+      try {
+        const body = await request.json() as Record<string, unknown>;
+        const priorId = String(body.prior_close_id || 'GENESIS');
+        const dataHashInput = String(body.data_hash || '');
+        const expectedChainHash = String(body.chain_hash || '');
+
+        const verifyInput = priorId + ':' + closeIdToVerify + ':' + dataHashInput;
+        const verifyBuffer = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifyInput));
+        const computedHash = Array.from(new Uint8Array(verifyBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 16).toUpperCase();
+
+        const valid = computedHash === expectedChainHash;
+
+        return jsonResponse({
+          close_id: closeIdToVerify,
+          chain_valid: valid,
+          computed_hash: computedHash,
+          expected_hash: expectedChainHash,
+          verification: valid ? 'CHAIN INTEGRITY VERIFIED' : 'CHAIN INTEGRITY FAILED — possible tampering detected',
+          requestId,
+        }, 200, request);
+      } catch (e: any) {
+        return jsonResponse({ error: 'Verification failed: ' + (e.message || 'unknown'), code: 'VERIFY_ERROR', requestId }, 400, request);
+      }
+    }
+
+    // ──── Analytics: Unit Economics API ────
+    if (url.pathname === '/v1/analytics/unit-economics' && request.method === 'POST') {
+      try {
+        const body = await request.json() as Record<string, unknown>;
+        const spend = Number(body.spend || 0);
+        const revenue = Number(body.revenue || 0);
+        const customers = Number(body.customers || 0);
+
+        if (spend <= 0) return jsonResponse({ error: 'spend must be > 0', code: 'VALIDATION_ERROR', requestId }, 400, request);
+
+        const grossMargin = revenue > 0 ? ((revenue - spend) / revenue) * 100 : null;
+        const costPerCustomer = customers > 0 ? spend / customers : null;
+        const revenuePerCustomer = customers > 0 ? revenue / customers : null;
+        const ltvProxy = revenue > 0 ? revenue / spend : null;
+
+        let bessemerTier = 'unknown';
+        if (grossMargin !== null) {
+          if (grossMargin >= 75) bessemerTier = 'saas_like';
+          else if (grossMargin >= 60) bessemerTier = 'shooting_star';
+          else if (grossMargin >= 40) bessemerTier = 'supernova';
+          else if (grossMargin >= 25) bessemerTier = 'below_target';
+          else bessemerTier = 'danger_zone';
+        }
+
+        return jsonResponse({
+          spend,
+          revenue,
+          customers,
+          gross_margin: grossMargin,
+          cost_per_customer: costPerCustomer,
+          revenue_per_customer: revenuePerCustomer,
+          ltv_proxy: ltvProxy,
+          bessemer_tier: bessemerTier,
+          orgId: auth.orgId,
+          requestId,
+        }, 200, request);
+      } catch (e: any) {
+        return jsonResponse({ error: 'Failed: ' + (e.message || 'unknown'), code: 'ANALYTICS_ERROR', requestId }, 400, request);
+      }
+    }
+
+    // ──── ERP Journal Entry Push-Back (QuickBooks) ────
+    if (url.pathname === '/v1/erp/journal-entry' && request.method === 'POST') {
+      try {
+        const body = await request.json() as Record<string, unknown>;
+        const closeIdRef = String(body.close_id || '');
+        const period = String(body.period || '');
+        const totalAmount = Number(body.total_amount || 0);
+        const allocations = (body.allocations || []) as Array<{
+          costCenter: string;
+          department: string;
+          amount: number;
+          percentage: number;
+        }>;
+        const erpProvider = String(body.erp_provider || 'quickbooks_online');
+
+        if (!closeIdRef || allocations.length === 0) {
+          return jsonResponse({ error: 'close_id and allocations[] required', code: 'VALIDATION_ERROR', requestId }, 400, request);
+        }
+
+        // Generate idempotency key from Close ID — posting the same Close ID twice is a no-op
+        const idempotencyKey = `finault-${closeIdRef}`;
+
+        // Build QBO journal entry from Finault allocations
+        const journalLines: Array<Record<string, unknown>> = [];
+
+        // Debit lines — one per cost center
+        for (const alloc of allocations) {
+          journalLines.push({
+            DetailType: 'JournalEntryLineDetail',
+            Amount: Math.round(alloc.amount * 100) / 100,
+            Description: `AI Spend - ${alloc.department} (${alloc.costCenter}) | ${closeIdRef}`,
+            JournalEntryLineDetail: {
+              PostingType: 'Debit',
+              AccountRef: {
+                // Default to a standard expense account — customer maps in onboarding
+                name: `AI Infrastructure - ${alloc.department}`,
+                value: alloc.costCenter,
+              },
+            },
+          });
+        }
+
+        // Credit line — single AP entry for total
+        journalLines.push({
+          DetailType: 'JournalEntryLineDetail',
+          Amount: Math.round(totalAmount * 100) / 100,
+          Description: `AI Provider Invoice - ${closeIdRef}`,
+          JournalEntryLineDetail: {
+            PostingType: 'Credit',
+            AccountRef: {
+              name: 'Accounts Payable - AI Vendors',
+              value: 'AP-AI',
+            },
+          },
+        });
+
+        const journalEntry = {
+          TxnDate: period ? `${period}-01` : new Date().toISOString().split('T')[0],
+          PrivateNote: `Finault AI Close | ${closeIdRef} | Auto-posted`,
+          DocNumber: closeIdRef,
+          Line: journalLines,
+        };
+
+        // Attempt to post to QuickBooks via ERP service
+        // If no QBO credentials configured, return the journal entry for manual import
+        const qbClientId = (env as any).QB_CLIENT_ID;
+        let postResult: Record<string, unknown> | null = null;
+
+        if (qbClientId) {
+          // Real QBO integration available
+          try {
+            const qbModule = await import('../../integrations/erp-quickbooks-service.js');
+            const qb = new qbModule.QuickBooksService({
+              clientId: qbClientId,
+              clientSecret: (env as any).QB_CLIENT_SECRET,
+              realmId: (env as any).QB_REALM_ID,
+              refreshToken: (env as any).QB_REFRESH_TOKEN,
+            });
+            postResult = await qb.postJournalEntry(journalEntry);
+          } catch (e: any) {
+            postResult = { success: false, error: 'QBO post failed: ' + (e.message || 'unknown'), retryable: true };
+          }
+        }
+
+        // Log the posting attempt
+        try {
+          await fetch(`${env.SUPABASE_URL}/rest/v1/audit_events`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'apikey': env.SUPABASE_SERVICE_KEY,
+              'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
+              'Prefer': 'return=minimal',
+            },
+            body: JSON.stringify({
+              org_id: auth.orgId,
+              actor_id: auth.userId || null,
+              action: 'erp.journal_posted',
+              resource_type: 'close_pack',
+              resource_id: closeIdRef,
+              metadata: {
+                erp_provider: erpProvider,
+                total_amount: totalAmount,
+                line_count: journalLines.length,
+                idempotency_key: idempotencyKey,
+                posted: postResult?.success || false,
+              },
+            }),
+          });
+        } catch { /* audit logging best-effort */ }
+
+        return jsonResponse({
+          close_id: closeIdRef,
+          erp_provider: erpProvider,
+          idempotency_key: idempotencyKey,
+          journal_entry: journalEntry,
+          posted: postResult?.success || false,
+          post_result: postResult || { success: false, error: 'No QBO credentials configured — journal entry returned for manual import' },
+          manual_import_available: true,
+          orgId: auth.orgId,
+          requestId,
+        }, postResult?.success ? 201 : 200, request);
+
+      } catch (e: any) {
+        return jsonResponse({ error: 'ERP push failed: ' + (e.message || 'unknown'), code: 'ERP_ERROR', requestId }, 500, request);
+      }
+    }
+
     // Main proxy endpoints — validate, enforce budget, then proxy
     if (url.pathname.startsWith('/v1/chat/completions') || url.pathname.startsWith('/v1/messages')) {
       // ──── FIX #7: Request Input Validation ────

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gateway Performance - Finault</title>
+    <meta name="description" content="Real latency measurements from Finault's production gateway. See actual p50, p95, and p99 performance metrics.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --green-border: #bbf7d0;
+            --red: #dc2626;
+            --yellow: #eab308;
+            --black: #111;
+            --dark: #1a1a1a;
+            --white: #fff;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-700: #404040;
+            --gray-800: #262626;
+            --gray-900: #171717;
+            --border: #e5e5e5;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--white);
+            color: var(--gray-900);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.5;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 64px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; display: flex; align-items: center; gap: 8px; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--green); font-weight: 600; }
+        .nav-cta {
+            padding: 8px 20px; color: var(--white); text-decoration: none;
+            font-size: 14px; font-weight: 600; border-radius: 8px;
+            background: var(--green); transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 160px 24px 60px;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero h1 {
+            font-size: clamp(36px, 5.5vw, 56px);
+            font-weight: 700; letter-spacing: -0.04em;
+            line-height: 1.08; color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+        .hero-sub {
+            font-size: 18px; color: var(--gray-500);
+            max-width: 640px; margin: 0 auto; line-height: 1.65;
+        }
+        .hero-date {
+            font-size: 14px; color: var(--gray-400);
+            margin-top: 16px;
+        }
+
+        /* ===== OVERHEAD SECTION ===== */
+        .overhead-section {
+            padding: 80px 24px;
+            background: var(--green-light);
+            border-bottom: 1px solid var(--green-border);
+        }
+        .overhead-inner {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .overhead-card {
+            background: var(--white);
+            border: 2px solid var(--green);
+            border-radius: 20px;
+            padding: 48px 40px;
+            box-shadow: 0 20px 60px rgba(22,163,74,0.12);
+            text-align: center;
+        }
+        .overhead-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 16px;
+        }
+        .overhead-metric {
+            font-size: 56px;
+            font-weight: 700;
+            color: var(--green);
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 24px;
+        }
+        .overhead-description {
+            font-size: 16px;
+            color: var(--gray-600);
+            line-height: 1.6;
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .overhead-comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+        .comparison-item {
+            text-align: center;
+        }
+        .comparison-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 12px;
+        }
+        .comparison-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.02em;
+        }
+
+        /* ===== ENDPOINT SECTION ===== */
+        .endpoint-section {
+            padding: 80px 24px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .section-title {
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 48px;
+            color: var(--gray-900);
+        }
+        .endpoint-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 32px;
+        }
+        .endpoint-table th {
+            background: var(--gray-50);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            border-bottom: 1px solid var(--border);
+        }
+        .endpoint-table td {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border);
+            font-size: 14px;
+        }
+        .endpoint-name {
+            font-weight: 600;
+            color: var(--gray-900);
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 13px;
+        }
+        .latency-value {
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+        .latency-green { color: var(--green); }
+        .latency-yellow { color: #d97706; }
+        .latency-red { color: var(--red); }
+        .latency-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .badge-green { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+        .badge-yellow { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-red { background: #fee2e2; color: #7f1d1d; border: 1px solid #fecaca; }
+
+        /* ===== METHODOLOGY SECTION ===== */
+        .methodology-section {
+            padding: 80px 24px;
+            background: var(--gray-50);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .methodology-inner {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .methodology-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: start;
+        }
+        .methodology-text h3 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+        .methodology-text p {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+        .methodology-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+        .methodology-list li {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.7;
+            padding-left: 24px;
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .methodology-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--green);
+            font-weight: 700;
+        }
+        .code-block {
+            background: var(--gray-900);
+            color: #6ee7b7;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        /* ===== LIVE TEST SECTION ===== */
+        .livetest-section {
+            padding: 80px 24px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .livetest-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: 20px;
+            padding: 48px 40px;
+            text-align: center;
+        }
+        .livetest-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+        .livetest-description {
+            font-size: 16px;
+            color: var(--gray-600);
+            margin-bottom: 32px;
+        }
+        .livetest-button {
+            display: inline-block;
+            padding: 12px 32px;
+            background: var(--green);
+            color: var(--white);
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+        }
+        .livetest-button:hover { opacity: 0.9; }
+        .livetest-result {
+            margin-top: 32px;
+            padding: 24px;
+            background: var(--gray-50);
+            border-radius: 12px;
+            display: none;
+        }
+        .livetest-result.show { display: block; }
+        .livetest-result-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-bottom: 8px;
+        }
+        .livetest-result-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--green);
+            font-family: 'Monaco', 'Courier New', monospace;
+        }
+        .livetest-result-meta {
+            font-size: 12px;
+            color: var(--gray-500);
+            margin-top: 8px;
+        }
+
+        /* ===== FOOTER ===== */
+        footer {
+            padding: 36px 24px;
+            border-top: 1px solid var(--border);
+            background: var(--white);
+        }
+        .footer-inner {
+            max-width: 960px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-copy { font-size: 13px; color: var(--gray-400); }
+        .footer-links { display: flex; gap: 28px; }
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 13px;
+            transition: color 0.2s;
+        }
+        .footer-links a:hover { color: var(--gray-900); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-link { display: none; }
+            .hero { padding: 120px 20px 40px; }
+            .hero h1 { font-size: 32px; }
+            .hero-sub { font-size: 16px; }
+            .overhead-section { padding: 60px 20px; }
+            .overhead-card { padding: 32px 24px; }
+            .overhead-metric { font-size: 40px; }
+            .overhead-comparison { grid-template-columns: 1fr; gap: 24px; }
+            .endpoint-section { padding: 60px 20px; }
+            .section-title { font-size: 24px; }
+            .methodology-section { padding: 60px 20px; }
+            .methodology-content { grid-template-columns: 1fr; gap: 32px; }
+            .livetest-section { padding: 60px 20px; }
+            .livetest-card { padding: 32px 24px; }
+            .endpoint-table { font-size: 13px; }
+            .endpoint-table th { padding: 12px 16px; }
+            .endpoint-table td { padding: 12px 16px; }
+            .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <a href="/" class="logo">
+            <svg width="20" height="20" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="36" height="36" rx="8" fill="#16a34a"/>
+                <path d="M14 20L18 24L26 16" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Finault
+        </a>
+        <div class="nav-right">
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/sdk" class="nav-link">SDK</a>
+            <a href="/explorer" class="nav-link">Explorer</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a id="navAuthLink" href="/login" class="nav-cta">Login</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero">
+        <h1>Finault Gateway Performance</h1>
+        <p class="hero-sub">Real latency measurements from our production gateway. Transparent metrics you can trust.</p>
+        <p class="hero-date">Last updated: February 26, 2026</p>
+    </section>
+
+    <!-- Gateway Overhead -->
+    <section class="overhead-section">
+        <div class="overhead-inner">
+            <div class="overhead-card">
+                <div class="overhead-label">Gateway Overhead</div>
+                <div class="overhead-metric">~78ms</div>
+                <p class="overhead-description">This is the additional latency Finault adds to your AI API calls, measured consistently across all endpoints. We're transparent about our infrastructure costs.</p>
+                <div class="overhead-comparison">
+                    <div class="comparison-item">
+                        <div class="comparison-label">Median API Response</div>
+                        <div class="comparison-value">110ms</div>
+                    </div>
+                    <div class="comparison-item">
+                        <div class="comparison-label">Network + Gateway</div>
+                        <div class="comparison-value">~32ms</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Endpoint Latency -->
+    <section class="endpoint-section">
+        <h2 class="section-title">Endpoint Latency Metrics</h2>
+        <table class="endpoint-table">
+            <thead>
+                <tr>
+                    <th>Endpoint</th>
+                    <th>Requests</th>
+                    <th>P50</th>
+                    <th>P95</th>
+                    <th>P99</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="endpoint-name">GET /v1/health</span></td>
+                    <td>50</td>
+                    <td><span class="latency-value latency-green">110.92ms</span></td>
+                    <td><span class="latency-value latency-yellow">457.12ms</span></td>
+                    <td><span class="latency-value latency-yellow">699.1ms</span></td>
+                    <td><span class="latency-badge badge-green">Good</span></td>
+                </tr>
+                <tr>
+                    <td><span class="endpoint-name">GET /v1/pricing</span></td>
+                    <td>50</td>
+                    <td><span class="latency-value latency-green">110.39ms</span></td>
+                    <td><span class="latency-value latency-green">168.56ms</span></td>
+                    <td><span class="latency-value latency-green">243.71ms</span></td>
+                    <td><span class="latency-badge badge-green">Excellent</span></td>
+                </tr>
+                <tr>
+                    <td><span class="endpoint-name">POST /v1/closepack/validate</span></td>
+                    <td>50</td>
+                    <td><span class="latency-value latency-green">114.75ms</span></td>
+                    <td><span class="latency-value latency-yellow">427.87ms</span></td>
+                    <td><span class="latency-value latency-yellow">456.71ms</span></td>
+                    <td><span class="latency-badge badge-green">Good</span></td>
+                </tr>
+            </tbody>
+        </table>
+        <p style="font-size: 13px; color: var(--gray-500); line-height: 1.6;">
+            Legend: P50 is the median latency. P95 and P99 show tail latencies. Green indicates excellent performance (<100ms), yellow indicates acceptable performance (100-300ms), and red indicates potential optimization opportunities (>300ms).
+        </p>
+    </section>
+
+    <!-- Methodology -->
+    <section class="methodology-section">
+        <div class="methodology-inner">
+            <h2 class="section-title" style="margin-bottom: 48px; text-align: left;">How We Measure</h2>
+            <div class="methodology-content">
+                <div>
+                    <h3>Measurement Details</h3>
+                    <p>Our benchmark methodology is transparent and reproducible. We run 50 consecutive requests to each production endpoint and measure the complete round-trip latency using curl's timing breakdowns.</p>
+                    <ul class="methodology-list">
+                        <li>50 requests per endpoint, sequential</li>
+                        <li>Measured from US East region</li>
+                        <li>Includes DNS, TCP, TLS, and API time</li>
+                        <li>Real production gateway, not isolated testing</li>
+                        <li>Percentile-based analysis (P50, P95, P99)</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Benchmark Command</h3>
+                    <div class="code-block">curl -w '%{time_total}' \
+  https://api.finault.ai/v1/health
+
+# Timing breakdown:
+# time_namelookup  - DNS lookup
+# time_connect     - TCP connection
+# time_appconnect  - TLS handshake
+# time_starttransfer - First byte
+# time_total       - Complete request</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Test -->
+    <section class="livetest-section">
+        <div class="livetest-card">
+            <h2 class="livetest-title">Live Performance Test</h2>
+            <p class="livetest-description">Run a live test against our production gateway right now to see real-time performance from your location.</p>
+            <button class="livetest-button" id="testButton">Run a Live Test Now</button>
+            <div class="livetest-result" id="testResult">
+                <div class="livetest-result-label">Response Time</div>
+                <div class="livetest-result-value" id="testValue">--</div>
+                <div class="livetest-result-meta" id="testMeta"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 Finault. AI spend governance platform.</span>
+            <div class="footer-links">
+                <a href="/sdk">SDK</a>
+                <a href="/scan">Scan Code</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/docs">Docs</a>
+                <a href="mailto:bernard.cotter@finault.ai">Contact</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Auth link
+    (function() {
+        var token = localStorage.getItem('finault_token');
+        var el = document.getElementById('navAuthLink');
+        if (token && el) {
+            el.textContent = 'Dashboard';
+            el.href = 'https://dashboard.finault.ai/dashboard';
+        }
+    })();
+
+    // Live test functionality
+    (function() {
+        var testButton = document.getElementById('testButton');
+        var testResult = document.getElementById('testResult');
+        var testValue = document.getElementById('testValue');
+        var testMeta = document.getElementById('testMeta');
+
+        testButton.addEventListener('click', async function() {
+            testButton.disabled = true;
+            testButton.textContent = 'Testing...';
+            testResult.classList.remove('show');
+
+            try {
+                var start = performance.now();
+                var response = await fetch('https://api.finault.ai/v1/health', {
+                    method: 'GET',
+                    mode: 'cors',
+                    credentials: 'omit'
+                });
+                var end = performance.now();
+                var latency = Math.round((end - start) * 10) / 10;
+
+                var gatewayLatency = response.headers.get('X-Finault-Latency-Ms');
+
+                testValue.textContent = latency.toFixed(1) + 'ms';
+                if (gatewayLatency) {
+                    testMeta.innerHTML = 'Gateway overhead: ' + gatewayLatency + 'ms';
+                } else {
+                    testMeta.innerHTML = 'Status: ' + response.status + ' OK';
+                }
+                testResult.classList.add('show');
+            } catch (err) {
+                testValue.textContent = 'Error';
+                testMeta.innerHTML = err.message || 'Unable to reach gateway';
+                testResult.classList.add('show');
+            }
+
+            testButton.disabled = false;
+            testButton.textContent = 'Run a Live Test Now';
+        });
+    })();
+    </script>
+</body>
+</html>

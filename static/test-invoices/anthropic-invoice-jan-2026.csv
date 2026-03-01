@@ -1,0 +1,31 @@
+timestamp,organization_id,organization_name,project_id,project_name,api_key_id,api_key_name,model,usage_type,cost_in_usd
+2026-01-02T09:12:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-sonnet,input,4280.00
+2026-01-02T09:12:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-sonnet,output,8920.00
+2026-01-03T14:30:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-opus,input,12450.00
+2026-01-03T14:30:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-opus,output,24800.00
+2026-01-05T08:00:00Z,org_meridian,Meridian Health,proj_data_pipeline,Data Pipeline,key_102,etl-service,claude-3-haiku,input,1890.00
+2026-01-05T08:00:00Z,org_meridian,Meridian Health,proj_data_pipeline,Data Pipeline,key_102,etl-service,claude-3-haiku,output,3420.00
+2026-01-07T11:15:00Z,org_meridian,Meridian Health,proj_research,Research Analytics,key_103,research-team,claude-3-opus,input,8750.00
+2026-01-07T11:15:00Z,org_meridian,Meridian Health,proj_research,Research Analytics,key_103,research-team,claude-3-opus,output,16200.00
+2026-01-10T10:00:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-sonnet,input,5120.00
+2026-01-10T10:00:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-sonnet,output,9840.00
+2026-01-12T16:45:00Z,org_meridian,Meridian Health,proj_internal_tools,Internal Tools,key_104,internal-ops,claude-3-haiku,input,2340.00
+2026-01-12T16:45:00Z,org_meridian,Meridian Health,proj_internal_tools,Internal Tools,key_104,internal-ops,claude-3-haiku,output,4180.00
+2026-01-15T09:30:00Z,org_meridian,Meridian Health,proj_data_pipeline,Data Pipeline,key_102,etl-service,claude-3-sonnet,input,3670.00
+2026-01-15T09:30:00Z,org_meridian,Meridian Health,proj_data_pipeline,Data Pipeline,key_102,etl-service,claude-3-sonnet,output,7250.00
+2026-01-17T13:00:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-opus,input,15600.00
+2026-01-17T13:00:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-opus,output,28400.00
+2026-01-20T08:15:00Z,org_meridian,Meridian Health,proj_research,Research Analytics,key_103,research-team,claude-3-sonnet,input,6780.00
+2026-01-20T08:15:00Z,org_meridian,Meridian Health,proj_research,Research Analytics,key_103,research-team,claude-3-sonnet,output,11500.00
+2026-01-22T10:45:00Z,org_meridian,Meridian Health,proj_internal_tools,Internal Tools,key_104,internal-ops,claude-3-haiku,input,1560.00
+2026-01-22T10:45:00Z,org_meridian,Meridian Health,proj_internal_tools,Internal Tools,key_104,internal-ops,claude-3-haiku,output,2890.00
+2026-01-25T14:20:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-sonnet,input,6240.00
+2026-01-25T14:20:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-sonnet,output,12100.00
+2026-01-27T09:00:00Z,org_meridian,Meridian Health,proj_data_pipeline,Data Pipeline,key_102,etl-service,claude-3-haiku,input,2180.00
+2026-01-27T09:00:00Z,org_meridian,Meridian Health,proj_data_pipeline,Data Pipeline,key_102,etl-service,claude-3-haiku,output,3950.00
+2026-01-28T15:30:00Z,org_meridian,Meridian Health,proj_research,Research Analytics,key_103,research-team,claude-3-opus,input,9200.00
+2026-01-28T15:30:00Z,org_meridian,Meridian Health,proj_research,Research Analytics,key_103,research-team,claude-3-opus,output,17800.00
+2026-01-29T11:00:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-opus,input,7830.00
+2026-01-29T11:00:00Z,org_meridian,Meridian Health,proj_clinical_ai,Clinical AI Assistant,key_101,clinical-prod,claude-3-opus,output,14250.00
+2026-01-30T08:45:00Z,org_meridian,Meridian Health,proj_internal_tools,Internal Tools,key_104,internal-ops,claude-3-sonnet,input,3420.00
+2026-01-30T08:45:00Z,org_meridian,Meridian Health,proj_internal_tools,Internal Tools,key_104,internal-ops,claude-3-sonnet,output,6580.00

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "vj0l9eldil");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The State of AI Cost Governance — Finault Research</title>
+    <meta name="description" content="Enterprise AI spending hit $1.5T in 2025 but 85% of companies can't forecast their AI costs within 10%. A data-driven look at the governance gap — and what it takes to close the books on AI.">
+    <meta property="og:title" content="The State of AI Cost Governance 2026 — Finault">
+    <meta property="og:description" content="85% of enterprises misestimate AI costs by more than 10%. Only 15% can forecast accurately. The governance gap is widening.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://finault.ai/research">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #111;
+            --white: #fff;
+            --green: #16a34a;
+            --green-light: #f0fdf4;
+            --green-border: #bbf7d0;
+            --gray-50: #fafafa;
+            --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5;
+            --gray-300: #d4d4d4;
+            --gray-400: #a3a3a3;
+            --gray-500: #737373;
+            --gray-600: #525252;
+            --gray-900: #171717;
+            --border: #e5e5e5;
+            --red: #dc2626;
+            --red-light: #fef2f2;
+            --amber: #d97706;
+            --amber-light: #fffbeb;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white);
+            color: var(--gray-900);
+            -webkit-font-smoothing: antialiased;
+            line-height: 1.6;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 64px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--gray-900); }
+        .nav-cta {
+            padding: 8px 20px; color: var(--white); text-decoration: none;
+            font-size: 14px; font-weight: 600; border-radius: 8px;
+            background: var(--green); transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* ===== HERO ===== */
+        .hero {
+            padding: 140px 24px 80px;
+            text-align: center;
+            max-width: 780px;
+            margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-block;
+            font-size: 12px; font-weight: 600; letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--green);
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            padding: 6px 16px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-size: clamp(32px, 4.5vw, 48px);
+            font-weight: 700; letter-spacing: -0.035em;
+            line-height: 1.12; color: var(--gray-900);
+            margin-bottom: 20px;
+        }
+        .hero-sub {
+            font-size: 18px; color: var(--gray-500);
+            max-width: 600px; margin: 0 auto 32px; line-height: 1.65;
+        }
+        .hero-meta {
+            font-size: 13px; color: var(--gray-400);
+        }
+
+        /* ===== KEY NUMBERS ===== */
+        .key-numbers {
+            max-width: 1040px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .key-num {
+            padding: 28px 20px;
+            border: 1px solid var(--gray-200);
+            border-radius: 14px;
+            text-align: center;
+        }
+        .key-num-val {
+            font-size: 40px;
+            font-weight: 700;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+        .key-num-val.green { color: var(--green); }
+        .key-num-val.red { color: var(--red); }
+        .key-num-val.amber { color: var(--amber); }
+        .key-num-label {
+            font-size: 13px;
+            color: var(--gray-500);
+            line-height: 1.45;
+        }
+        .key-num-source {
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 8px;
+        }
+
+        /* ===== CONTENT ===== */
+        .content {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 24px 80px;
+        }
+
+        .section-divider {
+            width: 48px;
+            height: 2px;
+            background: var(--green);
+            margin: 0 auto 48px;
+            border-radius: 1px;
+        }
+
+        .content h2 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--gray-900);
+        }
+
+        .content p {
+            font-size: 16px;
+            color: var(--gray-600);
+            line-height: 1.75;
+            margin-bottom: 24px;
+        }
+
+        .content p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Stat callout */
+        .stat-callout {
+            background: var(--gray-50);
+            border-left: 3px solid var(--green);
+            padding: 20px 24px;
+            border-radius: 0 10px 10px 0;
+            margin: 32px 0;
+        }
+        .stat-callout-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+        }
+        .stat-callout-text {
+            font-size: 15px;
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+        .stat-callout-source {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 8px;
+        }
+
+        /* Finding cards */
+        .findings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin: 32px 0;
+        }
+        .finding-card {
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 24px;
+        }
+        .finding-card-num {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 6px;
+        }
+        .finding-card-num.red { color: var(--red); }
+        .finding-card-num.amber { color: var(--amber); }
+        .finding-card-num.green { color: var(--green); }
+        .finding-card-text {
+            font-size: 14px;
+            color: var(--gray-600);
+            line-height: 1.55;
+        }
+        .finding-card-source {
+            font-size: 11px;
+            color: var(--gray-400);
+            margin-top: 10px;
+        }
+
+        /* Inline source */
+        .source {
+            color: var(--gray-400);
+            font-size: 0.85em;
+        }
+
+        /* Section spacing */
+        .section-block {
+            margin-bottom: 64px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 12px;
+        }
+
+        /* CTA Band */
+        .cta-band {
+            background: var(--gray-900);
+            padding: 72px 24px;
+            text-align: center;
+        }
+        .cta-band h2 {
+            font-size: clamp(24px, 3.5vw, 36px);
+            font-weight: 700;
+            color: var(--white);
+            letter-spacing: -0.03em;
+            margin-bottom: 16px;
+        }
+        .cta-band p {
+            font-size: 16px;
+            color: var(--gray-400);
+            max-width: 520px;
+            margin: 0 auto 32px;
+            line-height: 1.65;
+        }
+        .cta-band-buttons {
+            display: flex; gap: 12px;
+            justify-content: center; flex-wrap: wrap;
+        }
+        .btn-primary {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 32px; background: var(--green); color: var(--white);
+            text-decoration: none; font-size: 16px; font-weight: 600;
+            border-radius: 10px; transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(22,163,74,0.25);
+        }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 16px 28px; background: transparent; color: var(--white);
+            text-decoration: none; font-size: 15px; font-weight: 500;
+            border-radius: 10px; border: 1px solid var(--gray-600); transition: border-color 0.2s;
+        }
+        .btn-outline:hover { border-color: var(--gray-400); }
+
+        /* Methodology */
+        .methodology {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 64px 24px;
+        }
+        .methodology h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 12px;
+        }
+        .methodology p {
+            font-size: 14px;
+            color: var(--gray-500);
+            line-height: 1.7;
+        }
+        .source-categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .source-tag {
+            font-size: 12px;
+            color: var(--gray-500);
+            background: var(--gray-100);
+            border: 1px solid var(--gray-200);
+            padding: 4px 12px;
+            border-radius: 6px;
+        }
+
+        /* Footer */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 24px 40px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-inner {
+            max-width: 1200px; margin: 0 auto; width: 100%;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-copy { font-size: 13px; color: var(--gray-400); }
+        .footer-links { display: flex; gap: 28px; }
+        .footer-links a { color: var(--gray-400); text-decoration: none; font-size: 13px; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--gray-900); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-link { display: none; }
+            .key-numbers { grid-template-columns: repeat(2, 1fr); }
+            .findings-grid { grid-template-columns: 1fr; }
+            .hero { padding: 120px 20px 60px; }
+            footer { padding: 24px 20px; }
+            .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+            .footer-links { flex-wrap: wrap; justify-content: center; gap: 16px; }
+        }
+
+        /* ===== SCROLL ANIMATION ===== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(16px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+        <div class="nav-right">
+            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/research" class="nav-link active">Research</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero fade-in">
+        <div class="hero-badge">Finault Research &middot; February 2026</div>
+        <h1>The State of AI Cost Governance</h1>
+        <p class="hero-sub">Enterprise AI spending hit $1.5 trillion in 2025. But 85% of companies can't forecast their AI costs within 10%. Here's what the data says about the governance gap — and what it takes to close the books on AI.</p>
+        <p class="hero-meta">Synthesized from 150+ sources &middot; Gartner, McKinsey, Deloitte, IDC, Forrester, FinOps Foundation</p>
+    </section>
+
+    <!-- Key Numbers -->
+    <div class="key-numbers fade-in">
+        <div class="key-num">
+            <div class="key-num-val green">$1.5T</div>
+            <div class="key-num-label">Global AI spending in 2025, on track to exceed $2T in 2026</div>
+            <div class="key-num-source">Gartner</div>
+        </div>
+        <div class="key-num">
+            <div class="key-num-val red">85%</div>
+            <div class="key-num-label">of enterprises surveyed misestimate AI costs by more than 10%</div>
+            <div class="key-num-source">CIO / Mavvrik survey data</div>
+        </div>
+        <div class="key-num">
+            <div class="key-num-val red">84%</div>
+            <div class="key-num-label">of respondents report AI costs eroding gross margins by 6%+</div>
+            <div class="key-num-source">Mavvrik / Benchmarkit survey (n=372)</div>
+        </div>
+        <div class="key-num">
+            <div class="key-num-val amber">98%</div>
+            <div class="key-num-label">of FinOps practitioners now managing AI spend, up from 31% two years ago</div>
+            <div class="key-num-source">FinOps Foundation</div>
+        </div>
+    </div>
+
+    <div class="content">
+        <div class="section-divider"></div>
+
+        <!-- Section 1: The Scale -->
+        <div class="section-block fade-in">
+            <p class="section-label">The Scale</p>
+            <h2>AI spending is growing faster than any technology category in history.</h2>
+            <p>In a single quarter (Q2 2025), organizations spent $82 billion on compute and storage hardware for AI deployments — a 166% year-over-year increase. The AI infrastructure market is on track to reach $758 billion by 2029.</p>
+            <p>At the enterprise level, AI now accounts for 30% of overall IT budget increases despite total IT budgets rising only 1.8%. The average monthly enterprise spend on AI rose to $85,521 in 2025, with the proportion investing over $100,000 per month more than doubling from 20% to 45% in a single year. <span class="source">IDC, ISG, CloudZero (n=500)</span></p>
+
+            <div class="stat-callout">
+                <div class="stat-callout-number">$400B</div>
+                <div class="stat-callout-text">Combined 2025 AI capex from Amazon ($125B), Microsoft ($91B), Google ($75B), and Meta ($60B). These investments create cascading cost pressures throughout enterprise AI supply chains.</div>
+                <div class="stat-callout-source">Company earnings reports, 2025</div>
+            </div>
+        </div>
+
+        <!-- Section 2: The Forecasting Crisis -->
+        <div class="section-block fade-in">
+            <p class="section-label">The Forecasting Crisis</p>
+            <h2>Enterprises are spending billions they can't predict.</h2>
+            <p>The most alarming finding across all research is the near-total inability of enterprises to forecast AI costs. Only 15% can forecast within &plusmn;10%. Fully 80% miss forecasts by more than 25%, and nearly a quarter are off by 50% or more. <span class="source">Mavvrik / Benchmarkit (n=372)</span></p>
+            <p>The root cause: AI introduces fundamentally new cost units — tokens, GPU hours, inference jobs — where minor usage changes can spike spend by 100x compared to traditional compute. Unlike predictable SaaS licensing, consumption-based AI pricing creates volatile cost profiles that existing budgeting tools can't model.</p>
+
+            <div class="findings-grid">
+                <div class="finding-card">
+                    <div class="finding-card-num red">72%</div>
+                    <div class="finding-card-text">of AI investments are actively destroying value rather than creating it</div>
+                    <div class="finding-card-source">Larridin (n=350 finance &amp; IT leaders)</div>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-card-num red">42%</div>
+                    <div class="finding-card-text">of companies abandoned most AI projects in 2025, up from 17% the prior year</div>
+                    <div class="finding-card-source">S&amp;P Global</div>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-card-num amber">&lt;1%</div>
+                    <div class="finding-card-text">of executives report achieving significant ROI from AI investments</div>
+                    <div class="finding-card-source">Forbes AI Study 2025</div>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-card-num amber">10%</div>
+                    <div class="finding-card-text">of CFOs fully trust their enterprise data for AI cost decisions</div>
+                    <div class="finding-card-source">RGP CFO Survey (n=200)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Hidden Costs -->
+        <div class="section-block fade-in">
+            <p class="section-label">Hidden Cost Drivers</p>
+            <h2>Tokens aren't the problem. Everything else is.</h2>
+            <p>One of the most counterintuitive findings: token costs are not the primary driver of AI spending. Data platform usage (56%), network access (49%), GPU charges (45%), and storage (41%) all outrank token costs, which came in fifth at 37%. Organizations solely tracking token usage are governing less than half the actual AI cost surface. <span class="source">Mavvrik / Benchmarkit (n=372)</span></p>
+            <p>GPU cloud prices have seen dramatic volatility — AWS H100 instances dropped from ~$7/hour to $3.90 after a 44% price cut in June 2025, while output tokens remain 3–8x more expensive than input tokens across providers. True cost governance must span compute, storage, APIs, data pipelines, network traffic, and specialized hardware.</p>
+        </div>
+
+        <!-- Section 4: Shadow AI -->
+        <div class="section-block fade-in">
+            <p class="section-label">Shadow AI</p>
+            <h2>The fastest-growing financial blind spot in the enterprise.</h2>
+            <p>Up to 58% of employees use AI productivity tools daily, with almost half uploading sensitive company data to unauthorized platforms. Spending on AI-native applications rose 75% in 2024, averaging $398,271 per organization. Shadow AI incidents increase the cost of a data breach by $670,000 per incident. <span class="source">KPMG, Zylo, IBM Cost of Data Breach 2025</span></p>
+
+            <div class="stat-callout">
+                <div class="stat-callout-number">83%</div>
+                <div class="stat-callout-text">of enterprises report employees installing AI systems faster than security teams can track. 84% discover more AI tools than expected during audits. At one major insurance company, 27 unauthorized AI tools were discovered in just four days.</div>
+                <div class="stat-callout-source">Larridin State of Enterprise AI 2025</div>
+            </div>
+        </div>
+
+        <!-- Section 5: Regulatory Wave -->
+        <div class="section-block fade-in">
+            <p class="section-label">The Regulatory Tsunami</p>
+            <h2>Compliance deadlines are compressing. The cost of inaction is existential.</h2>
+            <p>The EU AI Act entered enforcement in phases starting February 2025, with high-risk AI system requirements hitting August 2026. Penalties reach up to 7% of global revenue. Over 550 AI-related bills have been introduced across 45+ U.S. states, and 65+ nations have published national AI strategies. <span class="source">EU AI Act, Stanford AI Index 2025</span></p>
+            <p>Compliance costs are significant: large enterprises face $8–15 million for high-risk system compliance; mid-size companies, $2–5 million initially. The AI governance market is projected to reach $7.4 billion by 2030 at a 51% CAGR — reflecting the shift from voluntary oversight to mandatory regulatory infrastructure. <span class="source">NMSC, Greenberg Traurig</span></p>
+        </div>
+
+        <!-- Section 6: Governance Maturity -->
+        <div class="section-block fade-in">
+            <p class="section-label">The Governance Gap</p>
+            <h2>Everyone has AI in production. Almost no one governs it.</h2>
+            <p>80% of enterprises have 50+ GenAI use cases in pipeline, but governance remains critically immature. Only 1% believe they've reached AI maturity. Only 1.5% of organizations believe they have adequate governance headcount. 80% report no tangible EBIT impact from GenAI. <span class="source">McKinsey, IAPP, ModelOp AI Governance Benchmark</span></p>
+
+            <div class="findings-grid">
+                <div class="finding-card">
+                    <div class="finding-card-num amber">6–18 mo</div>
+                    <div class="finding-card-text">from intake to production for 56% of organizations — 44% say governance is too slow</div>
+                    <div class="finding-card-source">AI Governance Benchmark Report</div>
+                </div>
+                <div class="finding-card">
+                    <div class="finding-card-num red">1 in 5</div>
+                    <div class="finding-card-text">companies has a mature governance model for autonomous AI agents</div>
+                    <div class="finding-card-source">Deloitte (n=3,235 leaders, 24 countries)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 7: The Market Opportunity -->
+        <div class="section-block fade-in">
+            <p class="section-label">The Market Opportunity</p>
+            <h2>Three markets are converging into one.</h2>
+            <p>Cloud FinOps ($14.9B → $26.9B by 2030), AI governance ($940M → $7.4B by 2030), and enterprise financial controls are converging into a single discipline: AI financial governance. No existing player occupies the intersection. <span class="source">MarketsandMarkets, NMSC, Grand View Research</span></p>
+            <p>Traditional FinOps tools (CloudZero, Datadog, Flexera) focus on cloud cost optimization but lack AI-specific cost attribution, compliance frameworks, and ERP integration. AI governance platforms (ModelOp, Credo AI, IBM) focus on model risk and ethics but can't answer the CFO's fundamental question: what did we spend on AI, and what value did it create?</p>
+            <p>No platform currently combines invoice parsing, inference-level cost attribution, cryptographic audit trails, FOCUS 1.3 compliance, and bidirectional ERP integration. The most mature organizations are building this capability in-house; the rest are waiting for the category to form.</p>
+        </div>
+    </div>
+
+    <!-- CTA Band -->
+    <div class="cta-band fade-in">
+        <h2>See what a governed AI close looks like.</h2>
+        <p>Upload a billing CSV and get back a CFO-ready close pack — journal entries, reconciliation, and a cryptographically sealed audit certificate. In your browser. Free.</p>
+        <div class="cta-band-buttons">
+            <a href="/audit" class="btn-primary">
+                Run Your Free Audit
+                <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+            </a>
+            <a href="/close-pack" class="btn-outline">View Example Close Pack</a>
+        </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="methodology fade-in">
+        <h3>Methodology &amp; Sources</h3>
+        <p>This analysis synthesizes findings from 150+ credible sources published between 2024 and February 2026. Sources include primary enterprise surveys (sample sizes noted inline), analyst forecasts, regulatory texts, and practitioner research. Where multiple sources report on the same metric, we cite the most methodologically rigorous. Survey-based findings are labeled with sample sizes where available; industry estimates and forecasts reflect the consensus range across multiple analyst firms. All figures represent the latest available data at time of publication. This is a living document updated quarterly.</p>
+        <p style="margin-top:8px;font-size:12px;color:var(--gray-400);">Disclosure: Finault is a participant in the AI cost governance market. This research reflects our honest synthesis of publicly available data and is intended to inform, not to sell. Where our analysis or commentary appears, it is clearly distinguished from third-party research findings.</p>
+        <div class="source-categories">
+            <span class="source-tag">Gartner</span>
+            <span class="source-tag">McKinsey</span>
+            <span class="source-tag">Deloitte</span>
+            <span class="source-tag">IDC</span>
+            <span class="source-tag">Forrester</span>
+            <span class="source-tag">FinOps Foundation</span>
+            <span class="source-tag">Mavvrik / Benchmarkit</span>
+            <span class="source-tag">CloudZero</span>
+            <span class="source-tag">Larridin</span>
+            <span class="source-tag">S&amp;P Global</span>
+            <span class="source-tag">IBM</span>
+            <span class="source-tag">KPMG</span>
+            <span class="source-tag">IAPP</span>
+            <span class="source-tag">EU AI Act</span>
+            <span class="source-tag">Stanford AI Index</span>
+            <span class="source-tag">Forbes</span>
+            <span class="source-tag">RGP</span>
+            <span class="source-tag">NMSC</span>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 Finault. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="/security">Security</a>
+                <a href="/docs">Docs</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/research">Research</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+    // Nav auth state
+    (function() {
+        var token = localStorage.getItem('finault_token');
+        var link = document.getElementById('navAuthLink');
+        if (token && link) {
+            link.textContent = 'Dashboard';
+            link.href = '/dashboard';
+        }
+    })();
+
+    // Scroll-triggered fade-in
+    (function() {
+        if (!('IntersectionObserver' in window)) {
+            document.querySelectorAll('.fade-in').forEach(function(el) { el.classList.add('visible'); });
+            return;
+        }
+        var observer = new IntersectionObserver(function(entries) {
+            entries.forEach(function(entry) {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.fade-in').forEach(function(el) { observer.observe(el); });
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "name": "@finault/sdk",
+  "version": "1.0.0",
+  "description": "Official Finault SDK for Node.js - AI Cost Governance API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write src",
+    "prepublish": "npm run build",
+    "prepush": "npm run lint && npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finault/finault-node.git"
+  },
+  "keywords": [
+    "finault",
+    "ai",
+    "cost",
+    "governance",
+    "api",
+    "sdk"
+  ],
+  "author": "Finault <support@finault.ai>",
+  "license": "MIT",
+  "homepage": "https://finault.ai",
+  "bugs": {
+    "url": "https://github.com/finault/finault-node/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "prettier": "^3.0.0",
+    "ts-jest": "^29.1.0",
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {}
+}

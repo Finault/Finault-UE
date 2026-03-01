@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Close Pack Spec (closepack.json)</title>
+    <meta name="description" content="The open standard for AI financial close. A machine-readable JSON manifest in every Close Pack. ERPs ingest it. Auditors verify it. Your code validates it.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #111; --white: #fff; --green: #16a34a; --green-light: #f0fdf4;
+            --green-border: #bbf7d0; --gray-50: #fafafa; --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5; --gray-400: #a3a3a3; --gray-500: #737373;
+            --gray-600: #525252; --gray-900: #171717; --border: #e5e5e5;
+            --code-bg: #0f172a; --code-alt: #1e293b;
+            --blue: #2563eb; --purple: #7c3aed; --amber: #d97706;
+        }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--white); color: var(--gray-900); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+
+        /* Nav */
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 40px; height: 64px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--green); font-weight: 600; }
+        .nav-cta { color: var(--white); background: var(--green); padding: 8px 20px; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; transition: opacity 0.2s; }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* Layout */
+        .section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+        .section-border { border-bottom: 1px solid var(--border); }
+        .section-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--green); margin-bottom: 12px; }
+        .section h2 { font-size: 32px; font-weight: 800; letter-spacing: -0.03em; margin-bottom: 12px; }
+        .section h2 span { color: var(--green); }
+        .section p.desc { font-size: 16px; color: var(--gray-500); max-width: 640px; margin-bottom: 40px; }
+
+        /* Hero */
+        .hero { padding: 160px 24px 80px; max-width: 960px; margin: 0 auto; text-align: center; }
+        .hero-badge { display: inline-block; font-size: 12px; font-weight: 600; color: var(--green); background: var(--green-light); border: 1px solid var(--green-border); padding: 4px 14px; border-radius: 999px; margin-bottom: 24px; }
+        .hero h1 { font-size: 48px; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 16px; }
+        .hero h1 span { color: var(--green); }
+        .hero p { font-size: 18px; color: var(--gray-500); max-width: 600px; margin: 0 auto 40px; }
+
+        /* Cards */
+        .card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 32px; }
+        .card { padding: 28px; border: 1px solid var(--border); border-radius: 12px; transition: border-color 0.2s; }
+        .card:hover { border-color: var(--green); }
+        .card-icon { width: 40px; height: 40px; background: var(--green-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--green); }
+        .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .card p { font-size: 14px; color: var(--gray-500); line-height: 1.5; }
+
+        /* Schema table */
+        .schema-section { margin-bottom: 40px; }
+        .schema-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+        .schema-name code { font-family: 'JetBrains Mono', monospace; font-size: 15px; color: var(--green); background: var(--green-light); padding: 2px 10px; border-radius: 6px; }
+        .schema-desc { font-size: 14px; color: var(--gray-500); margin-bottom: 16px; }
+        .field-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        .field-table th { text-align: left; padding: 10px 12px; background: var(--gray-50); border-bottom: 2px solid var(--border); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500); }
+        .field-table td { padding: 10px 12px; border-bottom: 1px solid var(--gray-100); vertical-align: top; }
+        .field-table td:first-child { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--green); white-space: nowrap; }
+        .field-table td:nth-child(2) { font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--gray-400); }
+        .field-table .required { color: var(--amber); font-size: 11px; font-weight: 600; }
+
+        /* Code block */
+        .code-block { background: var(--code-bg); border-radius: 12px; padding: 24px; overflow-x: auto; margin: 24px 0; position: relative; }
+        .code-block pre { font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.7; color: #e2e8f0; margin: 0; white-space: pre; }
+        .code-block .kw { color: #c084fc; }
+        .code-block .str { color: #86efac; }
+        .code-block .num { color: #fbbf24; }
+        .code-block .cmt { color: #64748b; }
+        .code-block .prop { color: #93c5fd; }
+        .code-label { font-size: 11px; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+        .copy-btn { position: absolute; top: 12px; right: 12px; padding: 4px 12px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; color: #94a3b8; font-size: 11px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+        .copy-btn:hover { background: rgba(255,255,255,0.15); color: #e2e8f0; }
+
+        /* Validator */
+        .validator { margin-top: 32px; }
+        .validator textarea { width: 100%; min-height: 200px; padding: 16px; font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.6; border: 1px solid var(--border); border-radius: 12px; resize: vertical; color: var(--gray-900); }
+        .validator textarea:focus { outline: none; border-color: var(--green); }
+        .validator textarea::placeholder { color: var(--gray-400); }
+        .val-actions { display: flex; gap: 12px; margin-top: 12px; align-items: center; }
+        .val-btn { padding: 12px 28px; background: var(--green); color: var(--white); border: none; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+        .val-btn:hover { opacity: 0.9; }
+        .val-sample { padding: 12px 20px; background: var(--white); color: var(--green); border: 1px solid var(--green); border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .val-sample:hover { background: var(--green-light); }
+        .val-result { margin-top: 20px; padding: 20px; border-radius: 12px; display: none; }
+        .val-result.valid { background: var(--green-light); border: 1px solid var(--green-border); }
+        .val-result.invalid { background: #fef2f2; border: 1px solid #fecaca; }
+        .val-result h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+        .val-result.valid h4 { color: var(--green); }
+        .val-result.invalid h4 { color: #dc2626; }
+        .val-result ul { list-style: none; padding: 0; }
+        .val-result li { font-size: 13px; color: var(--gray-600); padding: 4px 0; padding-left: 20px; position: relative; }
+        .val-result li::before { content: ''; position: absolute; left: 0; top: 10px; width: 8px; height: 8px; border-radius: 50%; }
+        .val-result.valid li::before { background: var(--green); }
+        .val-result.invalid li::before { background: #dc2626; }
+
+        /* ERP cards */
+        .erp-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 32px; }
+        .erp-card { padding: 24px; border: 1px solid var(--border); border-radius: 12px; text-align: center; transition: border-color 0.2s; }
+        .erp-card:hover { border-color: var(--green); }
+        .erp-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+        .erp-card p { font-size: 13px; color: var(--gray-500); margin-bottom: 12px; }
+        .erp-card code { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: var(--gray-100); padding: 4px 8px; border-radius: 4px; color: var(--gray-600); }
+
+        /* CTA */
+        .cta { text-align: center; padding: 80px 24px; background: var(--gray-50); border-top: 1px solid var(--border); }
+        .cta h2 { font-size: 28px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.03em; }
+        .cta p { font-size: 16px; color: var(--gray-500); margin-bottom: 28px; }
+        .cta-btn { display: inline-block; padding: 14px 32px; background: var(--green); color: var(--white); border-radius: 10px; text-decoration: none; font-size: 16px; font-weight: 600; transition: opacity 0.2s; }
+        .cta-btn:hover { opacity: 0.9; }
+        .cta-secondary { display: inline-block; margin-left: 16px; padding: 14px 32px; border: 1px solid var(--border); color: var(--gray-600); border-radius: 10px; text-decoration: none; font-size: 16px; font-weight: 500; transition: all 0.2s; }
+        .cta-secondary:hover { border-color: var(--green); color: var(--green); }
+
+        /* API endpoint */
+        .api-block { background: var(--gray-50); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-top: 24px; }
+        .api-method { display: inline-block; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 6px; background: var(--green); color: var(--white); margin-right: 8px; }
+        .api-path { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: var(--gray-600); }
+        .api-desc { font-size: 14px; color: var(--gray-500); margin-top: 12px; }
+
+        /* Footer */
+        footer { padding: 32px 24px; text-align: center; border-top: 1px solid var(--border); font-size: 13px; color: var(--gray-400); }
+        footer a { color: var(--gray-500); text-decoration: none; margin: 0 8px; }
+        footer a:hover { color: var(--green); }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 16px; }
+            .nav-right { gap: 16px; }
+            .hero h1 { font-size: 32px; }
+            .card-grid { grid-template-columns: 1fr; }
+            .erp-grid { grid-template-columns: repeat(2, 1fr); }
+            .field-table { font-size: 12px; }
+            .code-block { padding: 16px; }
+            .code-block pre { font-size: 11px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <a href="/" class="logo">Finault</a>
+        <div class="nav-right">
+            <a href="/audit" class="nav-link">Free Audit</a>
+            <a href="/sdk" class="nav-link">SDK</a>
+            <a href="/scan" class="nav-link">Scan Code</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/explorer" class="nav-link">Explorer</a>
+            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <div class="hero">
+        <div class="hero-badge">closepack.json v1.0</div>
+        <h1>The Open Standard for <span>AI Financial Close</span></h1>
+        <p>A machine-readable JSON manifest in every Close Pack. ERPs ingest it. Auditors verify it. Your code validates it.</p>
+    </div>
+
+    <!-- Why -->
+    <div class="section section-border">
+        <p class="section-label">Why closepack.json</p>
+        <h2>PDFs are for humans. <span>JSON is for systems.</span></h2>
+        <p class="desc">Every Close Pack now includes a structured manifest that accounting software, audit tools, and FinOps platforms can consume directly.</p>
+        <div class="card-grid">
+            <div class="card">
+                <div class="card-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                </div>
+                <h3>ERP Import</h3>
+                <p>NetSuite, Xero, QuickBooks, and Sage can ingest journal entries directly from the JSON. No rekeying. No CSV wrangling. Auto-post to your GL.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                </div>
+                <h3>Audit Verification</h3>
+                <p>SHA-256 hash chain seals every line item, journal entry, and file in the pack. Auditors can verify integrity without opening a single document.</p>
+            </div>
+            <div class="card">
+                <div class="card-icon">
+                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                </div>
+                <h3>Webhook Delivery</h3>
+                <p>Configure a webhook and Finault POSTs the closepack.json to your endpoint when a pack is generated. Push it into Slack, Zapier, or your ERP automatically.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schema Reference -->
+    <div class="section section-border" id="schema">
+        <p class="section-label">Schema Reference</p>
+        <h2>Six sections. <span>One file.</span></h2>
+        <p class="desc">The closepack.json schema is versioned and designed for backward-compatible evolution. All fields below are present in every Close Pack.</p>
+
+        <!-- metadata -->
+        <div class="schema-section">
+            <div class="schema-name"><code>metadata</code></div>
+            <div class="schema-desc">Identity and provenance of this Close Pack.</div>
+            <table class="field-table">
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>certId</td><td>string</td><td>Unique certificate ID (e.g. <code>FIN-2026-01-A7B3C9</code>) <span class="required">REQUIRED</span></td></tr>
+                <tr><td>period</td><td>string</td><td>Accounting period in YYYY-MM format <span class="required">REQUIRED</span></td></tr>
+                <tr><td>company</td><td>string</td><td>Organization name <span class="required">REQUIRED</span></td></tr>
+                <tr><td>generatedAt</td><td>string</td><td>ISO 8601 timestamp of generation <span class="required">REQUIRED</span></td></tr>
+                <tr><td>generator</td><td>string</td><td>Generator identifier (e.g. <code>finault-closepack-v2</code>)</td></tr>
+                <tr><td>dataHash</td><td>string</td><td>SHA-256 hash of the source invoice data <span class="required">REQUIRED</span></td></tr>
+            </table>
+        </div>
+
+        <!-- summary -->
+        <div class="schema-section">
+            <div class="schema-name"><code>summary</code></div>
+            <div class="schema-desc">Aggregate totals for the period.</div>
+            <table class="field-table">
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>totalSpend</td><td>number</td><td>Total AI spend in USD <span class="required">REQUIRED</span></td></tr>
+                <tr><td>totalTokens</td><td>integer</td><td>Total tokens consumed (input + output) <span class="required">REQUIRED</span></td></tr>
+                <tr><td>lineItemCount</td><td>integer</td><td>Number of invoice line items</td></tr>
+                <tr><td>providerCount</td><td>integer</td><td>Distinct AI providers</td></tr>
+                <tr><td>modelCount</td><td>integer</td><td>Distinct models used</td></tr>
+                <tr><td>currency</td><td>string</td><td>ISO 4217 currency code (default: <code>USD</code>) <span class="required">REQUIRED</span></td></tr>
+            </table>
+        </div>
+
+        <!-- line_items -->
+        <div class="schema-section">
+            <div class="schema-name"><code>line_items[]</code></div>
+            <div class="schema-desc">Every invoice line item with full cost attribution.</div>
+            <table class="field-table">
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>date</td><td>string</td><td>Usage date (YYYY-MM-DD) <span class="required">REQUIRED</span></td></tr>
+                <tr><td>provider</td><td>string</td><td>AI provider (openai, anthropic, google, azure, bedrock) <span class="required">REQUIRED</span></td></tr>
+                <tr><td>model</td><td>string</td><td>Model identifier <span class="required">REQUIRED</span></td></tr>
+                <tr><td>inputTokens</td><td>integer</td><td>Input/prompt tokens</td></tr>
+                <tr><td>outputTokens</td><td>integer</td><td>Output/completion tokens</td></tr>
+                <tr><td>cost</td><td>number</td><td>Cost in USD <span class="required">REQUIRED</span></td></tr>
+                <tr><td>costCenter</td><td>string</td><td>Cost center or department</td></tr>
+                <tr><td>project</td><td>string</td><td>Project or feature tag</td></tr>
+            </table>
+        </div>
+
+        <!-- journal_entries -->
+        <div class="schema-section">
+            <div class="schema-name"><code>journal_entries[]</code></div>
+            <div class="schema-desc">GL-ready debit/credit pairs for your accounting system.</div>
+            <table class="field-table">
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>date</td><td>string</td><td>Journal entry date <span class="required">REQUIRED</span></td></tr>
+                <tr><td>account</td><td>string</td><td>GL account code <span class="required">REQUIRED</span></td></tr>
+                <tr><td>debit</td><td>number</td><td>Debit amount (0 if credit)</td></tr>
+                <tr><td>credit</td><td>number</td><td>Credit amount (0 if debit)</td></tr>
+                <tr><td>memo</td><td>string</td><td>Description (e.g. "AI Spend - OpenAI - Engineering")</td></tr>
+                <tr><td>costCenter</td><td>string</td><td>Mapped cost center</td></tr>
+                <tr><td>period</td><td>string</td><td>Accounting period (YYYY-MM)</td></tr>
+            </table>
+        </div>
+
+        <!-- hashes -->
+        <div class="schema-section">
+            <div class="schema-name"><code>hashes</code></div>
+            <div class="schema-desc">Cryptographic integrity chain for tamper detection.</div>
+            <table class="field-table">
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>dataHash</td><td>string</td><td>SHA-256 of the source invoice data <span class="required">REQUIRED</span></td></tr>
+                <tr><td>manifestHash</td><td>string</td><td>SHA-256 of this JSON (with this field zeroed) <span class="required">REQUIRED</span></td></tr>
+                <tr><td>files[]</td><td>array</td><td>Per-file hashes: <code>{ name, hash }</code> for each document in the ZIP</td></tr>
+            </table>
+        </div>
+
+        <!-- compliance -->
+        <div class="schema-section">
+            <div class="schema-name"><code>compliance</code></div>
+            <div class="schema-desc">FinOps compliance and health metrics.</div>
+            <table class="field-table">
+                <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+                <tr><td>focusVersion</td><td>string</td><td>FinOps FOCUS spec version (e.g. <code>1.3</code>)</td></tr>
+                <tr><td>finaultHealthScore</td><td>integer</td><td>Financial Control Score (0-100)</td></tr>
+                <tr><td>anomalyCount</td><td>integer</td><td>Number of anomalies flagged</td></tr>
+                <tr><td>controlsRating</td><td>string</td><td>Internal controls assessment (effective, needs_improvement, ineffective)</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Example JSON -->
+    <div class="section section-border" id="example">
+        <p class="section-label">Example</p>
+        <h2>A complete <span>closepack.json</span></h2>
+        <p class="desc">This is what ships inside every Close Pack ZIP as <code>00-CLOSEPACK.json</code>.</p>
+
+        <div class="code-block">
+            <button class="copy-btn" onclick="copyExample(this)">Copy</button>
+            <pre id="exampleJson"><span class="cmt">// 00-CLOSEPACK.json — Machine-readable Close Pack manifest</span>
+{
+  <span class="prop">"version"</span>: <span class="str">"1.0"</span>,
+  <span class="prop">"metadata"</span>: {
+    <span class="prop">"certId"</span>: <span class="str">"FIN-2026-01-A7B3C9"</span>,
+    <span class="prop">"period"</span>: <span class="str">"2026-01"</span>,
+    <span class="prop">"company"</span>: <span class="str">"Acme Corp"</span>,
+    <span class="prop">"generatedAt"</span>: <span class="str">"2026-01-31T23:59:59Z"</span>,
+    <span class="prop">"generator"</span>: <span class="str">"finault-closepack-v2"</span>,
+    <span class="prop">"dataHash"</span>: <span class="str">"sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"</span>
+  },
+  <span class="prop">"summary"</span>: {
+    <span class="prop">"totalSpend"</span>: <span class="num">45230.00</span>,
+    <span class="prop">"totalTokens"</span>: <span class="num">182400000</span>,
+    <span class="prop">"lineItemCount"</span>: <span class="num">847</span>,
+    <span class="prop">"providerCount"</span>: <span class="num">3</span>,
+    <span class="prop">"modelCount"</span>: <span class="num">8</span>,
+    <span class="prop">"currency"</span>: <span class="str">"USD"</span>
+  },
+  <span class="prop">"line_items"</span>: [
+    {
+      <span class="prop">"date"</span>: <span class="str">"2026-01-02"</span>,
+      <span class="prop">"provider"</span>: <span class="str">"openai"</span>,
+      <span class="prop">"model"</span>: <span class="str">"gpt-4o"</span>,
+      <span class="prop">"inputTokens"</span>: <span class="num">1250000</span>,
+      <span class="prop">"outputTokens"</span>: <span class="num">380000</span>,
+      <span class="prop">"cost"</span>: <span class="num">6925.00</span>,
+      <span class="prop">"costCenter"</span>: <span class="str">"Engineering"</span>,
+      <span class="prop">"project"</span>: <span class="str">"AI Chatbot v2"</span>
+    },
+    {
+      <span class="prop">"date"</span>: <span class="str">"2026-01-02"</span>,
+      <span class="prop">"provider"</span>: <span class="str">"anthropic"</span>,
+      <span class="prop">"model"</span>: <span class="str">"claude-sonnet-4-5-20250929"</span>,
+      <span class="prop">"inputTokens"</span>: <span class="num">980000</span>,
+      <span class="prop">"outputTokens"</span>: <span class="num">327000</span>,
+      <span class="prop">"cost"</span>: <span class="num">3845.00</span>,
+      <span class="prop">"costCenter"</span>: <span class="str">"Product"</span>,
+      <span class="prop">"project"</span>: <span class="str">"Content Pipeline"</span>
+    }
+  ],
+  <span class="prop">"journal_entries"</span>: [
+    {
+      <span class="prop">"date"</span>: <span class="str">"2026-01-31"</span>,
+      <span class="prop">"account"</span>: <span class="str">"6200-AI-ENG"</span>,
+      <span class="prop">"debit"</span>: <span class="num">28450.00</span>,
+      <span class="prop">"credit"</span>: <span class="num">0</span>,
+      <span class="prop">"memo"</span>: <span class="str">"AI Spend - Engineering - Jan 2026"</span>,
+      <span class="prop">"costCenter"</span>: <span class="str">"Engineering"</span>,
+      <span class="prop">"period"</span>: <span class="str">"2026-01"</span>
+    },
+    {
+      <span class="prop">"date"</span>: <span class="str">"2026-01-31"</span>,
+      <span class="prop">"account"</span>: <span class="str">"2000-AP"</span>,
+      <span class="prop">"debit"</span>: <span class="num">0</span>,
+      <span class="prop">"credit"</span>: <span class="num">45230.00</span>,
+      <span class="prop">"memo"</span>: <span class="str">"AI Spend - Accounts Payable - Jan 2026"</span>,
+      <span class="prop">"costCenter"</span>: <span class="str">""</span>,
+      <span class="prop">"period"</span>: <span class="str">"2026-01"</span>
+    }
+  ],
+  <span class="prop">"allocations"</span>: [
+    {
+      <span class="prop">"costCenter"</span>: <span class="str">"Engineering"</span>,
+      <span class="prop">"team"</span>: <span class="str">"Platform"</span>,
+      <span class="prop">"project"</span>: <span class="str">"AI Chatbot v2"</span>,
+      <span class="prop">"totalSpend"</span>: <span class="num">28450.00</span>,
+      <span class="prop">"percentage"</span>: <span class="num">62.9</span>
+    },
+    {
+      <span class="prop">"costCenter"</span>: <span class="str">"Product"</span>,
+      <span class="prop">"team"</span>: <span class="str">"Content"</span>,
+      <span class="prop">"project"</span>: <span class="str">"Content Pipeline"</span>,
+      <span class="prop">"totalSpend"</span>: <span class="num">16780.00</span>,
+      <span class="prop">"percentage"</span>: <span class="num">37.1</span>
+    }
+  ],
+  <span class="prop">"hashes"</span>: {
+    <span class="prop">"dataHash"</span>: <span class="str">"sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"</span>,
+    <span class="prop">"manifestHash"</span>: <span class="str">"sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"</span>,
+    <span class="prop">"files"</span>: [
+      { <span class="prop">"name"</span>: <span class="str">"01-EXECUTIVE-SUMMARY.pdf"</span>, <span class="prop">"hash"</span>: <span class="str">"sha256:a1b2c3..."</span> },
+      { <span class="prop">"name"</span>: <span class="str">"02-GL-JOURNAL-ENTRY.csv"</span>, <span class="prop">"hash"</span>: <span class="str">"sha256:d4e5f6..."</span> },
+      { <span class="prop">"name"</span>: <span class="str">"09-LINE-ITEM-DETAIL.csv"</span>, <span class="prop">"hash"</span>: <span class="str">"sha256:g7h8i9..."</span> }
+    ]
+  },
+  <span class="prop">"compliance"</span>: {
+    <span class="prop">"focusVersion"</span>: <span class="str">"1.3"</span>,
+    <span class="prop">"finaultHealthScore"</span>: <span class="num">87</span>,
+    <span class="prop">"anomalyCount"</span>: <span class="num">2</span>,
+    <span class="prop">"controlsRating"</span>: <span class="str">"effective"</span>
+  },
+  <span class="prop">"_links"</span>: {
+    <span class="prop">"validate"</span>: <span class="str">"https://api.finault.ai/v1/closepack/validate"</span>,
+    <span class="prop">"spec"</span>: <span class="str">"https://finault.ai/close-pack-spec"</span>,
+    <span class="prop">"docs"</span>: <span class="str">"https://finault.ai/docs"</span>
+  }
+}</pre>
+        </div>
+    </div>
+
+    <!-- Validator -->
+    <div class="section section-border" id="validate">
+        <p class="section-label">Validator</p>
+        <h2>Validate a <span>closepack.json</span></h2>
+        <p class="desc">Paste a closepack.json to check required fields and schema compliance. Runs entirely in your browser.</p>
+
+        <div class="validator">
+            <textarea id="valInput" placeholder='Paste your closepack.json here...'></textarea>
+            <div class="val-actions">
+                <button class="val-btn" onclick="runValidation()">Validate</button>
+                <button class="val-sample" onclick="loadSampleJSON()">Load example</button>
+            </div>
+            <div class="val-result" id="valResult"></div>
+        </div>
+
+        <div class="api-block" style="margin-top:40px;">
+            <div style="margin-bottom:8px;">
+                <span class="api-method">POST</span>
+                <span class="api-path">/v1/closepack/validate</span>
+            </div>
+            <div class="api-desc">
+                Programmatic validation with hash integrity verification. Public endpoint — no authentication required. Send the closepack.json as the request body.
+            </div>
+            <div class="code-block" style="margin-top:16px;">
+                <pre><span class="cmt"># Validate a closepack.json via API</span>
+<span class="kw">curl</span> -X POST https://api.finault.ai/v1/closepack/validate \
+  -H <span class="str">"Content-Type: application/json"</span> \
+  -d @00-CLOSEPACK.json
+
+<span class="cmt"># Response</span>
+{
+  <span class="prop">"valid"</span>: <span class="kw">true</span>,
+  <span class="prop">"errors"</span>: [],
+  <span class="prop">"warnings"</span>: [<span class="str">"2 files missing from hashes.files"</span>],
+  <span class="prop">"metadata"</span>: {
+    <span class="prop">"certId"</span>: <span class="str">"FIN-2026-01-A7B3C9"</span>,
+    <span class="prop">"period"</span>: <span class="str">"2026-01"</span>,
+    <span class="prop">"version"</span>: <span class="str">"1.0"</span>
+  }
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- ERP Integrations -->
+    <div class="section section-border">
+        <p class="section-label">ERP Integrations</p>
+        <h2>One file. <span>Every accounting system.</span></h2>
+        <p class="desc">closepack.json journal entries map directly to your chart of accounts. Import natively or use the dedicated format files already in the ZIP.</p>
+
+        <div class="erp-grid">
+            <div class="erp-card">
+                <h4>NetSuite</h4>
+                <p>Journal entries map to GL accounts with subsidiary and department tags.</p>
+                <code>05-NETSUITE-IMPORT.csv</code>
+            </div>
+            <div class="erp-card">
+                <h4>Xero</h4>
+                <p>Manual journal import with tracking categories for cost centers.</p>
+                <code>07-XERO-IMPORT.csv</code>
+            </div>
+            <div class="erp-card">
+                <h4>QuickBooks</h4>
+                <p>IIF format for QuickBooks Desktop. CSV for QuickBooks Online.</p>
+                <code>06-QUICKBOOKS-IMPORT.iif</code>
+            </div>
+            <div class="erp-card">
+                <h4>Sage Intacct</h4>
+                <p>GL journal with dimension codes for departments and projects.</p>
+                <code>08-SAGE-IMPORT.csv</code>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="cta">
+        <h2>Generate your first Close Pack.</h2>
+        <p>Upload your AI billing CSV. Get back a sealed Close Pack with closepack.json included.</p>
+        <a href="/audit" class="cta-btn">Run a Free Audit</a>
+        <a href="/docs" class="cta-secondary">Read the Docs</a>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <a href="/sdk">SDK</a> &middot;
+        <a href="/scan">Scan Code</a> &middot;
+        <a href="/pricing">Pricing</a> &middot;
+        <a href="/docs">Docs</a> &middot;
+        <a href="mailto:bernard.cotter@finault.ai">Contact</a>
+        <div style="margin-top:12px;">&copy; 2026 Finault. All rights reserved.</div>
+    </footer>
+
+    <script>
+    // Copy example JSON
+    function copyExample(btn) {
+        var el = document.getElementById('exampleJson');
+        var text = el.textContent;
+        navigator.clipboard.writeText(text).then(function() {
+            btn.textContent = 'Copied!';
+            setTimeout(function() { btn.textContent = 'Copy'; }, 2000);
+        });
+    }
+
+    // Sample JSON for validator
+    var sampleClosePack = {
+        version: "1.0",
+        metadata: {
+            certId: "FIN-2026-01-A7B3C9",
+            period: "2026-01",
+            company: "Acme Corp",
+            generatedAt: "2026-01-31T23:59:59Z",
+            generator: "finault-closepack-v2",
+            dataHash: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        summary: {
+            totalSpend: 45230.00,
+            totalTokens: 182400000,
+            lineItemCount: 847,
+            providerCount: 3,
+            modelCount: 8,
+            currency: "USD"
+        },
+        line_items: [
+            { date: "2026-01-02", provider: "openai", model: "gpt-4o", inputTokens: 1250000, outputTokens: 380000, cost: 6925.00, costCenter: "Engineering", project: "AI Chatbot v2" }
+        ],
+        journal_entries: [
+            { date: "2026-01-31", account: "6200-AI-ENG", debit: 28450.00, credit: 0, memo: "AI Spend - Engineering - Jan 2026", costCenter: "Engineering", period: "2026-01" },
+            { date: "2026-01-31", account: "2000-AP", debit: 0, credit: 45230.00, memo: "AI Spend - Accounts Payable - Jan 2026", costCenter: "", period: "2026-01" }
+        ],
+        allocations: [
+            { costCenter: "Engineering", team: "Platform", project: "AI Chatbot v2", totalSpend: 28450.00, percentage: 62.9 }
+        ],
+        hashes: {
+            dataHash: "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            manifestHash: "sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069",
+            files: [
+                { name: "01-EXECUTIVE-SUMMARY.pdf", hash: "sha256:a1b2c3..." }
+            ]
+        },
+        compliance: {
+            focusVersion: "1.3",
+            finaultHealthScore: 87,
+            anomalyCount: 2,
+            controlsRating: "effective"
+        },
+        _links: {
+            validate: "https://api.finault.ai/v1/closepack/validate",
+            spec: "https://finault.ai/close-pack-spec",
+            docs: "https://finault.ai/docs"
+        }
+    };
+
+    function loadSampleJSON() {
+        document.getElementById('valInput').value = JSON.stringify(sampleClosePack, null, 2);
+        runValidation();
+    }
+
+    // Validator
+    function runValidation() {
+        var input = document.getElementById('valInput').value.trim();
+        var result = document.getElementById('valResult');
+        if (!input) { result.style.display = 'none'; return; }
+
+        var parsed;
+        try {
+            parsed = JSON.parse(input);
+        } catch (e) {
+            result.className = 'val-result invalid';
+            result.style.display = 'block';
+            result.innerHTML = '<h4>Invalid JSON</h4><ul><li>' + e.message + '</li></ul>';
+            return;
+        }
+
+        var errors = [];
+        var checks = [];
+
+        // Required top-level fields
+        if (!parsed.version) errors.push('Missing required field: version');
+        else checks.push('Version: ' + parsed.version);
+
+        if (!parsed.metadata) errors.push('Missing required section: metadata');
+        else {
+            if (!parsed.metadata.certId) errors.push('Missing metadata.certId');
+            else checks.push('Certificate: ' + parsed.metadata.certId);
+            if (!parsed.metadata.period) errors.push('Missing metadata.period');
+            else checks.push('Period: ' + parsed.metadata.period);
+            if (!parsed.metadata.company) errors.push('Missing metadata.company');
+            else checks.push('Company: ' + parsed.metadata.company);
+            if (!parsed.metadata.generatedAt) errors.push('Missing metadata.generatedAt');
+            if (!parsed.metadata.dataHash) errors.push('Missing metadata.dataHash');
+            else checks.push('Data hash present');
+        }
+
+        if (!parsed.summary) errors.push('Missing required section: summary');
+        else {
+            if (typeof parsed.summary.totalSpend !== 'number') errors.push('Missing or invalid summary.totalSpend');
+            else checks.push('Total spend: $' + parsed.summary.totalSpend.toLocaleString());
+            if (typeof parsed.summary.totalTokens !== 'number') errors.push('Missing or invalid summary.totalTokens');
+            if (!parsed.summary.currency) errors.push('Missing summary.currency');
+        }
+
+        if (!Array.isArray(parsed.line_items)) errors.push('Missing or invalid line_items array');
+        else {
+            checks.push('Line items: ' + parsed.line_items.length);
+            parsed.line_items.forEach(function(item, i) {
+                if (!item.date) errors.push('line_items[' + i + '] missing date');
+                if (!item.provider) errors.push('line_items[' + i + '] missing provider');
+                if (!item.model) errors.push('line_items[' + i + '] missing model');
+                if (typeof item.cost !== 'number') errors.push('line_items[' + i + '] missing or invalid cost');
+            });
+        }
+
+        if (!Array.isArray(parsed.journal_entries)) errors.push('Missing or invalid journal_entries array');
+        else {
+            checks.push('Journal entries: ' + parsed.journal_entries.length);
+            parsed.journal_entries.forEach(function(item, i) {
+                if (!item.date) errors.push('journal_entries[' + i + '] missing date');
+                if (!item.account) errors.push('journal_entries[' + i + '] missing account');
+            });
+        }
+
+        if (!parsed.hashes) errors.push('Missing required section: hashes');
+        else {
+            if (!parsed.hashes.dataHash) errors.push('Missing hashes.dataHash');
+            if (!parsed.hashes.manifestHash) errors.push('Missing hashes.manifestHash');
+            else checks.push('Manifest hash present');
+        }
+
+        if (parsed.compliance) {
+            if (parsed.compliance.finaultHealthScore !== undefined) {
+                checks.push('Health Score: ' + parsed.compliance.finaultHealthScore + '/100');
+            }
+        }
+
+        if (errors.length === 0) {
+            result.className = 'val-result valid';
+            result.style.display = 'block';
+            result.innerHTML = '<h4>Valid closepack.json</h4><ul>' +
+                checks.map(function(c) { return '<li>' + c + '</li>'; }).join('') +
+                '</ul>';
+        } else {
+            result.className = 'val-result invalid';
+            result.style.display = 'block';
+            result.innerHTML = '<h4>' + errors.length + ' validation error(s)</h4><ul>' +
+                errors.map(function(e) { return '<li>' + e + '</li>'; }).join('') +
+                '</ul>';
+        }
+    }
+
+    // Auth link
+    (function() {
+        var token = localStorage.getItem('finault_token');
+        var el = document.getElementById('navAuthLink');
+        if (token && el) {
+            el.textContent = 'Dashboard';
+            el.href = 'https://dashboard.finault.ai/dashboard';
+            el.className = 'nav-cta';
+        }
+    })();
+    </script>
+
+</body>
+</html>

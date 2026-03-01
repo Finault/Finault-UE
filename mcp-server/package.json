@@ -1,6 +1,6 @@
 {
   "name": "@finault/mcp-server",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "description": "Finault MCP Server - Financial Intelligence for AI Spend. Let Claude answer questions like 'What did engineering spend on AI?' and 'Generate the January Close Pack.'",
   "keywords": [
     "mcp",

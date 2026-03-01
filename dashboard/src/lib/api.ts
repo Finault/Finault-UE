@@ -936,6 +936,43 @@ export async function updateSettings(settings: any): Promise<{ success: boolean 
 }
 
 // ═══════════════════════════════════════════════════════════════════
+// TEAM MANAGEMENT
+// ═══════════════════════════════════════════════════════════════════
+
+export async function getTeamMembers(params?: { limit?: number; offset?: number }): Promise<{
+  success: boolean;
+  members: any[];
+  count: number;
+  hasMore: boolean;
+}> {
+  const queryParams = new URLSearchParams();
+  if (params?.limit) queryParams.set('limit', String(params.limit));
+  if (params?.offset) queryParams.set('offset', String(params.offset));
+  const qs = queryParams.toString();
+  return request(`/v1/team${qs ? '?' + qs : ''}`);
+}
+
+export async function inviteTeamMember(email: string, role: string): Promise<{ success: boolean; member: any }> {
+  return request('/v1/team', {
+    method: 'POST',
+    body: { email, role },
+  });
+}
+
+export async function updateTeamMember(memberId: string, updates: { role?: string; status?: string; name?: string }): Promise<{ success: boolean; member: any }> {
+  return request(`/v1/team/${memberId}`, {
+    method: 'PUT',
+    body: updates,
+  });
+}
+
+export async function removeTeamMember(memberId: string): Promise<{ success: boolean }> {
+  return request(`/v1/team/${memberId}`, {
+    method: 'DELETE',
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
 // ATTESTATION
 // ═══════════════════════════════════════════════════════════════════
 
@@ -1366,6 +1403,12 @@ export const api = {
   // Settings
   getSettings,
   updateSettings,
+
+  // Team Management
+  getTeamMembers,
+  inviteTeamMember,
+  updateTeamMember,
+  removeTeamMember,
 
   // Crypto Proof & Attestation
   generateCryptoProof,
