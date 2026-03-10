@@ -712,7 +712,7 @@ function App() {
     goLiveStartRef.current = Date.now();
     goLiveTimerRef.current = setInterval(() => { setGoLiveElapsed(((Date.now() - goLiveStartRef.current) / 1000).toFixed(1)); }, 100);
     try {
-      const res = await fetch(`${GATEWAY}/v1/chat/completions`, {
+      const res = await fetch("/gw/v1/chat/completions", {
         method: "POST",
         headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "Say hello in one sentence." }], max_tokens: 50 }),
