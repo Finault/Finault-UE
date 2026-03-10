@@ -124,8 +124,6 @@ cd apps/gateway && npx wrangler deploy
 ## Team
 
 Bernie Cotter — Founder & CEO (bernard.cotter@finault.co)
-Ian Lapham — Advisor (ex-Uniswap)
-David Rubin — Advisor (MathWorks)
 
 ## License
 
