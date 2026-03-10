@@ -4,8 +4,7 @@
 # Route API requests to api.finault.ai
 /api/* https://api.finault.ai/api/:splat 301
 
-# Proxy to gateway.finault.ai (200 = same-origin proxy, avoids CORS)
-/gw/* https://gateway.finault.ai/:splat 200
+# /gw/* is proxied via Pages Function (functions/gw/[[path]].js)
 
 # /audit serves audit.html (shared results viewer, renders #d=base64 data)
 # The actual upload tool is in /app (the dashboard)
