@@ -232,12 +232,12 @@ function SectionLabel({ children, right }) {
   );
 }
 
-// ─── Gateway fetch (routed through /api/gw/ proxy to avoid CORS) ───
+// ─── Gateway fetch (direct to api.finault.ai) ───
 async function gw(path, opts = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), opts.timeout || 30000);
   try {
-    const resp = await fetch(`/api/gw${path}`, { ...opts, signal: controller.signal, headers: { "Content-Type": "application/json", ...opts.headers } });
+    const resp = await fetch(`${GATEWAY}${path}`, { ...opts, signal: controller.signal, headers: { "Content-Type": "application/json", ...opts.headers } });
     clearTimeout(timeout);
     if (!resp.ok) throw new Error(`Gateway ${resp.status}`);
     return await resp.json();
