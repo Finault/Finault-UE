@@ -39,32 +39,32 @@
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #F7F8FA;
-    --bg-subtle: #F0F2F5;
+    --bg: #F8F9FB;
+    --bg-subtle: #F1F3F6;
     --white: #FFFFFF;
-    --ink: #0F172A;
-    --body: #334155;
-    --label: #64748B;
-    --caption: #94A3B8;
-    --ghost: #CBD5E1;
-    --border: #E2E8F0;
-    --border-soft: #F1F5F9;
-    --green: #059669;
-    --green-dark: #047857;
+    --ink: #0C1322;
+    --body: #3B4559;
+    --label: #5E6B81;
+    --caption: #8893A5;
+    --ghost: #C1C9D6;
+    --border: #E0E5ED;
+    --border-soft: #EEF1F6;
+    --green: #10B981;
+    --green-dark: #059669;
     --green-light: #ECFDF5;
     --green-border: #A7F3D0;
-    --red: #DC2626;
+    --red: #EF4444;
     --red-light: #FEF2F2;
     --red-border: #FECACA;
-    --amber: #D97706;
+    --amber: #F59E0B;
     --amber-light: #FFFBEB;
-    --code-bg: #0F172A;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.03);
-    --shadow-md: 0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03);
-    --shadow-lg: 0 4px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), 0 24px 64px rgba(0,0,0,0.05);
-    --shadow-glow: 0 0 0 1px rgba(5,150,105,0.08), 0 4px 16px rgba(5,150,105,0.06);
-    --radius: 14px;
-    --radius-lg: 20px;
+    --code-bg: #0B0F1A;
+    --shadow-sm: 0 1px 2px rgba(12,19,34,0.04);
+    --shadow-md: 0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05);
+    --shadow-lg: 0 2px 6px rgba(12,19,34,0.04), 0 8px 24px rgba(12,19,34,0.07), 0 20px 48px rgba(12,19,34,0.04);
+    --shadow-glow: 0 0 0 1px rgba(16,185,129,0.12), 0 4px 16px rgba(16,185,129,0.08);
+    --radius: 12px;
+    --radius-lg: 16px;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
@@ -75,9 +75,9 @@
     background: var(--bg);
     font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     color: var(--ink);
-    letter-spacing: -0.01em;
-    font-size: 15px;
-    line-height: 1.6;
+    letter-spacing: -0.015em;
+    font-size: 14px;
+    line-height: 1.55;
   }
   ::selection { background: #D1FAE5; color: #065F46; }
 
@@ -110,32 +110,32 @@
   @keyframes progressGrow { from { width: 0% } }
   @keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(5,150,105,0.1) } 50% { box-shadow: 0 0 40px rgba(5,150,105,0.2) } }
 
-  .card-hover { transition: box-shadow 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease; }
-  .card-hover:hover { box-shadow: var(--shadow-lg) !important; transform: translateY(-2px); border-color: rgba(5,150,105,0.15) !important; }
-  .nav-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #059669, #34D399, #059669); background-size: 200% 100%; animation: gradientShift 3s ease infinite; z-index: 9999; transition: width 0.15s ease; }
+  .card-hover { transition: box-shadow 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.25s ease; }
+  .card-hover:hover { box-shadow: var(--shadow-lg) !important; transform: translateY(-1px); border-color: rgba(16,185,129,0.18) !important; }
+  .nav-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--green); z-index: 9999; transition: width 0.15s ease; }
 
   /* Premium card base */
-  .premium-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid rgba(226,232,240,0.8); box-shadow: var(--shadow-md); transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
-  .premium-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: rgba(5,150,105,0.12); }
+  .premium-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-md); transition: all 0.25s cubic-bezier(0.16,1,0.3,1); }
+  .premium-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); border-color: rgba(16,185,129,0.18); }
 
   /* Step section headers */
-  .step-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: var(--green); background: linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.08)); border: 1px solid rgba(5,150,105,0.15); border-radius: 6px; padding: 5px 14px; backdrop-filter: blur(4px); }
+  .step-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--green); background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.14); border-radius: 100px; padding: 5px 14px; }
 
   /* Primary CTA button */
-  .btn-primary { padding: 12px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg, #059669, #047857); color: white; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(5,150,105,0.25), inset 0 1px 0 rgba(255,255,255,0.15); }
-  .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #047857, #065F46); box-shadow: 0 4px 16px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.15); transform: translateY(-1px); }
+  .btn-primary { padding: 12px 28px; border-radius: 10px; border: none; background: var(--green); color: white; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 1px 3px rgba(16,185,129,0.3), 0 0 0 1px rgba(16,185,129,0.1); }
+  .btn-primary:hover:not(:disabled) { background: var(--green-dark); box-shadow: 0 2px 8px rgba(16,185,129,0.35), 0 0 0 1px rgba(16,185,129,0.15); transform: translateY(-1px); }
 
   /* Section dividers */
-  .section-divider { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 48px 0; }
+  .section-divider { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 40px 0; }
 
   /* Metric card */
-  .metric-card { background: var(--white); border-radius: var(--radius); border: 1px solid rgba(226,232,240,0.6); box-shadow: var(--shadow-sm); padding: 24px; position: relative; overflow: hidden; transition: all 0.25s ease; }
-  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--green), #34D399); opacity: 0; transition: opacity 0.25s ease; }
-  .metric-card:hover { box-shadow: var(--shadow-md); border-color: rgba(5,150,105,0.12); }
+  .metric-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); padding: 22px; position: relative; overflow: hidden; transition: all 0.2s ease; }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--green); opacity: 0; transition: opacity 0.2s ease; }
+  .metric-card:hover { box-shadow: var(--shadow-md); border-color: rgba(16,185,129,0.15); }
   .metric-card:hover::before { opacity: 1; }
 
   /* Dark section */
-  .dark-section { background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%); border-radius: var(--radius-lg); }
+  .dark-section { background: linear-gradient(180deg, #0B0F1A 0%, #151B2B 100%); border-radius: var(--radius-lg); }
 
   @media (max-width: 640px) {
     .metrics-grid { grid-template-columns: 1fr !important; }
@@ -166,15 +166,15 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // ─── Design Tokens ───
 const T = {
-  ink: "#0F172A", body: "#334155", label: "#64748B", caption: "#94A3B8", ghost: "#CBD5E1",
-  border: "#E2E8F0", borderSoft: "#F1F5F9", white: "#FFFFFF", bg: "#FAFBFC",
-  green: "#059669", greenDark: "#047857", greenLight: "#ECFDF5", greenBorder: "#A7F3D0",
-  red: "#DC2626", redLight: "#FEF2F2", redBorder: "#FECACA",
-  amber: "#D97706", amberLight: "#FFFBEB",
-  blue: "#2563EB", blueLight: "#EFF6FF", purple: "#635bff",
+  ink: "#0C1322", body: "#3B4559", label: "#5E6B81", caption: "#8893A5", ghost: "#C1C9D6",
+  border: "#E0E5ED", borderSoft: "#EEF1F6", white: "#FFFFFF", bg: "#F8F9FB",
+  green: "#10B981", greenDark: "#059669", greenLight: "#ECFDF5", greenBorder: "#A7F3D0",
+  red: "#EF4444", redLight: "#FEF2F2", redBorder: "#FECACA",
+  amber: "#F59E0B", amberLight: "#FFFBEB",
+  blue: "#3B82F6", blueLight: "#EFF6FF", purple: "#635bff",
   font: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif",
   mono: "'JetBrains Mono', 'SF Mono', monospace",
-  codeBg: "#0F172A",
+  codeBg: "#0B0F1A",
 };
 
 const fmtUSD = (n) => "$" + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
@@ -216,8 +216,8 @@ function ScoreRing({ score, grade, size = 140 }) {
 
 // ─── Card ───
 function Card({ children, style = {}, id, accent }) {
-  return <div id={id} className="card-hover" style={{ background: T.white, borderRadius: 20, border: `1px solid rgba(226,232,240,0.8)`, boxShadow: "0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03)", transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", position: "relative", overflow: "hidden", ...style }}>
-    {accent && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${T.green}, #34D399)`, borderRadius: "20px 20px 0 0" }} />}
+  return <div id={id} className="card-hover" style={{ background: T.white, borderRadius: 16, border: `1px solid ${T.border}`, boxShadow: "0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05)", transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)", position: "relative", overflow: "hidden", ...style }}>
+    {accent && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: T.green, borderRadius: "16px 16px 0 0" }} />}
     {children}
   </div>;
 }
@@ -712,7 +712,7 @@ function App() {
     goLiveStartRef.current = Date.now();
     goLiveTimerRef.current = setInterval(() => { setGoLiveElapsed(((Date.now() - goLiveStartRef.current) / 1000).toFixed(1)); }, 100);
     try {
-      const res = await fetch("/gw/v1/chat/completions", {
+      const res = await fetch("https://gateway.finault.ai/v1/chat/completions", {
         method: "POST",
         headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
         body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "Say hello in one sentence." }], max_tokens: 50 }),
@@ -937,11 +937,11 @@ function App() {
 
         {/* ── KEY INPUT ── */}
         <div style={{ padding: "80px 24px 48px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
-          <h1 style={{ fontSize: 36, fontWeight: 900, color: T.ink, letterSpacing: "-0.04em", marginBottom: 12, opacity: 0, animation: "rise 0.6s ease 0.1s both" }}>Paste your API key</h1>
-          <p style={{ fontSize: 17, color: T.label, marginBottom: 36, lineHeight: 1.5, opacity: 0, animation: "rise 0.6s ease 0.2s both" }}>We'll pull your usage and show you the full picture in 15 seconds.</p>
+          <h1 style={{ fontSize: 34, fontWeight: 900, color: T.ink, letterSpacing: "-0.035em", marginBottom: 10, opacity: 0, animation: "rise 0.6s ease 0.1s both" }}>Paste your API key</h1>
+          <p style={{ fontSize: 16, color: T.label, marginBottom: 36, lineHeight: 1.5, opacity: 0, animation: "rise 0.6s ease 0.2s both" }}>See your Finault Score, find savings, and get a sealed audit — in 15 seconds.</p>
 
           <div style={{ maxWidth: 520, margin: "0 auto", opacity: 0, animation: "rise 0.6s ease 0.3s both" }}>
-            <div style={{ display: "flex", border: `1.5px solid ${T.ghost}`, borderRadius: 12, overflow: "hidden", background: T.white, boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.03)" }}>
+            <div style={{ display: "flex", border: `1.5px solid ${T.border}`, borderRadius: 10, overflow: "hidden", background: T.white, boxShadow: "0 1px 4px rgba(12,19,34,0.04), 0 6px 20px rgba(12,19,34,0.04)" }}>
               <input id="hero-input" type="password" placeholder="Paste any API key — OpenAI, Anthropic, Google" autoFocus
                 value={openaiKey || anthropicKey}
                 onChange={e => { const v = e.target.value.trim(); if (v.startsWith("sk-ant-")) { setOpenaiKey(""); setAnthropicKey(v); } else { setOpenaiKey(v); setAnthropicKey(""); } }}
@@ -1103,10 +1103,10 @@ function App() {
       <PageProgress />
 
       {/* ── NAV ── */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(255,255,255,0.72)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", borderBottom: `1px solid rgba(0,0,0,0.06)`, padding: "14px 36px", display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(255,255,255,0.85)", backdropFilter: "blur(16px) saturate(180%)", WebkitBackdropFilter: "blur(16px) saturate(180%)", borderBottom: `1px solid ${T.border}`, padding: "12px 36px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 8, height: 8, borderRadius: 2, background: `linear-gradient(135deg, ${T.green}, #34D399)`, boxShadow: "0 0 8px rgba(5,150,105,0.3)" }} />
-          <span style={{ fontSize: 14, fontWeight: 900, letterSpacing: "0.06em", color: T.ink }}>FINAULT</span>
+          <div style={{ width: 7, height: 7, borderRadius: 2, background: T.green, boxShadow: "0 0 6px rgba(16,185,129,0.3)" }} />
+          <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.08em", color: T.ink }}>FINAULT</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 13, fontWeight: 600 }}>
           {sealCount > 0 ? (
@@ -1138,7 +1138,7 @@ function App() {
       <div style={{ display: "flex", maxWidth: 1280, margin: "0 auto", padding: "0 32px", gap: 0 }}>
 
         {/* ── SIDEBAR: 5-STEP JOURNEY ── */}
-        <div className="sidebar-nav" style={{ width: 240, flexShrink: 0, position: "sticky", top: 52, height: "calc(100vh - 52px)", overflowY: "auto", padding: "32px 16px 24px 0", borderRight: `1px solid ${T.border}`, marginRight: 48, display: screen < 3 ? "none" : "block" }}>
+        <div className="sidebar-nav" style={{ width: 220, flexShrink: 0, position: "sticky", top: 52, height: "calc(100vh - 52px)", overflowY: "auto", padding: "28px 20px 24px 0", borderRight: `1px solid ${T.border}`, marginRight: 44, display: screen < 3 ? "none" : "block" }}>
           {[
             { step: 1, id: "step1", label: "Scan", completed: journeyStep >= 1, locked: false,
               subtitle: journeyStep >= 1 ? `Score: ${score}/100` : "Paste API key",
@@ -1172,19 +1172,19 @@ function App() {
                 }}
                 style={{
                   display: "flex", alignItems: "flex-start", gap: 10, width: "100%", textAlign: "left",
-                  padding: "10px 12px", background: activeSection === item.id ? (item.completed ? T.greenLight : "#F0F9FF") : (item.completed ? T.greenLight : "transparent"),
-                  border: `1px solid ${activeSection === item.id ? (item.completed ? T.greenBorder : "#BAE6FD") : (item.completed ? T.greenBorder : "transparent")}`,
+                  padding: "8px 10px", background: activeSection === item.id ? "rgba(16,185,129,0.06)" : "transparent",
+                  border: "none",
                   borderRadius: 8, cursor: item.locked ? "default" : "pointer", fontFamily: T.font,
-                  opacity: item.locked ? 0.45 : 1, transition: "all 0.15s ease",
+                  opacity: item.locked ? 0.4 : 1, transition: "all 0.15s ease",
                 }}
-                onMouseEnter={e => { if (!item.locked && !item.completed) e.currentTarget.style.background = T.borderSoft; }}
-                onMouseLeave={e => { if (!item.locked && !item.completed) e.currentTarget.style.background = "transparent"; }}>
+                onMouseEnter={e => { if (!item.locked) e.currentTarget.style.background = "rgba(16,185,129,0.04)"; }}
+                onMouseLeave={e => { if (!item.locked) e.currentTarget.style.background = activeSection === item.id ? "rgba(16,185,129,0.06)" : "transparent"; }}>
                 <div style={{
-                  width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
-                  background: item.completed ? T.green : (item.locked ? T.borderSoft : T.white),
+                  width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 2,
+                  background: item.completed ? T.green : "transparent",
                   color: item.completed ? T.white : (item.locked ? T.ghost : T.label),
-                  border: item.completed ? "none" : `1.5px solid ${item.locked ? T.border : T.ghost}`,
+                  border: item.completed ? "none" : `1.5px solid ${item.locked ? T.borderSoft : T.ghost}`,
                 }}>
                   {item.completed ? "✓" : (item.locked ? "🔒" : item.step)}
                 </div>
@@ -1298,7 +1298,7 @@ function App() {
 
         {/* ── 2. THE SCORE + ONE SENTENCE ── */}
         <Fade show={revealStep >= 1} delay={0.3}>
-          <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "28px 32px", background: T.white, borderRadius: 20, border: `1px solid rgba(226,232,240,0.7)`, marginBottom: 24, boxShadow: "0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03)", position: "relative", overflow: "hidden" }} className="score-hero">
+          <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "28px 32px", background: T.white, borderRadius: 16, border: `1px solid ${T.border}`, marginBottom: 24, boxShadow: "0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05)", position: "relative", overflow: "hidden" }} className="score-hero">
             <div style={{ flexShrink: 0 }}>
               <AnimatedScoreRing score={score} grade={grade} size={110} />
             </div>
@@ -1759,14 +1759,15 @@ function App() {
 
 const client = new OpenAI({
     baseURL: "https://gateway.finault.ai/v1",
+    apiKey: "${(goLiveKey || openaiKey || "").trim() ? (goLiveKey || openaiKey || "").trim().slice(0, 8) + "..." : "your-openai-key"}",
 });` : goLiveCodeTab === "curl" ? `curl https://gateway.finault.ai/v1/chat/completions \\
-  -H "Authorization: Bearer YOUR_KEY" \\
+  -H "Authorization: Bearer ${(goLiveKey || openaiKey || "").trim() ? (goLiveKey || openaiKey || "").trim().slice(0, 8) + "..." : "YOUR_KEY"}" \\
   -H "Content-Type: application/json" \\
   -d '{"model":"gpt-4o","messages":[...]}'` : `import openai
 
 client = openai.OpenAI(
     base_url="https://gateway.finault.ai/v1",
-    api_key="your-openai-key"
+    api_key="${(goLiveKey || openaiKey || "").trim() ? (goLiveKey || openaiKey || "").trim().slice(0, 8) + "..." : "your-openai-key"}"
 )`}
                     </pre>
                     <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
@@ -2375,9 +2376,9 @@ client = openai.OpenAI(
         <span id="sec-sealed"/>
         {screen >= 3 && revealStep >= 6 && (
           <Fade show={true} delay={0.5}>
-            <div className="dark-section" style={{ borderRadius: 24, border: "1px solid rgba(255,255,255,0.06)", padding: "56px 40px", position: "relative", overflow: "hidden" }}>
+            <div className="dark-section" style={{ borderRadius: 16, border: "1px solid rgba(255,255,255,0.05)", padding: "48px 36px", position: "relative", overflow: "hidden" }}>
               {/* Subtle gradient orb decoration */}
-              <div style={{ position: "absolute", top: -80, right: -80, width: 240, height: 240, borderRadius: "50%", background: "radial-gradient(circle, rgba(5,150,105,0.08), transparent 70%)", pointerEvents: "none" }} />
+              <div style={{ position: "absolute", top: -80, right: -80, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.06), transparent 70%)", pointerEvents: "none" }} />
               {/* Step header */}
               <div style={{ textAlign: "center", marginBottom: 28 }}>
                 <span className="step-badge" style={{ background: "rgba(5,150,105,0.15)", border: "1px solid rgba(5,150,105,0.25)" }}>STEP 5 OF 5</span>
@@ -2471,10 +2472,10 @@ client = openai.OpenAI(
       <ScrollToTop />
 
       {/* ── FOOTER ── */}
-      <div style={{ borderTop: `1px solid ${T.border}`, padding: "32px 36px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1280, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <div style={{ width: 7, height: 7, borderRadius: 2, background: `linear-gradient(135deg, ${T.green}, #34D399)`, boxShadow: "0 0 6px rgba(5,150,105,0.2)" }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: T.caption }}>&copy; 2026 Finault</span>
+      <div style={{ borderTop: `1px solid ${T.border}`, padding: "28px 36px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1280, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div style={{ width: 6, height: 6, borderRadius: 2, background: T.green }} />
+          <span style={{ fontSize: 11, fontWeight: 600, color: T.caption }}>&copy; 2026 Finault</span>
         </div>
         <div style={{ display: "flex", gap: 24 }}>
           {["Docs", "Pricing", "Security", "Privacy", "Terms"].map(link => (
