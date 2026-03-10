@@ -159,7 +159,7 @@
 <script type="text/babel">
 const { useState, useEffect, useCallback, useRef } = React;
 
-const GATEWAY = "https://api.finault.ai";
+const GATEWAY = "https://gateway.finault.ai";
 const SUPABASE_URL = "https://bejoptgsrhmklmllkobu.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -232,7 +232,7 @@ function SectionLabel({ children, right }) {
   );
 }
 
-// ─── Gateway fetch (direct to api.finault.ai) ───
+// ─── Gateway fetch (direct to gateway.finault.ai) ───
 async function gw(path, opts = {}) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), opts.timeout || 30000);
