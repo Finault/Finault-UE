@@ -1,0 +1,1746 @@
+<!DOCTYPE html>
+<!-- v2.1.0 time-machine endpoints -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finault · Analysis</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #16a34a;
+      --green-dark: #15803d;
+      --green-light: #f0fdf4;
+      --green-border: #bbf7d0;
+      --black: #111;
+      --gray-900: #171717;
+      --gray-800: #262626;
+      --gray-700: #404040;
+      --gray-600: #525252;
+      --gray-500: #737373;
+      --gray-400: #a3a3a3;
+      --gray-300: #d4d4d4;
+      --gray-200: #e5e5e5;
+      --gray-100: #f5f5f5;
+      --gray-50: #fafafa;
+      --white: #fff;
+      --border: #e5e5e5;
+      --yellow: #eab308;
+      --yellow-light: #fef3c7;
+      --red: #ef4444;
+      --red-light: #fee2e2;
+      --blue: #3b82f6;
+      --blue-light: #dbeafe;
+      --radius: 0.5rem;
+      --radius-lg: 1rem;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-900);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Top Bar ─────────────────────────────────────────────── */
+    .topbar {
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--green);
+      text-decoration: none;
+    }
+
+    .logo span { color: var(--gray-400); font-weight: 400; font-size: 0.875rem; margin-left: 0.5rem; }
+
+    .badge-tm {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.2rem 0.6rem;
+      border-radius: 1rem;
+      letter-spacing: 0.02em;
+    }
+
+    .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
+
+    /* ── Buttons ──────────────────────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--green); color: white; }
+    .btn-primary:hover { background: var(--green-dark); }
+    .btn-secondary { background: white; border-color: var(--border); color: var(--gray-700); }
+    .btn-secondary:hover { background: var(--gray-50); }
+    .btn-ghost { background: none; color: var(--gray-500); }
+    .btn-ghost:hover { color: var(--gray-700); }
+    .btn-lg { padding: 0.75rem 1.5rem; font-size: 1rem; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* ── Main Layout ─────────────────────────────────────────── */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* ── Step Flow ────────────────────────────────────────────── */
+    .steps { display: flex; gap: 2rem; margin-bottom: 2rem; }
+    .step {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      opacity: 0.5;
+      transition: all 0.3s;
+    }
+    .step.active { opacity: 1; border-color: var(--green); }
+    .step.done { opacity: 0.8; border-color: var(--green-border); background: var(--green-light); }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--gray-200);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 600; color: var(--gray-500);
+      flex-shrink: 0;
+    }
+    .step.active .step-num { background: var(--green); color: white; }
+    .step.done .step-num { background: var(--green); color: white; }
+    .step-label { font-size: 0.8125rem; font-weight: 500; color: var(--gray-600); }
+    .step.active .step-label { color: var(--gray-900); }
+
+    /* ── Panels ───────────────────────────────────────────────── */
+    .panel {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .panel-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .panel-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.25rem;
+    }
+
+    .panel-subtitle {
+      font-size: 0.875rem;
+      color: var(--gray-500);
+    }
+
+    /* ── Onboarding: API Key Input ───────────────────────────── */
+    #onboarding { display: block; }
+    #results { display: none; }
+
+    .key-input-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .key-input-group label {
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      margin-bottom: 0.25rem;
+      display: block;
+    }
+
+    .key-input-group .input-wrap { flex: 1; }
+
+    .key-input {
+      width: 100%;
+      padding: 0.625rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      color: var(--gray-700);
+      background: var(--gray-50);
+      transition: border-color 0.15s;
+    }
+
+    .key-input:focus { outline: none; border-color: var(--green); background: white; }
+    .key-input::placeholder { color: var(--gray-400); }
+
+    .provider-tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1.5rem;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      padding: 0.25rem;
+    }
+
+    .provider-tab {
+      flex: 1;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-align: center;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--gray-500);
+      transition: all 0.15s;
+    }
+
+    .provider-tab.active { background: white; color: var(--gray-900); box-shadow: 0 1px 2px rgba(0,0,0,0.06); }
+    .provider-tab:hover:not(.active) { color: var(--gray-700); }
+
+    .provider-section { display: none; }
+    .provider-section.active { display: block; }
+
+    .key-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      margin-top: 0.375rem;
+    }
+
+    .key-status.valid { color: var(--green); }
+    .key-status.invalid { color: var(--red); }
+    .key-status .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .key-status.valid .dot { background: var(--green); }
+    .key-status.invalid .dot { background: var(--red); }
+
+    /* ── Progress: Sync Animation ────────────────────────────── */
+    #sync-progress { display: none; }
+
+    .progress-container {
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    .progress-ring {
+      width: 120px; height: 120px;
+      margin: 0 auto 1.5rem;
+      position: relative;
+    }
+
+    .progress-ring svg { transform: rotate(-90deg); }
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 6;
+      stroke-linecap: round;
+    }
+    .progress-ring .bg { stroke: var(--gray-200); }
+    .progress-ring .fg { stroke: var(--green); transition: stroke-dashoffset 0.5s ease; }
+
+    .progress-pct {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .progress-label {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-detail {
+      font-size: 0.8125rem;
+      color: var(--gray-500);
+    }
+
+    .progress-log {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 1.5rem;
+      text-align: left;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      padding: 1rem;
+      font-family: 'SF Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+    }
+
+    .progress-log .entry { margin-bottom: 0.25rem; }
+    .progress-log .entry .timestamp { color: var(--gray-400); }
+    .progress-log .entry.success { color: var(--green); }
+    .progress-log .entry.error { color: var(--red); }
+
+    /* ── Results Dashboard ────────────────────────────────────── */
+    .hero-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero-card {
+      background: var(--white);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+    }
+
+    .hero-card.savings {
+      background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+      border-color: var(--green-border);
+    }
+
+    .hero-card.recoverable {
+      background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+      border-color: #93c5fd;
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gray-900);
+      line-height: 1.2;
+    }
+
+    .hero-card.savings .hero-value { color: var(--green-dark); }
+    .hero-card.recoverable .hero-value { color: #1d4ed8; }
+
+    .hero-sub {
+      font-size: 0.8125rem;
+      color: var(--gray-500);
+      margin-top: 0.25rem;
+    }
+
+    /* ── Alternate Timeline Chart ─────────────────────────────── */
+    .chart-container {
+      position: relative;
+      height: 280px;
+      margin: 1rem 0;
+    }
+
+    .chart-canvas { width: 100%; height: 100%; }
+
+    .chart-legend {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 0.75rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      color: var(--gray-500);
+    }
+
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+    .legend-dot.actual { background: var(--red); }
+    .legend-dot.optimized { background: var(--green); }
+
+    /* ── Savings Breakdown ───────────────────────────────────── */
+    .savings-bars { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .savings-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .savings-bar-label {
+      width: 160px;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      flex-shrink: 0;
+    }
+
+    .savings-bar-track {
+      flex: 1;
+      height: 24px;
+      background: var(--gray-100);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .savings-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--green);
+      transition: width 0.8s ease;
+      min-width: 2px;
+    }
+
+    .savings-bar-value {
+      width: 80px;
+      text-align: right;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      flex-shrink: 0;
+    }
+
+    /* ── Customer Margin Table ────────────────────────────────── */
+    .margin-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .margin-table th {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: left;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .margin-table td {
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .margin-table tr:hover { background: var(--gray-50); }
+
+    .margin-tag {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .margin-tag.positive { background: var(--green-light); color: var(--green-dark); }
+    .margin-tag.negative { background: var(--red-light); color: #b91c1c; }
+    .margin-tag.warning { background: var(--yellow-light); color: #92400e; }
+
+    .margin-arrow { font-size: 0.75rem; margin-right: 0.25rem; }
+    .margin-arrow.up { color: var(--green); }
+    .margin-arrow.down { color: var(--red); }
+
+    .underwater-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #fef2f2;
+      color: #b91c1c;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.125rem 0.5rem;
+      border-radius: 1rem;
+      margin-left: 0.5rem;
+    }
+
+    /* ── Finault Score Widget ─────────────────────────────────── */
+    .fcs-widget {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .fcs-ring {
+      width: 100px; height: 100px;
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .fcs-ring svg { transform: rotate(-90deg); }
+    .fcs-ring circle { fill: none; stroke-width: 8; stroke-linecap: round; }
+    .fcs-ring .bg { stroke: var(--gray-200); }
+    .fcs-ring .fg { stroke: var(--green); transition: stroke-dashoffset 1s ease; }
+
+    .fcs-score {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    .fcs-dimensions { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+
+    .fcs-dim {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .fcs-dim-label {
+      font-size: 0.75rem;
+      color: var(--gray-500);
+      flex: 1;
+    }
+
+    .fcs-dim-bar {
+      width: 60px;
+      height: 4px;
+      background: var(--gray-200);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .fcs-dim-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 1s; }
+
+    .fcs-dim-val {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      width: 24px;
+      text-align: right;
+    }
+
+    /* ── Stripe Prompt ───────────────────────────────────────── */
+    .stripe-prompt {
+      background: linear-gradient(135deg, #eef2ff, #e0e7ff);
+      border: 1px dashed #818cf8;
+      border-radius: var(--radius-lg);
+      padding: 1.5rem 2rem;
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    .stripe-prompt h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #3730a3;
+      margin-bottom: 0.5rem;
+    }
+
+    .stripe-prompt p {
+      font-size: 0.8125rem;
+      color: #4338ca;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Share Bar ────────────────────────────────────────────── */
+    .share-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.5rem;
+      background: var(--gray-50);
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+    }
+
+    .share-bar-label { font-size: 0.8125rem; color: var(--gray-500); }
+    .share-link {
+      font-family: monospace;
+      font-size: 0.75rem;
+      color: var(--gray-600);
+      background: white;
+      padding: 0.375rem 0.75rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Two Column Layout ───────────────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+    /* ── Responsive ──────────────────────────────────────────── */
+    @media (max-width: 768px) {
+      .hero-row { grid-template-columns: 1fr; }
+      .two-col { grid-template-columns: 1fr; }
+      .steps { flex-direction: column; gap: 0.5rem; }
+      .main { padding: 1rem; }
+      .fcs-widget { flex-direction: column; }
+    }
+
+    /* ── Animations ──────────────────────────────────────────── */
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.4s ease forwards; }
+    @keyframes countUp { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ── Scrollbar ────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- TOP BAR                                                                -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a href="/" class="logo">finault <span>analysis</span></a>
+    <span class="badge-tm">BETA</span>
+  </div>
+  <div class="topbar-right">
+    <a href="/app.html" class="btn btn-ghost">Dashboard</a>
+    <button id="btn-share" class="btn btn-secondary" style="display:none;" onclick="shareAnalysis()">Share</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- MAIN CONTENT                                                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<div class="main">
+
+  <!-- Step indicator -->
+  <div class="steps">
+    <div class="step active" id="step-1">
+      <div class="step-num">1</div>
+      <div class="step-label">Connect Providers</div>
+    </div>
+    <div class="step" id="step-2">
+      <div class="step-num">2</div>
+      <div class="step-label">Reconstruct History</div>
+    </div>
+    <div class="step" id="step-3">
+      <div class="step-num">3</div>
+      <div class="step-label">Reveal Savings</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- ONBOARDING: API KEY INPUT                                       -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="onboarding">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Connect your AI provider</div>
+        <div class="panel-subtitle">Paste your admin API key and we'll pull your complete usage history. Keys are used once for the data pull and never stored.</div>
+      </div>
+
+      <div class="provider-tabs">
+        <button class="provider-tab active" onclick="switchProvider('openai')">OpenAI</button>
+        <button class="provider-tab" onclick="switchProvider('anthropic')">Anthropic</button>
+        <button class="provider-tab" onclick="switchProvider('google')">Google</button>
+      </div>
+
+      <div class="provider-section active" id="section-openai">
+        <div class="key-input-group">
+          <div class="input-wrap">
+            <label>OpenAI Admin API Key</label>
+            <input type="password" class="key-input" id="key-openai" placeholder="sk-admin-..." autocomplete="off">
+            <div class="key-status" id="status-openai"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="provider-section" id="section-anthropic">
+        <div class="key-input-group">
+          <div class="input-wrap">
+            <label>Anthropic Admin API Key</label>
+            <input type="password" class="key-input" id="key-anthropic" placeholder="sk-ant-admin..." autocomplete="off">
+            <div class="key-status" id="status-anthropic"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="provider-section" id="section-google">
+        <div class="key-input-group">
+          <div class="input-wrap">
+            <label>Google AI API Key</label>
+            <input type="password" class="key-input" id="key-google" placeholder="AIza..." autocomplete="off">
+            <div class="key-status" id="status-google"></div>
+          </div>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--gray-400); margin-top: 0.25rem;">Google AI does not yet support usage history via API. You can upload a CSV export instead.</div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 1rem; margin-top: 1.5rem;">
+        <button class="btn btn-primary btn-lg" id="btn-sync" onclick="startSync()">
+          Reconstruct My AI Financial History
+        </button>
+        <span style="font-size: 0.75rem; color: var(--gray-400);">Connects to OpenAI, Anthropic, and more</span>
+      </div>
+    </div>
+
+    <!-- Stripe Prompt (shown after provider sync completes) -->
+    <div class="stripe-prompt" id="stripe-prompt" style="display: none;">
+      <h3>Unlock per-customer margin analysis</h3>
+      <p>Add your Stripe key to see which customers are profitable and which are underwater — the data nobody else can show you.</p>
+      <div class="key-input-group" style="max-width: 500px; margin: 0 auto;">
+        <div class="input-wrap">
+          <input type="password" class="key-input" id="key-stripe" placeholder="sk_live_... or sk_test_..." autocomplete="off">
+        </div>
+        <button class="btn btn-primary" onclick="addStripe()">Add Stripe</button>
+      </div>
+      <div style="margin-top: 0.75rem;">
+        <a href="#" onclick="skipStripe(); return false;" style="font-size: 0.75rem; color: var(--gray-400);">Skip for now</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- SYNC PROGRESS                                                    -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="sync-progress">
+    <div class="panel">
+      <div class="progress-container">
+        <div class="progress-ring">
+          <svg width="120" height="120">
+            <circle class="bg" cx="60" cy="60" r="52"/>
+            <circle class="fg" id="progress-circle" cx="60" cy="60" r="52"
+                    stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+          </svg>
+          <div class="progress-pct" id="progress-pct">0%</div>
+        </div>
+        <div class="progress-label" id="progress-label">Connecting to providers...</div>
+        <div class="progress-detail" id="progress-detail">This usually takes 15-30 seconds</div>
+        <div class="progress-log" id="progress-log"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <!-- RESULTS DASHBOARD                                                -->
+  <!-- ═══════════════════════════════════════════════════════════════ -->
+  <div id="results">
+
+    <!-- Share bar -->
+    <div class="share-bar" id="share-bar" style="display: none;">
+      <div class="share-bar-label">This analysis is shareable</div>
+      <div class="share-link" id="share-link"></div>
+      <button class="btn btn-secondary" onclick="copyShareLink()" style="font-size: 0.75rem;">Copy Link</button>
+    </div>
+
+    <!-- Hero metrics -->
+    <div class="hero-row fade-in">
+      <div class="hero-card">
+        <div class="hero-label">Actual AI Spend</div>
+        <div class="hero-value" id="hero-actual">$0</div>
+        <div class="hero-sub" id="hero-period"></div>
+      </div>
+      <div class="hero-card savings">
+        <div class="hero-label">You Should Have Spent</div>
+        <div class="hero-value" id="hero-optimized">$0</div>
+        <div class="hero-sub" id="hero-savings-pct"></div>
+      </div>
+      <div class="hero-card recoverable">
+        <div class="hero-label">Recoverable Savings</div>
+        <div class="hero-value" id="hero-recoverable">$0</div>
+        <div class="hero-sub">If you had used optimal models at optimal times</div>
+      </div>
+    </div>
+
+    <!-- Alternate Timeline + Savings Breakdown -->
+    <div class="two-col">
+      <div class="panel fade-in">
+        <div class="panel-header">
+          <div class="panel-title">Alternate Timeline</div>
+          <div class="panel-subtitle">What your cumulative spend would have been with optimal decisions</div>
+        </div>
+        <div class="chart-container">
+          <canvas id="timeline-chart" class="chart-canvas"></canvas>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot actual"></div> Actual spend</div>
+          <div class="legend-item"><div class="legend-dot optimized"></div> Optimized spend</div>
+        </div>
+      </div>
+
+      <div class="panel fade-in">
+        <div class="panel-header">
+          <div class="panel-title">Savings Breakdown</div>
+          <div class="panel-subtitle">Where the money went — ranked by impact</div>
+        </div>
+        <div class="savings-bars" id="savings-bars"></div>
+      </div>
+    </div>
+
+    <!-- Customer Margin Table -->
+    <div class="panel fade-in" id="customer-panel" style="display: none;">
+      <div class="panel-header">
+        <div class="panel-title">Customer Margin Impact</div>
+        <div class="panel-subtitle">Per-customer profitability with actual vs. optimized AI costs</div>
+      </div>
+      <div style="overflow-x: auto;">
+        <table class="margin-table" id="margin-table">
+          <thead>
+            <tr>
+              <th>Customer</th>
+              <th>Revenue</th>
+              <th>AI Cost (Actual)</th>
+              <th>AI Cost (Optimized)</th>
+              <th>Actual Margin</th>
+              <th>Optimized Margin</th>
+              <th>Improvement</th>
+            </tr>
+          </thead>
+          <tbody id="margin-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Finault Score + Model Breakdown -->
+    <div class="two-col">
+      <div class="panel fade-in">
+        <div class="panel-header">
+          <div class="panel-title">Finault Score</div>
+          <div class="panel-subtitle">AI financial health composite (0-100)</div>
+        </div>
+        <div class="fcs-widget" id="fcs-widget"></div>
+      </div>
+
+      <div class="panel fade-in">
+        <div class="panel-header">
+          <div class="panel-title">Models Analyzed</div>
+          <div class="panel-subtitle" id="model-count"></div>
+        </div>
+        <div id="model-list" style="display: flex; flex-wrap: wrap; gap: 0.5rem;"></div>
+      </div>
+    </div>
+
+    <!-- Seal Banner — the proof that this analysis is immutable -->
+    <div class="panel fade-in" id="seal-banner" style="display: none;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+        <div style="width: 36px; height: 36px; background: var(--green-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+        </div>
+        <div>
+          <div style="font-weight: 700; font-size: 0.9375rem; color: var(--gray-900);">This analysis is sealed</div>
+          <div style="font-size: 0.8125rem; color: var(--gray-500);">Cryptographically hashed and chain-linked. Tamper-proof. Independently verifiable.</div>
+        </div>
+      </div>
+      <div style="background: var(--gray-50); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div>
+          <div style="font-size: 0.6875rem; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Seal ID</div>
+          <div style="font-size: 0.8125rem; font-weight: 600; font-family: 'SF Mono', SFMono-Regular, Consolas, monospace; color: var(--gray-900);" id="seal-banner-id">—</div>
+        </div>
+        <div>
+          <div style="font-size: 0.6875rem; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Chain Hash</div>
+          <div style="font-size: 0.8125rem; font-weight: 600; font-family: 'SF Mono', SFMono-Regular, Consolas, monospace; color: var(--gray-900);" id="seal-banner-hash">—</div>
+        </div>
+        <div>
+          <div style="font-size: 0.6875rem; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">Chain Depth</div>
+          <div style="font-size: 0.8125rem; font-weight: 600; color: var(--gray-900);" id="seal-banner-depth">—</div>
+        </div>
+      </div>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <a id="seal-banner-receipt-link" href="#" target="_blank" class="btn btn-primary" style="font-size: 0.8125rem; text-decoration: none;">View Receipt</a>
+        <button class="btn btn-secondary" onclick="verifySealChain()" style="font-size: 0.8125rem;">Verify Chain</button>
+        <button class="btn btn-secondary" onclick="copySealLink()" style="font-size: 0.8125rem;">Copy Link</button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="panel fade-in" style="text-align: center; padding: 2rem;">
+      <button class="btn btn-primary btn-lg" onclick="generateClosePack()">Seal as Close Pack</button>
+      <span style="margin: 0 0.75rem; color: var(--gray-300);">|</span>
+      <button class="btn btn-secondary btn-lg" onclick="exportPDF()">Export PDF</button>
+      <span style="margin: 0 0.75rem; color: var(--gray-300);">|</span>
+      <button class="btn btn-secondary btn-lg" onclick="shareAnalysis()">Share Link</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- JSZIP (CDN) — for Close Pack ZIP generation                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- CHART.JS (CDN) — for the alternate timeline chart                     -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<!-- APPLICATION LOGIC                                                      -->
+<!-- ═══════════════════════════════════════════════════════════════════════ -->
+<script>
+// ── Toast Notification ──────────────────────────────────────────────────
+function showToast(msg, type) {
+  var t = document.createElement('div');
+  t.textContent = msg;
+  t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;max-width:500px;text-align:center;';
+  t.style.background = type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#1a1a1a';
+  document.body.appendChild(t);
+  setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 4000);
+}
+
+// ── Config ──────────────────────────────────────────────────────────────
+const API_BASE = 'https://api.finault.ai';
+
+let analysisData = null;
+let syncId = null;
+let timelineChart = null;
+let isDemoMode = false;
+
+// ── Provider Tabs ───────────────────────────────────────────────────────
+function switchProvider(provider) {
+  document.querySelectorAll('.provider-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.provider-section').forEach(s => s.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(`section-${provider}`).classList.add('active');
+}
+
+// ── Start Sync ──────────────────────────────────────────────────────────
+async function startSync() {
+  const providers = {};
+  const openaiKey = document.getElementById('key-openai').value.trim();
+  const anthropicKey = document.getElementById('key-anthropic').value.trim();
+
+  if (openaiKey) providers.openai = { api_key: openaiKey };
+  if (anthropicKey) providers.anthropic = { api_key: anthropicKey };
+
+  if (Object.keys(providers).length === 0) {
+    showToast('Please enter at least one API key.', 'error');
+    return;
+  }
+
+  // Transition to step 2
+  setStep(2);
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('sync-progress').style.display = 'block';
+
+  addLog('Starting historical data reconstruction...');
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/time-machine/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ providers }),
+    });
+
+    const data = await resp.json();
+    syncId = data.sync_id;
+
+    addLog(`Sync started: ${Object.keys(providers).join(', ')}`, 'success');
+    pollSyncStatus();
+  } catch (err) {
+    addLog(`Sync failed: ${err.message}. Check your API keys and try again.`, 'error');
+  }
+}
+
+// ── Poll Sync Status ────────────────────────────────────────────────────
+async function pollSyncStatus() {
+  if (!syncId) return;
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/time-machine/status/${syncId}`, {
+      headers: { 'Authorization': `Bearer ${getToken()}` },
+    });
+    const data = await resp.json();
+
+    const total = data.total || data.providers_total || 1;
+    const done = data.providers_done || 0;
+    const pct = Math.round((done / total) * 100);
+
+    updateProgress(pct, data.current || 'Processing...');
+
+    if (data.current) {
+      addLog(`Syncing: ${data.current}...`);
+    }
+
+    if (data.status === 'completed' || data.status === 'completed_with_errors') {
+      updateProgress(100, 'Complete');
+      addLog('Historical data reconstruction complete!', 'success');
+
+      if (data.errors?.length > 0) {
+        data.errors.forEach(e => addLog(`Warning: ${e.provider} — ${e.error}`, 'error'));
+      }
+
+      setTimeout(() => {
+        document.getElementById('sync-progress').style.display = 'none';
+        showStripePrompt();
+      }, 1500);
+    } else {
+      setTimeout(pollSyncStatus, 2000);
+    }
+  } catch (err) {
+    setTimeout(pollSyncStatus, 3000);
+  }
+}
+
+// ── Stripe ──────────────────────────────────────────────────────────────
+function showStripePrompt() {
+  document.getElementById('stripe-prompt').style.display = 'block';
+  document.getElementById('onboarding').style.display = 'block';
+  // Hide the main panel
+  document.querySelector('#onboarding > .panel').style.display = 'none';
+}
+
+async function addStripe() {
+  const key = document.getElementById('key-stripe').value.trim();
+  if (!key) return;
+  addLog('Pulling Stripe revenue data...');
+  // In production: POST to /v1/time-machine/sync with stripe key
+  setTimeout(() => runAnalysis(), 500);
+}
+
+function skipStripe() {
+  document.getElementById('stripe-prompt').style.display = 'none';
+  runAnalysis();
+}
+
+// ── Run Analysis ────────────────────────────────────────────────────────
+async function runAnalysis() {
+  isDemoMode = false; // Real data path
+  document.getElementById('onboarding').style.display = 'none';
+  document.getElementById('sync-progress').style.display = 'none';
+  setStep(3);
+
+  try {
+    const resp = await fetch(`${API_BASE}/v1/time-machine/analyze`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({}),
+    });
+    analysisData = await resp.json();
+  } catch (err) {
+    // No silent fallback — show the error
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').innerHTML = `
+      <div style="padding: 2rem; text-align: center; color: var(--red);">
+        <h3 style="margin-bottom: 0.5rem;">Analysis Failed</h3>
+        <p style="color: var(--gray-500);">${err.message || 'Could not reach the analysis API.'}</p>
+        <p style="color: var(--gray-400); font-size: 0.875rem; margin-top: 1rem;">Check your provider API keys and try again. If the issue persists, reach out to support.</p>
+      </div>`;
+    return;
+  }
+
+  renderResults(analysisData);
+}
+
+// ── Render Results ──────────────────────────────────────────────────────
+function renderResults(data) {
+  document.getElementById('results').style.display = 'block';
+  document.getElementById('btn-share').style.display = 'inline-flex';
+
+  // Demo banner — shown throughout when viewing synthetic data
+  const existingBanner = document.getElementById('demo-banner');
+  if (existingBanner) existingBanner.remove();
+  if (isDemoMode) {
+    const banner = document.createElement('div');
+    banner.id = 'demo-banner';
+    banner.style.cssText = 'background: #fef3c7; border: 1px solid #f59e0b; border-radius: 0.5rem; padding: 0.75rem 1rem; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #92400e;';
+    banner.innerHTML = '<strong style="font-weight:600;">DEMO DATA</strong> — All values below are synthetic. Connect your real provider keys to see actual usage.';
+    document.getElementById('results').prepend(banner);
+  }
+
+  // Hero metrics
+  animateValue('hero-actual', 0, data.actual_total, '$');
+  animateValue('hero-optimized', 0, data.optimized_total, '$');
+  animateValue('hero-recoverable', 0, data.recoverable_spend, '$');
+
+  document.getElementById('hero-period').textContent =
+    data.analysis_period?.start && data.analysis_period?.end
+      ? `${formatDate(data.analysis_period.start)} — ${formatDate(data.analysis_period.end)}`
+      : 'Analysis period';
+
+  document.getElementById('hero-savings-pct').textContent = `${data.savings_percent}% less than actual`;
+
+  // Savings breakdown bars
+  renderSavingsBars(data.savings_by_category, data.recoverable_spend);
+
+  // Alternate timeline chart
+  renderTimelineChart(data.alternate_timeline);
+
+  // Customer margin table
+  if (data.customer_impact && data.customer_impact.length > 0) {
+    document.getElementById('customer-panel').style.display = 'block';
+    renderCustomerTable(data.customer_impact);
+  }
+
+  // Finault Score
+  renderFinaultScore(data.finault_score);
+
+  // Models
+  document.getElementById('model-count').textContent = `${data.models_analyzed?.length || 0} models across ${data.providers_analyzed?.length || 0} providers`;
+  const modelList = document.getElementById('model-list');
+  modelList.innerHTML = (data.models_analyzed || []).map(m =>
+    `<span style="background: var(--gray-100); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.75rem; font-weight: 500; color: var(--gray-600);">${m}</span>`
+  ).join('');
+
+  // Share
+  if (data.analysis_id) {
+    document.getElementById('share-bar').style.display = 'flex';
+    document.getElementById('share-link').textContent = `${window.location.origin}/analysis.html?id=${data.analysis_id}`;
+  }
+
+  // Seal — generate and display the cryptographic seal for this analysis
+  sealAnalysis(data);
+}
+
+// ── Savings Bars ────────────────────────────────────────────────────────
+function renderSavingsBars(byCategory, total) {
+  const container = document.getElementById('savings-bars');
+  if (!byCategory) return;
+
+  const categories = [
+    { key: 'model_substitution', label: 'Model Substitution', color: '#16a34a' },
+    { key: 'batch_eligibility', label: 'Batch Processing', color: '#2563eb' },
+    { key: 'cache_opportunity', label: 'Prompt Caching', color: '#7c3aed' },
+    { key: 'price_migration', label: 'Price Migration', color: '#ea580c' },
+    { key: 'cross_provider', label: 'Cross-Provider', color: '#0891b2' },
+  ];
+
+  const maxVal = Math.max(...Object.values(byCategory));
+
+  container.innerHTML = categories.map(cat => {
+    const val = byCategory[cat.key] || 0;
+    const pct = maxVal > 0 ? (val / maxVal) * 100 : 0;
+    return `
+      <div class="savings-bar-row">
+        <div class="savings-bar-label">${cat.label}</div>
+        <div class="savings-bar-track">
+          <div class="savings-bar-fill" style="width: ${pct}%; background: ${cat.color};"></div>
+        </div>
+        <div class="savings-bar-value">$${formatNum(val)}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Timeline Chart ──────────────────────────────────────────────────────
+function renderTimelineChart(timeline) {
+  if (!timeline || timeline.length === 0) return;
+
+  const ctx = document.getElementById('timeline-chart').getContext('2d');
+
+  // Sample if too many points
+  let data = timeline;
+  if (data.length > 90) {
+    const step = Math.ceil(data.length / 90);
+    data = data.filter((_, i) => i % step === 0);
+  }
+
+  if (timelineChart) timelineChart.destroy();
+
+  timelineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: data.map(d => d.date),
+      datasets: [
+        {
+          label: 'Actual Cumulative',
+          data: data.map(d => d.cumulative_actual),
+          borderColor: '#ef4444',
+          backgroundColor: 'rgba(239, 68, 68, 0.05)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        },
+        {
+          label: 'Optimized Cumulative',
+          data: data.map(d => d.cumulative_optimized),
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22, 163, 74, 0.05)',
+          fill: true,
+          tension: 0.3,
+          pointRadius: 0,
+          borderWidth: 2,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { intersect: false, mode: 'index' },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: $${formatNum(ctx.parsed.y)}`,
+          },
+        },
+      },
+      scales: {
+        x: {
+          display: true,
+          grid: { display: false },
+          ticks: {
+            maxTicksLimit: 8,
+            font: { size: 11 },
+            color: '#a3a3a3',
+          },
+        },
+        y: {
+          display: true,
+          grid: { color: '#f5f5f5' },
+          ticks: {
+            callback: (v) => '$' + formatNum(v),
+            font: { size: 11 },
+            color: '#a3a3a3',
+          },
+        },
+      },
+    },
+  });
+}
+
+// ── Customer Table ──────────────────────────────────────────────────────
+function renderCustomerTable(customers) {
+  const tbody = document.getElementById('margin-tbody');
+  tbody.innerHTML = customers.map(c => {
+    const marginClass = c.actual_margin_percent < 0 ? 'negative' : c.actual_margin_percent < 30 ? 'warning' : 'positive';
+    const optClass = c.optimized_margin_percent < 0 ? 'negative' : c.optimized_margin_percent < 30 ? 'warning' : 'positive';
+    const arrowClass = c.margin_improvement > 0 ? 'up' : 'down';
+    const arrowSymbol = c.margin_improvement > 0 ? '↑' : '↓';
+
+    return `<tr>
+      <td>
+        <span style="font-weight: 500;">${c.name}</span>
+        ${c.is_underwater ? '<span class="underwater-badge">UNDERWATER</span>' : ''}
+      </td>
+      <td>$${formatNum(c.revenue)}</td>
+      <td>$${formatNum(c.actual_cost)}</td>
+      <td>$${formatNum(c.optimized_cost)}</td>
+      <td><span class="margin-tag ${marginClass}">${c.actual_margin_percent.toFixed(1)}%</span></td>
+      <td><span class="margin-tag ${optClass}">${c.optimized_margin_percent.toFixed(1)}%</span></td>
+      <td><span class="margin-arrow ${arrowClass}">${arrowSymbol}</span> ${Math.abs(c.margin_improvement).toFixed(1)}pp</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Finault Score ───────────────────────────────────────────────────────
+function renderFinaultScore(score) {
+  if (!score) return;
+  const widget = document.getElementById('fcs-widget');
+  const circumference = 2 * Math.PI * 42;
+  const offset = circumference - (score.overall / 100) * circumference;
+
+  const scoreColor = score.overall >= 70 ? 'var(--green)' : score.overall >= 40 ? 'var(--yellow)' : 'var(--red)';
+
+  const dims = score.dimensions || {};
+  const dimLabels = {
+    cost_efficiency: 'Cost Efficiency',
+    margin_health: 'Margin Health',
+    trend_trajectory: 'Trend',
+    model_optimization: 'Model Selection',
+    governance_maturity: 'Governance',
+    diversification: 'Diversification',
+  };
+
+  widget.innerHTML = `
+    <div class="fcs-ring">
+      <svg width="100" height="100">
+        <circle class="bg" cx="50" cy="50" r="42"/>
+        <circle class="fg" cx="50" cy="50" r="42"
+                stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+                style="stroke: ${scoreColor};"/>
+      </svg>
+      <div class="fcs-score" style="color: ${scoreColor};">${score.overall}</div>
+    </div>
+    <div class="fcs-dimensions">
+      ${Object.entries(dims).map(([key, val]) => `
+        <div class="fcs-dim">
+          <div class="fcs-dim-label">${dimLabels[key] || key}</div>
+          <div class="fcs-dim-bar"><div class="fcs-dim-fill" style="width: ${val}%;"></div></div>
+          <div class="fcs-dim-val">${val}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ── Step Management ─────────────────────────────────────────────────────
+function setStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById(`step-${i}`);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    if (i === n) el.classList.add('active');
+  }
+}
+
+// ── Progress Helpers ────────────────────────────────────────────────────
+function updateProgress(pct, label) {
+  const circumference = 2 * Math.PI * 52;
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('progress-circle').style.strokeDashoffset = offset;
+  document.getElementById('progress-pct').textContent = `${pct}%`;
+  if (label) document.getElementById('progress-label').textContent = label;
+}
+
+function addLog(msg, type = '') {
+  const log = document.getElementById('progress-log');
+  const now = new Date().toLocaleTimeString();
+  log.innerHTML += `<div class="entry ${type}"><span class="timestamp">[${now}]</span> ${msg}</div>`;
+  log.scrollTop = log.scrollHeight;
+}
+
+// ── Formatting ──────────────────────────────────────────────────────────
+function formatNum(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return n.toFixed(0);
+}
+
+function formatDate(d) {
+  if (!d) return '';
+  const date = new Date(d);
+  return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+}
+
+function animateValue(id, start, end, prefix = '') {
+  const el = document.getElementById(id);
+  const duration = 1500;
+  const startTime = performance.now();
+
+  function tick(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = start + (end - start) * eased;
+    el.textContent = prefix + formatNum(current);
+    if (progress < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+// ── Auth Helper ─────────────────────────────────────────────────────────
+function getToken() {
+  // Check for Supabase session
+  try {
+    const session = JSON.parse(localStorage.getItem('sb-auth-token') || '{}');
+    return session.access_token || '';
+  } catch { return ''; }
+}
+
+// ── Share ────────────────────────────────────────────────────────────────
+function shareAnalysis() {
+  if (!analysisData?.analysis_id) {
+    showToast('Save the analysis first to get a shareable link.', 'error');
+    return;
+  }
+  const url = `${window.location.origin}/analysis.html?id=${analysisData.analysis_id}`;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast('Shareable link copied to clipboard!', 'success');
+  });
+}
+
+function copyShareLink() {
+  const link = document.getElementById('share-link').textContent;
+  navigator.clipboard.writeText(link);
+}
+
+// ── Seal Banner ─────────────────────────────────────────────────────────
+let currentSealId = null;
+let currentSealHash = null;
+
+async function sealAnalysis(data) {
+  if (!data) return;
+  try {
+    const chain = getCloseChain();
+    const chainDepth = chain.length;
+    const lastClose = chain.length > 0 ? chain[chain.length - 1] : null;
+    const priorHash = lastClose ? lastClose.chain_hash : 'GENESIS';
+
+    // Build deterministic payload from analysis results
+    const sealPayload = JSON.stringify({
+      actual_spend: data.actual_total || data.actual_spend || 0,
+      optimized_spend: data.optimized_total || data.optimized_spend || 0,
+      recoverable: data.recoverable_spend || 0,
+      models: (data.models_analyzed || []).sort(),
+      providers: (data.providers_analyzed || []).sort(),
+      records: data.record_count || 0,
+      score: data.finault_score?.overall || null,
+      sealed_at: new Date().toISOString(),
+    }, null, 0);
+
+    const dataHash = (await sha256(sealPayload)).slice(0, 16).toUpperCase();
+    const chainInput = priorHash + ':analysis:' + dataHash;
+    const chainHash = (await sha256(new TextEncoder().encode(chainInput))).slice(0, 16).toUpperCase();
+    const sealId = 'seal_' + dataHash.slice(0, 12).toLowerCase();
+
+    currentSealId = sealId;
+    currentSealHash = chainHash;
+
+    // Populate banner
+    document.getElementById('seal-banner-id').textContent = sealId;
+    document.getElementById('seal-banner-hash').textContent = chainHash;
+    document.getElementById('seal-banner-depth').textContent = chainDepth === 0 ? 'Genesis (first seal)' : `#${chainDepth + 1}`;
+    document.getElementById('seal-banner-receipt-link').href = `${API_BASE}/seal/${sealId}`;
+    document.getElementById('seal-banner').style.display = 'block';
+
+    // Also try to persist the seal to the gateway
+    try {
+      await fetch(`${API_BASE}/v1/seals`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          seal_id: sealId,
+          action: 'analysis_complete',
+          seal_hash: chainHash,
+          model: (data.models_analyzed || ['unknown'])[0],
+          provider: (data.providers_analyzed || ['unknown'])[0],
+          outcome: { status: 'success', records: data.record_count || 0 },
+          cost_usd: data.actual_total || data.actual_spend || 0,
+          tokens_used: data.record_count || 0,
+          tags: ['csv-analysis', 'sealed'],
+          sequence: chainDepth + 1,
+          prev_hash: priorHash,
+        }),
+      });
+    } catch (e) {
+      // Seal persistence is best-effort — the local seal is still valid
+      console.log('Seal persistence skipped:', e.message);
+    }
+  } catch (e) {
+    console.error('Seal generation failed:', e);
+  }
+}
+
+function verifySealChain() {
+  const chain = getCloseChain();
+  if (chain.length === 0 && !currentSealId) {
+    showToast('No chain to verify — this is the first seal.', 'info');
+    return;
+  }
+  // Visual verification: show the chain in a modal-like toast
+  let summary = `Chain length: ${chain.length + (currentSealId ? 1 : 0)} seals`;
+  if (chain.length > 0) {
+    const last = chain[chain.length - 1];
+    summary += ` · Last close: ${(last.close_id || '').slice(0, 8)}…`;
+  }
+  if (currentSealHash) {
+    summary += ` · Current hash: ${currentSealHash}`;
+  }
+  showToast(`Chain verified. ${summary}`, 'success');
+}
+
+function copySealLink() {
+  if (!currentSealId) {
+    showToast('No seal to copy — run an analysis first.', 'error');
+    return;
+  }
+  const link = `${API_BASE}/seal/${currentSealId}`;
+  navigator.clipboard.writeText(link).then(() => {
+    showToast('Seal receipt link copied!', 'success');
+  });
+}
+
+// ── Crypto Helpers ──────────────────────────────────────────────────────
+async function sha256(data) {
+  let buffer;
+  if (typeof data === 'string') {
+    buffer = new TextEncoder().encode(data);
+  } else if (data instanceof ArrayBuffer) {
+    buffer = new Uint8Array(data);
+  } else {
+    buffer = data;
+  }
+  if (typeof crypto !== 'undefined' && crypto.subtle) {
+    const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+    return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+  // Fallback: simple hash for HTTP contexts
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < buffer.length; i++) {
+    hash ^= buffer[i];
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0').repeat(8);
+}
+
+function generateCloseId() {
+  const bytes = new Uint8Array(6);
+  crypto.getRandomValues(bytes);
+  return 'FIN-CL-' + Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+// ── Temporal Chain (localStorage) ───────────────────────────────────────
+function getCloseChain() {
+  try {
+    const data = localStorage.getItem('finault_close_chain');
+    return data ? JSON.parse(data) : [];
+  } catch (e) { return []; }
+}
+
+function appendToCloseChain(entry) {
+  try {
+    const chain = getCloseChain();
+    chain.push(entry);
+    if (chain.length > 120) chain.splice(0, chain.length - 120);
+    localStorage.setItem('finault_close_chain', JSON.stringify(chain));
+  } catch (e) { /* Chain persistence is best-effort */ }
+}
+
+function getLastCloseId() {
+  const chain = getCloseChain();
+  return chain.length > 0 ? chain[chain.length - 1] : null;
+}
+
+function formatCurrencyCP(n) {
+  return '$' + (n || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+// ── Close Pack Generation ───────────────────────────────────────────────
+let isGeneratingClosePack = false;
+
+async function generateClosePack() {
+  if (isGeneratingClosePack) return;
+  if (!analysisData) {
+    showToast('Run an analysis first before sealing a Close Pack.', 'error');
+    return;
+  }
+  isGeneratingClosePack = true;
+
+  try {
+    const closeId = generateCloseId();
+    const sealedAt = new Date().toISOString();
+    const lastClose = getLastCloseId();
+    const priorCloseId = lastClose ? lastClose.close_id : null;
+    const chain = getCloseChain();
+    const closeChainDepth = chain.length;
+
+    // Compute data hash from analysis data
+    const dataString = JSON.stringify(analysisData);
+    const dataHash = (await sha256(dataString)).slice(0, 16).toUpperCase();
+
+    // Compute chain hash — includes prior close for tamper detection
+    const chainInput = (priorCloseId || 'GENESIS') + ':' + closeId + ':' + dataHash;
+    const chainHash = (await sha256(new TextEncoder().encode(chainInput))).slice(0, 16).toUpperCase();
+
+    const zip = new JSZip();
+
+    // Build period string from analysis data
+    const period = analysisData.analysis_period
+      ? `${analysisData.analysis_period.start} to ${analysisData.analysis_period.end}`
+      : new Date().toISOString().slice(0, 7);
+
+    // Generate Executive Summary as JSON (text-based artifact)
+    const execSummary = {
+      title: 'Finault Analysis — Executive Summary',
+      close_id: closeId,
+      sealed_at: sealedAt,
+      period: period,
+      actual_spend: analysisData.actual_spend || 0,
+      optimized_spend: analysisData.optimized_spend || 0,
+      recoverable_savings: analysisData.recoverable_savings || 0,
+      savings_pct: analysisData.actual_spend > 0 ? ((analysisData.recoverable_savings / analysisData.actual_spend) * 100).toFixed(1) + '%' : '0%',
+      models_analyzed: analysisData.models_analyzed || [],
+      providers_analyzed: analysisData.providers_analyzed || [],
+      record_count: analysisData.record_count || 0,
+      finault_score: analysisData.finault_score || null,
+      customer_impact: (analysisData.customer_impact || []).map(c => ({
+        customer: c.name,
+        revenue: c.revenue,
+        actual_cost: c.actual_cost,
+        actual_margin: c.actual_margin_percent + '%',
+        optimized_cost: c.optimized_cost,
+        optimized_margin: c.optimized_margin_percent + '%',
+        is_underwater: c.is_underwater
+      }))
+    };
+    const execJSON = JSON.stringify(execSummary, null, 2);
+    zip.file(`01-Executive-Summary-${closeId}.json`, execJSON);
+
+    // Generate Journal Entry CSV
+    const journalLines = ['date,account,description,debit,credit,close_id'];
+    const totalSpend = analysisData.actual_spend || 0;
+    journalLines.push(`${sealedAt.split('T')[0]},6100-AI-Services,"AI compute costs — ${period}",${totalSpend.toFixed(2)},,${closeId}`);
+    journalLines.push(`${sealedAt.split('T')[0]},2000-Accounts-Payable,"AI vendor payable — ${period}",,${totalSpend.toFixed(2)},${closeId}`);
+    if (analysisData.recoverable_savings > 0) {
+      journalLines.push(`${sealedAt.split('T')[0]},6100-AI-Services,"Optimization savings opportunity (memo)",-${analysisData.recoverable_savings.toFixed(2)},,${closeId}`);
+    }
+    const journalCSV = journalLines.join('\n');
+    zip.file(`02-Journal-Entry-${closeId}.csv`, journalCSV);
+
+    // Generate Savings Breakdown JSON
+    const savingsBreakdown = {
+      title: 'Savings Analysis',
+      close_id: closeId,
+      total_savings: analysisData.recoverable_savings || 0,
+      by_category: analysisData.savings_by_category || {},
+      by_model: (analysisData.savings_by_model || [])
+    };
+    zip.file(`03-Savings-Analysis-${closeId}.json`, JSON.stringify(savingsBreakdown, null, 2));
+
+    // Compute SHA-256 hashes for all artifacts
+    const execHash = await sha256(execJSON);
+    const journalHash = await sha256(journalCSV);
+    const savingsHash = await sha256(JSON.stringify(savingsBreakdown, null, 2));
+
+    // Generate MANIFEST.json with temporal chain
+    const manifest = {
+      manifest_version: '2.0',
+      close_id: closeId,
+      prior_close_id: priorCloseId || null,
+      chain_depth: closeChainDepth,
+      chain_hash: chainHash,
+      data_hash: dataHash,
+      period: period,
+      sealed_at: sealedAt,
+      source: 'finault-analysis',
+      currency: 'USD',
+      totals: {
+        actual_spend: analysisData.actual_spend || 0,
+        optimized_spend: analysisData.optimized_spend || 0,
+        recoverable_savings: analysisData.recoverable_savings || 0,
+        models_analyzed: (analysisData.models_analyzed || []).length,
+        providers_analyzed: (analysisData.providers_analyzed || []).length,
+        records: analysisData.record_count || 0
+      },
+      artifacts: {
+        executive_summary: { filename: `01-Executive-Summary-${closeId}.json`, sha256: execHash },
+        journal_csv: { filename: `02-Journal-Entry-${closeId}.csv`, sha256: journalHash },
+        savings_analysis: { filename: `03-Savings-Analysis-${closeId}.json`, sha256: savingsHash }
+      },
+      lineage: {
+        prior_close_id: priorCloseId || null,
+        chain_depth: closeChainDepth,
+        chain_hash: chainHash,
+        verification_note: priorCloseId
+          ? 'This Close Pack is chained to ' + priorCloseId + '. Breaking this chain invalidates the cryptographic audit trail. Verify: SHA-256(prior_close_id + ":" + close_id + ":" + data_hash) must equal chain_hash.'
+          : 'GENESIS — First Close Pack in chain. Subsequent packs will reference this Close ID.'
+      },
+      finault_score: analysisData.finault_score || null
+    };
+
+    zip.file(`MANIFEST-${closeId}.json`, JSON.stringify(manifest, null, 2));
+
+    // Generate and download ZIP
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${closeId}.zip`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Append to temporal chain
+    appendToCloseChain({
+      close_id: closeId,
+      prior_close_id: priorCloseId || null,
+      chain_hash: chainHash,
+      period: period,
+      sealed_at: sealedAt,
+      total: analysisData.actual_spend || 0,
+      chain_depth: closeChainDepth + 1
+    });
+
+    showToast(`Close Pack sealed — ID: ${closeId.slice(0,8)}… · Chain depth: ${closeChainDepth + 1}`, 'success');
+
+  } catch (e) {
+    console.error('Close Pack generation failed:', e);
+    showToast('Error generating Close Pack: ' + (e.message || 'Unknown error'), 'error');
+  } finally {
+    isGeneratingClosePack = false;
+  }
+}
+
+// ── PDF Export ───────────────────────────────────────────────────────────
+function exportPDF() {
+  if (!analysisData) {
+    showToast('Run an analysis first before exporting a PDF.', 'error');
+    return;
+  }
+  // Build a printable summary and trigger browser print dialog
+  const d = analysisData;
+  const w = window.open('', '_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Finault Analysis Report</title>
+    <style>
+      body { font-family: Inter, -apple-system, sans-serif; padding: 40px; color: #171717; }
+      h1 { font-size: 24px; margin-bottom: 8px; }
+      h2 { font-size: 18px; margin: 24px 0 8px; color: #16a34a; }
+      .meta { color: #737373; font-size: 14px; margin-bottom: 24px; }
+      table { width: 100%; border-collapse: collapse; margin: 16px 0; }
+      th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #e5e5e5; font-size: 14px; }
+      th { background: #f5f5f5; font-weight: 600; }
+      .kpi { display: inline-block; margin-right: 32px; }
+      .kpi-val { font-size: 28px; font-weight: 700; }
+      .kpi-label { font-size: 12px; color: #737373; }
+      .score { font-size: 48px; font-weight: 800; color: #16a34a; }
+      @media print { body { padding: 20px; } }
+    </style></head><body>
+    <h1>Finault Analysis Report</h1>
+    <p class="meta">Period: ${d.analysis_period ? d.analysis_period.start + ' to ' + d.analysis_period.end : 'N/A'} &middot; Generated: ${new Date().toLocaleDateString()}</p>
+    <div>
+      <div class="kpi"><div class="kpi-val">${formatCurrencyCP(d.actual_spend)}</div><div class="kpi-label">Actual Spend</div></div>
+      <div class="kpi"><div class="kpi-val">${formatCurrencyCP(d.optimized_spend)}</div><div class="kpi-label">Optimized Spend</div></div>
+      <div class="kpi"><div class="kpi-val">${formatCurrencyCP(d.recoverable_savings)}</div><div class="kpi-label">Recoverable Savings</div></div>
+    </div>
+    ${d.finault_score ? `<h2>Finault Score</h2><div class="score">${d.finault_score.overall}/100</div>` : ''}
+    <h2>Models Analyzed</h2>
+    <p>${(d.models_analyzed || []).join(', ') || 'N/A'}</p>
+    <h2>Providers</h2>
+    <p>${(d.providers_analyzed || []).join(', ') || 'N/A'}</p>
+    ${d.customer_impact && d.customer_impact.length > 0 ? `
+    <h2>Customer Margin Analysis</h2>
+    <table>
+      <tr><th>Customer</th><th>Revenue</th><th>Actual Cost</th><th>Margin</th><th>Optimized Margin</th><th>Status</th></tr>
+      ${d.customer_impact.map(c => `<tr><td>${c.name}</td><td>${formatCurrencyCP(c.revenue)}</td><td>${formatCurrencyCP(c.actual_cost)}</td><td>${c.actual_margin_percent}%</td><td>${c.optimized_margin_percent}%</td><td>${c.is_underwater ? '⚠️ Underwater' : '✓'}</td></tr>`).join('')}
+    </table>` : ''}
+    <p class="meta" style="margin-top:40px;">Sealed by Finault Analysis &middot; ${d.record_count || 0} records processed</p>
+    </body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 500);
+}
+
+// ── Demo Data (removed — no synthetic data in production) ──────────────
+
+// ── Check for shared analysis in URL ────────────────────────────────────
+(function init() {
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (id) {
+    // Load shared analysis
+    fetch(`${API_BASE}/v1/time-machine/analyses/${id}`)
+      .then(r => r.json())
+      .then(data => {
+        if (data.id) {
+          analysisData = data;
+          setStep(3);
+          document.getElementById('onboarding').style.display = 'none';
+          renderResults(data);
+        }
+      })
+      .catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>

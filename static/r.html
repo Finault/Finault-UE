@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Your AI Margin Report</title>
+    <meta name="description" content="AI cost governance results — see your gross margin, customer profitability, and optimization opportunities.">
+    <meta property="og:title" content="Finault — AI Margin Report">
+    <meta property="og:description" content="See how your AI features are impacting your margins.">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green: #16a34a; --green-dark: #15803d; --green-light: #f0fdf4; --green-50: #f0fdf4; --green-border: #bbf7d0;
+            --red: #ef4444; --red-dark: #dc2626; --red-light: #fee2e2;
+            --yellow: #eab308; --yellow-light: #fef3c7;
+            --gray-900: #171717; --gray-800: #262626; --gray-700: #404040; --gray-600: #525252;
+            --gray-500: #737373; --gray-400: #a3a3a3; --gray-300: #d4d4d4; --gray-200: #e5e5e5;
+            --gray-100: #f5f5f5; --gray-50: #fafafa; --white: #fff; --black: #111;
+            --border: #e5e5e5;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-900);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* ─── Layout ─── */
+        .results-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        @media (max-width: 640px) {
+            .results-container { padding: 1rem 1rem 3rem; }
+        }
+
+        /* ─── Header ─── */
+        .results-header {
+            text-align: center;
+            padding: 1.5rem 0 1rem;
+        }
+
+        .results-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: .5rem;
+            text-decoration: none;
+            color: var(--gray-900);
+            font-size: 1.125rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .results-logo svg { width: 28px; height: 28px; }
+
+        .results-meta {
+            margin-top: .5rem;
+            font-size: .8125rem;
+            color: var(--gray-500);
+        }
+
+        /* ─── Hero Metric ─── */
+        .hero-metric {
+            text-align: center;
+            padding: 3rem 1rem;
+            margin-bottom: 1.5rem;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+        }
+
+        .hero-number {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            margin-bottom: .5rem;
+        }
+
+        @media (max-width: 640px) { .hero-number { font-size: 3rem; } }
+
+        .hero-number.good { color: var(--green); }
+        .hero-number.warning { color: var(--yellow); }
+        .hero-number.danger { color: var(--red); }
+
+        .hero-label {
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: var(--gray-600);
+        }
+
+        .hero-context {
+            margin-top: .75rem;
+            font-size: .875rem;
+            color: var(--gray-500);
+        }
+
+        .hero-context strong { color: var(--gray-700); font-weight: 600; }
+
+        /* ─── Bessemer Gauge ─── */
+        .gauge-bar {
+            display: flex;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 1.25rem auto 0;
+            max-width: 400px;
+        }
+
+        .gauge-bar .danger-zone { flex: 25; background: linear-gradient(90deg, #dc2626, #ef4444); }
+        .gauge-bar .warning-zone { flex: 15; background: linear-gradient(90deg, #f59e0b, #eab308); }
+        .gauge-bar .good-zone { flex: 20; background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .gauge-bar .great-zone { flex: 15; background: linear-gradient(90deg, #16a34a, #15803d); }
+        .gauge-bar .elite-zone { flex: 10; background: #166534; }
+
+        .gauge-labels {
+            display: flex;
+            justify-content: space-between;
+            max-width: 400px;
+            margin: .25rem auto 0;
+            font-size: .625rem;
+            color: var(--gray-400);
+        }
+
+        .gauge-marker {
+            position: absolute;
+            top: -4px;
+            transition: left .4s ease;
+        }
+
+        .gauge-marker-line {
+            width: 3px;
+            height: 18px;
+            background: var(--gray-900);
+            border-radius: 2px;
+            margin: 0 auto;
+        }
+
+        .gauge-wrapper { position: relative; max-width: 400px; margin: 1.25rem auto 0; }
+
+        /* ─── Section Cards ─── */
+        .section-card {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: .75rem;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
+        }
+
+        .section-title {
+            font-size: .875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .section-body { padding: 0; }
+
+        /* ─── Customer Table ─── */
+        .customer-table { width: 100%; border-collapse: collapse; }
+
+        .customer-table th {
+            font-size: .6875rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            color: var(--gray-500);
+            text-align: left;
+            padding: .625rem 1.25rem;
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .customer-table td {
+            padding: .75rem 1.25rem;
+            font-size: .875rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .customer-table tr:last-child td { border-bottom: none; }
+
+        .customer-table tr.profitable td { background: #f0fdf410; }
+        .customer-table tr.unprofitable td { background: #fee2e210; }
+
+        .customer-name { font-weight: 500; color: var(--gray-900); }
+
+        .margin-badge {
+            display: inline-block;
+            padding: .125rem .5rem;
+            border-radius: 1rem;
+            font-size: .75rem;
+            font-weight: 600;
+        }
+
+        .margin-badge.positive { background: var(--green-50); color: var(--green-dark); border: 1px solid var(--green-border); }
+        .margin-badge.negative { background: var(--red-light); color: var(--red-dark); border: 1px solid #fecaca; }
+
+        /* ─── Recommendation Card ─── */
+        .reco-card {
+            padding: 1.5rem;
+        }
+
+        .reco-badge {
+            display: inline-block;
+            padding: .25rem .625rem;
+            border-radius: .25rem;
+            font-size: .6875rem;
+            font-weight: 600;
+            letter-spacing: .03em;
+            text-transform: uppercase;
+            background: var(--green-50);
+            color: var(--green-dark);
+            margin-bottom: .75rem;
+        }
+
+        .reco-headline {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: .5rem;
+            line-height: 1.4;
+        }
+
+        .reco-detail {
+            font-size: .875rem;
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            line-height: 1.5;
+        }
+
+        .reco-impact {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .reco-stat {
+            text-align: center;
+        }
+
+        .reco-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .reco-stat-value.green { color: var(--green); }
+        .reco-stat-label {
+            font-size: .6875rem;
+            color: var(--gray-500);
+            margin-top: .125rem;
+        }
+
+        /* ─── Close Pack Seal ─── */
+        .seal-card {
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .seal-icon {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto .75rem;
+            background: var(--gray-100);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .seal-title {
+            font-size: .875rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: .25rem;
+        }
+
+        .seal-hash {
+            font-family: 'SF Mono', 'Cascadia Code', monospace;
+            font-size: .6875rem;
+            color: var(--gray-400);
+            letter-spacing: .03em;
+            word-break: break-all;
+            margin-bottom: .75rem;
+        }
+
+        .seal-chain {
+            font-size: .75rem;
+            color: var(--gray-500);
+            margin-bottom: 1rem;
+        }
+
+        /* ─── Buttons ─── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: .5rem;
+            padding: .625rem 1.25rem;
+            border-radius: .5rem;
+            font-size: .875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all .15s;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        .btn-primary { background: var(--green); color: var(--white); }
+        .btn-primary:hover { background: var(--green-dark); }
+
+        .btn-secondary { background: var(--white); color: var(--gray-700); border: 1px solid var(--gray-300); }
+        .btn-secondary:hover { background: var(--gray-50); }
+
+        /* ─── Full Analysis Link ─── */
+        .full-analysis {
+            text-align: center;
+            margin-top: 1rem;
+            padding: 1.5rem;
+        }
+
+        .full-analysis a {
+            color: var(--green);
+            font-size: .875rem;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .full-analysis a:hover { text-decoration: underline; }
+
+        /* ─── Footer ─── */
+        .results-footer {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            font-size: .75rem;
+            color: var(--gray-400);
+        }
+
+        .results-footer a { color: var(--gray-500); text-decoration: none; }
+        .results-footer a:hover { color: var(--green); }
+
+        /* ─── Loading State ─── */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .loading-spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin .6s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+
+        .error-state h2 { font-size: 1.25rem; color: var(--gray-900); margin-bottom: .5rem; }
+
+        /* ─── Trend Chart ─── */
+        .trend-chart {
+            padding: 1.25rem;
+        }
+
+        .trend-canvas {
+            width: 100%;
+            height: 160px;
+        }
+
+        /* ─── Summary Stats Row ─── */
+        .summary-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 480px) { .summary-stats { grid-template-columns: 1fr; } }
+
+        .summary-stat {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: .75rem;
+            padding: 1rem 1.25rem;
+            text-align: center;
+        }
+
+        .summary-stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .summary-stat-label {
+            font-size: .6875rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            margin-top: .125rem;
+            letter-spacing: .02em;
+        }
+    </style>
+</head>
+<body>
+    <div class="results-container" id="app">
+        <!-- Loading state -->
+        <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <div style="font-size:.875rem;color:var(--gray-500)">Loading your results...</div>
+        </div>
+
+        <!-- Error state -->
+        <div class="error-state" id="errorState" style="display:none">
+            <h2>Report not found</h2>
+            <p>This link may have expired or the report ID is invalid.</p>
+            <div style="margin-top:1.5rem">
+                <a href="/" class="btn btn-secondary">Go to Finault</a>
+            </div>
+        </div>
+
+        <!-- Results content (hidden until loaded) -->
+        <div id="resultsContent" style="display:none">
+
+            <!-- Header -->
+            <div class="results-header">
+                <a href="/" class="results-logo">
+                    <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#16a34a"/><path d="M8 16h4l3-8 5 16 3-8h4" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Finault
+                </a>
+                <div class="results-meta" id="reportMeta"></div>
+            </div>
+
+            <!-- Hero Metric: One number, huge, with context -->
+            <div class="hero-metric" id="heroSection">
+                <div class="hero-number" id="heroNumber">—</div>
+                <div class="hero-label" id="heroLabel">Gross Margin</div>
+                <div class="hero-context" id="heroContext"></div>
+                <div class="gauge-wrapper">
+                    <div class="gauge-bar">
+                        <div class="danger-zone"></div>
+                        <div class="warning-zone"></div>
+                        <div class="good-zone"></div>
+                        <div class="great-zone"></div>
+                        <div class="elite-zone"></div>
+                    </div>
+                    <div class="gauge-marker" id="gaugeMarker">
+                        <div class="gauge-marker-line"></div>
+                    </div>
+                    <div class="gauge-labels">
+                        <span>Danger</span>
+                        <span>Supernova ~25%</span>
+                        <span>Shooting Star ~60%</span>
+                        <span>SaaS 75%+</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Summary Stats -->
+            <div class="summary-stats" id="summaryStats"></div>
+
+            <!-- Customer Table: Red/Green -->
+            <div class="section-card" id="customerSection" style="display:none">
+                <div class="section-title">Customer Profitability</div>
+                <div class="section-body">
+                    <table class="customer-table">
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Revenue</th>
+                                <th>AI Cost</th>
+                                <th>Margin</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customerTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- One Recommendation -->
+            <div class="section-card" id="recoSection" style="display:none">
+                <div class="section-title">Your fastest path to better margins</div>
+                <div class="section-body">
+                    <div class="reco-card" id="recoCard"></div>
+                </div>
+            </div>
+
+            <!-- Trend (if multi-month) or Projection -->
+            <div class="section-card" id="trendSection" style="display:none">
+                <div class="section-title" id="trendTitle">Margin Trend</div>
+                <div class="section-body">
+                    <div class="trend-chart">
+                        <canvas id="trendCanvas" class="trend-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Close Pack Seal -->
+            <div class="section-card" id="sealSection">
+                <div class="section-body">
+                    <div class="seal-card">
+                        <div class="seal-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        </div>
+                        <div class="seal-title">Cryptographically Sealed</div>
+                        <div class="seal-hash" id="sealHash"></div>
+                        <div class="seal-chain" id="sealChain"></div>
+                        <a class="btn btn-secondary" id="downloadBtn" href="#">Download Board Deck PDF</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Full Analysis Link -->
+            <div class="full-analysis">
+                <a href="/app" id="fullAnalysisLink">See full analysis &rarr;</a>
+            </div>
+
+            <!-- Footer -->
+            <div class="results-footer">
+                Generated by <a href="/">Finault</a> &mdash; AI Cost Governance<br>
+                <span id="footerTimestamp"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+
+        // ─── Supabase ───
+        const SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ─── Helpers ───
+        function formatCurrency(n) {
+            if (n == null || isNaN(n)) return '$0';
+            if (Math.abs(n) >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+            if (Math.abs(n) >= 1000) return '$' + (n / 1000).toFixed(n >= 10000 ? 0 : 1) + 'K';
+            return '$' + n.toFixed(2);
+        }
+
+        function getMarginClass(margin) {
+            if (margin >= 60) return 'good';
+            if (margin >= 25) return 'warning';
+            return 'danger';
+        }
+
+        function getMarginContext(margin) {
+            if (margin >= 75) return 'SaaS-like margins. You\'re in elite territory.';
+            if (margin >= 60) return 'Investors want 60%. <strong>You\'re there.</strong>';
+            if (margin >= 40) return 'Bessemer Shooting Star range. Solid, with room to improve.';
+            if (margin >= 25) return 'Supernova range (~25%). Investors will ask questions.';
+            if (margin >= 0) return 'Below Supernova. <strong>Investors want 60%.</strong>';
+            return 'Negative margin. Your AI costs exceed revenue. <strong>This needs attention.</strong>';
+        }
+
+        function getGaugePosition(margin) {
+            // Map margin to 0-100% of gauge bar
+            // Gauge: 0-25% danger | 25-40% warning | 40-60% good | 60-75% great | 75-85% elite
+            const clamped = Math.max(-20, Math.min(85, margin));
+            return ((clamped + 20) / 105) * 100;
+        }
+
+        // ─── DOWNGRADE MAP (same as app.html) ───
+        const DOWNGRADE_MAP = {
+            'claude-opus-4-5':   { to: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5', savingsRatio: 0.40 },
+            'claude-opus-4':     { to: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5', savingsRatio: 0.80 },
+            'claude-3-opus':     { to: 'claude-sonnet-4-5', label: 'Claude Sonnet 4.5', savingsRatio: 0.80 },
+            'claude-sonnet-4-5': { to: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', savingsRatio: 0.67 },
+            'claude-sonnet-4':   { to: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', savingsRatio: 0.67 },
+            'claude-3.5-sonnet': { to: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', savingsRatio: 0.67 },
+            'claude-3-sonnet':   { to: 'claude-haiku-4-5', label: 'Claude Haiku 4.5', savingsRatio: 0.67 },
+            'gpt-4':             { to: 'gpt-4.1', label: 'GPT-4.1', savingsRatio: 0.90 },
+            'gpt-4-turbo':       { to: 'gpt-4.1', label: 'GPT-4.1', savingsRatio: 0.76 },
+            'gpt-4.1':          { to: 'gpt-4.1-mini', label: 'GPT-4.1 Mini', savingsRatio: 0.80 },
+            'gpt-4o':            { to: 'gpt-4o-mini', label: 'GPT-4o Mini', savingsRatio: 0.94 },
+            'gpt-4.1-mini':     { to: 'gpt-4.1-nano', label: 'GPT-4.1 Nano', savingsRatio: 0.75 },
+            'o1':                { to: 'o3', label: 'o3', savingsRatio: 0.87 },
+            'o3':                { to: 'o3-mini', label: 'o3 Mini', savingsRatio: 0.45 },
+            'gemini-2.5-pro':    { to: 'gemini-2.5-flash', label: 'Gemini 2.5 Flash', savingsRatio: 0.93 },
+            'gemini-1.5-pro':    { to: 'gemini-1.5-flash', label: 'Gemini 1.5 Flash', savingsRatio: 0.94 },
+            'llama-3.1-405b':    { to: 'llama-3.1-70b', label: 'Llama 3.1 70B', savingsRatio: 0.97 },
+        };
+
+        // ─── Extract report ID from URL ───
+        function getReportId() {
+            const path = window.location.pathname;
+            // Support /r/abc123 or /r.html?id=abc123
+            const pathMatch = path.match(/\/r\/([a-zA-Z0-9-]+)/);
+            if (pathMatch) return pathMatch[1];
+            const params = new URLSearchParams(window.location.search);
+            return params.get('id') || params.get('report');
+        }
+
+        // ─── Main: Fetch and Render ───
+        async function loadReport() {
+            const reportId = getReportId();
+            if (!reportId) {
+                showError();
+                return;
+            }
+
+            try {
+                // Fetch Close Pack by ID
+                const { data, error } = await sb
+                    .from('close_packs')
+                    .select('*')
+                    .eq('id', reportId)
+                    .limit(1)
+                    .single();
+
+                if (error || !data) {
+                    // Try by close_id field
+                    const { data: byCloseId, error: err2 } = await sb
+                        .from('close_packs')
+                        .select('*')
+                        .eq('close_id', reportId)
+                        .limit(1)
+                        .single();
+
+                    if (err2 || !byCloseId) {
+                        showError();
+                        return;
+                    }
+                    renderReport(byCloseId);
+                    return;
+                }
+
+                renderReport(data);
+            } catch (e) {
+                console.error('[results] Load error:', e);
+                showError();
+            }
+        }
+
+        function showError() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = '';
+        }
+
+        function renderReport(closePack) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('resultsContent').style.display = '';
+
+            const margins = closePack.margins || {};
+            const totalCost = closePack.total_cost || margins.ai_spend || 0;
+            const monthlyRevenue = margins.monthly_revenue || 0;
+            const customerCount = margins.customer_count || 0;
+            const period = closePack.period || '';
+            const company = closePack.company || margins.company || '';
+
+            // ─── Report Meta ───
+            const metaParts = [];
+            if (company) metaParts.push(company);
+            if (period) metaParts.push(period);
+            document.getElementById('reportMeta').textContent = metaParts.join(' — ');
+
+            // ─── Hero Metric ───
+            if (monthlyRevenue > 0) {
+                const grossMargin = ((monthlyRevenue - totalCost) / monthlyRevenue * 100);
+                const heroEl = document.getElementById('heroNumber');
+                heroEl.textContent = grossMargin.toFixed(0) + '%';
+                heroEl.className = 'hero-number ' + getMarginClass(grossMargin);
+                document.getElementById('heroLabel').textContent = 'Gross Margin';
+                document.getElementById('heroContext').innerHTML = getMarginContext(grossMargin);
+
+                // Position gauge marker
+                const pos = getGaugePosition(grossMargin);
+                document.getElementById('gaugeMarker').style.left = pos + '%';
+            } else {
+                // Spend-only mode
+                document.getElementById('heroNumber').textContent = formatCurrency(totalCost);
+                document.getElementById('heroNumber').className = 'hero-number';
+                document.getElementById('heroLabel').textContent = 'Monthly AI Spend';
+                document.getElementById('heroContext').innerHTML = period ? `Billing period: ${period}` : '';
+                document.querySelector('.gauge-wrapper').style.display = 'none';
+            }
+
+            // ─── Summary Stats ───
+            const statsHtml = [];
+            statsHtml.push(`
+                <div class="summary-stat">
+                    <div class="summary-stat-value">${formatCurrency(totalCost)}</div>
+                    <div class="summary-stat-label">AI Spend</div>
+                </div>
+            `);
+            if (monthlyRevenue > 0) {
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${formatCurrency(monthlyRevenue)}</div>
+                        <div class="summary-stat-label">Monthly Revenue</div>
+                    </div>
+                `);
+            }
+            if (customerCount > 0) {
+                const costPerCustomer = totalCost / customerCount;
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${formatCurrency(costPerCustomer)}</div>
+                        <div class="summary-stat-label">Cost per Customer</div>
+                    </div>
+                `);
+            }
+            if (closePack.row_count) {
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${closePack.row_count.toLocaleString()}</div>
+                        <div class="summary-stat-label">Records Processed</div>
+                    </div>
+                `);
+            }
+            document.getElementById('summaryStats').innerHTML = statsHtml.slice(0, 3).join('');
+
+            // ─── Customer Table ───
+            const customerMargins = closePack.margin_by_customer || margins.margin_by_customer || {};
+            const customers = Object.entries(customerMargins);
+            if (customers.length > 0) {
+                document.getElementById('customerSection').style.display = '';
+                // Sort: unprofitable first (most negative margin at top)
+                customers.sort((a, b) => (a[1].margin_pct || 0) - (b[1].margin_pct || 0));
+
+                const tbody = document.getElementById('customerTableBody');
+                tbody.innerHTML = customers.map(([name, data]) => {
+                    const margin = data.margin_pct || 0;
+                    const profitable = margin >= 0;
+                    return `
+                        <tr class="${profitable ? 'profitable' : 'unprofitable'}">
+                            <td class="customer-name">${escapeHtml(name)}</td>
+                            <td>${data.revenue != null ? formatCurrency(data.revenue) : '—'}</td>
+                            <td>${formatCurrency(data.cost || 0)}</td>
+                            <td><span class="margin-badge ${profitable ? 'positive' : 'negative'}">${margin > 0 ? '+' : ''}${margin.toFixed(1)}%</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+
+            // ─── One Recommendation ───
+            const savings = closePack.savings || [];
+            const modelBreakdown = closePack.model_breakdown || [];
+
+            // Find the single highest-impact recommendation
+            let bestReco = null;
+
+            if (savings.length > 0) {
+                // Use pre-computed savings from sync
+                bestReco = savings.sort((a, b) => (b.monthly_savings || 0) - (a.monthly_savings || 0))[0];
+            } else if (modelBreakdown.length > 0) {
+                // Compute from model breakdown + DOWNGRADE_MAP
+                for (const m of modelBreakdown) {
+                    const normalized = normalizeModelName(m.model);
+                    const downgrade = DOWNGRADE_MAP[normalized];
+                    if (downgrade && m.cost > 0) {
+                        const monthlySavings = m.cost * downgrade.savingsRatio;
+                        if (!bestReco || monthlySavings > bestReco.monthly_savings) {
+                            bestReco = {
+                                from: m.model,
+                                to: downgrade.to,
+                                to_label: downgrade.label,
+                                monthly_savings: monthlySavings,
+                                savings_pct: Math.round(downgrade.savingsRatio * 100),
+                            };
+                        }
+                    }
+                }
+            }
+
+            if (bestReco && bestReco.monthly_savings > 0) {
+                document.getElementById('recoSection').style.display = '';
+                const projectedCost = totalCost - bestReco.monthly_savings;
+                const projectedMargin = monthlyRevenue > 0
+                    ? ((monthlyRevenue - projectedCost) / monthlyRevenue * 100).toFixed(0)
+                    : null;
+                const currentMargin = monthlyRevenue > 0
+                    ? ((monthlyRevenue - totalCost) / monthlyRevenue * 100).toFixed(0)
+                    : null;
+
+                let impactHtml = `
+                    <div class="reco-stat">
+                        <div class="reco-stat-value green">${formatCurrency(bestReco.monthly_savings)}/mo</div>
+                        <div class="reco-stat-label">Savings</div>
+                    </div>
+                `;
+                if (currentMargin && projectedMargin) {
+                    impactHtml += `
+                        <div class="reco-stat">
+                            <div class="reco-stat-value green">${currentMargin}% &rarr; ${projectedMargin}%</div>
+                            <div class="reco-stat-label">Margin Impact</div>
+                        </div>
+                    `;
+                }
+
+                // Count how many unprofitable customers become profitable
+                if (customers.length > 0 && bestReco.monthly_savings > 0) {
+                    const unprofitable = customers.filter(([, d]) => (d.margin_pct || 0) < 0);
+                    if (unprofitable.length > 0) {
+                        impactHtml += `
+                            <div class="reco-stat">
+                                <div class="reco-stat-value green">${unprofitable.length}</div>
+                                <div class="reco-stat-label">Customers to fix</div>
+                            </div>
+                        `;
+                    }
+                }
+
+                document.getElementById('recoCard').innerHTML = `
+                    <div class="reco-badge">Highest Impact</div>
+                    <div class="reco-headline">Move ${escapeHtml(bestReco.from)} to ${escapeHtml(bestReco.to_label || bestReco.to)}</div>
+                    <div class="reco-detail">
+                        This single change saves ${formatCurrency(bestReco.monthly_savings)}/month (${bestReco.savings_pct || '—'}% reduction on this model).
+                        ${projectedMargin ? `Your margin goes from ${currentMargin}% to ${projectedMargin}%.` : ''}
+                    </div>
+                    <div class="reco-impact">${impactHtml}</div>
+                `;
+            }
+
+            // ─── Close Pack Seal ───
+            const hash = closePack.chain_hash || closePack.data_hash || '';
+            document.getElementById('sealHash').textContent = hash ? `SHA-256: ${hash}` : '';
+            const priorId = closePack.prior_close_id;
+            if (priorId) {
+                document.getElementById('sealChain').textContent = `Linked to prior month: ${priorId}`;
+            } else {
+                document.getElementById('sealChain').textContent = 'First report in chain';
+            }
+
+            // Footer timestamp
+            const sealedAt = closePack.sealed_at || closePack.created_at;
+            if (sealedAt) {
+                document.getElementById('footerTimestamp').textContent =
+                    'Sealed ' + new Date(sealedAt).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            // Full analysis link
+            document.getElementById('fullAnalysisLink').href = '/app';
+        }
+
+        function normalizeModelName(raw) {
+            if (!raw) return '';
+            let s = raw.toLowerCase().trim();
+            s = s.replace(/[-:]?\d{4}[-]?\d{2}[-]?\d{2,4}$/, '');
+            s = s.replace(/-\d{4}$/, '');
+            s = s.replace(/claude-(\d+)-(\d+)-/, 'claude-$1.$2-');
+            s = s.replace(/-v\d+$/, '');
+            if (DOWNGRADE_MAP[s]) return s;
+            for (const key of Object.keys(DOWNGRADE_MAP)) {
+                if (s.startsWith(key) || key.startsWith(s)) return key;
+            }
+            return s;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        // ─── Init ───
+        loadReport();
+    })();
+    </script>
+
+    <!-- Conversion CTA — appears at bottom of every shared report -->
+    <div style="max-width:720px;margin:2rem auto 3rem;padding:0 1.5rem;">
+        <div style="background:var(--gray-900);border-radius:1rem;padding:2.5rem 2rem;text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;letter-spacing:0.03em;text-transform:uppercase;color:#16a34a;background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.25);margin-bottom:16px;">Your turn</div>
+            <h3 style="font-size:clamp(20px,3.5vw,28px);font-weight:700;color:#fff;letter-spacing:-0.02em;line-height:1.2;margin-bottom:10px;">What are <em>your</em> AI margins?</h3>
+            <p style="font-size:15px;color:#a3a3a3;max-width:440px;margin:0 auto 24px;line-height:1.6;">This report was generated by Finault in under 60 seconds. Upload your own billing CSV and see your margins, anomalies, and optimization opportunities — free.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <a href="/app" style="display:inline-flex;align-items:center;gap:6px;padding:12px 28px;background:#16a34a;color:#fff;font-size:15px;font-weight:600;border-radius:10px;text-decoration:none;transition:opacity 0.2s;">Check Your Margins — Free</a>
+            </div>
+            <p style="font-size:12px;color:#737373;margin-top:14px;">No credit card required. Works with OpenAI, Anthropic, AWS, Azure, and Google.</p>
+        </div>
+    </div>
+</body>
+</html>

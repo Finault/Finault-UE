@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Attestation Manifesto — Finault</title>
+    <meta name="description" content="Every transaction in the financial system has a record. AI doesn't. We're fixing that.">
+    <meta property="og:title" content="The Attestation Manifesto — Finault">
+    <meta property="og:description" content="Every AI call deserves an economic receipt. The case for attestation infrastructure.">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://finault.ai/manifesto">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #111; --white: #fff; --green: #16a34a; --green-light: #f0fdf4;
+            --gray-50: #fafafa; --gray-100: #f5f5f5; --gray-200: #e5e5e5;
+            --gray-400: #a3a3a3; --gray-500: #737373; --gray-600: #525252; --gray-900: #171717;
+            --border: #e5e5e5;
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; background: var(--white); color: var(--gray-900); -webkit-font-smoothing: antialiased; line-height: 1.7; }
+
+        /* NAV */
+        nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 0 40px; height: 64px; display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.92); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-cta { padding: 8px 20px; color: var(--white); text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 8px; background: var(--green); transition: opacity 0.2s; }
+        .nav-cta:hover { opacity: 0.9; }
+
+        /* HERO */
+        .hero { padding: 160px 24px 80px; text-align: center; max-width: 720px; margin: 0 auto; }
+        .hero-label { display: inline-block; padding: 6px 16px; background: var(--green-light); color: var(--green); border-radius: 100px; font-size: 13px; font-weight: 600; margin-bottom: 24px; border: 1px solid #bbf7d0; }
+        .hero h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; letter-spacing: -0.04em; line-height: 1.15; margin-bottom: 20px; }
+        .hero h1 em { font-style: normal; color: var(--green); }
+        .hero p { font-size: 1.125rem; color: var(--gray-500); max-width: 600px; margin: 0 auto; }
+
+        /* CONTENT */
+        .content { max-width: 680px; margin: 0 auto; padding: 0 24px 100px; }
+        .content h2 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.03em; margin: 56px 0 16px; padding-top: 24px; }
+        .content h2:first-of-type { margin-top: 0; }
+        .content p { font-size: 1rem; color: var(--gray-600); margin-bottom: 20px; }
+        .content p strong { color: var(--gray-900); font-weight: 600; }
+
+        .pull-quote { margin: 40px 0; padding: 24px 32px; background: var(--gray-50); border-left: 4px solid var(--green); border-radius: 0 12px 12px 0; font-size: 1.125rem; font-weight: 500; color: var(--gray-900); line-height: 1.6; }
+
+        .divider { width: 60px; height: 3px; background: var(--green); border-radius: 2px; margin: 48px auto; }
+
+        /* CODE BLOCK */
+        .code-block { background: var(--gray-900); border-radius: 12px; padding: 24px 28px; margin: 24px 0 32px; overflow-x: auto; }
+        .code-block code { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 14px; color: #e5e5e5; line-height: 1.7; white-space: pre; }
+        .code-comment { color: #6b7280; }
+        .code-decorator { color: #60a5fa; }
+        .code-string { color: #34d399; }
+        .code-keyword { color: #c084fc; }
+
+        /* CTA */
+        .cta-section { text-align: center; padding: 80px 24px; background: var(--gray-900); margin-top: 60px; }
+        .cta-section h2 { color: var(--white); font-size: 1.75rem; font-weight: 700; margin-bottom: 12px; }
+        .cta-section p { color: var(--gray-400); font-size: 1rem; margin-bottom: 32px; }
+        .cta-buttons { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+        .btn-primary { padding: 14px 32px; background: var(--green); color: var(--white); text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 15px; transition: opacity 0.2s; }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-secondary { padding: 14px 32px; background: transparent; color: var(--white); text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 15px; border: 1px solid #525252; transition: border-color 0.2s; }
+        .btn-secondary:hover { border-color: var(--white); }
+
+        /* FOOTER */
+        footer { padding: 40px 24px; text-align: center; font-size: 13px; color: var(--gray-400); background: var(--gray-900); border-top: 1px solid #333; }
+
+        @media (max-width: 640px) {
+            nav { padding: 0 20px; }
+            .hero { padding: 120px 20px 60px; }
+            .content { padding: 0 20px 60px; }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+  <a href="/" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#0F172A;">
+    <div style="width:7px;height:7px;border-radius:2px;background:#059669"></div>
+    <span style="font-size:15px;font-weight:900;letter-spacing:-0.02em">Finault</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:24px;">
+    <a href="/docs" style="font-size:13px;font-weight:500;color:#64748B;text-decoration:none">Docs</a>
+    <a href="/pricing" style="font-size:13px;font-weight:500;color:#64748B;text-decoration:none">Pricing</a>
+    <a href="/security" style="font-size:13px;font-weight:500;color:#64748B;text-decoration:none">Security</a>
+    <a href="/login" style="font-size:13px;font-weight:500;color:#64748B;text-decoration:none">Sign In</a>
+    <a href="/experience" style="font-size:13px;font-weight:700;color:#fff;background:#0F172A;border-radius:6px;padding:8px 16px;text-decoration:none">Get Started</a>
+  </div>
+</nav>
+
+<div class="hero">
+    <span class="hero-label">The Attestation Manifesto</span>
+    <h1>Every AI call deserves<br>an <em>economic receipt.</em></h1>
+    <p>Every transaction in the financial system has a record. Every credit card swipe, wire transfer, and stock trade is logged, attested, and auditable. AI doesn't have this. We're building it.</p>
+</div>
+
+<div class="content">
+
+    <h2>The Problem No One Is Solving</h2>
+    <p>Companies are spending millions on AI with no financial record of what that money produced. They can tell you their cloud bill. They can tell you their headcount cost. But ask them: <strong>"What did your AI spend produce for each customer, and can you prove it?"</strong> Silence.</p>
+    <p>This isn't a monitoring problem. Observability tools tell you what happened technically. This is an <strong>economic attestation problem</strong>. There is no infrastructure that records what AI costs, what it produces, and whether the unit economics work. Per customer. Per feature. Per dollar of revenue.</p>
+
+    <div class="pull-quote">Per-token costs are falling. But total costs per task are rising. As reasoning models consume 10&ndash;100x more tokens, companies are spending more on AI than ever &mdash; with less visibility into what it's worth.</div>
+
+    <h2>What Attestation Means</h2>
+    <p>An attestation is a cryptographically sealed record of an economic event. When your AI makes a call, the Finault Seal captures: <strong>what model was used, what it cost, what it produced, and who it was for.</strong> That record is hashed, signed, and chained to every other record in your organization. Immutable. Verifiable. Auditable.</p>
+    <p>This is not logging. Logs are mutable, scattered, and exist for debugging. Attestations are <strong>permanent economic records</strong> that exist for governance, compliance, and business intelligence.</p>
+
+    <h2>The Protocol</h2>
+    <p>The Finault Seal is free, open, and zero-dependency. Two lines of code:</p>
+
+    <div class="code-block"><code><span class="code-keyword">from</span> finault <span class="code-keyword">import</span> seal
+
+<span class="code-decorator">@seal.attest</span>
+<span class="code-keyword">def</span> <span class="code-string">generate_response</span>(prompt, customer_id):
+    <span class="code-comment"># Your existing AI call &mdash; unchanged</span>
+    response = openai.chat.completions.create(
+        model=<span class="code-string">"gpt-4o"</span>,
+        messages=[{<span class="code-string">"role"</span>: <span class="code-string">"user"</span>, <span class="code-string">"content"</span>: prompt}]
+    )
+    <span class="code-keyword">return</span> response
+
+<span class="code-comment"># Every call now produces a sealed economic receipt:</span>
+<span class="code-comment"># seal_id, cost, model, customer, timestamp, hash chain</span></code></div>
+
+    <p>Every AI call gets an economic receipt. Those receipts chain together into a tamper-evident ledger. At month-end, they roll up into a <strong>Close Pack</strong> &mdash; five sealed artifacts that prove exactly what your AI spent, what it produced, and what your margins are. Sealed. Signed. Chain-linked to every prior month.</p>
+
+    <h2>Why This Matters Now</h2>
+    <p><strong>AI pricing is shifting from tokens to outcomes.</strong> When you charge customers $49/month for "unlimited AI features," you need to know your cost-to-serve per customer. When a customer comes up for renewal, you need to prove your margins support your pricing. When your board asks "are our AI features profitable?", you need a number, not a guess.</p>
+    <p>The EU AI Act requires documentation retention for 10 years. Colorado's AI Act mandates annual impact assessments. SOC 2 auditors are asking about AI governance controls. The regulatory wave is coming. The companies that have attestation infrastructure will be ready. The rest will be scrambling.</p>
+
+    <div class="pull-quote">The companies that win in AI won't just build the best models. They'll be the ones who can <strong>prove</strong> their AI economics work &mdash; to customers, investors, regulators, and their own board.</div>
+
+    <h2>The Standard</h2>
+    <p>ACPS &mdash; the AI Cost Processing Standard &mdash; is our open specification for how AI economic activity should be recorded. It defines the attestation schema, the Close Pack format, the hash chain structure, and the Finault Score methodology. Anyone can implement it. Everyone should.</p>
+    <p>We don't want to own the data. We want to own the standard. Like GAAP for financial reporting, like FICO for credit scoring, like HL7 for health data. The infrastructure becomes invisible, embedded, and vitally necessary.</p>
+
+    <div class="divider"></div>
+
+    <h2>The Strategy</h2>
+    <p><strong>Give away the protocol.</strong> The Finault Seal is free forever. Every AI call gets an economic receipt. Zero dependency. Two lines of code. <code style="background:var(--gray-100);padding:2px 8px;border-radius:4px;font-size:14px">pip install finault</code></p>
+    <p><strong>Monetize the intelligence.</strong> The free seal tells you what happened. The paid platform tells you what it means: margins, attribution, optimization, forecasting, compliance, Finault Score, sealed Close Packs.</p>
+    <p><strong>Become the standard.</strong> ACPS becomes the way the industry measures AI economics. Finault Score becomes the metric boards demand. Close Packs become the audit artifact regulators accept.</p>
+
+</div>
+
+<div class="cta-section">
+    <h2>Start attesting. It takes 60 seconds.</h2>
+    <p>Install the SDK, seal your first AI call, see your economics.</p>
+    <div class="cta-buttons">
+        <a href="/experience" class="btn-primary">Open Dashboard</a>
+        <a href="/docs" class="btn-secondary">Read the Docs</a>
+    </div>
+</div>
+
+<footer>
+  <div style="max-width:700px;margin:0 auto;text-align:center;padding:40px 24px;border-top:1px solid #E2E8F0;">
+    <div style="font-size:13px;color:#94A3B8;margin-bottom:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</div>
+    <div style="font-size:13px;display:flex;gap:16px;justify-content:center">
+      <a href="/experience" style="color:#64748B;text-decoration:none">Free Audit</a>
+      <a href="/docs" style="color:#64748B;text-decoration:none">Docs</a>
+      <a href="/pricing" style="color:#64748B;text-decoration:none">Pricing</a>
+      <a href="/security" style="color:#64748B;text-decoration:none">Security</a>
+      <a href="/privacy" style="color:#64748B;text-decoration:none">Privacy</a>
+      <a href="/terms" style="color:#64748B;text-decoration:none">Terms</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

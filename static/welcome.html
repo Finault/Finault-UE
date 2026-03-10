@@ -737,12 +737,7 @@ resp = client.chat.completions.create(
         }
 
         function goToDashboard() {
-            const token = localStorage.getItem('finault_token');
-            if (token) {
-                window.location.href = 'https://dashboard.finault.ai/dashboard#access_token=' + encodeURIComponent(token);
-            } else {
-                window.location.href = 'https://dashboard.finault.ai/dashboard';
-            }
+            window.location.href = '/app';
         }
 
         function copyKey() {

@@ -4,10 +4,10 @@ node_modules/
 
 # Build output
 dist/
+out/
 *.tsbuildinfo
 .next/
-dashboard/.next/
-dashboard/out/
+apps/dashboard/out/
 mcp-server/dist/
 
 # Wrangler
@@ -16,10 +16,9 @@ mcp-server/dist/
 
 # Environment
 .env
-.env.local
-.env.production
-**/.env.local
-**/.env.production
+.env.*
+**/.env
+**/.env.*
 
 # OS
 .DS_Store
@@ -39,6 +38,7 @@ npm-debug.log*
 __pycache__/
 *.pyc
 *.pyo
+*.egg-info/
 venv/
 .venv/
 
@@ -46,7 +46,6 @@ venv/
 coverage/
 .jest/
 test-sandbox-receipts/
-structural-tests.txt
 
 # Temporary
 *.tmp

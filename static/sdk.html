@@ -139,12 +139,12 @@
     <nav>
         <a href="/" class="logo">Finault</a>
         <div class="nav-right">
-            <a href="/app" class="nav-link">Free Audit</a>
-            <a href="/sdk" class="nav-link active">SDK</a>
-            <a href="/security" class="nav-link">Security</a>
-            <a href="/pricing" class="nav-link">Pricing</a>
-            <a href="/docs" class="nav-link">Docs</a>
-            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+            
+                <a href="/docs" class="nav-link">Docs</a>
+                <a href="/pricing" class="nav-link">Pricing</a>
+                <a href="/security" class="nav-link">Security</a>
+                <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+            
         </div>
     </nav>
 
@@ -368,7 +368,7 @@ resp = client.chat.completions.create(
                 <h4>Framework integrations</h4>
                 <p>LangChain, LlamaIndex, Vercel AI SDK, LiteLLM, OpenTelemetry — see how Finault fits your stack.</p>
             </a>
-            <a href="/app" class="cross-link">
+            <a href="/experience" class="cross-link">
                 <h4>Run a free audit</h4>
                 <p>Upload your AI billing CSV. Get a close pack with savings, anomalies, and GL journal entries.</p>
             </a>
@@ -380,7 +380,7 @@ resp = client.chat.completions.create(
                 <h4>Security</h4>
                 <p>Enterprise-grade security, zero-trust architecture, and cryptographic integrity verification.</p>
             </a>
-            <a href="/app" class="cross-link">
+            <a href="/experience" class="cross-link">
                 <h4>Free audit tool</h4>
                 <p>Upload your AI billing CSV. Get a close pack with savings, anomalies, and GL journal entries.</p>
             </a>
@@ -396,12 +396,17 @@ resp = client.chat.completions.create(
 
     <!-- Footer -->
     <footer>
-        <a href="/sdk">SDK</a> &nbsp;&middot;&nbsp;
-        <a href="/security">Security</a> &nbsp;&middot;&nbsp;
-        <a href="/pricing">Pricing</a> &nbsp;&middot;&nbsp;
-        <a href="/docs">Docs</a> &nbsp;&middot;&nbsp;
-        <a href="mailto:bernard.cotter@finault.ai">Contact</a>
-        <p style="margin-top:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</p>
+        <div style="max-width:800px;margin:0 auto;text-align:center;padding:40px 24px;">
+            <div style="font-size:13px;color:#94A3B8;margin-bottom:12px">&copy; 2026 Finault. The AI Cost Governance Standard.</div>
+            <div style="font-size:13px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+                <a href="/experience" style="color:#64748B;text-decoration:none">Free Audit</a>
+                <a href="/docs" style="color:#64748B;text-decoration:none">Docs</a>
+                <a href="/pricing" style="color:#64748B;text-decoration:none">Pricing</a>
+                <a href="/security" style="color:#64748B;text-decoration:none">Security</a>
+                <a href="/privacy" style="color:#64748B;text-decoration:none">Privacy</a>
+                <a href="/terms" style="color:#64748B;text-decoration:none">Terms</a>
+            </div>
+        </div>
     </footer>
 
     <script>
@@ -425,7 +430,7 @@ resp = client.chat.completions.create(
         (function() {
             var token = localStorage.getItem('finault_token');
             var el = document.getElementById('navAuthLink');
-            if (token && el) { el.textContent = 'Dashboard'; el.href = 'https://dashboard.finault.ai/dashboard'; }
+            if (token && el) { el.textContent = 'Dashboard'; el.href = '/app'; }
         })();
     </script>
 </body>

@@ -239,6 +239,14 @@
     </footer>
 
     <script>
+    function showToast(msg, type) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;max-width:500px;text-align:center;';
+      t.style.background = type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#1a1a1a';
+      document.body.appendChild(t);
+      setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 4000);
+    }
     // ═══════════════════════════════════════════════════════════════
     // SCANNER ENGINE — regex-based AI API call detection
     // ═══════════════════════════════════════════════════════════════
@@ -365,7 +373,7 @@
 
     function runScan() {
         var code = document.getElementById('codeInput').value;
-        if (!code.trim()) { alert('Paste some code or upload a file first.'); return; }
+        if (!code.trim()) { showToast('Paste some code or upload a file first.', 'error'); return; }
 
         document.getElementById('uploadSection').classList.add('hidden');
         document.getElementById('processingSection').classList.remove('hidden');
@@ -518,7 +526,7 @@
     (function() {
         var token = localStorage.getItem('finault_token');
         var el = document.getElementById('navAuthLink');
-        if (token && el) { el.textContent = 'Dashboard'; el.href = 'https://dashboard.finault.ai/dashboard'; }
+        if (token && el) { el.textContent = 'Dashboard'; el.href = '/app'; }
     })();
     </script>
 </body>

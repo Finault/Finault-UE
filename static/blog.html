@@ -57,7 +57,7 @@
 </head>
 <body>
   <nav class="nav">
-    <a href="index.html" class="logo">
+    <a href="/" class="logo">
       <svg viewBox="0 0 32 32" fill="none"><rect width="32" height="32" rx="8" fill="#171717"/><path d="M9 8H23V11H12V14H21V17H12V24H9V8Z" fill="#22C55E"/></svg>
       <span>Finault</span>
     </a>
@@ -79,47 +79,36 @@
         </div>
       </article>
       
-      <!-- Article 2: Category definition -->
-      <article class="post">
-        <div class="post-image">🎯</div>
-        <div class="post-content">
-          <div class="post-category">Concept</div>
-          <h2 class="post-title"><a href="blog/what-is-ai-finops.html">What is AI FinOps? The Emerging Discipline of AI Cost Management</a></h2>
-          <p class="post-excerpt">AI FinOps is the practice of managing AI costs with the same rigor as cloud infrastructure. Here's why it matters and how to get started.</p>
-          <div class="post-meta">January 22, 2026 · 8 min read</div>
-        </div>
-      </article>
-      
-      <!-- Article 3: Compliance angle -->
+      <!-- Article 2: Compliance -->
       <article class="post">
         <div class="post-image">⚖️</div>
         <div class="post-content">
           <div class="post-category">Compliance</div>
-          <h2 class="post-title"><a href="blog/eu-ai-act-finance-teams.html">EU AI Act: What Finance Teams Need to Know About Article 12</a></h2>
+          <h2 class="post-title"><a href="blog/eu-ai-act-compliance.html">EU AI Act Compliance: What Finance Teams Need to Know</a></h2>
           <p class="post-excerpt">The EU AI Act requires automatic logging of AI operations. Here's what that means for your month-end close and audit trail.</p>
-          <div class="post-meta">January 18, 2026 · 10 min read</div>
+          <div class="post-meta">January 22, 2026 · 10 min read</div>
         </div>
       </article>
-      
-      <!-- Article 4: Practical template -->
+
+      <!-- Article 3: FinOps certification -->
       <article class="post">
-        <div class="post-image">📋</div>
+        <div class="post-image">🎓</div>
         <div class="post-content">
-          <div class="post-category">Template</div>
-          <h2 class="post-title"><a href="blog/ai-spend-tracking-template.html">Free AI Spend Tracking Template for Finance Teams</a></h2>
-          <p class="post-excerpt">Download our free spreadsheet template for tracking AI costs before you're ready for automation. Includes formulas and instructions.</p>
-          <div class="post-meta">January 15, 2026 · 5 min read</div>
+          <div class="post-category">Framework</div>
+          <h2 class="post-title"><a href="blog/finops-for-ai-certification.html">FinOps for AI: Certification and Best Practices</a></h2>
+          <p class="post-excerpt">How FinOps principles apply to AI spend management. A framework for teams building AI cost governance from scratch.</p>
+          <div class="post-meta">January 18, 2026 · 8 min read</div>
         </div>
       </article>
-      
-      <!-- Article 5: Comparison -->
+
+      <!-- Article 4: Why governance matters -->
       <article class="post">
-        <div class="post-image">🔍</div>
+        <div class="post-image">🎯</div>
         <div class="post-content">
-          <div class="post-category">Analysis</div>
-          <h2 class="post-title"><a href="blog/openai-vs-anthropic-pricing.html">OpenAI vs Anthropic Pricing: A Finance Team's Comparison</a></h2>
-          <p class="post-excerpt">Breaking down the true cost of GPT-4o vs Claude 3.5 Sonnet for enterprise workloads. Includes hidden costs most teams miss.</p>
-          <div class="post-meta">January 12, 2026 · 15 min read</div>
+          <div class="post-category">Strategy</div>
+          <h2 class="post-title"><a href="blog/why-ai-cost-governance.html">Why AI Cost Governance Is the Next CFO Priority</a></h2>
+          <p class="post-excerpt">AI spend is growing faster than cloud ever did. Here's why finance teams need governance now, not after the next budget cycle.</p>
+          <div class="post-meta">January 12, 2026 · 12 min read</div>
         </div>
       </article>
     </div>
@@ -127,7 +116,7 @@
     <div class="newsletter">
       <h2>Get AI FinOps insights monthly</h2>
       <p>Join 500+ finance leaders getting our newsletter.</p>
-      <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Thanks for subscribing!');">
+      <form class="newsletter-form" onsubmit="event.preventDefault(); this.querySelector('button').textContent='Subscribed!'; this.querySelector('button').disabled=true; this.querySelector('input').disabled=true;">
         <input type="email" placeholder="you@company.com" required>
         <button type="submit">Subscribe</button>
       </form>

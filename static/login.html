@@ -15,12 +15,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700,800,900&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
-            --green: #16a34a;
-            --green-dark: #16a34a;
+            --green: #059669;
+            --green-dark: #047857;
             --green-light: #dcfce7;
             --gray-900: #111827;
             --gray-700: #374151;
@@ -38,7 +39,7 @@
         html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Satoshi', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--white);
             color: var(--gray-900);
             -webkit-font-smoothing: antialiased;
@@ -51,20 +52,13 @@
 
         /* ===== NAVIGATION ===== */
         nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 100;
-            padding: 0 40px;
-            height: 64px;
+            padding: 14px 32px;
+            max-width: 1100px;
+            margin: 0 auto;
+            width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--gray-200);
         }
 
         .nav-logo-container {
@@ -94,9 +88,10 @@
         }
 
         .nav-logo-text {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: -0.03em;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            color: #0F172A;
         }
 
         .nav-right {
@@ -116,9 +111,9 @@
         .nav-text-link:hover { color: var(--gray-900); }
 
         .nav-link {
-            color: var(--gray-600);
+            color: #64748B;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             transition: color 0.2s;
         }
@@ -144,7 +139,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 120px 24px 60px;
+            padding: 40px 24px 60px;
         }
 
         .auth-container {
@@ -434,18 +429,13 @@
     <!-- Navigation -->
     <nav>
         <a href="/" class="nav-logo-container">
-            <div class="nav-logo-box">
-                <svg class="nav-logo-icon" viewBox="0 0 24 24">
-                    <path d="M3 12h18M6 9l-3 3 3 3M18 9l3 3-3 3" />
-                </svg>
-            </div>
+            <div style="width:7px;height:7px;border-radius:2px;background:var(--green)"></div>
             <span class="nav-logo-text">Finault</span>
         </a>
         <div class="nav-right">
-            <a href="/app" class="nav-link">Free Audit</a>
-            <a href="/pricing" class="nav-link">Pricing</a>
-            <a href="/docs" class="nav-link">Docs</a>
-            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+            <a href="/experience" class="nav-link">Free Audit</a>
+            <a href="https://github.com/Finault/aiei-spec" target="_blank" class="nav-link">Docs</a>
+            <a href="https://api.finault.ai" target="_blank" class="nav-link">API</a>
         </div>
     </nav>
 
@@ -458,10 +448,10 @@
             </div>
 
             <!-- Value Prop -->
-            <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 1.5rem;background:rgba(22,163,74,0.06);border:1px solid rgba(22,163,74,0.15);border-radius:12px">
-                <p style="font-size:.9rem;color:var(--gray-600);margin:0;line-height:1.5">
-                    <strong style="color:#16a34a">Upload. Allocate. Close.</strong><br>
-                    AI cost allocation and audit-ready Close Packs in 60 seconds. No credit card.
+            <div style="text-align:center;margin-bottom:1.5rem;padding:1rem 1.5rem;background:rgba(5,150,105,0.06);border:1px solid rgba(5,150,105,0.15);border-radius:10px">
+                <p style="font-size:13px;color:#334155;margin:0;line-height:1.6">
+                    <strong style="color:#059669">The Accountability Layer for AI</strong><br>
+                    Paste your API key. See your Finault Score in 15 seconds. No credit card.
                 </p>
             </div>
 
@@ -538,7 +528,7 @@
             if (redirect === 'app') return '/app';
             // Allow relative paths
             if (redirect && redirect.startsWith('/')) return redirect;
-            return '/app';
+            return '/experience';
         }
 
         // Check if already logged in — verify token is still valid before redirecting

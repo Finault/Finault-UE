@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIEI Standard — AI Economic Identity Envelope | Finault</title>
+    <meta name="description" content="The open specification for AI transaction receipts. Every AI decision gets a sealed, verifiable economic identity. MIT licensed.">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --black: #111; --white: #fff; --green: #16a34a; --green-light: #f0fdf4;
+            --green-border: #bbf7d0; --gray-50: #fafafa; --gray-100: #f5f5f5;
+            --gray-200: #e5e5e5; --gray-400: #a3a3a3; --gray-500: #737373;
+            --gray-600: #525252; --gray-900: #171717; --border: #e5e5e5;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--white); color: var(--gray-900);
+            -webkit-font-smoothing: antialiased; line-height: 1.6;
+        }
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            padding: 0 40px; height: 64px;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .logo { font-size: 18px; font-weight: 700; color: var(--gray-900); text-decoration: none; letter-spacing: -0.03em; }
+        .nav-right { display: flex; align-items: center; gap: 32px; }
+        .nav-link { color: var(--gray-500); text-decoration: none; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        .nav-link:hover { color: var(--gray-900); }
+        .nav-link.active { color: var(--green); font-weight: 600; }
+        .nav-cta {
+            padding: 8px 20px; color: var(--white); text-decoration: none;
+            font-size: 14px; font-weight: 600; border-radius: 8px;
+            background: var(--green); transition: opacity 0.2s;
+        }
+        .nav-cta:hover { opacity: 0.9; }
+
+        .hero {
+            padding: 140px 24px 80px; text-align: center;
+            max-width: 720px; margin: 0 auto;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            background: var(--green-light); color: var(--green); border: 1px solid var(--green-border);
+            margin-bottom: 24px;
+        }
+        .hero h1 {
+            font-size: clamp(32px, 5vw, 52px); font-weight: 800;
+            letter-spacing: -0.04em; line-height: 1.1; color: var(--gray-900); margin-bottom: 20px;
+        }
+        .hero h1 .accent { color: var(--green); }
+        .hero-sub {
+            font-size: 18px; color: var(--gray-500); max-width: 540px;
+            margin: 0 auto 36px; line-height: 1.65;
+        }
+        .hero-cta {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 28px; background: var(--gray-900); color: var(--white);
+            text-decoration: none; font-size: 15px; font-weight: 600;
+            border-radius: 10px; transition: opacity 0.2s;
+        }
+        .hero-cta:hover { opacity: 0.85; }
+        .hero-cta svg { width: 18px; height: 18px; }
+
+        .section { padding: 80px 24px; border-top: 1px solid var(--border); }
+        .section-inner { max-width: 720px; margin: 0 auto; }
+        .section-label { font-size: 13px; font-weight: 600; letter-spacing: 0.02em; color: var(--green); margin-bottom: 12px; }
+        .section h2 { font-size: clamp(24px, 3.5vw, 36px); font-weight: 700; letter-spacing: -0.03em; line-height: 1.2; margin-bottom: 20px; }
+        .section p { font-size: 16px; color: var(--gray-500); line-height: 1.7; margin-bottom: 16px; }
+
+        .envelope-card {
+            background: var(--gray-50); border: 1px solid var(--gray-200);
+            border-radius: 12px; padding: 28px; margin: 32px 0;
+            font-family: 'SF Mono', SFMono-Regular, Consolas, monospace; font-size: 13px;
+            line-height: 1.8; color: var(--gray-600); overflow-x: auto;
+        }
+        .envelope-card .key { color: var(--green); font-weight: 600; }
+        .envelope-card .comment { color: var(--gray-400); font-style: italic; }
+
+        .field-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0;
+        }
+        .field-card {
+            padding: 20px; background: var(--white); border: 1px solid var(--gray-200);
+            border-radius: 10px;
+        }
+        .field-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: var(--gray-900); }
+        .field-card p { font-size: 13px; color: var(--gray-500); line-height: 1.5; margin-bottom: 0; }
+
+        .principles-list {
+            margin: 28px 0; display: flex; flex-direction: column; gap: 16px;
+        }
+        .principle {
+            display: flex; gap: 16px; align-items: flex-start;
+            padding: 20px; background: var(--gray-50); border-radius: 10px;
+            border: 1px solid var(--gray-200);
+        }
+        .principle-num {
+            width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+            background: var(--green); color: var(--white);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; font-weight: 700;
+        }
+        .principle h4 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+        .principle p { font-size: 14px; color: var(--gray-500); line-height: 1.5; margin-bottom: 0; }
+
+        .dark-section {
+            padding: 80px 24px; background: #1a1625; text-align: center;
+        }
+        .dark-section h2 { color: #fff; font-size: clamp(24px, 3.5vw, 36px); font-weight: 700; letter-spacing: -0.02em; margin-bottom: 16px; }
+        .dark-section p { color: rgba(255,255,255,0.55); font-size: 16px; max-width: 540px; margin: 0 auto 32px; line-height: 1.7; }
+        .dark-section .hero-cta { background: var(--green); }
+
+        footer {
+            padding: 36px 24px; border-top: 1px solid var(--border);
+        }
+        .footer-inner {
+            max-width: 720px; margin: 0 auto;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .footer-copy { font-size: 13px; color: var(--gray-400); }
+        .footer-links { display: flex; gap: 28px; }
+        .footer-links a { color: var(--gray-400); text-decoration: none; font-size: 13px; }
+        .footer-links a:hover { color: var(--gray-900); }
+
+        @media (max-width: 768px) {
+            nav { padding: 0 20px; }
+            .nav-link { display: none; }
+            .hero { padding: 120px 20px 60px; }
+            .field-grid { grid-template-columns: 1fr; }
+            .footer-inner { flex-direction: column; gap: 16px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
+        <div class="nav-right">
+            <a href="/docs" class="nav-link">Docs</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/security" class="nav-link">Security</a>
+            <a href="/login" class="nav-link">Sign In</a>
+            <a href="/experience" class="nav-cta">Get Started</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            Open Standard &middot; MIT License &middot; v1.0.0
+        </div>
+        <h1>AI Economic Identity <span class="accent">Envelope</span></h1>
+        <p class="hero-sub">An open specification for AI transaction receipts. Every AI decision gets a sealed, verifiable economic identity — who made it, what it cost, and proof it happened.</p>
+        <a href="https://github.com/finault/aiei" class="hero-cta" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+            View on GitHub
+        </a>
+    </section>
+
+    <!-- What is AIEI -->
+    <section class="section">
+        <div class="section-inner">
+            <p class="section-label">The Problem</p>
+            <h2>AI has no receipts.</h2>
+            <p>When your company makes an AI call, there's no standard record of what happened. No receipt. No chain of custody. No way to prove what model was used, what it cost, or who authorized it. AIEI fixes that.</p>
+            <p>The AI Economic Identity Envelope is an open data format that wraps every AI transaction in a verifiable, portable receipt. Think of it as a W-2 for AI decisions — a standardized record that any system can read, verify, and audit.</p>
+        </div>
+    </section>
+
+    <!-- The Envelope -->
+    <section class="section" style="background:var(--gray-50);">
+        <div class="section-inner">
+            <p class="section-label">The Envelope</p>
+            <h2>Four sections. Complete identity.</h2>
+            <p>Every AIEI envelope contains four sections that fully describe an AI transaction: who triggered it, what happened, what it cost, and cryptographic proof it occurred.</p>
+
+            <div class="field-grid">
+                <div class="field-card">
+                    <h4>Identity — WHO</h4>
+                    <p>Agent ID, organization, principal (human or autonomous), environment, and session context.</p>
+                </div>
+                <div class="field-card">
+                    <h4>Decision — WHAT</h4>
+                    <p>Action taken, model used, provider, protocol version, confidence score, and reasoning chain.</p>
+                </div>
+                <div class="field-card">
+                    <h4>Economics — WORTH</h4>
+                    <p>Cost in USD, tokens consumed (input + output), latency, outcome data, and cost center allocation.</p>
+                </div>
+                <div class="field-card">
+                    <h4>Integrity — PROOF</h4>
+                    <p>SHA-256 hashes (input, output, seal), signature, sequence number, previous hash link, and optional blockchain anchor.</p>
+                </div>
+            </div>
+
+            <div class="envelope-card">
+<span class="comment">// Example AIEI v1.0.0 Envelope</span>
+{
+  <span class="key">"aiei_version"</span>: "1.0.0",
+  <span class="key">"seal_id"</span>: "seal_a3f8c91e2b4d7f06e1c2",
+  <span class="key">"timestamp"</span>: "2026-03-04T22:14:33.041Z",
+
+  <span class="comment">// Identity</span>
+  <span class="key">"agent_id"</span>: "agent_prod_classifier_v3",
+  <span class="key">"org_id"</span>: "org_acme_corp",
+  <span class="key">"principal_id"</span>: "user_jsmith",
+
+  <span class="comment">// Decision</span>
+  <span class="key">"action"</span>: "classify_support_ticket",
+  <span class="key">"model"</span>: "gpt-4o-mini",
+  <span class="key">"provider"</span>: "openai",
+  <span class="key">"confidence"</span>: 0.94,
+
+  <span class="comment">// Economics</span>
+  <span class="key">"cost_usd"</span>: 0.0023,
+  <span class="key">"tokens_in"</span>: 847,
+  <span class="key">"tokens_out"</span>: 12,
+  <span class="key">"latency_ms"</span>: 340,
+
+  <span class="comment">// Integrity</span>
+  <span class="key">"sequence"</span>: 14209,
+  <span class="key">"input_hash"</span>: "sha256:a3f8...",
+  <span class="key">"outcome_hash"</span>: "sha256:7c2e...",
+  <span class="key">"prev_hash"</span>: "sha256:9d1f...",
+  <span class="key">"seal_hash"</span>: "sha256:e4b2..."
+}
+            </div>
+        </div>
+    </section>
+
+    <!-- Design Principles -->
+    <section class="section">
+        <div class="section-inner">
+            <p class="section-label">Design Principles</p>
+            <h2>Built for the real world.</h2>
+
+            <div class="principles-list">
+                <div class="principle">
+                    <div class="principle-num">1</div>
+                    <div>
+                        <h4>Portable</h4>
+                        <p>JSON-based. Works with any language, any platform, any AI provider. No vendor lock-in.</p>
+                    </div>
+                </div>
+                <div class="principle">
+                    <div class="principle-num">2</div>
+                    <div>
+                        <h4>Verifiable</h4>
+                        <p>SHA-256 hashes on every field. Any party can independently verify the integrity of any envelope without trusting the issuer.</p>
+                    </div>
+                </div>
+                <div class="principle">
+                    <div class="principle-num">3</div>
+                    <div>
+                        <h4>Chain-linked</h4>
+                        <p>Every envelope references the hash of the previous one. After thousands of transactions, you have an unbroken chain that proves completeness.</p>
+                    </div>
+                </div>
+                <div class="principle">
+                    <div class="principle-num">4</div>
+                    <div>
+                        <h4>Exportable, not replayable</h4>
+                        <p>You can always export your data. But the chain — the sequence, the hashes, the history — lives in the system that created it. You own the data. The chain is the moat.</p>
+                    </div>
+                </div>
+                <div class="principle">
+                    <div class="principle-num">5</div>
+                    <div>
+                        <h4>MIT Licensed</h4>
+                        <p>Fully open. Anyone can implement AIEI in their own systems. The standard gets stronger as more companies adopt it.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="dark-section">
+        <h2>The standard for AI economics.</h2>
+        <p>AIEI is open, free, and ready to use. Read the full spec on GitHub, or start generating sealed envelopes with Finault today.</p>
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <a href="https://github.com/finault/aiei" class="hero-cta" target="_blank" rel="noopener">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                View Spec on GitHub
+            </a>
+            <a href="/experience" class="hero-cta" style="background:transparent;border:1px solid rgba(255,255,255,0.2);">
+                Try Finault Free
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-inner">
+            <span class="footer-copy">&copy; 2026 Finault. All rights reserved.</span>
+            <div class="footer-links">
+                <a href="/experience">Free Audit</a>
+                <a href="/docs">Docs</a>
+                <a href="/pricing">Pricing</a>
+                <a href="/security">Security</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

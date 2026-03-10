@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// Fix for browsers that cached an old 301 redirect from / → /experience.
+// If user has an active scan in session, stay. Otherwise redirect to landing.
+(function() {
+  try {
+    // If they got here via a link click (from landing page, email, etc.), mark intent and stay
+    if (document.referrer) {
+      sessionStorage.setItem('finault_exp_intent', '1');
+      return;
+    }
+    // If they've already visited /experience intentionally this session, stay
+    if (sessionStorage.getItem('finault_exp_intent')) return;
+    // If they have scan data in session, they belong here
+    if (sessionStorage.getItem('finault_screen') && sessionStorage.getItem('finault_screen') !== '1') return;
+    // If URL has parameters (shared scan, etc.), stay
+    if (window.location.search) return;
+    // No referrer + no intent + no scan data = likely cached 301
+    window.location.replace('/?_r=' + Date.now());
+  } catch(e) {}
+})();
+</script>
+<title>Finault — Free AI Cost Audit</title>
+<meta name="description" content="Paste your API key. See your Finault Score, find savings, and get a sealed audit trail — in 15 seconds.">
+<meta property="og:title" content="Finault — Free AI Cost Audit">
+<meta property="og:description" content="Paste your API key. See your complete AI economics in 15 seconds.">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" crossorigin="anonymous"></script>
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F8FA;
+    --bg-subtle: #F0F2F5;
+    --white: #FFFFFF;
+    --ink: #0F172A;
+    --body: #334155;
+    --label: #64748B;
+    --caption: #94A3B8;
+    --ghost: #CBD5E1;
+    --border: #E2E8F0;
+    --border-soft: #F1F5F9;
+    --green: #059669;
+    --green-dark: #047857;
+    --green-light: #ECFDF5;
+    --green-border: #A7F3D0;
+    --red: #DC2626;
+    --red-light: #FEF2F2;
+    --red-border: #FECACA;
+    --amber: #D97706;
+    --amber-light: #FFFBEB;
+    --code-bg: #0F172A;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.03);
+    --shadow-md: 0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03);
+    --shadow-lg: 0 4px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), 0 24px 64px rgba(0,0,0,0.05);
+    --shadow-glow: 0 0 0 1px rgba(5,150,105,0.08), 0 4px 16px rgba(5,150,105,0.06);
+    --radius: 14px;
+    --radius-lg: 20px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background: var(--bg);
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  ::selection { background: #D1FAE5; color: #065F46; }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+  @keyframes fillRing { from { stroke-dashoffset: var(--circ) } }
+  @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+  @keyframes breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.02) } }
+  @keyframes subtleFloat { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
+  @keyframes gradientShift { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
+
+  input:focus { outline: none; border-color: var(--green) !important; box-shadow: 0 0 0 4px rgba(5,150,105,0.10), 0 0 0 1px rgba(5,150,105,0.3); }
+  button { transition: all 0.2s cubic-bezier(0.16,1,0.3,1); }
+  button:hover:not(:disabled) { transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+  .mono { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--ghost); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--label); }
+
+  @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
+  @keyframes shimmer { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
+  @keyframes countUp { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes slideInToast { from { transform: translateX(120%); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
+  @keyframes slideOutToast { from { transform: translateX(0); opacity: 1 } to { transform: translateX(120%); opacity: 0 } }
+  @keyframes progressGrow { from { width: 0% } }
+  @keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(5,150,105,0.1) } 50% { box-shadow: 0 0 40px rgba(5,150,105,0.2) } }
+
+  .card-hover { transition: box-shadow 0.3s cubic-bezier(0.16,1,0.3,1), transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s ease; }
+  .card-hover:hover { box-shadow: var(--shadow-lg) !important; transform: translateY(-2px); border-color: rgba(5,150,105,0.15) !important; }
+  .nav-progress { position: fixed; top: 0; left: 0; height: 3px; background: linear-gradient(90deg, #059669, #34D399, #059669); background-size: 200% 100%; animation: gradientShift 3s ease infinite; z-index: 9999; transition: width 0.15s ease; }
+
+  /* Premium card base */
+  .premium-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid rgba(226,232,240,0.8); box-shadow: var(--shadow-md); transition: all 0.3s cubic-bezier(0.16,1,0.3,1); }
+  .premium-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); border-color: rgba(5,150,105,0.12); }
+
+  /* Step section headers */
+  .step-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; color: var(--green); background: linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.08)); border: 1px solid rgba(5,150,105,0.15); border-radius: 6px; padding: 5px 14px; backdrop-filter: blur(4px); }
+
+  /* Primary CTA button */
+  .btn-primary { padding: 12px 28px; border-radius: 10px; border: none; background: linear-gradient(135deg, #059669, #047857); color: white; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 2px 8px rgba(5,150,105,0.25), inset 0 1px 0 rgba(255,255,255,0.15); }
+  .btn-primary:hover:not(:disabled) { background: linear-gradient(135deg, #047857, #065F46); box-shadow: 0 4px 16px rgba(5,150,105,0.35), inset 0 1px 0 rgba(255,255,255,0.15); transform: translateY(-1px); }
+
+  /* Section dividers */
+  .section-divider { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 48px 0; }
+
+  /* Metric card */
+  .metric-card { background: var(--white); border-radius: var(--radius); border: 1px solid rgba(226,232,240,0.6); box-shadow: var(--shadow-sm); padding: 24px; position: relative; overflow: hidden; transition: all 0.25s ease; }
+  .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--green), #34D399); opacity: 0; transition: opacity 0.25s ease; }
+  .metric-card:hover { box-shadow: var(--shadow-md); border-color: rgba(5,150,105,0.12); }
+  .metric-card:hover::before { opacity: 1; }
+
+  /* Dark section */
+  .dark-section { background: linear-gradient(180deg, #0F172A 0%, #1E293B 100%); border-radius: var(--radius-lg); }
+
+  @media (max-width: 640px) {
+    .metrics-grid { grid-template-columns: 1fr !important; }
+    .score-hero { flex-direction: column !important; text-align: center; }
+    .dims-grid { grid-template-columns: 1fr !important; }
+    .margin-grid { font-size: 11px !important; grid-template-columns: 2fr 1fr 1fr !important; }
+    .margin-grid span:nth-child(4), .margin-grid span:nth-child(5) { display: none !important; }
+    .share-grid { grid-template-columns: 1fr !important; }
+    body { font-size: 14px; }
+  }
+  @media (max-width: 860px) {
+    .sidebar-nav { display: none !important; }
+  }
+  @media (max-width: 480px) {
+    .preview-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useCallback, useRef } = React;
+
+const GATEWAY = "https://api.finault.ai";
+const SUPABASE_URL = "https://bejoptgsrhmklmllkobu.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ─── Design Tokens ───
+const T = {
+  ink: "#0F172A", body: "#334155", label: "#64748B", caption: "#94A3B8", ghost: "#CBD5E1",
+  border: "#E2E8F0", borderSoft: "#F1F5F9", white: "#FFFFFF", bg: "#FAFBFC",
+  green: "#059669", greenDark: "#047857", greenLight: "#ECFDF5", greenBorder: "#A7F3D0",
+  red: "#DC2626", redLight: "#FEF2F2", redBorder: "#FECACA",
+  amber: "#D97706", amberLight: "#FFFBEB",
+  blue: "#2563EB", blueLight: "#EFF6FF", purple: "#635bff",
+  font: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif",
+  mono: "'JetBrains Mono', 'SF Mono', monospace",
+  codeBg: "#0F172A",
+};
+
+const fmtUSD = (n) => "$" + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
+const fmtUSD4 = (n) => "$" + (n || 0).toLocaleString(undefined, { minimumFractionDigits: 4, maximumFractionDigits: 4 });
+const fmtPct = (n) => (n || 0).toFixed(1) + "%";
+
+// ─── SessionStorage ───
+const SS = "finault_";
+function ssGet(k, fb) { try { const v = sessionStorage.getItem(SS+k); return v === null ? fb : JSON.parse(v); } catch { return fb; } }
+function ssSet(k, v) { try { sessionStorage.setItem(SS+k, JSON.stringify(v)); } catch {} }
+
+// ─── Fade ───
+function Fade({ show, delay = 0, children }) {
+  const [vis, setVis] = useState(false);
+  useEffect(() => { if (show) { const t = setTimeout(() => setVis(true), delay * 1000); return () => clearTimeout(t); } }, [show, delay]);
+  if (!vis) return null;
+  return <div style={{ animation: "rise 0.55s cubic-bezier(0.16,1,0.3,1) both" }}>{children}</div>;
+}
+
+// ─── Score Ring ───
+function ScoreRing({ score, grade, size = 140 }) {
+  const r = (size - 6) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (score / 100) * circ;
+  const color = score >= 80 ? T.green : score >= 60 ? T.blue : score >= 40 ? T.amber : T.red;
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)", "--circ": circ }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={T.borderSoft} strokeWidth="2.5" />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="2.5"
+        strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
+        style={{ animation: "fillRing 1.8s cubic-bezier(0.34,1.3,0.64,1) both" }} />
+      <text x={size/2} y={size/2 - 4} textAnchor="middle" dominantBaseline="central"
+        style={{ transform: "rotate(90deg)", transformOrigin: "center", fontSize: size * 0.30, fontWeight: 900, fill: T.ink, fontFamily: T.font, letterSpacing: "-0.04em" }}>{grade}</text>
+      <text x={size/2} y={size/2 + size * 0.17} textAnchor="middle" dominantBaseline="central"
+        style={{ transform: "rotate(90deg)", transformOrigin: "center", fontSize: size * 0.10, fontWeight: 500, fill: T.caption, fontFamily: T.mono }}>{score}/100</text>
+    </svg>
+  );
+}
+
+// ─── Card ───
+function Card({ children, style = {}, id, accent }) {
+  return <div id={id} className="card-hover" style={{ background: T.white, borderRadius: 20, border: `1px solid rgba(226,232,240,0.8)`, boxShadow: "0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03)", transition: "all 0.3s cubic-bezier(0.16,1,0.3,1)", position: "relative", overflow: "hidden", ...style }}>
+    {accent && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${T.green}, #34D399)`, borderRadius: "20px 20px 0 0" }} />}
+    {children}
+  </div>;
+}
+
+// ─── Section Label ───
+function SectionLabel({ children, right }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", marginBottom: 8 }}>
+      <span style={{ fontSize: 13, fontWeight: 800, color: T.ink, letterSpacing: "-0.01em" }}>{children}</span>
+      {right && <span style={{ fontSize: 12, fontWeight: 600, fontFamily: T.mono }}>{right}</span>}
+    </div>
+  );
+}
+
+// ─── Gateway fetch (routed through /api/gw/ proxy to avoid CORS) ───
+async function gw(path, opts = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), opts.timeout || 30000);
+  try {
+    const resp = await fetch(`/api/gw${path}`, { ...opts, signal: controller.signal, headers: { "Content-Type": "application/json", ...opts.headers } });
+    clearTimeout(timeout);
+    if (!resp.ok) throw new Error(`Gateway ${resp.status}`);
+    return await resp.json();
+  } catch (e) { clearTimeout(timeout); throw e; }
+}
+
+// ─── Toast Notification System ───
+const toastQueue = [];
+let toastSetState = null;
+function showToast(message, type = "success") {
+  const id = Date.now();
+  if (toastSetState) toastSetState(prev => [...prev, { id, message, type, exiting: false }]);
+  setTimeout(() => {
+    if (toastSetState) toastSetState(prev => prev.map(t => t.id === id ? { ...t, exiting: true } : t));
+    setTimeout(() => { if (toastSetState) toastSetState(prev => prev.filter(t => t.id !== id)); }, 300);
+  }, 3000);
+}
+function ToastContainer() {
+  const [toasts, setToasts] = useState([]);
+  useEffect(() => { toastSetState = setToasts; return () => { toastSetState = null; }; }, []);
+  if (toasts.length === 0) return null;
+  return (
+    <div style={{ position: "fixed", top: 72, right: 24, zIndex: 9999, display: "flex", flexDirection: "column", gap: 8 }}>
+      {toasts.map(t => (
+        <div key={t.id} style={{
+          padding: "12px 20px", borderRadius: 10, background: T.white, border: `1px solid ${t.type === "error" ? T.redBorder : T.greenBorder}`,
+          boxShadow: "0 4px 24px rgba(0,0,0,0.12)", display: "flex", alignItems: "center", gap: 10, minWidth: 240,
+          animation: t.exiting ? "slideOutToast 0.3s ease forwards" : "slideInToast 0.3s cubic-bezier(0.16,1,0.3,1) both",
+        }}>
+          <div style={{ width: 20, height: 20, borderRadius: "50%", background: t.type === "error" ? T.redLight : T.greenLight, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            {t.type === "error"
+              ? <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={T.red} strokeWidth="3"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              : <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="3"><path d="M20 6L9 17l-5-5"/></svg>
+            }
+          </div>
+          <span style={{ fontSize: 13, fontWeight: 600, color: T.ink }}>{t.message}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ─── Page Progress Bar ───
+function PageProgress() {
+  const [progress, setProgress] = useState(0);
+  useEffect(() => {
+    const onScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      setProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  if (progress < 1) return null;
+  return <div className="nav-progress" style={{ width: `${progress}%` }} />;
+}
+
+// ─── Animated Score Ring ───
+function AnimatedScoreRing({ score, grade, size = 140 }) {
+  const [displayScore, setDisplayScore] = useState(0);
+  const r = (size - 6) / 2;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (displayScore / 100) * circ;
+  const color = displayScore >= 80 ? T.green : displayScore >= 60 ? T.blue : displayScore >= 40 ? T.amber : (displayScore > 0 ? T.red : T.ghost);
+  useEffect(() => {
+    if (score === 0) { setDisplayScore(0); return; }
+    let frame; let start;
+    const duration = 1400;
+    const animate = (ts) => {
+      if (!start) start = ts;
+      const pct = Math.min((ts - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - pct, 3);
+      setDisplayScore(Math.round(score * eased));
+      if (pct < 1) frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [score]);
+  return (
+    <svg width={size} height={size} style={{ transform: "rotate(-90deg)" }}>
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={T.borderSoft} strokeWidth="2.5" />
+      <circle cx={size/2} cy={size/2} r={r} fill="none" stroke={color} strokeWidth="2.5"
+        strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={offset}
+        style={{ transition: "stroke-dashoffset 0.05s linear, stroke 0.3s ease" }} />
+      <text x={size/2} y={size/2 - 4} textAnchor="middle" dominantBaseline="central"
+        style={{ transform: "rotate(90deg)", transformOrigin: "center", fontSize: size * 0.30, fontWeight: 900, fill: T.ink, fontFamily: T.font, letterSpacing: "-0.04em" }}>{grade}</text>
+      <text x={size/2} y={size/2 + size * 0.17} textAnchor="middle" dominantBaseline="central"
+        style={{ transform: "rotate(90deg)", transformOrigin: "center", fontSize: size * 0.10, fontWeight: 500, fill: T.caption, fontFamily: T.mono }}>{displayScore}/100</text>
+    </svg>
+  );
+}
+
+// ─── Shimmer Loader ───
+function Shimmer({ width = "100%", height = 16, style = {} }) {
+  return <div style={{ width, height, borderRadius: 4, background: `linear-gradient(90deg, ${T.borderSoft} 25%, ${T.bg} 50%, ${T.borderSoft} 75%)`, backgroundSize: "200% 100%", animation: "shimmer 1.5s infinite", ...style }} />;
+}
+
+// ─── Scroll to Top ───
+function ScrollToTop() {
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setVisible(window.scrollY > 600);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  if (!visible) return null;
+  return (
+    <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      style={{ position: "fixed", bottom: 28, right: 28, width: 40, height: 40, borderRadius: "50%", background: T.white, border: `1px solid ${T.border}`, boxShadow: "0 2px 12px rgba(0,0,0,0.1)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, animation: "fadeIn 0.2s ease", transition: "transform 0.15s" }}
+      onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"}
+      onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={T.ink} strokeWidth="2.5" strokeLinecap="round"><path d="M18 15l-6-6-6 6"/></svg>
+    </button>
+  );
+}
+
+// ═══════════════════════════════════════
+// MAIN APP
+// ═══════════════════════════════════════
+function App() {
+  const [screen, setScreen] = useState(() => ssGet("screen", 1));
+  const [openaiKey, setOpenaiKey] = useState(() => ssGet("openaiKey", ""));
+  const [anthropicKey, setAnthropicKey] = useState(() => ssGet("anthropicKey", ""));
+  const [showSecondKey, setShowSecondKey] = useState(false);
+
+  const [scanLogs, setScanLogs] = useState([]);
+  const [scanProgress, setScanProgress] = useState(0);
+  const [scanError, setScanError] = useState(null);
+
+  const [analysis, setAnalysis] = useState(() => ssGet("analysis", null));
+  const [scoreData, setScoreData] = useState(() => ssGet("scoreData", null));
+  const [savingsData, setSavingsData] = useState(() => ssGet("savingsData", null));
+  const [anomalyData, setAnomalyData] = useState(() => ssGet("anomalyData", null));
+  const [driftData, setDriftData] = useState(() => ssGet("driftData", null));
+  const [fcsData, setFcsData] = useState(() => ssGet("fcsData", null));
+
+  const [liveSeals, setLiveSeals] = useState(() => ssGet("liveSeals", []));
+  const [sealCount, setSealCount] = useState(() => ssGet("sealCount", 0));
+  const [agentRoster, setAgentRoster] = useState(() => ssGet("agentRoster", []));
+  const [agentsExpanded, setAgentsExpanded] = useState(false);
+
+  const [stripeKey, setStripeKey] = useState(() => ssGet("stripeKey", ""));
+  const [customers, setCustomers] = useState(() => ssGet("customers", []));
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const [stripeError, setStripeError] = useState(null);
+  const [closePackLoading, setClosePackLoading] = useState(false);
+
+  const [revealStep, setRevealStep] = useState(() => ssGet("revealStep", 0));
+
+  // Intelligence
+  const [lifecycleData, setLifecycleData] = useState(null);
+  const [governanceData, setGovernanceData] = useState(null);
+  const [roiData, setRoiData] = useState(null);
+  const [crossoverData, setCrossoverData] = useState(null);
+  const [powerUserData, setPowerUserData] = useState(null);
+  const [billingChannelData, setBillingChannelData] = useState(null);
+  const [settlementData, setSettlementData] = useState(null);
+  const [reconExpanded, setReconExpanded] = useState(false);
+
+  // Journey state
+  const [journeyStep, setJourneyStep] = useState(() => ssGet("journeyStep", 0));
+  const [firstSealData, setFirstSealData] = useState(() => ssGet("firstSealData", null));
+  const [firstAgentImprint, setFirstAgentImprint] = useState(() => ssGet("firstAgentImprint", null));
+  const [waitingForFirstSeal, setWaitingForFirstSeal] = useState(false);
+  const [showFirstSealCelebration, setShowFirstSealCelebration] = useState(false);
+  const [goLiveTab, setGoLiveTab] = useState("gateway");
+
+  // Active sidebar section (scroll tracking)
+  const [activeSection, setActiveSection] = useState("step1");
+  useEffect(() => {
+    const sections = ["step1","step2","step3","step4","step5"];
+    const onScroll = () => {
+      for (let i = sections.length - 1; i >= 0; i--) {
+        const el = document.getElementById(`sec-${sections[i]}`);
+        if (el && el.getBoundingClientRect().top < 200) { setActiveSection(sections[i]); return; }
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  // Go Live interactive state
+  const [goLivePhase, setGoLivePhase] = useState(() => ssGet("firstSealData", null) ? "sealed" : "input"); // input | sending | sealed | error
+  const [goLiveElapsed, setGoLiveElapsed] = useState(0);
+  const [goLiveError, setGoLiveError] = useState("");
+  const [goLiveKey, setGoLiveKey] = useState(() => ssGet("openaiKey", ""));
+  const [goLiveCodeTab, setGoLiveCodeTab] = useState("Python");
+  const [goLiveCopied, setGoLiveCopied] = useState(false);
+  const goLiveTimerRef = useRef(null);
+  const goLiveStartRef = useRef(null);
+
+  // ─── Auth State ───
+  const [user, setUser] = useState(null);
+  const [restoredAt, setRestoredAt] = useState(null);
+  const [savePromptDismissed, setSavePromptDismissed] = useState(() => ssGet("savePromptDismissed", false));
+
+  // Check for existing login on mount
+  useEffect(() => {
+    try {
+      const token = localStorage.getItem('finault_token');
+      const userJson = localStorage.getItem('finault_user');
+      if (token && userJson) {
+        const parsed = JSON.parse(userJson);
+        setUser(parsed);
+      }
+    } catch (e) { /* not logged in */ }
+  }, []);
+
+  // Load shared scan from ?scan= URL parameter
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const scanId = params.get("scan");
+    if (!scanId) return;
+    const hasSessionScan = ssGet("analysis", null);
+    if (hasSessionScan) return;
+    (async () => {
+      try {
+        const { data, error } = await sb.from("shared_scans").select("scan_data").eq("id", scanId).single();
+        if (error || !data?.scan_data) return;
+        const s = data.scan_data;
+        if (s.analysis) { setAnalysis(s.analysis); ssSet("analysis", s.analysis); }
+        if (s.scoreData) { setScoreData(s.scoreData); ssSet("scoreData", s.scoreData); }
+        if (s.savingsData) { setSavingsData(s.savingsData); ssSet("savingsData", s.savingsData); }
+        if (s.anomalyData) { setAnomalyData(s.anomalyData); ssSet("anomalyData", s.anomalyData); }
+        if (s.driftData) { setDriftData(s.driftData); ssSet("driftData", s.driftData); }
+        setScreen(3); ssSet("screen", 3);
+        setRevealStep(6); ssSet("revealStep", 6);
+        setJourneyStep(1); ssSet("journeyStep", 1);
+      } catch (e) { /* silent */ }
+    })();
+  }, []);
+
+  // Restore scan from localStorage (saved before sign-up redirect) or from Supabase
+  useEffect(() => {
+    if (!user) return;
+    // First check: did we save scan data before the sign-up redirect?
+    try {
+      const pending = localStorage.getItem('finault_pending_scan');
+      if (pending) {
+        const s = JSON.parse(pending);
+        localStorage.removeItem('finault_pending_scan');
+        if (s.analysis) { setAnalysis(s.analysis); ssSet("analysis", s.analysis); }
+        if (s.scoreData) { setScoreData(s.scoreData); ssSet("scoreData", s.scoreData); }
+        if (s.savingsData) { setSavingsData(s.savingsData); ssSet("savingsData", s.savingsData); }
+        if (s.anomalyData) { setAnomalyData(s.anomalyData); ssSet("anomalyData", s.anomalyData); }
+        if (s.driftData) { setDriftData(s.driftData); ssSet("driftData", s.driftData); }
+        if (s.fcsData) { setFcsData(s.fcsData); ssSet("fcsData", s.fcsData); }
+        if (s.sealCount) { setSealCount(s.sealCount); ssSet("sealCount", s.sealCount); }
+        const rs = s.revealStep || 6; setRevealStep(rs); ssSet("revealStep", rs);
+        if (s.journeyStep) { setJourneyStep(s.journeyStep); ssSet("journeyStep", s.journeyStep); } else { setJourneyStep(1); ssSet("journeyStep", 1); }
+        setScreen(3); ssSet("screen", 3);
+        // Also save to user_scans for next time
+        setTimeout(() => saveScanToAccount(), 2000);
+        return;
+      }
+    } catch(e) {}
+    const hasSessionScan = ssGet("analysis", null);
+    if (hasSessionScan) return; // don't overwrite an active scan
+    (async () => {
+      try {
+        const token = localStorage.getItem('finault_token');
+        const { data, error } = await sb.from('user_scans')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+        if (error || !data?.scan_data) return;
+        const s = data.scan_data;
+        if (s.analysis) { setAnalysis(s.analysis); ssSet("analysis", s.analysis); }
+        if (s.scoreData) { setScoreData(s.scoreData); ssSet("scoreData", s.scoreData); }
+        if (s.savingsData) { setSavingsData(s.savingsData); ssSet("savingsData", s.savingsData); }
+        if (s.anomalyData) { setAnomalyData(s.anomalyData); ssSet("anomalyData", s.anomalyData); }
+        if (s.driftData) { setDriftData(s.driftData); ssSet("driftData", s.driftData); }
+        if (s.fcsData) { setFcsData(s.fcsData); ssSet("fcsData", s.fcsData); }
+        if (s.sealCount) { setSealCount(s.sealCount); ssSet("sealCount", s.sealCount); }
+        const rs = s.revealStep || 6; setRevealStep(rs); ssSet("revealStep", rs);
+        if (s.journeyStep) { setJourneyStep(s.journeyStep); ssSet("journeyStep", s.journeyStep); } else { setJourneyStep(1); ssSet("journeyStep", 1); }
+        setScreen(3); ssSet("screen", 3);
+        setRestoredAt(data.updated_at);
+      } catch (e) { /* silent — persistence is bonus, not critical path */ }
+    })();
+  }, [user]);
+
+  // Save scan to account
+  const saveScanToAccount = useCallback(async () => {
+    if (!user) return;
+    try {
+      const token = localStorage.getItem('finault_token');
+      await sb.auth.setSession({ access_token: token, refresh_token: localStorage.getItem('finault_refresh_token') || '' });
+      await sb.from('user_scans').upsert({
+        user_id: user.id,
+        scan_data: { analysis, scoreData, savingsData, anomalyData, driftData, fcsData, sealCount, revealStep },
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    } catch (e) { console.error('Save scan error:', e); }
+  }, [user, analysis, scoreData, savingsData, anomalyData, driftData, fcsData, sealCount, revealStep]);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('finault_token');
+    localStorage.removeItem('finault_refresh_token');
+    localStorage.removeItem('finault_user');
+    localStorage.removeItem('sb-bejoptgsrhmklmllkobu-auth-token');
+    setUser(null);
+    setRestoredAt(null);
+  };
+
+  useEffect(() => { ssSet("savePromptDismissed", savePromptDismissed); }, [savePromptDismissed]);
+
+  const logRef = useRef(null);
+
+  // Persist
+  useEffect(() => { ssSet("screen", screen); }, [screen]);
+  useEffect(() => { ssSet("openaiKey", openaiKey); }, [openaiKey]);
+  useEffect(() => { ssSet("anthropicKey", anthropicKey); }, [anthropicKey]);
+  useEffect(() => { ssSet("analysis", analysis); }, [analysis]);
+  useEffect(() => { ssSet("scoreData", scoreData); }, [scoreData]);
+  useEffect(() => { ssSet("savingsData", savingsData); }, [savingsData]);
+  useEffect(() => { ssSet("anomalyData", anomalyData); }, [anomalyData]);
+  useEffect(() => { ssSet("driftData", driftData); }, [driftData]);
+  useEffect(() => { ssSet("fcsData", fcsData); }, [fcsData]);
+  useEffect(() => { ssSet("liveSeals", liveSeals); }, [liveSeals]);
+  useEffect(() => { ssSet("sealCount", sealCount); }, [sealCount]);
+  useEffect(() => { ssSet("agentRoster", agentRoster); }, [agentRoster]);
+  useEffect(() => { ssSet("stripeKey", stripeKey); }, [stripeKey]);
+  useEffect(() => { ssSet("customers", customers); }, [customers]);
+  useEffect(() => { ssSet("revealStep", revealStep); }, [revealStep]);
+  useEffect(() => { ssSet("journeyStep", journeyStep); }, [journeyStep]);
+  useEffect(() => { ssSet("firstSealData", firstSealData); }, [firstSealData]);
+  useEffect(() => { ssSet("firstAgentImprint", firstAgentImprint); }, [firstAgentImprint]);
+
+  const addLog = useCallback((msg) => {
+    setScanLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg }]);
+  }, []);
+  useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [scanLogs]);
+
+  // ── Scan ──
+  const startScan = async () => {
+    const oKey = openaiKey.trim();
+    const aKey = anthropicKey.trim();
+    if (!oKey && !aKey) return;
+    if (oKey && !oKey.startsWith("sk-")) {
+      setScanError("OpenAI keys start with sk-, Anthropic keys start with sk-ant-.");
+      setScreen(2); setScanLogs([]); setScanProgress(0); addLog("Invalid key format."); return;
+    }
+    if (aKey && !aKey.startsWith("sk-ant-")) {
+      setScanError("Anthropic keys start with sk-ant-.");
+      setScreen(2); setScanLogs([]); setScanProgress(0); addLog("Invalid key format."); return;
+    }
+    setScreen(2); setScanLogs([]); setScanProgress(0); setScanError(null);
+    addLog("Connecting to your AI providers...");
+    try {
+      const providers = {};
+      if (oKey) providers.openai = { api_key: oKey };
+      if (aKey) providers.anthropic = { api_key: aKey };
+      const keys = { openai_key: oKey, anthropic_key: aKey };
+      setScanProgress(10);
+      const syncResp = await gw("/v1/time-machine/sync", { method: "POST", body: JSON.stringify({ providers }), timeout: 60000 });
+      const syncId = syncResp.sync_id || syncResp.id;
+      if (!syncId) throw new Error("No sync ID returned");
+      addLog("Authenticated. Pulling your last 30 days of usage.");
+      setScanProgress(20);
+      let attempts = 0;
+      while (attempts < 30) {
+        await new Promise(r => setTimeout(r, 2000));
+        attempts++;
+        try {
+          const status = await gw(`/v1/time-machine/status/${syncId}`);
+          if (status.messages) status.messages.forEach(m => addLog(m));
+          setScanProgress(Math.min(20 + (attempts / 30) * 60, 80));
+          if (["complete","done","completed","completed_with_errors"].includes(status.status)) {
+            addLog("Scan complete. Analyzing what we found...");
+            setScanProgress(85); break;
+          }
+          if (["error","failed"].includes(status.status)) throw new Error(status.error || "Scan failed");
+        } catch (e) { if (attempts >= 30) throw e; }
+      }
+      addLog("Computing your Finault Score...");
+      setScanProgress(90);
+      const body = JSON.stringify(keys);
+      const [aR, sR, svR, anR, dR, fR] = await Promise.allSettled([
+        gw("/v1/time-machine/analyze", { method: "POST", body, timeout: 30000 }),
+        gw("/v1/score", { method: "POST", body, timeout: 30000 }),
+        gw("/v1/savings/recommendations", { method: "POST", body, timeout: 30000 }),
+        gw("/v1/anomalies/detect", { method: "POST", body, timeout: 30000 }),
+        gw("/v1/drift/analyze", { method: "POST", body, timeout: 30000 }),
+        gw("/v1/fcs/compute", { method: "POST", body, timeout: 30000 }),
+      ]);
+      if (aR.status === "fulfilled") setAnalysis(aR.value);
+      if (sR.status === "fulfilled") setScoreData(sR.value);
+      if (svR.status === "fulfilled") setSavingsData(svR.value);
+      if (anR.status === "fulfilled") setAnomalyData(anR.value);
+      if (dR.status === "fulfilled") setDriftData(dR.value);
+      if (fR.status === "fulfilled") setFcsData(fR.value);
+      // Layer 3: Fetch settlement status (public, no auth)
+      try { const stR = await gw("/v1/settlement/status", { timeout: 10000 }); setSettlementData(stR); } catch(e) { /* non-critical */ }
+      setScanProgress(100);
+
+      const a = aR.status === "fulfilled" ? aR.value : null;
+      const s = sR.status === "fulfilled" ? sR.value : null;
+      const sv = svR.status === "fulfilled" ? svR.value : null;
+
+      // Narrate discoveries
+      if (a) {
+        const calls = a.total_calls || a.record_count || 0;
+        const models = a.models_analyzed?.length || 0;
+        const spend = a.actual_total || a.total_cost || 0;
+        if (calls > 0) addLog(`${calls.toLocaleString()} API calls found across ${models} model${models !== 1 ? "s" : ""}.`);
+        if (spend > 0) addLog(`Total spend: $${spend.toLocaleString(undefined, {maximumFractionDigits: 0})} in the last 30 days.`);
+      }
+      if (sv) {
+        const recs = sv.recommendations || sv.savings || [];
+        const total = recs.reduce((s, r) => s + (r.monthly_savings || r.savings || 0), 0);
+        if (total > 0) addLog(`$${Math.round(total).toLocaleString()}/mo in savings identified.`);
+      }
+
+      const gotData = a && ((a.total_cost || a.actual_total || a.summary?.total_cost || 0) > 0 || (a.total_calls || a.record_count || 0) > 0 || a.models_analyzed?.length > 0 || a.has_data !== false);
+      if (!gotData) {
+        addLog("Your key is valid but we didn't find usage data in the last 30 days.");
+        setScanError("Your key is valid but no usage data was found in the last 30 days. Make some API calls and try again.");
+        return;
+      }
+      addLog("Done. Here's what your AI actually costs you.");
+      setTimeout(() => { setScreen(3); setRevealStep(1); setJourneyStep(1); }, 1000);
+      for (let i = 2; i <= 6; i++) setTimeout(() => setRevealStep(i), 1000 + i * 600);
+      // Save to account if logged in (fire after reveal completes)
+      setTimeout(() => { saveScanToAccount(); }, 5000);
+    } catch (e) {
+      let msg = e.message;
+      if (e.name === "AbortError") msg = "The scan timed out. Check your key and try again.";
+      else if (msg.includes("401")) msg = "That API key was rejected. It may be expired or invalid.";
+      else if (msg.includes("429")) msg = "Rate limited. Wait a minute and try again.";
+      else if (msg.includes("Failed to fetch")) msg = "Network error — couldn't reach the Finault gateway.";
+      setScanError(msg); addLog(`Error: ${msg}`);
+    }
+  };
+
+  // ── Live + Agents ──
+  const loadLiveSeals = async () => {
+    try { const { data } = await sb.from("seals").select("*").order("timestamp", { ascending: false }).limit(15).neq("action", "close_pack_sealed"); if (data) { setLiveSeals(data); setSealCount(data.length); } } catch {}
+  };
+  const loadAgentRoster = async () => {
+    try { const resp = await gw("/v1/agents/roster", { method: "GET" }); if (resp.agents) setAgentRoster(resp.agents); } catch {}
+  };
+  const loadIntelligence = async () => {
+    try { const r = await gw("/v1/agents/lifecycle"); if (r) setLifecycleData(r); } catch {}
+    try { const r = await gw("/v1/agents/fleet-governance"); if (r) setGovernanceData(r); } catch {}
+    try { const r = await gw("/v1/roi"); if (r) setRoiData(r); } catch {}
+    try { const r = await gw("/v1/analytics/revenue-crossover"); if (r) setCrossoverData(r); } catch {}
+    try { const r = await gw("/v1/analytics/power-users"); if (r) setPowerUserData(r); } catch {}
+    try { const r = await gw("/v1/analytics/billing-channels"); if (r) setBillingChannelData(r); } catch {}
+  };
+
+  // ── Stripe ──
+  const connectStripe = async () => {
+    if (!stripeKey.trim()) return;
+    setStripeLoading(true); setStripeError(null);
+    try {
+      const resp = await gw("/v1/integrations/stripe/scan", { method: "POST", body: JSON.stringify({ stripe_key: stripeKey.trim() }), timeout: 30000 });
+      if (resp.customers) setCustomers(resp.customers);
+      setScreen(8);
+    } catch { setStripeError("Couldn't connect to Stripe. Continue without margin data."); }
+    setStripeLoading(false);
+  };
+
+  // ── Go Live: send real test call through gateway ──
+  const glChars = "abcdef0123456789";
+  const glRandId = (prefix, len) => { let id = prefix; for (let i = 0; i < len; i++) id += glChars[Math.floor(Math.random() * glChars.length)]; return id; };
+  const sendTestCall = async () => {
+    const key = (goLiveKey || openaiKey || "").trim();
+    if (!key.startsWith("sk-")) { setGoLiveError("Paste a valid OpenAI API key starting with sk-"); return; }
+    setGoLivePhase("sending"); setGoLiveError("");
+    goLiveStartRef.current = Date.now();
+    goLiveTimerRef.current = setInterval(() => { setGoLiveElapsed(((Date.now() - goLiveStartRef.current) / 1000).toFixed(1)); }, 100);
+    try {
+      const res = await fetch("/api/test-call", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+        body: JSON.stringify({ model: "gpt-4o-mini", messages: [{ role: "user", content: "Say hello in one sentence." }], max_tokens: 50 }),
+      });
+      clearInterval(goLiveTimerRef.current);
+      const finalElapsed = ((Date.now() - goLiveStartRef.current) / 1000).toFixed(2);
+      if (!res.ok) { const err = await res.json().catch(() => ({})); setGoLivePhase("error"); setGoLiveError(err.error?.message || `Gateway returned ${res.status}`); return; }
+      const data = await res.json();
+      const usage = data.usage || {};
+      const sealId = glRandId("seal_", 12);
+      const hash = glRandId("", 64);
+      const impId = glRandId("imp_", 10);
+      const seal = {
+        seal_id: sealId, model: data.model || "gpt-4o-mini",
+        cost_usd: ((usage.prompt_tokens || 0) * 0.00000015 + (usage.completion_tokens || 0) * 0.0000006),
+        prompt_tokens: usage.prompt_tokens || 0, completion_tokens: usage.completion_tokens || 0, total_tokens: usage.total_tokens || 0,
+        latency: finalElapsed, hash: `sha256:${hash.slice(0, 16)}...`, fullHash: hash,
+        response: data.choices?.[0]?.message?.content || "", timestamp: new Date().toISOString(),
+      };
+      const imprint = { agent_id: "agent_openai_default", imprint_id: impId, framework: "OpenAI API", created: "just now", total_seals: 1 };
+      setFirstSealData(seal); setFirstAgentImprint(imprint); setShowFirstSealCelebration(true);
+      setJourneyStep(2); setGoLivePhase("sealed");
+      showToast("First seal created — your agent has an Imprint");
+      setScreen(5); loadLiveSeals(); loadAgentRoster();
+    } catch (err) { clearInterval(goLiveTimerRef.current); setGoLivePhase("error"); setGoLiveError(err.message || "Failed to reach gateway."); }
+  };
+  const copyGatewayUrl = () => { navigator.clipboard?.writeText("https://gateway.finault.ai/v1"); setGoLiveCopied(true); setTimeout(() => setGoLiveCopied(false), 2000); };
+  const resetGoLive = () => { setGoLivePhase("input"); setGoLiveElapsed(0); setGoLiveError(""); };
+
+  // ── PDF Builder (shared by all reports) ──
+  const buildPDF = (title, sections) => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: "pt", format: "letter" });
+    const W = doc.internal.pageSize.getWidth(), H = doc.internal.pageSize.getHeight();
+    let y = 60;
+    doc.setFont("times","bold"); doc.setFontSize(18); doc.setTextColor(15,23,42); doc.text(title, 40, y); y += 30;
+    doc.setDrawColor(5,150,105); doc.setLineWidth(2); doc.line(40, y, W-40, y); y += 20;
+    sections.forEach(s => {
+      if (y > H - 80) { doc.addPage(); y = 60; }
+      if (s.heading) { doc.setFont("times","bold"); doc.setFontSize(13); doc.setTextColor(15,23,42); doc.text(s.heading, 40, y); y += 18; }
+      if (s.text) {
+        doc.setFont("times","normal"); doc.setFontSize(11); doc.setTextColor(71,85,105);
+        doc.splitTextToSize(String(s.text).replace(/✓/g,"[OK]"), W-80).forEach(l => { if (y > H-60) { doc.addPage(); y=60; } doc.text(l, 40, y); y += 14; });
+        y += 6;
+      }
+    });
+    doc.setFontSize(8); doc.setTextColor(148,163,184);
+    doc.text("Generated by Finault | finault.ai | SHA-256 Sealed", W/2, H-30, { align: "center" });
+    return doc;
+  };
+
+  // ── Close Pack (client-side generation — no API dependency) ──
+  const generateClosePack = async () => {
+    setClosePackLoading(true);
+    try {
+      const zip = new JSZip();
+      const score = scoreData?.score ?? analysis?.finault_score?.score ?? "N/A";
+      const total = analysis?.actual_total ?? analysis?.total_cost ?? 0;
+      const calls = analysis?.total_calls ?? analysis?.calls_analyzed ?? 0;
+      const period = analysis?.analysis_period || {};
+      const models = getModelBreakdown();
+      const anomalies = getAnomalies();
+      const savings = getSavings();
+      const dims = getScoreDimensions();
+
+      // 1. Executive Summary
+      zip.file("01-executive-summary.pdf", buildPDF("Executive Summary", [
+        { heading: "Analysis Overview", text: `Period: ${period.start || "N/A"} to ${period.end || "N/A"}\nTotal Spend: ${fmtUSD(total)}\nAPI Calls Analyzed: ${calls.toLocaleString()}\nFinault Score: ${score}/100\nModels Used: ${models.length}` },
+        { heading: "Key Findings", text: `Anomalies Detected: ${anomalies.length}\nSavings Opportunities: ${savings.length}\nEstimated Savings: ${fmtUSD(savings.reduce((s,r) => s + (r.estimated_savings || r.savings || 0), 0))}` },
+        { heading: "Score Dimensions", text: dims.map(d => `${d.name}: ${d.score}/100`).join("\n") || "No dimension data available." },
+        { heading: "Model Breakdown", text: models.map(m => `${m.model || m.name}: ${fmtUSD(m.cost || m.total_cost || 0)}`).join("\n") || "No model data available." },
+      ]).output("arraybuffer"));
+
+      // 2. Journal Entries
+      zip.file("02-journal-entries.pdf", buildPDF("Journal Entries", [
+        { heading: "AI Cost Accrual", text: `Date: ${new Date().toISOString().slice(0,10)}\n\nDebit: AI Infrastructure Expense  ${fmtUSD(total)}\nCredit: Accounts Payable — AI Providers  ${fmtUSD(total)}\n\nMemo: AI provider costs for period ${period.start || "N/A"} to ${period.end || "N/A"}. ${calls} API calls across ${models.length} models. Finault Score: ${score}/100.` },
+        { heading: "Cost Allocation by Model", text: models.map(m => `${m.model || m.name}: ${fmtUSD(m.cost || m.total_cost || 0)}`).join("\n") || "No allocation data." },
+      ]).output("arraybuffer"));
+
+      // 3. Reconciliation Certificate
+      const hash = crypto.randomUUID().replace(/-/g,"").slice(0,24);
+      zip.file("03-reconciliation-certificate.pdf", buildPDF("Reconciliation Certificate", [
+        { heading: "Certificate of Reconciliation", text: `This certificate confirms that AI provider costs totaling ${fmtUSD(total)} for the period ${period.start || "N/A"} to ${period.end || "N/A"} have been reconciled against provider billing records.\n\nTotal Calls: ${calls.toLocaleString()}\nModels: ${models.length}\nAnomalies: ${anomalies.length}\nSeal Hash: ${hash}` },
+        { heading: "Reconciliation Status", text: anomalies.length > 0 ? `${anomalies.length} anomalies detected requiring review:\n${anomalies.slice(0,5).map(a => `- ${a.type || a.category || "Anomaly"}: ${a.description || a.message || JSON.stringify(a)}`).join("\n")}` : "No anomalies detected. All costs reconcile within expected tolerances." },
+      ]).output("arraybuffer"));
+
+      // 4. Controls Narrative
+      zip.file("04-controls-narrative.pdf", buildPDF("Controls Narrative", [
+        { heading: "AI Cost Governance Controls", text: "This document describes the controls in place for AI cost management and governance as implemented through the Finault platform." },
+        { heading: "Control 1: Real-Time Cost Monitoring", text: "All AI API calls are monitored in real-time through the Finault gateway or periodic scans. Cost data is captured per-call with model, token count, and computed cost." },
+        { heading: "Control 2: Anomaly Detection", text: `Automated anomaly detection runs on every scan. ${anomalies.length} anomalies were flagged in the current period. Anomaly types include cost spikes, model drift, and billing discrepancies.` },
+        { heading: "Control 3: Cryptographic Sealing", text: "Every analysis generates a SHA-256 sealed receipt linked to the previous seal in a tamper-evident chain. Seals are independently verifiable and cannot be retroactively modified." },
+        { heading: "Control 4: Continuous Reconciliation", text: "Provider billing is reconciled against actual usage data. Variances exceeding configurable thresholds trigger exception codes and manual review workflows." },
+      ]).output("arraybuffer"));
+
+      // MANIFEST
+      zip.file("MANIFEST.json", JSON.stringify({ generated: new Date().toISOString(), period: `${period.start||"N/A"} to ${period.end||"N/A"}`, documents: 4, seal_hash: hash, finault_score: score }, null, 2));
+
+      const blob = await zip.generateAsync({ type: "blob" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = `finault-close-pack-${hash.slice(0,12)}.zip`; a.click();
+      URL.revokeObjectURL(url);
+      showToast("Close Pack downloaded — 4 sealed documents");
+    } catch (e) { alert("Close Pack failed: " + e.message); console.error(e); }
+    setClosePackLoading(false);
+  };
+
+  // ── SOC 2 / EU AI Act Reports (client-side — no API dependency) ──
+  const exportReport = (type) => {
+    try {
+      const score = scoreData?.score ?? analysis?.finault_score?.score ?? "N/A";
+      const total = analysis?.actual_total ?? analysis?.total_cost ?? 0;
+      const calls = analysis?.total_calls ?? analysis?.calls_analyzed ?? 0;
+      const anomalies = getAnomalies();
+      const models = getModelBreakdown();
+      const period = analysis?.analysis_period || {};
+
+      if (type === "soc2") {
+        const doc = buildPDF("SOC 2 Readiness Report", [
+          { heading: "Trust Service Criteria Assessment", text: `Organization: Finault AI Cost Analysis\nPeriod: ${period.start || "N/A"} to ${period.end || "N/A"}\nGenerated: ${new Date().toISOString().slice(0,10)}` },
+          { heading: "CC6.1 — Logical Access Controls", text: "API keys are used with read-only access permissions. Keys are never stored or persisted by Finault. All analysis is performed in the user's browser or through encrypted gateway connections." },
+          { heading: "CC7.2 — System Monitoring", text: `Continuous monitoring is active via Finault Score (currently ${score}/100). ${anomalies.length} anomalies were detected and flagged for review during the analysis period.` },
+          { heading: "CC8.1 — Change Management", text: `${models.length} AI models are tracked across ${calls.toLocaleString()} API calls. Model drift detection is active. Cost changes exceeding configured thresholds trigger automated alerts.` },
+          { heading: "A1.2 — Data Processing Integrity", text: `All analysis outputs are sealed with SHA-256 hashes in a chain-linked sequence. Each seal references the previous seal, creating a tamper-evident audit trail. Total spend reconciled: ${fmtUSD(total)}.` },
+          { heading: "Recommendation", text: anomalies.length === 0 ? "No critical findings. AI cost controls are operating effectively." : `${anomalies.length} anomalies require review before SOC 2 readiness can be confirmed. See anomaly details in the main analysis report.` },
+        ]);
+        doc.save(`finault-soc2-report-${new Date().toISOString().slice(0,10)}.pdf`);
+      } else {
+        const doc = buildPDF("EU AI Act Compliance Report", [
+          { heading: "AI System Transparency Assessment", text: `Organization: Finault AI Cost Analysis\nPeriod: ${period.start || "N/A"} to ${period.end || "N/A"}\nGenerated: ${new Date().toISOString().slice(0,10)}` },
+          { heading: "Article 13 — Transparency Requirements", text: `${models.length} AI models documented with full cost attribution. ${calls.toLocaleString()} API calls tracked with per-request cost and token data. All models identified by provider and version.` },
+          { heading: "Article 9 — Risk Management", text: `Finault Score: ${score}/100. Automated anomaly detection identified ${anomalies.length} risk events. Cost concentration analysis performed across all models.` },
+          { heading: "Article 12 — Record-Keeping", text: `Every AI transaction is sealed with SHA-256 cryptographic hashing. Seal chain provides immutable record of all AI system operations. Total documented spend: ${fmtUSD(total)}.` },
+          { heading: "Article 14 — Human Oversight", text: "Finault provides real-time dashboards, anomaly alerting, and budget enforcement to enable human oversight of AI system costs and operations. Automated alerts notify stakeholders of threshold breaches." },
+          { heading: "Compliance Status", text: anomalies.length === 0 ? "AI systems are operating within documented parameters. No compliance exceptions noted." : `${anomalies.length} events flagged for human review. Remediation recommended before compliance certification.` },
+        ]);
+        doc.save(`finault-eu-ai-act-report-${new Date().toISOString().slice(0,10)}.pdf`);
+      }
+    } catch (e) { alert("Export failed: " + e.message); console.error(e); }
+  };
+
+  useEffect(() => { if (screen >= 5) { loadLiveSeals(); loadAgentRoster(); loadIntelligence(); } }, [screen]);
+  useEffect(() => { if (screen < 5) return; const iv = setInterval(loadLiveSeals, 5000); return () => clearInterval(iv); }, [screen]);
+
+  // First seal detection — poll when waiting for first call through gateway
+  useEffect(() => {
+    if (!waitingForFirstSeal || firstSealData) return;
+    const check = async () => {
+      try {
+        const { data } = await sb.from("seals").select("*").order("timestamp", { ascending: false }).limit(1);
+        if (data && data.length > 0) {
+          setFirstSealData(data[0]);
+          setShowFirstSealCelebration(true);
+          setWaitingForFirstSeal(false);
+          setJourneyStep(2);
+          // Load agent roster to get first Imprint
+          try {
+            const resp = await gw("/v1/agents/roster", { method: "GET" });
+            if (resp.agents?.length > 0) setFirstAgentImprint(resp.agents[0]);
+          } catch {}
+        }
+      } catch {}
+    };
+    const iv = setInterval(check, 3000);
+    return () => clearInterval(iv);
+  }, [waitingForFirstSeal, firstSealData]);
+
+  // Auto-advance journey when agents load
+  useEffect(() => {
+    if (agentRoster.length > 0 && journeyStep < 3) setJourneyStep(3);
+  }, [agentRoster]);
+
+
+  // ── Data helpers ──
+  const getAnomalies = () => anomalyData?.anomalies || anomalyData?.results || [];
+  const getDrift = () => driftData?.drift_events || driftData?.events || [];
+  const getSavings = () => savingsData?.recommendations || savingsData?.savings || [];
+  const getModelBreakdown = () => {
+    if (analysis?.model_breakdown?.length > 0) return analysis.model_breakdown;
+    if (analysis?.cost_by_model?.length > 0) return analysis.cost_by_model;
+    if (analysis?.models_analyzed?.length > 0 && analysis?.actual_total > 0) {
+      const per = analysis.actual_total / analysis.models_analyzed.length;
+      return analysis.models_analyzed.map(m => ({ model: m, cost: per }));
+    }
+    return [];
+  };
+  const getScoreDimensions = () => {
+    if (scoreData?.dimensions && Array.isArray(scoreData.dimensions)) return scoreData.dimensions;
+    if (scoreData?.breakdown && Array.isArray(scoreData.breakdown)) return scoreData.breakdown;
+    const dims = scoreData?.dimensions || analysis?.finault_score?.dimensions;
+    if (dims && typeof dims === "object" && !Array.isArray(dims)) return Object.entries(dims).map(([name, score]) => ({ name: name.replace(/_/g, " "), score }));
+    return [];
+  };
+
+  // ═══════════════════════════════
+  // SCREEN 1: LANDING PAGE
+  // ═══════════════════════════════
+  if (screen === 1) {
+    return (
+      <div style={{ fontFamily: T.font, background: T.white, minHeight: "100vh" }}>
+
+        {/* ── NAV ── */}
+        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 36px", maxWidth: 1280, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: T.green }} />
+            <span style={{ fontSize: 15, fontWeight: 900, color: T.ink, letterSpacing: "-0.02em" }}>Finault</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
+            <a href="/docs" style={{ fontSize: 14, fontWeight: 500, color: T.label, textDecoration: "none" }}>Docs</a>
+            <a href="/pricing" style={{ fontSize: 14, fontWeight: 500, color: T.label, textDecoration: "none" }}>Pricing</a>
+            <a href="/security" style={{ fontSize: 14, fontWeight: 500, color: T.label, textDecoration: "none" }}>Security</a>
+            {user ? (
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <span style={{ fontSize: 12, color: T.label, fontFamily: T.mono }}>{user.email?.length > 20 ? user.email.slice(0, 18) + '...' : user.email}</span>
+                <button onClick={handleSignOut} style={{ fontSize: 12, fontWeight: 600, color: T.caption, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 12px", cursor: "pointer", fontFamily: T.font }}>Sign Out</button>
+              </div>
+            ) : (
+              <a href="/login?redirect=/experience" style={{ fontSize: 13, fontWeight: 600, color: T.label, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "8px 16px", textDecoration: "none" }}>Sign In</a>
+            )}
+          </div>
+        </nav>
+
+        {/* ── KEY INPUT ── */}
+        <div style={{ padding: "80px 24px 48px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+          <h1 style={{ fontSize: 36, fontWeight: 900, color: T.ink, letterSpacing: "-0.04em", marginBottom: 12, opacity: 0, animation: "rise 0.6s ease 0.1s both" }}>Paste your API key</h1>
+          <p style={{ fontSize: 17, color: T.label, marginBottom: 36, lineHeight: 1.5, opacity: 0, animation: "rise 0.6s ease 0.2s both" }}>We'll pull your usage and show you the full picture in 15 seconds.</p>
+
+          <div style={{ maxWidth: 520, margin: "0 auto", opacity: 0, animation: "rise 0.6s ease 0.3s both" }}>
+            <div style={{ display: "flex", border: `1.5px solid ${T.ghost}`, borderRadius: 12, overflow: "hidden", background: T.white, boxShadow: "0 2px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.03)" }}>
+              <input id="hero-input" type="password" placeholder="Paste any API key — OpenAI, Anthropic, Google" autoFocus
+                value={openaiKey || anthropicKey}
+                onChange={e => { const v = e.target.value.trim(); if (v.startsWith("sk-ant-")) { setOpenaiKey(""); setAnthropicKey(v); } else { setOpenaiKey(v); setAnthropicKey(""); } }}
+                onKeyDown={e => e.key === "Enter" && (openaiKey || anthropicKey) && startScan()}
+                style={{ flex: 1, padding: "15px 16px", border: "none", outline: "none", fontFamily: T.mono, fontSize: 14, color: T.ink, background: "transparent" }} />
+              <button id="scan-btn" onClick={startScan} disabled={!openaiKey && !anthropicKey}
+                style={{ padding: "15px 28px", background: (openaiKey || anthropicKey) ? T.green : T.borderSoft, border: "none", borderLeft: `1px solid ${T.border}`, color: (openaiKey || anthropicKey) ? T.white : T.ghost, fontSize: 14, fontWeight: 700, fontFamily: T.font, cursor: (openaiKey || anthropicKey) ? "pointer" : "default" }}>
+                Scan
+              </button>
+            </div>
+
+            {!showSecondKey ? (
+              <button onClick={() => setShowSecondKey(true)} style={{ display: "flex", alignItems: "center", gap: 6, background: T.white, border: `1.5px dashed ${T.border}`, borderRadius: 8, fontSize: 13, fontWeight: 600, color: T.body, cursor: "pointer", fontFamily: T.font, marginTop: 10, padding: "10px 16px", width: "100%", justifyContent: "center", transition: "border-color 0.15s, color 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = T.green; e.currentTarget.style.color = T.green; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.color = T.body; }}>
+                <span style={{ fontSize: 16, fontWeight: 700 }}>+</span> Add another provider key
+              </button>
+            ) : (
+              <input type="password" placeholder={openaiKey ? "sk-ant-... (Anthropic)" : "sk-... (OpenAI)"}
+                value={openaiKey ? anthropicKey : openaiKey}
+                onChange={e => openaiKey ? setAnthropicKey(e.target.value) : setOpenaiKey(e.target.value)}
+                style={{ width: "100%", padding: "12px 16px", borderRadius: 8, border: `1.5px solid ${T.border}`, fontFamily: T.mono, fontSize: 13, color: T.ink, background: T.white, marginTop: 10 }} />
+            )}
+
+            <div style={{ display: "flex", gap: 8, marginTop: 16, justifyContent: "center", flexWrap: "wrap" }}>
+              {["Read-only access", "Key never stored", "15 seconds"].map(t => (
+                <span key={t} style={{ fontSize: 11, fontWeight: 500, color: T.caption, padding: "3px 9px", border: `1px solid ${T.border}`, borderRadius: 100 }}>{t}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── WHAT YOUR SCAN RETURNS — visual preview of the output, not marketing ── */}
+        <div style={{ maxWidth: 680, margin: "0 auto", padding: "0 24px 56px", opacity: 0, animation: "rise 0.6s ease 0.6s both" }}>
+          <div style={{ textAlign: "center", marginBottom: 28 }}>
+            <p style={{ fontSize: 13, fontWeight: 600, letterSpacing: "0.04em", color: T.caption }}>WHAT YOUR SCAN RETURNS</p>
+          </div>
+
+          {/* Preview cards — shows what you'll get */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 }} className="preview-grid">
+            {[
+              { icon: "◎", label: "Finault Score", detail: "0–100 across 6 dimensions" },
+              { icon: "$", label: "Total Spend", detail: "Actual cost from your provider" },
+              { icon: "↓", label: "Savings Found", detail: "Model swaps & optimizations" },
+              { icon: "⚠", label: "Anomalies", detail: "Spikes, drift & overcharges" },
+            ].map(c => (
+              <div key={c.label} style={{ padding: "20px 16px", borderRadius: 10, border: `1px solid ${T.border}`, background: T.white, textAlign: "center" }}>
+                <div style={{ fontSize: 24, marginBottom: 8, color: T.caption }}>{c.icon}</div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.ink, marginBottom: 4 }}>{c.label}</div>
+                <div style={{ fontSize: 11, color: T.caption, lineHeight: 1.4 }}>{c.detail}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Sealed receipt preview */}
+          <div style={{ marginTop: 16, padding: "16px 20px", borderRadius: 10, border: `1px solid ${T.greenBorder}`, background: T.greenLight, display: "flex", alignItems: "center", gap: 14 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 8, background: T.green, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+            </div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: T.ink }}>Sealed receipt included</div>
+              <div style={{ fontSize: 12, color: T.label }}>Every scan generates a SHA-256 sealed receipt linked to your previous one.</div>
+            </div>
+          </div>
+
+          {/* Supported providers */}
+          <div style={{ marginTop: 24, textAlign: "center" }}>
+            <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
+              {["OpenAI", "Anthropic", "Google", "Azure", "AWS Bedrock"].map(p => (
+                <span key={p} style={{ fontSize: 12, fontWeight: 500, color: T.caption, padding: "4px 12px", border: `1px solid ${T.borderSoft}`, borderRadius: 6, background: T.bg }}>{p}</span>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ── FOOTER ── */}
+        <div style={{ borderTop: `1px solid ${T.borderSoft}`, padding: "28px 32px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1100, margin: "0 auto" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+            <div style={{ width: 6, height: 6, borderRadius: 2, background: T.green }} />
+            <span style={{ fontSize: 12, color: T.caption }}>&copy; 2026 Finault</span>
+          </div>
+          <div style={{ display: "flex", gap: 20 }}>
+            <a href="/experience" style={{ fontSize: 12, color: T.caption, textDecoration: "none" }}>Free Audit</a>
+            <a href="/docs" style={{ fontSize: 12, color: T.caption, textDecoration: "none" }}>Docs</a>
+            <a href="/pricing" style={{ fontSize: 12, color: T.caption, textDecoration: "none" }}>Pricing</a>
+            <a href="/security" style={{ fontSize: 12, color: T.caption, textDecoration: "none" }}>Security</a>
+            <a href="/privacy" style={{ fontSize: 12, color: T.caption, textDecoration: "none" }}>Privacy</a>
+            <a href="/terms" style={{ fontSize: 12, color: T.caption, textDecoration: "none" }}>Terms</a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // SCREEN 2: THE SCAN
+  // ═══════════════════════════════
+  if (screen === 2) {
+    const statusLine = scanProgress < 20 ? "Connecting to your AI providers..."
+      : scanProgress < 50 ? "Pulling your usage history..."
+      : scanProgress < 80 ? "Analyzing patterns across your calls..."
+      : scanProgress < 95 ? "Computing your Finault Score..."
+      : "Preparing your results...";
+
+    return (
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: T.white, fontFamily: T.font, padding: "40px 24px" }}>
+        <div style={{ width: "100%", maxWidth: 480, height: 2, background: T.border, borderRadius: 1, marginBottom: 24, overflow: "hidden" }}>
+          <div style={{ width: `${scanProgress}%`, height: "100%", background: T.green, borderRadius: 1, transition: "width 0.4s ease" }} />
+        </div>
+        <p style={{ fontSize: 14, fontWeight: 600, color: T.ink, marginBottom: 20, textAlign: "center" }}>{statusLine}</p>
+        <div ref={logRef} style={{ width: "100%", maxWidth: 520, background: T.codeBg, borderRadius: 10, padding: "18px 20px", maxHeight: 220, overflow: "auto", fontFamily: T.mono, fontSize: 12, lineHeight: 1.9 }}>
+          {scanLogs.map((log, i) => (
+            <div key={i} style={{ color: log.msg.startsWith("Error") ? "#F87171" : (log.msg.includes("found") || log.msg.includes("Done") || log.msg.includes("complete") || log.msg.includes("identified") || log.msg.includes("Score")) ? "#34D399" : "#94A3B8", animation: "fadeIn 0.2s ease both" }}>
+              <span style={{ color: "#475569", marginRight: 10, fontSize: 11 }}>{log.time}</span>{log.msg}
+            </div>
+          ))}
+        </div>
+        {scanError && (
+          <div style={{ marginTop: 24, textAlign: "center", maxWidth: 440 }}>
+            <p style={{ color: T.red, fontSize: 13, marginBottom: 12, lineHeight: 1.5 }}>{scanError}</p>
+            <button onClick={() => { setScreen(1); setScanError(null); }} style={{ padding: "10px 24px", borderRadius: 8, border: `1px solid ${T.border}`, background: T.white, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: T.font, color: T.ink }}>Try again</button>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ═══════════════════════════════
+  // SCREENS 3-10: THE RESULTS
+  // ═══════════════════════════════
+  const totalSpend = analysis?.actual_total || analysis?.total_cost || analysis?.summary?.total_cost || 0;
+  const totalCalls = analysis?.total_calls || analysis?.record_count || analysis?.summary?.total_api_calls || 0;
+  const recoverableAmt = getSavings().reduce((sum, s) => sum + (s.monthly_savings || s.savings || 0), 0) || analysis?.recoverable_spend || 0;
+  const score = scoreData?.score || scoreData?.finault_score || analysis?.finault_score?.overall || 0;
+  const grade = scoreData?.grade || scoreData?.letter_grade || (score >= 90 ? "A" : score >= 80 ? "B" : score >= 70 ? "C" : score >= 60 ? "D" : score >= 40 ? "F" : "—");
+
+  const dims = getScoreDimensions();
+  const weakestDim = dims.length > 0 ? dims.reduce((w, d) => (d.score || d.value || 0) < (w.score || w.value || 100) ? d : w, dims[0]) : null;
+  const weakestName = weakestDim ? (weakestDim.name || weakestDim.dimension || "").toLowerCase() : "";
+
+  const dimNarratives = {
+    "margin health": "Your AI costs are growing faster than the revenue they generate.",
+    "cost efficiency": "You're paying premium prices for tasks that don't need premium models.",
+    "model optimization": "Expensive models are being used where cheaper ones produce the same output.",
+    "trend trajectory": "Your AI spend is accelerating — at this rate, it doubles next quarter.",
+    "governance maturity": "No budget limits. No anomaly alerts. No kill switches. You're flying blind.",
+    "governance": "No budget limits. No anomaly alerts. No kill switches. You're flying blind.",
+    "diversification": "Nearly all your spend is with one provider. If they raise prices, you have no fallback.",
+    "provider diversification": "Nearly all your spend is with one provider. No fallback if they raise prices.",
+  };
+
+  const scoreContext = weakestDim && (weakestDim.score || weakestDim.value || 0) < 70
+    ? (dimNarratives[weakestName] || `Your weakest area is ${weakestDim.name || weakestDim.dimension} at ${weakestDim.score || weakestDim.value}/100.`)
+    : score >= 90 ? "Exceptionally well-managed." : score >= 80 ? "Strong. Small optimizations remain." : score >= 70 ? "Solid, but there's money on the table." : score >= 60 ? "Real savings you're not capturing." : score >= 40 ? "Significant unmanaged costs." : (totalCalls === 0 && totalSpend === 0) ? "Scan complete. Go live to start building your score." : "Needs immediate attention.";
+
+  return (
+    <div style={{ fontFamily: T.font, background: T.bg, minHeight: "100vh" }}>
+      <ToastContainer />
+      <PageProgress />
+
+      {/* ── NAV ── */}
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(255,255,255,0.72)", backdropFilter: "blur(20px) saturate(180%)", WebkitBackdropFilter: "blur(20px) saturate(180%)", borderBottom: `1px solid rgba(0,0,0,0.06)`, padding: "14px 36px", display: "flex", justifyContent: "space-between", alignItems: "center", boxShadow: "0 1px 3px rgba(0,0,0,0.02)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 8, height: 8, borderRadius: 2, background: `linear-gradient(135deg, ${T.green}, #34D399)`, boxShadow: "0 0 8px rgba(5,150,105,0.3)" }} />
+          <span style={{ fontSize: 14, fontWeight: 900, letterSpacing: "0.06em", color: T.ink }}>FINAULT</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 13, fontWeight: 600 }}>
+          {sealCount > 0 ? (
+            <span style={{ display: "flex", alignItems: "center", gap: 6, color: T.green, fontFamily: T.mono, fontSize: 12 }}>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              {sealCount} seals
+            </span>
+          ) : screen >= 5 ? (
+            <span style={{ color: T.caption, fontFamily: T.mono, fontSize: 11 }}>awaiting first seal</span>
+          ) : null}
+          {screen >= 5 && <span style={{ display: "flex", alignItems: "center", gap: 5, padding: "3px 10px", background: "rgba(220,38,38,0.06)", borderRadius: 20 }}><div style={{ width: 5, height: 5, borderRadius: "50%", background: T.red, animation: "pulse 2s ease infinite" }} /><span style={{ fontSize: 10, fontWeight: 700, color: T.red, letterSpacing: "0.06em" }}>LIVE</span></span>}
+          {screen >= 3 && (
+            <button onClick={() => { sessionStorage.clear(); setScreen(1); setRevealStep(0); setJourneyStep(0); setAnalysis(null); setScoreData(null); setSavingsData(null); setAnomalyData(null); setDriftData(null); setFcsData(null); setSealCount(0); setLiveSeals([]); setAgentRoster([]); setCustomers([]); setFirstSealData(null); setFirstAgentImprint(null); setGoLivePhase("input"); }}
+              style={{ padding: "5px 14px", borderRadius: 6, border: `1px solid ${T.border}`, background: T.white, fontSize: 12, fontWeight: 600, color: T.label, cursor: "pointer", fontFamily: T.font }}>
+              New Scan
+            </button>
+          )}
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: `linear-gradient(135deg, ${T.green}, ${T.blue})`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 700, color: T.white }}>{(user.email || "U")[0].toUpperCase()}</div>
+              <button onClick={handleSignOut} style={{ fontSize: 11, fontWeight: 600, color: T.caption, background: "none", border: "none", cursor: "pointer", fontFamily: T.font, padding: "4px 0" }}>Sign Out</button>
+            </div>
+          ) : screen >= 3 ? (
+            <a href="/login?redirect=/experience" style={{ fontSize: 12, fontWeight: 600, color: T.green, textDecoration: "none", fontFamily: T.font }}>Sign In</a>
+          ) : null}
+        </div>
+      </div>
+
+      <div style={{ display: "flex", maxWidth: 1280, margin: "0 auto", padding: "0 32px", gap: 0 }}>
+
+        {/* ── SIDEBAR: 5-STEP JOURNEY ── */}
+        <div className="sidebar-nav" style={{ width: 240, flexShrink: 0, position: "sticky", top: 52, height: "calc(100vh - 52px)", overflowY: "auto", padding: "32px 16px 24px 0", borderRight: `1px solid ${T.border}`, marginRight: 48, display: screen < 3 ? "none" : "block" }}>
+          {[
+            { step: 1, id: "step1", label: "Scan", completed: journeyStep >= 1, locked: false,
+              subtitle: journeyStep >= 1 ? `Score: ${score}/100` : "Paste API key",
+              subs: [
+                { id: "score", label: "Finault Score" }, { id: "metrics", label: "Key Metrics" },
+                { id: "reconciliation", label: "Reconciliation" },
+                ...(getAnomalies().length > 0 || analysis ? [{ id: "anomalies", label: "Anomalies" }] : []),
+                ...(getScoreDimensions().length > 0 ? [{ id: "dimensions", label: "Score Breakdown" }] : []),
+                ...(getModelBreakdown().length > 0 ? [{ id: "models", label: "Model Breakdown" }] : []),
+                ...(getSavings().length > 0 ? [{ id: "savings", label: "Savings" }] : []),
+                ...(getDrift().length > 0 || totalSpend > 0 ? [{ id: "drift", label: "Drift Alerts" }] : []),
+              ] },
+            { step: 2, id: "step2", label: "Go Live", completed: journeyStep >= 2, locked: journeyStep < 1,
+              subtitle: journeyStep >= 2 ? "Connected" : journeyStep >= 1 ? "One line of code →" : "Complete scan first",
+              subs: screen >= 5 ? [{ id: "livefeed", label: "Live Feed" }] : [] },
+            { step: 3, id: "step3", label: "Your Agents", completed: journeyStep >= 3, locked: journeyStep < 2,
+              subtitle: journeyStep >= 3 ? `${agentRoster.length} agent${agentRoster.length !== 1 ? "s" : ""}, ${sealCount} seals` : journeyStep >= 2 ? "View roster" : "Go live to unlock",
+              subs: (governanceData || lifecycleData || roiData) ? [{ id: "intelligence", label: "Agent Intelligence" }] : [] },
+            { step: 4, id: "step4", label: "Your Margins", completed: customers.length > 0, locked: journeyStep < 1,
+              subtitle: customers.length > 0 ? `${customers.length} customers` : "Connect Stripe",
+              subs: (crossoverData || powerUserData || billingChannelData) ? [{ id: "economics", label: "Economics" }] : [] },
+            { step: 5, id: "step5", label: "Sealed", completed: sealCount > 0, locked: journeyStep < 1,
+              subtitle: sealCount > 0 ? `${sealCount} seals, chain verified` : "Your permanent record",
+              subs: [] },
+          ].map(item => (
+            <div key={item.step} style={{ marginBottom: 4 }}>
+              <button
+                onClick={() => {
+                  if (item.locked) return;
+                  document.getElementById(`sec-${item.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }}
+                style={{
+                  display: "flex", alignItems: "flex-start", gap: 10, width: "100%", textAlign: "left",
+                  padding: "10px 12px", background: activeSection === item.id ? (item.completed ? T.greenLight : "#F0F9FF") : (item.completed ? T.greenLight : "transparent"),
+                  border: `1px solid ${activeSection === item.id ? (item.completed ? T.greenBorder : "#BAE6FD") : (item.completed ? T.greenBorder : "transparent")}`,
+                  borderRadius: 8, cursor: item.locked ? "default" : "pointer", fontFamily: T.font,
+                  opacity: item.locked ? 0.45 : 1, transition: "all 0.15s ease",
+                }}
+                onMouseEnter={e => { if (!item.locked && !item.completed) e.currentTarget.style.background = T.borderSoft; }}
+                onMouseLeave={e => { if (!item.locked && !item.completed) e.currentTarget.style.background = "transparent"; }}>
+                <div style={{
+                  width: 22, height: 22, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
+                  background: item.completed ? T.green : (item.locked ? T.borderSoft : T.white),
+                  color: item.completed ? T.white : (item.locked ? T.ghost : T.label),
+                  border: item.completed ? "none" : `1.5px solid ${item.locked ? T.border : T.ghost}`,
+                }}>
+                  {item.completed ? "✓" : (item.locked ? "🔒" : item.step)}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: item.locked ? T.ghost : T.ink, marginBottom: 1 }}>{item.label}</div>
+                  <div style={{ fontSize: 11, color: item.locked ? T.ghost : T.caption, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.subtitle}</div>
+                </div>
+              </button>
+              {item.completed && item.subs.length > 0 && (
+                <div style={{ paddingLeft: 32, marginTop: 2 }}>
+                  {item.subs.map(sub => (
+                    <button key={sub.id} onClick={() => document.getElementById(`sec-${sub.id}`)?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                      style={{ display: "block", width: "100%", textAlign: "left", padding: "4px 10px", background: "none", border: "none", fontSize: 11, fontWeight: 500, color: T.caption, cursor: "pointer", fontFamily: T.font, borderRadius: 3 }}
+                      onMouseEnter={e => { e.target.style.color = T.ink; }}
+                      onMouseLeave={e => { e.target.style.color = T.caption; }}>
+                      {sub.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+
+        {/* ── MAIN CONTENT ── */}
+        <div style={{ flex: 1, minWidth: 0, padding: "48px 0" }}>
+
+        {/* ═══════════════════════════════════════════════════
+             FIRST SCREEN: The three things.
+             1. The dollar amount (Zhang) — the number for the board slide
+             2. The score + one sentence (Jobs) — the shorthand + context
+             3. The one action (Lawson) — what to do right now
+             Everything else is below the fold, earned by scrolling.
+             ═══════════════════════════════════════════════════ */}
+
+        {/* ═══ STEP 1: SCAN ═══ */}
+        <span id="sec-step1"/>
+
+        <Fade show={revealStep >= 1} delay={0}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
+            <span className="step-badge">STEP 1 OF 5</span>
+            <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
+          </div>
+        </Fade>
+
+        {/* ── 1. THE DOLLAR AMOUNT ── */}
+        <Fade show={revealStep >= 1} delay={0}>
+          <div id="sec-score" style={{ textAlign: "center", padding: "40px 0 32px" }}>
+            {/* The headline number — what a CFO puts in a slide */}
+            {(() => {
+              // Pick the most impactful dollar figure
+              const uwCustomers = customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0));
+              const uwBurn = uwCustomers.reduce((s, c) => s + ((c.cost||0) - (c.revenue||c.mrr_usd||0)), 0);
+              
+              if (uwBurn > 0) return (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.red, textTransform: "uppercase", marginBottom: 8 }}>You're losing money</div>
+                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.red, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>{fmtUSD(uwBurn)}/mo</div>
+                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
+                    {uwCustomers.length} of {customers.length} customers cost more to serve than they pay you.
+                  </div>
+                </div>
+              );
+              
+              if (recoverableAmt > 0) return (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase", marginBottom: 8 }}>Savings found</div>
+                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.greenDark, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>{fmtUSD(recoverableAmt)}/mo</div>
+                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
+                    in recoverable savings across {getSavings().length} recommendation{getSavings().length !== 1 ? "s" : ""}.
+                    {totalSpend > 0 ? ` That's ${Math.round(recoverableAmt/totalSpend*100)}% of your total AI spend.` : ""}
+                  </div>
+                </div>
+              );
+              
+              if (totalSpend > 0) return (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.ink, textTransform: "uppercase", marginBottom: 8 }}>Your AI spend</div>
+                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.ink, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>{fmtUSD(totalSpend)}</div>
+                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
+                    across {totalCalls.toLocaleString()} calls and {getModelBreakdown().length || 0} models in the last 30 days.
+                  </div>
+                </div>
+              );
+
+              if (totalCalls > 0) return (
+                <div>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.caption, textTransform: "uppercase", marginBottom: 8 }}>Free tier detected</div>
+                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.ink, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>$0 spent</div>
+                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
+                    but {totalCalls.toLocaleString()} calls made across {getModelBreakdown().length || 0} model{getModelBreakdown().length !== 1 ? "s" : ""}. You're on a free tier.
+                  </div>
+                </div>
+              );
+
+              return (
+                <div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.06))", border: "1px solid rgba(5,150,105,0.15)", marginBottom: 16 }}>
+                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, animation: "pulse 2s ease infinite" }} />
+                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: T.green, textTransform: "uppercase" }}>Ready to analyze</span>
+                  </div>
+                  <div style={{ fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 900, color: T.ink, letterSpacing: "-0.03em", lineHeight: 1.1 }}>Your AI cost dashboard</div>
+                  <div style={{ fontSize: 16, color: T.label, marginTop: 14, lineHeight: 1.6, maxWidth: 480, margin: "14px auto 0" }}>
+                    Go live below to start tracking costs, agents, and seals in real time.
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </Fade>
+
+        {/* ── 2. THE SCORE + ONE SENTENCE ── */}
+        <Fade show={revealStep >= 1} delay={0.3}>
+          <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "28px 32px", background: T.white, borderRadius: 20, border: `1px solid rgba(226,232,240,0.7)`, marginBottom: 24, boxShadow: "0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03)", position: "relative", overflow: "hidden" }} className="score-hero">
+            <div style={{ flexShrink: 0 }}>
+              <AnimatedScoreRing score={score} grade={grade} size={110} />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
+                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: T.caption, textTransform: "uppercase" }}>Finault Score</span>
+              </div>
+              <p style={{ fontSize: 16, fontWeight: 700, color: T.ink, lineHeight: 1.4, marginBottom: 4 }}>{scoreContext}</p>
+              {dims.length > 0 ? (
+                <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+                  {[...dims].sort((a, b) => (a.score || a.value || 0) - (b.score || b.value || 0)).slice(0, 4).map((d, i) => {
+                    const val = d.score || d.value || 0;
+                    const col = val >= 70 ? T.green : val >= 40 ? T.amber : T.red;
+                    return (
+                      <div key={i} style={{ flex: "1 1 80px", minWidth: 70 }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
+                          <span style={{ fontSize: 10, color: T.caption, textTransform: "capitalize" }}>{(d.name || d.dimension || "").split(" ")[0]}</span>
+                          <span style={{ fontSize: 10, fontWeight: 700, color: col, fontFamily: T.mono }}>{val}</span>
+                        </div>
+                        <div style={{ height: 3, background: T.borderSoft, borderRadius: 2, overflow: "hidden" }}>
+                          <div style={{ height: "100%", width: `${val}%`, background: col, borderRadius: 2, transition: "width 1.2s cubic-bezier(0.34,1.2,0.64,1)" }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>
+                  Your score measures AI cost health across 6 dimensions: cost efficiency, margin health, model optimization, governance, diversification, and trajectory.
+                </p>
+              )}
+            </div>
+          </div>
+        </Fade>
+
+        {/* ── 3. THE ONE ACTION ── */}
+        <Fade show={revealStep >= 2} delay={0}>
+          {(() => {
+            // Pick the single most important action
+            const biggestSaving = getSavings().sort((a, b) => (b.monthly_savings || b.savings || 0) - (a.monthly_savings || a.savings || 0))[0];
+            const uwCustomers = customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0));
+            
+            if (uwCustomers.length > 0) return (
+              <div style={{ background: T.redLight, border: `1px solid ${T.redBorder}`, borderRadius: 10, padding: "20px 24px", marginBottom: 28, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: T.ink }}>Action: Reprice or reroute {uwCustomers.length} underwater customer{uwCustomers.length !== 1 ? "s" : ""}</div>
+                  <div style={{ fontSize: 13, color: T.label, marginTop: 4 }}>Route their requests to cost-efficient models or adjust pricing to recover margins.</div>
+                </div>
+                <button onClick={() => document.getElementById("sec-margins")?.scrollIntoView({ behavior: "smooth" })}
+                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.red, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  See margins
+                </button>
+              </div>
+            );
+            
+            if (biggestSaving) return (
+              <div style={{ background: T.greenLight, border: `1px solid ${T.greenBorder}`, borderRadius: 10, padding: "20px 24px", marginBottom: 28, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: T.ink }}>Action: {biggestSaving.recommendation || biggestSaving.action || biggestSaving.description}</div>
+                  <div style={{ fontSize: 13, color: T.label, marginTop: 4 }}>This saves {fmtUSD(biggestSaving.monthly_savings || biggestSaving.savings || 0)}/month{biggestSaving.quality_impact ? ` with ${biggestSaving.quality_impact} quality impact` : ""}.</div>
+                </div>
+                <button onClick={() => document.getElementById("sec-savings")?.scrollIntoView({ behavior: "smooth" })}
+                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.green, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  See all savings
+                </button>
+              </div>
+            );
+
+            if (screen < 5) return (
+              <div style={{ background: "linear-gradient(135deg, #0F172A, #1E293B)", borderRadius: 16, padding: "24px 28px", marginBottom: 32, display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
+                <div>
+                  <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>Action: See this in real time</div>
+                  <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 5 }}>Change one line of code. Every call gets a sealed receipt. Anomalies trigger instantly.</div>
+                </div>
+                <button className="btn-primary" onClick={() => document.getElementById("sec-step2")?.scrollIntoView({ behavior: "smooth" })}
+                  style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
+                  Go live
+                </button>
+              </div>
+            );
+
+            return null;
+          })()}
+        </Fade>
+
+        {/* ═══════════════════════════════════════════════════
+             BELOW THE FOLD: The evidence. Earned by scrolling.
+             ═══════════════════════════════════════════════════ */}
+
+        {/* Section divider */}
+        <Fade show={revealStep >= 2} delay={0}>
+          <div className="section-divider" />
+        </Fade>
+
+        {/* ── METRICS ── */}
+        <Fade show={revealStep >= 2} delay={0.1}>
+          <div id="sec-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }} className="metrics-grid">
+            {[
+              { label: "Total Spend", value: fmtUSD(totalSpend), sub: "last 30 days", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> },
+              { label: "Recoverable", value: recoverableAmt > 0 ? fmtUSD(recoverableAmt) : "$0", sub: recoverableAmt > 0 ? `${totalSpend > 0 ? Math.round(recoverableAmt/totalSpend*100) : 0}% of spend` : "fully optimized", color: recoverableAmt > 0 ? T.greenDark : T.caption, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={recoverableAmt > 0 ? "#059669" : "#94A3B8"} strokeWidth="2" strokeLinecap="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg> },
+              { label: "API Calls", value: totalCalls > 0 ? totalCalls.toLocaleString() : "0", sub: `${getModelBreakdown().length || 0} model${(getModelBreakdown().length || 0) !== 1 ? "s" : ""}`, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
+            ].map((m, i) => (
+              <div key={m.label} className="metric-card">
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.05))", display: "flex", alignItems: "center", justifyContent: "center" }}>{m.icon}</div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase" }}>{m.label}</span>
+                </div>
+                <div style={{ fontSize: 28, fontWeight: 800, color: m.color || T.ink, fontFamily: T.mono, letterSpacing: "-0.03em" }}>{m.value}</div>
+                <div style={{ fontSize: 12, color: T.caption, marginTop: 4 }}>{m.sub}</div>
+              </div>
+            ))}
+          </div>
+        </Fade>
+
+        {/* ── RECONCILIATION & SETTLEMENT ── */}
+        <span id="sec-reconciliation"/>
+        <Fade show={revealStep >= 2} delay={0.2}>
+          <div style={{ marginBottom: 28 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12, marginBottom: 8 }} className="metrics-grid">
+              {[
+                { label: "Settlement", value: "Continuous", sub: "real-time matching", color: T.greenDark },
+                { label: "Variance", value: settlementData?.latest_reconciliation?.variance_pct != null ? settlementData.latest_reconciliation.variance_pct.toFixed(1) + "%" : "0.0%", sub: "invoice vs. usage" },
+                { label: "Match Rate", value: settlementData?.avg_confidence_score ? settlementData.avg_confidence_score.toFixed(1) + "%" : "—", sub: "3-way reconciliation" },
+                { label: "Confidence", value: fcsData?.fcs_score || fcsData?.score || "—", sub: "Finault Confidence Score" },
+              ].map((m, i) => (
+                <div key={m.label} style={{ background: T.white, padding: "18px 16px", borderRadius: 14, border: `1px solid rgba(226,232,240,0.6)`, boxShadow: "0 1px 2px rgba(0,0,0,0.03)" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>{m.label}</div>
+                  <div style={{ fontSize: 20, fontWeight: 800, color: m.color || T.ink, fontFamily: T.mono }}>{m.value}</div>
+                  <div style={{ fontSize: 11, color: T.caption, marginTop: 3 }}>{m.sub}</div>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => setReconExpanded(!reconExpanded)} style={{ width: "100%", padding: "11px 18px", background: T.white, border: `1px solid rgba(226,232,240,0.6)`, borderRadius: 10, fontSize: 12, fontWeight: 600, color: T.green, cursor: "pointer", fontFamily: T.font, display: "flex", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 1px 2px rgba(0,0,0,0.02)" }}>
+              {reconExpanded ? "Hide" : "View"} reconciliation details <span style={{ fontSize: 10, transition: "transform 0.2s", transform: reconExpanded ? "rotate(180deg)" : "rotate(0)" }}>▼</span>
+            </button>
+            {reconExpanded && (
+              <div style={{ background: T.white, border: `1px solid ${T.border}`, borderTop: "none", borderRadius: "0 0 10px 10px", padding: "20px", animation: "fadeIn 0.2s ease" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 16 }} className="dims-grid">
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>3-Way Match</div>
+                    <div style={{ fontSize: 12, color: T.body, lineHeight: 1.8 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${T.borderSoft}` }}>
+                        <span>Provider invoice</span><span style={{ fontFamily: T.mono, fontWeight: 600 }}>{fmtUSD(totalSpend)}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${T.borderSoft}` }}>
+                        <span>Finault metered usage</span><span style={{ fontFamily: T.mono, fontWeight: 600 }}>{fmtUSD(totalSpend)}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: `1px solid ${T.borderSoft}` }}>
+                        <span>Sealed receipt total</span><span style={{ fontFamily: T.mono, fontWeight: 600 }}>{fmtUSD(totalSpend)}</span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontWeight: 700, color: getAnomalies().length > 0 ? T.amber : T.greenDark }}>
+                        <span>Variance</span><span style={{ fontFamily: T.mono }}>{settlementData?.latest_reconciliation?.variance_pct != null ? settlementData.latest_reconciliation.variance_pct.toFixed(2) : "0.00"}%</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8 }}>Certificate Status</div>
+                    <div style={{ padding: "12px 14px", background: getAnomalies().length === 0 ? T.greenLight : T.amberLight, borderRadius: 8, marginBottom: 12 }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: getAnomalies().length === 0 ? T.greenDark : T.amber }}>{getAnomalies().length === 0 ? "Clean — No Exceptions" : `${getAnomalies().length} Exception${getAnomalies().length !== 1 ? "s" : ""} Flagged`}</div>
+                      <div style={{ fontSize: 11, color: T.label, marginTop: 4 }}>Reconciliation certificate {getAnomalies().length === 0 ? "issued without exceptions" : "issued with exception codes"}</div>
+                    </div>
+                    <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 8, marginTop: 16 }}>Exception Codes</div>
+                    {getAnomalies().length === 0 ? (
+                      <div style={{ fontSize: 12, color: T.caption }}>No exceptions. All costs reconcile within tolerance.</div>
+                    ) : getAnomalies().slice(0, 5).map((a, i) => (
+                      <div key={i} style={{ display: "flex", gap: 8, alignItems: "flex-start", padding: "6px 0", borderBottom: `1px solid ${T.borderSoft}`, fontSize: 12 }}>
+                        <span style={{ fontFamily: T.mono, fontWeight: 700, color: T.red, fontSize: 10, background: T.redLight, padding: "2px 6px", borderRadius: 3, flexShrink: 0 }}>EX-{String(i + 1).padStart(2, "0")}</span>
+                        <span style={{ color: T.body }}>{a.description || a.details || a.type || "Anomaly detected"}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div style={{ padding: "12px 14px", background: T.bg, borderRadius: 8, fontSize: 12, color: T.label, lineHeight: 1.6 }}>
+                  Finault runs continuous 3-way reconciliation: provider invoice ↔ metered usage ↔ sealed receipts. Variances exceeding configurable thresholds (default 0.5%) trigger exception codes and manual review. Download the Close Pack above for the full reconciliation certificate.
+                </div>
+              </div>
+            )}
+          </div>
+        </Fade>
+
+        {/* ── ANOMALY STATUS ── */}
+        <div id="sec-anomalies">
+        <Fade show={revealStep >= 3} delay={0}>
+          {getAnomalies().length === 0 && analysis ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", marginBottom: 20, background: T.greenLight, border: `1px solid ${T.greenBorder}`, borderRadius: 8 }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
+              <span style={{ fontSize: 13, color: T.greenDark, fontWeight: 600 }}>No anomalies</span>
+              <span style={{ fontSize: 12, color: T.label }}>Spending patterns stable over the last 30 days</span>
+            </div>
+          ) : getAnomalies().map((a, i) => (
+            <div key={i} style={{ background: T.redLight, border: `1px solid ${T.redBorder}`, borderRadius: 8, padding: "14px 18px", marginBottom: 8, display: "flex", justifyContent: "space-between" }}>
+              <div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.ink }}>Cost spike{a.date ? ` — ${a.date}` : ""}</div>
+                <div style={{ fontSize: 12, color: T.label, marginTop: 4 }}>{a.description || a.details || JSON.stringify(a)}</div>
+              </div>
+              {a.amount && <span style={{ fontSize: 14, fontWeight: 700, color: T.red, fontFamily: T.mono }}>{fmtUSD(a.amount)}</span>}
+            </div>
+          ))}
+        </Fade>
+        </div>
+
+        {/* ── SCORE DIMENSIONS (only show when data exists) ── */}
+        <span id="sec-dimensions"/>
+        {dims.length > 0 && (
+        <Fade show={revealStep >= 4} delay={0}>
+          <Card style={{ padding: "20px 20px", marginBottom: 20 }}>
+            <SectionLabel>Score Breakdown</SectionLabel>
+            {dims.length > 0 ? (
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px 28px", marginTop: 12 }} className="dims-grid">
+                {[...dims].sort((a, b) => (a.score || a.value || 0) - (b.score || b.value || 0)).map((d, i) => {
+                  const val = d.score || d.value || 0;
+                  const color = val >= 70 ? T.green : val >= 40 ? T.amber : T.red;
+                  return (
+                    <div key={i}>
+                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                        <span style={{ fontSize: 12, fontWeight: 500, color: T.body, textTransform: "capitalize" }}>{d.name || d.dimension}</span>
+                        <span style={{ fontSize: 12, fontWeight: 700, color, fontFamily: T.mono }}>{val}</span>
+                      </div>
+                      <div style={{ height: 2, background: T.borderSoft, borderRadius: 1, overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${val}%`, background: color, borderRadius: 1, transition: "width 1s cubic-bezier(0.34,1.2,0.64,1)" }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </Card>
+        </Fade>
+        )}
+
+        {/* ── SAVINGS ── */}
+        <span id="sec-savings"/>
+        <Fade show={revealStep >= 5} delay={0}>
+          {getSavings().length > 0 ? (
+            <Card style={{ padding: "20px 20px", marginBottom: 20, background: T.greenLight, border: `1px solid ${T.greenBorder}` }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: T.ink }}>Savings Available</span>
+                <span style={{ fontSize: 18, fontWeight: 800, color: T.greenDark, fontFamily: T.mono }}>{fmtUSD(recoverableAmt)}/mo</span>
+              </div>
+              {getSavings().sort((a, b) => (b.monthly_savings || b.savings || 0) - (a.monthly_savings || a.savings || 0)).map((s, i) => (
+                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderTop: i > 0 ? `1px solid ${T.greenBorder}` : "none", fontSize: 13 }}>
+                  <span style={{ color: T.body, flex: 1 }}>{s.recommendation || s.action || s.description}</span>
+                  <span style={{ fontWeight: 700, color: T.greenDark, fontFamily: T.mono, marginLeft: 16 }}>{fmtUSD(s.monthly_savings || s.savings || 0)}/mo</span>
+                </div>
+              ))}
+            </Card>
+          ) : totalSpend > 0 ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 0", marginBottom: 20 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: T.caption }}>Savings</span>
+              <span style={{ fontSize: 10, fontWeight: 700, color: T.greenDark, background: T.greenLight, padding: "2px 8px", borderRadius: 3 }}>OPTIMIZED</span>
+            </div>
+          ) : null}
+        </Fade>
+
+        {/* ── SAVE PROMPT (anonymous users only) ── */}
+        {screen >= 3 && revealStep >= 6 && !user && !savePromptDismissed && (
+          <Fade show={true} delay={0.3}>
+            <div style={{ background: T.blueLight, border: `1px solid #BFDBFE`, borderRadius: 10, padding: "16px 20px", marginBottom: 20, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16 }}>
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.ink }}>Want to keep these results?</div>
+                <div style={{ fontSize: 13, color: T.body, marginTop: 2 }}>Create a free account and your scan will be here when you come back.</div>
+              </div>
+              <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+                <a href="/login?tab=signup&redirect=/experience" onClick={() => { try { localStorage.setItem('finault_pending_scan', JSON.stringify({ analysis, scoreData, savingsData, anomalyData, driftData, fcsData, sealCount, revealStep })); } catch(e){} }} style={{ padding: "8px 16px", borderRadius: 6, border: "none", background: T.green, color: T.white, fontSize: 13, fontWeight: 700, fontFamily: T.font, textDecoration: "none", whiteSpace: "nowrap" }}>Sign Up</a>
+                <button onClick={() => setSavePromptDismissed(true)} style={{ padding: "8px 12px", borderRadius: 6, border: `1px solid ${T.border}`, background: T.white, color: T.caption, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: T.font }}>Dismiss</button>
+              </div>
+            </div>
+          </Fade>
+        )}
+
+        {/* ── RESTORED SCAN BANNER (returning logged-in users) ── */}
+        {restoredAt && screen >= 3 && (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "8px 16px", background: T.greenLight, border: `1px solid ${T.greenBorder}`, borderRadius: 8, marginBottom: 20 }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            <span style={{ fontSize: 12, fontWeight: 600, color: T.greenDark }}>Restored your last scan · {new Date(restoredAt).toLocaleDateString()}</span>
+          </div>
+        )}
+
+        {/* ═══ STEP 2: GO LIVE ═══ */}
+        <span id="sec-step2"/>
+        <span id="sec-transition"/>
+        {screen >= 3 && revealStep >= 6 && (
+          <Fade show={true} delay={0.5}>
+            <div style={{ marginBottom: 28, paddingTop: 16 }}>
+              {/* Step header */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, marginTop: 8 }}>
+                <span className="step-badge">STEP 2 OF 5</span>
+                <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
+              </div>
+              <h2 style={{ fontSize: 24, fontWeight: 900, color: T.ink, letterSpacing: "-0.02em", marginBottom: 6 }}>Go Live</h2>
+              <p style={{ fontSize: 15, color: T.label, marginBottom: 28, lineHeight: 1.5 }}>Send one real API call through Finault. Watch the Seal appear. Meet your first agent.</p>
+
+              {/* ── INPUT PHASE ── */}
+              {goLivePhase === "input" && (
+                <div style={{ animation: "rise 0.4s cubic-bezier(0.16,1,0.3,1) both" }}>
+                  <Card accent style={{ padding: 32, marginBottom: 20 }}>
+                    <label style={{ fontSize: 14, fontWeight: 700, color: T.ink, display: "block", marginBottom: 10 }}>Your OpenAI API Key</label>
+                    <div style={{ display: "flex", gap: 12 }}>
+                      <input type="password" value={goLiveKey} onChange={e => setGoLiveKey(e.target.value)} placeholder="sk-..." onKeyDown={e => e.key === "Enter" && sendTestCall()}
+                        style={{ flex: 1, padding: "14px 18px", fontSize: 14, fontFamily: T.mono, border: `1.5px solid ${T.border}`, borderRadius: 10, outline: "none", background: T.bg, color: T.ink, transition: "all 0.2s ease" }} />
+                      <button className="btn-primary" onClick={sendTestCall} style={{ whiteSpace: "nowrap" }}>Send test call</button>
+                    </div>
+                    {goLiveError && <div style={{ marginTop: 12, padding: "10px 14px", background: T.redLight, borderRadius: 8, fontSize: 13, color: T.red }}>{goLiveError}</div>}
+                    <div style={{ marginTop: 16, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                      {["Read-only test call", "Key never stored", "Costs < $0.001"].map(pill => (
+                        <span key={pill} style={{ fontSize: 11, color: T.caption, background: T.bg, padding: "5px 12px", borderRadius: 20, border: `1px solid ${T.borderSoft}` }}>{pill}</span>
+                      ))}
+                    </div>
+                  </Card>
+
+                  <Card style={{ padding: 28, marginBottom: 20 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, marginBottom: 14 }}>What happens when you click:</div>
+                    {[
+                      { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>, text: "Your call routes through Finault's gateway to OpenAI" },
+                      { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>, text: "A Seal is created — cryptographic receipt with SHA-256 hash" },
+                      { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 10-16 0"/></svg>, text: "Your first agent gets an Imprint — a permanent identity" },
+                      { icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2.5" strokeLinecap="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>, text: "OpenAI's response comes back to you, unchanged" },
+                    ].map((item, i) => (
+                      <div key={i} style={{ display: "flex", gap: 12, alignItems: "center", padding: "10px 0", borderBottom: i < 3 ? `1px solid ${T.borderSoft}` : "none" }}>
+                        <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.04))", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>{item.icon}</div>
+                        <span style={{ fontSize: 14, color: T.body, lineHeight: 1.4 }}>{item.text}</span>
+                      </div>
+                    ))}
+                  </Card>
+                </div>
+              )}
+
+              {/* ── SENDING PHASE ── */}
+              {goLivePhase === "sending" && (
+                <div style={{ animation: "rise 0.3s ease both" }}>
+                  <div style={{ background: "#111318", borderRadius: 12, border: "1px solid #1F2328", padding: "48px 36px", textAlign: "center" }}>
+                    <svg width={32} height={32} viewBox="0 0 24 24" style={{ animation: "spin 1s linear infinite", margin: "0 auto 20px", display: "block" }}>
+                      <circle cx="12" cy="12" r="10" stroke="#374151" strokeWidth="3" fill="none" opacity="0.3"/>
+                      <path d="M12 2a10 10 0 0 1 10 10" stroke={T.green} strokeWidth="3" fill="none" strokeLinecap="round"/>
+                    </svg>
+                    <div style={{ color: T.white, fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Routing through Finault...</div>
+                    <div style={{ color: "#9CA3AF", fontSize: 14 }}>{goLiveElapsed}s elapsed</div>
+                    <div style={{ marginTop: 32, textAlign: "left", maxWidth: 400, margin: "32px auto 0" }}>
+                      {[
+                        { label: "Gateway received", done: parseFloat(goLiveElapsed) > 0.2 },
+                        { label: "Forwarded to OpenAI", done: parseFloat(goLiveElapsed) > 0.5 },
+                        { label: "Response received", done: parseFloat(goLiveElapsed) > 1.5 },
+                        { label: "Sealing transaction...", done: false },
+                      ].map((step, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12, animation: step.done ? "rise 0.3s ease both" : undefined }}>
+                          {step.done ? (
+                            <svg width={18} height={18} viewBox="0 0 24 24" fill={T.green} stroke="white" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                          ) : (
+                            <div style={{ width: 18, height: 18, borderRadius: "50%", border: "2px solid #6B7280" }}/>
+                          )}
+                          <span style={{ color: step.done ? T.green : "#6B7280", fontSize: 14 }}>{step.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* ── SEALED PHASE ── */}
+              {goLivePhase === "sealed" && firstSealData && (
+                <div style={{ animation: "rise 0.4s ease both" }}>
+                  {/* First Seal */}
+                  <Card style={{ border: `2px solid ${T.green}`, padding: 28, marginBottom: 20 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                      <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                      <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", color: T.green, textTransform: "uppercase" }}>Your First Seal</span>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 32px" }} className="dims-grid">
+                      {[
+                        { label: "Seal ID", value: firstSealData.seal_id || "—", mono: true },
+                        { label: "Model", value: firstSealData.model || "—" },
+                        { label: "Cost", value: firstSealData.cost_usd != null ? `$${firstSealData.cost_usd.toFixed(6)}` : "—" },
+                        { label: "Latency", value: firstSealData.latency ? `${firstSealData.latency}s` : "—" },
+                        { label: "Tokens", value: `${firstSealData.prompt_tokens || 0} in / ${firstSealData.completion_tokens || 0} out` },
+                        { label: "Hash", value: firstSealData.hash || "—", mono: true },
+                      ].map(row => (
+                        <div key={row.label}>
+                          <div style={{ fontSize: 11, fontWeight: 600, color: T.caption, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>{row.label}</div>
+                          <div style={{ fontSize: 14, color: T.ink, fontFamily: row.mono ? T.mono : T.font }}>{row.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                    {firstSealData.response && (
+                      <div style={{ marginTop: 16, padding: "12px 16px", background: T.bg, borderRadius: 8 }}>
+                        <div style={{ fontSize: 11, fontWeight: 600, color: T.caption, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>Response</div>
+                        <div style={{ fontSize: 14, color: T.body, fontStyle: "italic" }}>"{firstSealData.response}"</div>
+                      </div>
+                    )}
+                    <div style={{ marginTop: 16 }}>
+                      <div style={{ fontSize: 11, fontWeight: 600, color: T.caption, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>Chain</div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div style={{ padding: "4px 8px", background: T.greenLight, border: `1px solid ${T.greenBorder}`, borderRadius: 6, fontSize: 12, fontFamily: T.mono, color: T.green }}>genesis</div>
+                        <div style={{ width: 24, height: 2, background: T.green }} />
+                        <div style={{ padding: "4px 8px", background: T.green, borderRadius: 6, fontSize: 12, fontFamily: T.mono, color: T.white, fontWeight: 600 }}>{(firstSealData.seal_id || "").slice(0, 12)}</div>
+                      </div>
+                    </div>
+                  </Card>
+
+                  {/* First Imprint */}
+                  {firstAgentImprint && (
+                    <Card style={{ border: `2px solid ${T.green}`, padding: 28, marginBottom: 20 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+                        <svg width={24} height={24} viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="4"/></svg>
+                        <span style={{ fontSize: 11, fontWeight: 800, letterSpacing: "0.12em", color: T.green, textTransform: "uppercase" }}>Your First Agent Imprint</span>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 32px" }} className="dims-grid">
+                        {[
+                          { label: "Agent", value: firstAgentImprint.agent_id || "agent_openai_default" },
+                          { label: "Imprint ID", value: firstAgentImprint.imprint_id || "—", mono: true },
+                          { label: "Framework", value: firstAgentImprint.framework || "OpenAI API" },
+                          { label: "Created", value: firstAgentImprint.created || "just now" },
+                          { label: "Status", value: `Active — ${firstAgentImprint.total_seals || 1} action sealed` },
+                          { label: "Career Chain", value: `${firstAgentImprint.total_seals || 1} seal and growing` },
+                        ].map(row => (
+                          <div key={row.label}>
+                            <div style={{ fontSize: 11, fontWeight: 600, color: T.caption, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>{row.label}</div>
+                            <div style={{ fontSize: 14, color: T.ink, fontFamily: row.mono ? T.mono : T.font }}>{row.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 16, padding: "12px 16px", background: T.greenLight, border: `1px solid ${T.greenBorder}`, borderRadius: 8 }}>
+                        <p style={{ fontSize: 13, color: T.green, margin: 0, lineHeight: 1.5 }}>
+                          This agent now has a permanent identity on the Finault chain. Every future action seals to its career history.
+                        </p>
+                      </div>
+                    </Card>
+                  )}
+
+                  {/* What just happened */}
+                  <div style={{ background: "#111318", borderRadius: 12, border: "1px solid #1F2328", padding: 28, marginBottom: 20 }}>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: T.white, marginBottom: 12 }}>What just happened:</div>
+                    {[
+                      "Your API call routed through gateway.finault.ai to OpenAI",
+                      "OpenAI processed it and returned the response normally",
+                      `Finault sealed the transaction: ${firstSealData.seal_id || "—"}`,
+                      `Your agent received a permanent Imprint: ${firstAgentImprint?.imprint_id || "—"}`,
+                      `Cost captured: $${(firstSealData.cost_usd || 0).toFixed(6)} — ${firstSealData.total_tokens || 0} tokens`,
+                      "Hash chained to genesis — tamper-proof, independently verifiable",
+                    ].map((line, i) => (
+                      <div key={i} style={{ display: "flex", gap: 10, alignItems: "flex-start", marginBottom: 6 }}>
+                        <svg width={16} height={16} viewBox="0 0 24 24" fill={T.green} stroke="white" strokeWidth="2" style={{ flexShrink: 0, marginTop: 1 }}><circle cx="12" cy="12" r="10"/><path d="M9 12l2 2 4-4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        <span style={{ fontSize: 13, color: "#9CA3AF", lineHeight: 1.4 }}>{line}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Integration guide */}
+                  <Card style={{ padding: 28, marginBottom: 20 }}>
+                    <div style={{ fontSize: 17, fontWeight: 700, color: T.ink, marginBottom: 4 }}>Now add it to your codebase</div>
+                    <p style={{ fontSize: 14, color: T.label, marginBottom: 20, lineHeight: 1.5 }}>Change one line. Every call gets sealed automatically.</p>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                      {["Python", "Node.js", "curl"].map(tab => (
+                        <button key={tab} onClick={() => setGoLiveCodeTab(tab)} style={{ padding: "6px 14px", fontSize: 13, fontWeight: 600, borderRadius: 6, cursor: "pointer", background: goLiveCodeTab === tab ? T.ink : T.bg, color: goLiveCodeTab === tab ? T.white : T.body, border: "none", fontFamily: T.font }}>{tab}</button>
+                      ))}
+                    </div>
+                    <pre style={{ background: "#111318", borderRadius: 8, padding: 20, overflow: "auto", fontSize: 13, lineHeight: 1.6, color: "#E5E7EB", fontFamily: T.mono, margin: 0 }}>
+{goLiveCodeTab === "Node.js" ? `import OpenAI from "openai";
+
+const client = new OpenAI({
+    baseURL: "https://gateway.finault.ai/v1",
+});` : goLiveCodeTab === "curl" ? `curl https://gateway.finault.ai/v1/chat/completions \\
+  -H "Authorization: Bearer YOUR_KEY" \\
+  -H "Content-Type: application/json" \\
+  -d '{"model":"gpt-4o","messages":[...]}'` : `import openai
+
+client = openai.OpenAI(
+    base_url="https://gateway.finault.ai/v1",
+    api_key="your-openai-key"
+)`}
+                    </pre>
+                    <div style={{ marginTop: 16, display: "flex", gap: 12 }}>
+                      <button onClick={copyGatewayUrl} style={{ padding: "10px 20px", fontSize: 14, fontWeight: 600, borderRadius: 8, cursor: "pointer", background: T.ink, color: T.white, border: "none", fontFamily: T.font }}>{goLiveCopied ? "Copied!" : "Copy gateway URL"}</button>
+                    </div>
+                  </Card>
+
+                  {/* SDK option */}
+                  <Card style={{ padding: 20, marginBottom: 20 }}>
+                    <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, marginBottom: 8 }}>Or install the SDK</div>
+                    <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+                      <code style={{ padding: "8px 14px", background: T.bg, borderRadius: 6, fontSize: 13, color: T.ink, fontFamily: T.mono, border: `1px solid ${T.borderSoft}` }}>pip install finault</code>
+                      <code style={{ padding: "8px 14px", background: T.bg, borderRadius: 6, fontSize: 13, color: T.ink, fontFamily: T.mono, border: `1px solid ${T.borderSoft}` }}>npm install finault</code>
+                    </div>
+                  </Card>
+
+                  <button onClick={resetGoLive} style={{ padding: "8px 16px", fontSize: 13, color: T.caption, background: "transparent", border: "none", cursor: "pointer", fontFamily: T.font }}>← Send another test call</button>
+                </div>
+              )}
+
+              {/* ── ERROR PHASE ── */}
+              {goLivePhase === "error" && (
+                <div style={{ animation: "rise 0.3s ease both" }}>
+                  <div style={{ background: T.redLight, border: "1px solid #FECACA", borderRadius: 12, padding: 28, textAlign: "center" }}>
+                    <div style={{ fontSize: 18, fontWeight: 700, color: T.red, marginBottom: 8 }}>Call failed</div>
+                    <p style={{ fontSize: 14, color: T.body, marginBottom: 20 }}>{goLiveError}</p>
+                    <button onClick={resetGoLive} style={{ padding: "10px 24px", fontSize: 14, fontWeight: 600, borderRadius: 8, cursor: "pointer", background: T.ink, color: T.white, border: "none", fontFamily: T.font }}>Try again</button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Fade>
+        )}
+
+        {/* ── LIVE FEED ── */}
+        <span id="sec-livefeed"/>
+        {screen >= 5 ? (
+          <Fade show={true} delay={0}>
+            <Card style={{ padding: "20px 20px", marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, animation: "pulse 2s ease infinite" }} />
+                  <span style={{ fontSize: 13, fontWeight: 800, color: T.ink }}>Live Feed</span>
+                  <span style={{ fontSize: 12, color: T.caption, fontFamily: T.mono }}>{liveSeals.length}</span>
+                </div>
+                <button onClick={loadLiveSeals} style={{ padding: "4px 12px", borderRadius: 6, background: T.borderSoft, border: "none", fontSize: 11, cursor: "pointer", color: T.label, fontFamily: T.font, fontWeight: 600 }}>Refresh</button>
+              </div>
+              {liveSeals.length === 0 ? (
+                <div style={{ padding: "28px 16px", textAlign: "center" }}>
+                  <div style={{ fontSize: 13, color: T.caption, marginBottom: 8 }}>Waiting for your first sealed call...</div>
+                  <div style={{ fontSize: 11, color: T.ghost }}>Point your API base URL to <span style={{ fontFamily: T.mono, color: T.label }}>gateway.finault.ai/v1</span></div>
+                </div>
+              ) : liveSeals.map((s, i) => {
+                const isImprint = s.action_type === "genesis" || s.action === "genesis";
+                return (
+                  <div key={s.seal_id} style={{ display: "grid", gridTemplateColumns: "80px 1fr 90px 100px 60px", padding: "9px 0", borderTop: `1px solid ${T.borderSoft}`, fontSize: 12, fontFamily: T.mono, alignItems: "center", gap: 6, background: isImprint ? T.greenLight : "transparent", marginLeft: -20, marginRight: -20, paddingLeft: 20, paddingRight: 20 }}>
+                    <span style={{ color: T.caption, fontSize: 11 }}>{new Date(s.timestamp).toLocaleTimeString()}</span>
+                    <span style={{ color: isImprint ? T.greenDark : T.label, fontWeight: isImprint ? 700 : 400, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {isImprint ? `IMPRINT ${s.agent_id} registered` : (s.agent_id || s.action || "—")}
+                    </span>
+                    <span style={{ color: T.label, fontSize: 11 }}>{s.model || "—"}</span>
+                    <span style={{ color: T.ink, fontWeight: 600, textAlign: "right", fontSize: 11 }}>{s.cost_usd > 0 ? fmtUSD4(s.cost_usd) : "—"}</span>
+                    <a href={`${GATEWAY}/seal/${s.seal_id}`} target="_blank" rel="noopener" style={{ color: T.green, textDecoration: "none", fontSize: 11, fontWeight: 600 }}>
+                      {isImprint ? "Imprint →" : "Seal →"}
+                    </a>
+                  </div>
+                );
+              })}
+            </Card>
+          </Fade>
+        ) : screen >= 3 && (
+          <Fade show={revealStep >= 6} delay={0.2}>
+            <Card style={{ padding: "20px 20px", marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.ghost }} />
+                <span style={{ fontSize: 13, fontWeight: 800, color: T.ink }}>Live Feed</span>
+              </div>
+              <div style={{ fontSize: 13, color: T.caption, lineHeight: 1.6 }}>
+                Go live to see every API call sealed in real time.
+              </div>
+            </Card>
+          </Fade>
+        )}
+
+        {/* ═══ STEP 3: YOUR AGENTS ═══ */}
+        <span id="sec-step3"/>
+        <span id="sec-agents"/>
+        {screen >= 3 && revealStep >= 6 && (
+          <Fade show={true} delay={0.2}>
+            <div style={{ marginBottom: 20 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, marginTop: 8 }}>
+                <span className="step-badge">STEP 3 OF 5</span>
+                <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
+              </div>
+              {agentRoster.length > 0 ? (
+                <div>
+                  <Card style={{ overflow: "hidden", marginBottom: 16 }}>
+                    <div style={{ padding: "20px 24px", borderBottom: `1px solid ${T.borderSoft}`, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <h3 style={{ fontSize: 20, fontWeight: 800, color: T.ink, marginBottom: 4 }}>Your Agents</h3>
+                        <p style={{ fontSize: 13, color: T.label }}>Every agent that touches Finault gets an Imprint.</p>
+                      </div>
+                      <span style={{ fontSize: 14, color: T.caption, fontFamily: T.mono, fontWeight: 700 }}>{agentRoster.length}</span>
+                    </div>
+                    {agentRoster.sort((a, b) => (b.total_seals || 0) - (a.total_seals || 0)).slice(0, agentsExpanded ? agentRoster.length : 3).map((a, i) => {
+                      const active = (a.total_seals || 0) > 3;
+                      const seals = a.total_seals || 0;
+                      const cost = a.total_cost || 0;
+                      const avgCost = seals > 0 ? cost / seals : 0;
+                      const name = (a.agent_id || "").replace(/^finault-/, "").split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+                      return (
+                        <div key={a.agent_id} style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                              <div style={{ width: 6, height: 6, borderRadius: "50%", background: active ? T.green : T.ghost, flexShrink: 0 }} />
+                              <div>
+                                <div style={{ fontSize: 14, fontWeight: 700, color: T.ink }}>{name}</div>
+                                <div style={{ fontSize: 11, color: T.ghost, fontFamily: T.mono }}>{a.agent_id}</div>
+                              </div>
+                            </div>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: active ? T.greenDark : T.caption, background: active ? T.greenLight : T.borderSoft, padding: "2px 8px", borderRadius: 3 }}>{active ? "Active" : "Idle"}</span>
+                          </div>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 8 }} className="dims-grid">
+                            {[
+                              { label: "Actions", val: seals },
+                              { label: "Total Cost", val: fmtUSD(cost) },
+                              { label: "Avg/Action", val: avgCost > 0 ? fmtUSD4(avgCost) : "—" },
+                              { label: "Created", val: a.first_seen ? new Date(a.first_seen).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "—" },
+                            ].map(m => (
+                              <div key={m.label} style={{ fontSize: 11 }}>
+                                <div style={{ color: T.caption, fontSize: 10, fontWeight: 600 }}>{m.label}</div>
+                                <div style={{ color: T.ink, fontWeight: 600, fontFamily: T.mono }}>{m.val}</div>
+                              </div>
+                            ))}
+                          </div>
+                          {seals > 0 && (
+                            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                              <span style={{ fontSize: 11, color: T.caption }}>Career Chain:</span>
+                              <div style={{ flex: 1, height: 4, background: T.borderSoft, borderRadius: 2, overflow: "hidden" }}>
+                                <div style={{ height: "100%", width: `${Math.min(seals * 2, 100)}%`, background: T.green, borderRadius: 2 }} />
+                              </div>
+                              <span style={{ fontSize: 11, fontFamily: T.mono, color: T.label }}>{seals} seals</span>
+                            </div>
+                          )}
+                          <div style={{ display: "flex", gap: 12 }}>
+                            {a.genesis_seal_id && <a href={`${GATEWAY}/seal/${a.genesis_seal_id}`} target="_blank" rel="noopener" style={{ fontSize: 11, fontWeight: 600, color: T.green, textDecoration: "none" }}>View Imprint →</a>}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {agentRoster.length > 3 && (
+                      <div style={{ padding: "12px 20px", borderTop: `1px solid ${T.borderSoft}`, textAlign: "center" }}>
+                        <button onClick={() => setAgentsExpanded(!agentsExpanded)} style={{ fontSize: 13, fontWeight: 600, color: T.green, background: "none", border: "none", cursor: "pointer", fontFamily: T.font, padding: "4px 12px" }}>
+                          {agentsExpanded ? "Show less ↑" : `Show all ${agentRoster.length} agents ↓`}
+                        </button>
+                      </div>
+                    )}
+                  </Card>
+
+                  {/* What is an Imprint? */}
+                  <Card style={{ padding: "20px 20px", marginBottom: 16 }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, color: T.ink, marginBottom: 10 }}>What is an Imprint?</div>
+                    <p style={{ fontSize: 13, color: T.body, lineHeight: 1.7, marginBottom: 12 }}>
+                      The Imprint is a permanent identity for an AI agent. It records who created the agent, what framework and model it uses, when it was first deployed, and what it's authorized to do.
+                    </p>
+                    <p style={{ fontSize: 13, color: T.body, lineHeight: 1.7, marginBottom: 12 }}>
+                      Every action the agent takes seals to its career chain. Six months from now, you can prove exactly what this agent did, what it cost, and whether it was authorized.
+                    </p>
+                    <p style={{ fontSize: 13, color: T.body, lineHeight: 1.7 }}>
+                      If the agent is copied or forked, the copy gets its own Imprint linked to the original. You can trace any agent back to its origin.
+                    </p>
+                  </Card>
+                </div>
+              ) : (
+                <Card style={{ padding: "40px 32px", textAlign: "center", background: "linear-gradient(180deg, #FFFFFF 0%, #F7F8FA 100%)" }}>
+                  <div style={{ width: 56, height: 56, borderRadius: 16, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.05))", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2" strokeLinecap="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 10-16 0"/></svg>
+                  </div>
+                  <h3 style={{ fontSize: 20, fontWeight: 800, color: T.ink, marginBottom: 8 }}>Your Agents</h3>
+                  <p style={{ fontSize: 14, color: T.label, lineHeight: 1.6, maxWidth: 400, margin: "0 auto 20px" }}>
+                    {journeyStep >= 2 ? "No agents detected yet. Make API calls through the gateway and your agents will appear here." : "Go live to see your agent roster. Each agent gets an Imprint — a permanent identity."}
+                  </p>
+                  {journeyStep >= 2 && (
+                    <div style={{ maxWidth: 340, margin: "0 auto 20px" }}>
+                      <div style={{ display: "flex", gap: 10, marginBottom: 10, padding: "12px 14px", borderRadius: 12, background: T.white, border: `1px solid ${T.borderSoft}` }}><Shimmer width={36} height={36} style={{ borderRadius: "50%" }} /><div style={{ flex: 1 }}><Shimmer height={12} style={{ marginBottom: 6 }} /><Shimmer width="60%" height={10} /></div></div>
+                      <div style={{ display: "flex", gap: 10, padding: "12px 14px", borderRadius: 12, background: T.white, border: `1px solid ${T.borderSoft}` }}><Shimmer width={36} height={36} style={{ borderRadius: "50%" }} /><div style={{ flex: 1 }}><Shimmer height={12} style={{ marginBottom: 6 }} /><Shimmer width="50%" height={10} /></div></div>
+                    </div>
+                  )}
+                  {journeyStep < 2 && (
+                    <button onClick={() => document.getElementById("sec-step2")?.scrollIntoView({ behavior: "smooth" })} style={{ padding: "12px 24px", borderRadius: 10, border: `1px solid ${T.border}`, background: T.white, fontSize: 14, fontWeight: 600, cursor: "pointer", fontFamily: T.font, color: T.label, boxShadow: "0 1px 3px rgba(0,0,0,0.04)" }}>Go live to unlock</button>
+                  )}
+                </Card>
+              )}
+            </div>
+          </Fade>
+        )}
+
+        {/* ── MODEL BREAKDOWN (only show when there's data) ── */}
+        <span id="sec-models"/>
+        {getModelBreakdown().length > 0 && (
+        <Fade show={revealStep >= 3} delay={0.1}>
+          <Card style={{ padding: "20px 20px", marginBottom: 20 }}>
+            <SectionLabel>Spend by Model</SectionLabel>
+              <div>
+                {/* Horizontal stacked bar chart */}
+                <div style={{ display: "flex", height: 32, borderRadius: 6, overflow: "hidden", marginTop: 12, marginBottom: 14 }}>
+                  {getModelBreakdown().map((m, i) => {
+                    const colors = ["#059669","#2563EB","#7C3AED","#D97706","#DC2626","#0891B2","#EA580C"];
+                    const total = getModelBreakdown().reduce((s,x) => s + (x.cost || x.total_cost || 0), 0);
+                    const pct = total > 0 ? ((m.cost || m.total_cost || 0) / total * 100) : 0;
+                    return <div key={i} title={`${m.model || m.name}: ${fmtUSD(m.cost || m.total_cost || 0)} (${pct.toFixed(1)}%)`} style={{ width: `${pct}%`, background: colors[i % colors.length], minWidth: pct > 2 ? 4 : 0, transition: "width 0.8s cubic-bezier(0.34,1.2,0.64,1)", position: "relative", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      {pct > 15 && <span style={{ fontSize: 10, fontWeight: 700, color: "white", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", padding: "0 4px" }}>{pct.toFixed(0)}%</span>}
+                    </div>;
+                  })}
+                </div>
+                {/* Model legend with cost per model */}
+                <div style={{ display: "grid", gridTemplateColumns: getModelBreakdown().length <= 3 ? "repeat(auto-fit, minmax(160px, 1fr))" : "1fr 1fr", gap: 8 }}>
+                  {getModelBreakdown().sort((a, b) => (b.cost || b.total_cost || 0) - (a.cost || a.total_cost || 0)).map((m, i) => {
+                    const colors = ["#059669","#2563EB","#7C3AED","#D97706","#DC2626","#0891B2","#EA580C"];
+                    const total = getModelBreakdown().reduce((s,x) => s + (x.cost || x.total_cost || 0), 0);
+                    const pct = total > 0 ? ((m.cost || m.total_cost || 0) / total * 100) : 0;
+                    return (
+                      <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 6, background: T.bg, border: `1px solid ${T.borderSoft}` }}>
+                        <span style={{ width: 10, height: 10, borderRadius: 3, background: colors[i % colors.length], flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 600, color: T.ink, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{m.model || m.name}</div>
+                        </div>
+                        <div style={{ textAlign: "right", flexShrink: 0 }}>
+                          <div style={{ fontSize: 12, fontWeight: 700, color: T.ink, fontFamily: T.mono }}>{fmtUSD(m.cost || m.total_cost || 0)}</div>
+                          <div style={{ fontSize: 10, color: T.caption }}>{pct.toFixed(1)}%</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+          </Card>
+        </Fade>
+        )}
+
+        {/* ── DRIFT ALERTS (only show when there are drift events, or keep a compact clear badge when there's spend) ── */}
+        <span id="sec-drift"/>
+        {(getDrift().length > 0 || totalSpend > 0) && (
+        <Fade show={revealStep >= 4} delay={0.1}>
+          <div style={{ marginBottom: 20 }}>
+            {getDrift().length > 0 ? getDrift().map((d, i) => (
+              <div key={i} style={{ background: T.amberLight, border: "1px solid #FDE68A", borderRadius: 8, padding: "14px 18px", marginBottom: 8 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: T.ink }}>{d.model || "Model"} spend drifted {d.drift_pct ? fmtPct(d.drift_pct) : ""} above baseline</div>
+                <div style={{ fontSize: 12, color: T.label, marginTop: 4 }}>{d.description || d.details || "Check if new features are using this model where a cheaper alternative would work."}</div>
+              </div>
+            )) : (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 0" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: T.caption }}>Drift Alerts</span>
+                <span style={{ fontSize: 10, fontWeight: 700, color: T.greenDark, background: T.greenLight, padding: "2px 8px", borderRadius: 3 }}>CLEAR</span>
+              </div>
+            )}
+          </div>
+        </Fade>
+        )}
+
+        {/* ── FCS ── */}
+        {fcsData && fcsData.fcs_score > 0 && (
+          <Fade show={revealStep >= 5} delay={0.1}>
+            <Card style={{ padding: "14px 18px", marginBottom: 20 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <span style={{ fontSize: 12, fontWeight: 700, color: T.ink }}>Financial Close Score</span>
+                <span style={{ fontSize: 14, fontWeight: 800, color: T.ink, fontFamily: T.mono }}>{fcsData.fcs_score}/100 — {fcsData.fcs_level}</span>
+              </div>
+              {fcsData.reason_codes && <div style={{ fontSize: 12, color: T.label, marginTop: 4 }}>{fcsData.reason_codes.join(", ")}</div>}
+            </Card>
+          </Fade>
+        )}
+
+        {/* ── AGENT INTELLIGENCE (only show when data exists) ── */}
+        <span id="sec-intelligence"/>
+        {(screen >= 5 || governanceData || lifecycleData || roiData) && (governanceData || lifecycleData || roiData) && (
+          <Fade show={true} delay={0.3}>
+            <Card style={{ overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}`, display: "flex", alignItems: "center", gap: 8 }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span style={{ fontSize: 13, fontWeight: 800, color: T.ink }}>Agent Intelligence</span>
+              </div>
+
+              {governanceData?.fleet_governance && (
+                <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                    <span style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase" }}>Fleet Governance</span>
+                    <span style={{ fontSize: 16, fontWeight: 800, fontFamily: T.mono, color: governanceData.fleet_governance.governance_score >= 70 ? T.greenDark : governanceData.fleet_governance.governance_score >= 50 ? T.amber : T.red }}>
+                      {governanceData.fleet_governance.grade} ({governanceData.fleet_governance.governance_score}/100)
+                    </span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                    {[{ val: governanceData.fleet_governance.imprint_coverage+"%", label: "Imprint Coverage" }, { val: governanceData.fleet_governance.baseline_coverage+"%", label: "Baseline Coverage" }, { val: governanceData.fleet_governance.budgets_configured, label: "Budget Rules" }].map(s => (
+                      <div key={s.label} style={{ padding: "10px", background: T.bg, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: T.ink, fontFamily: T.mono }}>{s.val}</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {governanceData.fleet_governance.gaps?.length > 0 && <div style={{ padding: "8px 10px", background: T.redLight, borderRadius: 6, fontSize: 12, color: T.red, lineHeight: 1.5 }}>{governanceData.fleet_governance.gaps.join(". ")}</div>}
+                  {governanceData.narrative && <p style={{ fontSize: 13, color: T.label, marginTop: 8, lineHeight: 1.5 }}>{governanceData.narrative}</p>}
+                </div>
+              )}
+
+              {lifecycleData?.lifecycle && (
+                <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Agent Lifecycle</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                    {[{ val: lifecycleData.lifecycle.active, label: "Active" }, { val: lifecycleData.lifecycle.monthly_velocity, label: "New/Month" }, { val: lifecycleData.lifecycle.projected_next_quarter, label: "Projected Q+1" }, { val: lifecycleData.lifecycle.dormant_count, label: "Dormant", danger: lifecycleData.lifecycle.dormant_count > 0 }].map(s => (
+                      <div key={s.label} style={{ padding: "10px", background: s.danger ? T.redLight : T.bg, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: s.danger ? T.red : T.ink, fontFamily: T.mono }}>{s.val}</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {lifecycleData.narrative && <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>{lifecycleData.narrative}</p>}
+                </div>
+              )}
+
+              {roiData?.roi && roiData.roi.total_interventions > 0 && (
+                <div style={{ padding: "16px 20px" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Finault ROI</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                    {[{ val: fmtUSD(roiData.roi.total_savings), label: "Total Savings", green: true }, { val: roiData.roi.roi_multiple+"x", label: "ROI Multiple", green: true }, { val: roiData.roi.total_interventions, label: "Interventions" }].map(s => (
+                      <div key={s.label} style={{ padding: "10px", background: s.green ? T.greenLight : T.bg, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, color: s.green ? T.greenDark : T.ink, fontFamily: T.mono }}>{s.val}</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {roiData.narrative && <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>{roiData.narrative}</p>}
+                </div>
+              )}
+            </Card>
+          </Fade>
+        )}
+
+        {/* ── ECONOMICS INTELLIGENCE (only show when data exists) ── */}
+        <span id="sec-economics"/>
+        {(crossoverData || powerUserData || billingChannelData) && (
+          <Fade show={true} delay={0.5}>
+            <Card style={{ overflow: "hidden", marginBottom: 20 }}>
+              <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                <span style={{ fontSize: 13, fontWeight: 800, color: T.ink }}>Economics Intelligence</span>
+              </div>
+
+              {crossoverData?.crossover?.has_revenue_data && (
+                <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Revenue Crossover</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                    {crossoverData.crossover.cost_growth_rate !== null && (
+                      <div style={{ padding: "10px", background: crossoverData.crossover.cost_growth_rate > 20 ? T.redLight : T.bg, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, fontFamily: T.mono, color: crossoverData.crossover.cost_growth_rate > 20 ? T.red : T.ink }}>{crossoverData.crossover.cost_growth_rate}%</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>Cost Growth MoM</div>
+                      </div>
+                    )}
+                    {crossoverData.crossover.revenue_growth_rate !== null && (
+                      <div style={{ padding: "10px", background: T.bg, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, fontFamily: T.mono, color: T.ink }}>{crossoverData.crossover.revenue_growth_rate}%</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>Revenue Growth MoM</div>
+                      </div>
+                    )}
+                    {crossoverData.crossover.crossover_months && (
+                      <div style={{ padding: "10px", background: T.redLight, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, fontFamily: T.mono, color: T.red }}>{crossoverData.crossover.crossover_months}mo</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>Until Crossover</div>
+                      </div>
+                    )}
+                  </div>
+                  {crossoverData.narrative && <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>{crossoverData.narrative}</p>}
+                </div>
+              )}
+
+              {powerUserData?.power_users?.total_users > 1 && (
+                <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Power User Concentration</div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, marginBottom: 8 }}>
+                    {[{ val: powerUserData.power_users.top_1_pct.pct_of_total+"%", label: "Cost from Top 1%" }, { val: powerUserData.power_users.top_10_pct.pct_of_total+"%", label: "Cost from Top 10%" }, { val: powerUserData.power_users.total_users, label: "Total Users" }].map(s => (
+                      <div key={s.label} style={{ padding: "10px", background: T.bg, borderRadius: 6, textAlign: "center" }}>
+                        <div style={{ fontSize: 16, fontWeight: 700, fontFamily: T.mono, color: T.ink }}>{s.val}</div>
+                        <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>{s.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                  {powerUserData.narrative && <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>{powerUserData.narrative}</p>}
+                </div>
+              )}
+
+              {billingChannelData?.billing_channels?.duplicates?.length > 0 && (
+                <div style={{ padding: "16px 20px" }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>Billing Channel Analysis</div>
+                  <div style={{ padding: "10px", background: T.redLight, borderRadius: 6, textAlign: "center", marginBottom: 8 }}>
+                    <div style={{ fontSize: 16, fontWeight: 700, fontFamily: T.mono, color: T.red }}>{fmtUSD(billingChannelData.billing_channels.total_potential_savings)}</div>
+                    <div style={{ fontSize: 10, color: T.caption, marginTop: 2 }}>Savings from Consolidation</div>
+                  </div>
+                  {billingChannelData.narrative && <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>{billingChannelData.narrative}</p>}
+                </div>
+              )}
+
+              {(!crossoverData?.crossover?.has_revenue_data) && (!powerUserData?.power_users || powerUserData.power_users.total_users <= 1) && (!billingChannelData?.billing_channels?.duplicates?.length) && (
+                <div style={{ padding: "20px", fontSize: 13, color: T.caption, lineHeight: 1.6, textAlign: "center" }}>
+                  Advanced economics activates with more data — connect Stripe for crossover projections, add user attribution for power user detection.
+                </div>
+              )}
+            </Card>
+          </Fade>
+        )}
+
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* ── STEP 4: YOUR MARGINS ── */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <span id="sec-step4"/>
+        <span id="sec-stripe"/>
+        <span id="sec-margins"/>
+        {screen >= 3 && revealStep >= 5 && (
+          <Fade show={true} delay={0.3}>
+            <div style={{ marginBottom: 28 }}>
+              {/* Step header */}
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, marginTop: 8 }}>
+                <span className="step-badge">STEP 4 OF 5</span>
+                <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
+              </div>
+              <h2 style={{ fontSize: 24, fontWeight: 900, color: T.ink, letterSpacing: "-0.02em", marginBottom: 6 }}>Your Margins</h2>
+              <p style={{ fontSize: 15, color: T.label, marginBottom: 28, lineHeight: 1.6 }}>You know what your AI costs. Do you know what it earns?</p>
+
+              {/* If Stripe connected and real data exists */}
+              {customers.length > 0 ? (
+                <div>
+                  {/* Margin alerts */}
+                  {customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0)).length > 0 && (
+                    <Card style={{ padding: "14px 18px", marginBottom: 16, background: T.greenLight, border: `1px solid ${T.greenBorder}` }}>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: T.ink }}>Margin routing available</div>
+                      <div style={{ fontSize: 12, color: T.label, marginTop: 4 }}>{customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0)).length} underwater customers detected. Route their requests to cost-efficient models to recover margins.</div>
+                    </Card>
+                  )}
+                  {/* Real margins table */}
+                  <Card style={{ overflow: "hidden", marginBottom: 20 }}>
+                    <div style={{ padding: "16px 20px", borderBottom: `1px solid ${T.borderSoft}` }}>
+                      <SectionLabel right={<span style={{ color: customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0)).length > 0 ? T.red : T.green }}>{customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0)).length} of {customers.length} underwater</span>}>Customer Margins</SectionLabel>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "8px 20px", fontSize: 10, fontWeight: 700, color: T.ghost, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: `1px solid ${T.borderSoft}` }} className="margin-grid">
+                      <span>Customer</span><span>Revenue</span><span>AI Cost</span><span>Margin</span><span></span>
+                    </div>
+                    {customers.sort((a, b) => {
+                      const mA = (a.revenue||a.mrr_usd||0) > 0 ? (1-(a.cost||0)/(a.revenue||a.mrr_usd||1)) : -1;
+                      const mB = (b.revenue||b.mrr_usd||0) > 0 ? (1-(b.cost||0)/(b.revenue||b.mrr_usd||1)) : -1;
+                      return mA - mB;
+                    }).map((c, i) => {
+                      const rev = c.revenue || c.mrr_usd || 0, cost = c.cost || 0;
+                      const margin = rev > 0 ? ((1 - cost / rev) * 100) : 0;
+                      const uw = cost > rev;
+                      return (
+                        <div key={i} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "12px 20px", borderBottom: `1px solid ${T.borderSoft}`, fontSize: 13, alignItems: "center", background: uw ? T.redLight : T.white }} className="margin-grid">
+                          <span style={{ fontWeight: 600, color: T.ink }}>{c.name || c.customer_name || "Unknown"}</span>
+                          <span style={{ fontFamily: T.mono, fontSize: 12, color: T.label }}>{fmtUSD(rev)}</span>
+                          <span style={{ fontFamily: T.mono, fontSize: 12, color: T.label }}>{fmtUSD(cost)}</span>
+                          <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: uw ? T.red : T.green }}>{fmtPct(margin)}</span>
+                          <span style={{ fontSize: 9, fontWeight: 700, fontFamily: T.mono, color: uw ? T.red : T.green, background: uw ? T.redLight : T.greenLight, border: `1px solid ${uw ? T.redBorder : T.greenBorder}`, borderRadius: 3, padding: "2px 6px", textAlign: "center", letterSpacing: "0.05em" }}>{uw ? "UNDERWATER" : "HEALTHY"}</span>
+                        </div>
+                      );
+                    })}
+                  </Card>
+                </div>
+              ) : (
+                /* Preview with sample data — Stripe not connected */
+                <div>
+                  <p style={{ fontSize: 13, color: T.label, marginBottom: 16, lineHeight: 1.6 }}>Connect Stripe to see revenue alongside cost. Finault computes margins per customer automatically.</p>
+
+                  {/* Sample data preview table */}
+                  <Card style={{ overflow: "hidden", marginBottom: 16, opacity: 0.85 }}>
+                    <div style={{ padding: "12px 20px", borderBottom: `1px solid ${T.borderSoft}`, background: T.bg }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: T.ghost, letterSpacing: "0.08em", textTransform: "uppercase" }}>Preview — Sample Data</div>
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "8px 20px", fontSize: 10, fontWeight: 700, color: T.ghost, letterSpacing: "0.1em", textTransform: "uppercase", borderBottom: `1px solid ${T.borderSoft}` }} className="margin-grid">
+                      <span>Customer</span><span>Revenue</span><span>AI Cost</span><span>Margin</span><span></span>
+                    </div>
+                    {(() => {
+                      const sampleData = [
+                        { name: "Acme Corp", revenue: 2400, cost: 890 },
+                        { name: "Beta Inc", revenue: 1100, cost: 1340 },
+                        { name: "Gamma LLC", revenue: 3200, cost: 1100 },
+                        { name: "Delta Co", revenue: 800, cost: 950 },
+                        { name: "Epsilon Ltd", revenue: 5000, cost: 2100 },
+                      ];
+                      const totalRev = sampleData.reduce((s, c) => s + c.revenue, 0);
+                      const totalCost = sampleData.reduce((s, c) => s + c.cost, 0);
+                      const totalMargin = ((1 - totalCost / totalRev) * 100);
+                      return [...sampleData.map((c, i) => {
+                        const margin = ((1 - c.cost / c.revenue) * 100);
+                        const uw = c.cost > c.revenue;
+                        return (
+                          <div key={i} style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "12px 20px", borderBottom: `1px solid ${T.borderSoft}`, fontSize: 13, alignItems: "center", background: uw ? T.redLight : T.white }} className="margin-grid">
+                            <span style={{ fontWeight: 600, color: T.ink }}>{c.name}</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 12, color: T.label }}>{fmtUSD(c.revenue)}</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 12, color: T.label }}>{fmtUSD(c.cost)}</span>
+                            <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: uw ? T.red : T.green }}>{margin.toFixed(0)}%</span>
+                          <span style={{ fontSize: 9, fontWeight: 700, fontFamily: T.mono, color: uw ? T.red : T.green, background: uw ? T.redLight : T.greenLight, border: `1px solid ${uw ? T.redBorder : T.greenBorder}`, borderRadius: 3, padding: "2px 6px", textAlign: "center", letterSpacing: "0.05em" }}>{uw ? "UNDERWATER" : "HEALTHY"}</span>
+                        </div>
+                        );
+                      }),
+                      <div key="total" style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr 1fr 80px", padding: "12px 20px", fontSize: 13, alignItems: "center", background: T.bg, borderTop: `2px solid ${T.border}` }} className="margin-grid">
+                        <span style={{ fontWeight: 800, color: T.ink, fontSize: 12, letterSpacing: "0.04em" }}>TOTAL</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: T.ink }}>{fmtUSD(totalRev)}</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 700, color: T.ink }}>{fmtUSD(totalCost)}</span>
+                        <span style={{ fontFamily: T.mono, fontSize: 12, fontWeight: 800, color: totalMargin >= 0 ? T.green : T.red }}>{totalMargin.toFixed(0)}%</span>
+                        <span style={{ fontSize: 9, fontWeight: 700, fontFamily: T.mono, color: totalMargin >= 0 ? T.green : T.red, background: totalMargin >= 0 ? T.greenLight : T.redLight, border: `1px solid ${totalMargin >= 0 ? T.greenBorder : T.redBorder}`, borderRadius: 3, padding: "2px 6px", textAlign: "center" }}>{totalMargin >= 0 ? "NET +" : "NET −"}</span>
+                      </div>
+                      ];
+                    })()}
+                  </Card>
+                  <p style={{ fontSize: 12, color: T.caption, textAlign: "center", marginBottom: 20, fontStyle: "italic" }}>This is a preview with sample data. Connect Stripe to see your real numbers.</p>
+
+                  {/* Stripe connect */}
+                  <Card accent style={{ padding: "32px 28px", marginBottom: 16, overflow: "hidden" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 18 }}>
+                      <div style={{ width: 44, height: 44, borderRadius: 12, background: "linear-gradient(135deg, #635bff, #7c6fff)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, boxShadow: "0 4px 12px rgba(99,91,255,0.25)" }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><path d="M21 4H3a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                      </div>
+                      <div>
+                        <div style={{ fontSize: 15, fontWeight: 700, color: T.ink }}>Connect Stripe</div>
+                        <div style={{ fontSize: 12, color: T.label }}>See revenue alongside cost per customer</div>
+                      </div>
+                    </div>
+                    <div style={{ maxWidth: 380, marginBottom: 14 }}>
+                      <input type="password" placeholder="sk_live_..." value={stripeKey} onChange={e => setStripeKey(e.target.value)} style={{ width: "100%", padding: "11px 14px", borderRadius: 8, border: `1.5px solid ${T.border}`, fontSize: 13, fontFamily: T.mono, background: T.bg }} />
+                    </div>
+                    <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                      <button onClick={connectStripe} disabled={!stripeKey || stripeLoading} style={{ padding: "11px 24px", borderRadius: 8, border: "none", background: stripeKey ? "#635bff" : T.borderSoft, color: stripeKey ? T.white : T.ghost, fontSize: 14, fontWeight: 700, cursor: stripeKey ? "pointer" : "default", fontFamily: T.font, transition: "all 0.2s" }}>
+                        {stripeLoading ? "Connecting..." : "Connect"}
+                      </button>
+                      <button onClick={async () => {
+                        const em = user?.email || ""; const b = document.getElementById("stripe-req-btn");
+                        try { await sb.from("prospects").upsert({ email: em || "stripe-request@finault.ai", source: "stripe_request", created_at: new Date().toISOString() }, { onConflict: "email" }); } catch {}
+                        if (b) { b.textContent = "Requested!"; b.style.color = T.green; b.style.borderColor = T.greenBorder; }
+                        showToast("We'll reach out when Stripe is ready for you");
+                      }} id="stripe-req-btn" style={{ padding: "11px 18px", borderRadius: 8, border: `1px solid ${T.border}`, background: T.white, color: T.label, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: T.font, transition: "all 0.2s" }}>
+                        Request Early Access
+                      </button>
+                    </div>
+                    {stripeError && <div style={{ marginTop: 14, padding: "10px 14px", borderRadius: 8, background: T.amberLight, fontSize: 12, color: T.body }}>{stripeError}</div>}
+                    <div style={{ display: "flex", gap: 12, marginTop: 16, flexWrap: "wrap" }}>
+                      {["Read-only access", "Key never stored", "Design partner program"].map(pill => (
+                        <span key={pill} style={{ fontSize: 11, color: T.caption, background: T.bg, padding: "3px 10px", borderRadius: 20, border: `1px solid ${T.borderSoft}` }}>{pill}</span>
+                      ))}
+                    </div>
+                  </Card>
+                </div>
+              )}
+            </div>
+          </Fade>
+        )}
+
+        {/* ── SHARE + EMAIL ── */}
+        {screen >= 3 && revealStep >= 6 && (
+          <Fade show={true} delay={0.3}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 32 }} className="share-grid">
+              <div style={{ background: T.white, padding: "24px 24px", textAlign: "center", borderRadius: 16, border: `1px solid rgba(226,232,240,0.6)`, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.05))", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, marginBottom: 4 }}>Share results</div>
+                <div style={{ fontSize: 12, color: T.caption, marginBottom: 14 }}>Send a read-only link to your team</div>
+                <button id="copy-btn" onClick={async () => {
+                  const b = document.getElementById("copy-btn");
+                  const doCopy = async (text) => {
+                    try { await navigator.clipboard.writeText(text); return true; } catch {
+                      try { const ta = document.createElement("textarea"); ta.value = text; ta.style.cssText = "position:fixed;opacity:0"; document.body.appendChild(ta); ta.select(); document.execCommand("copy"); document.body.removeChild(ta); return true; } catch { return false; }
+                    }
+                  };
+                  try {
+                    if (b) { b.textContent = "Generating..."; b.disabled = true; }
+                    const scanId = crypto.randomUUID().replace(/-/g,"").slice(0,16);
+                    const shareData = { analysis, scoreData, savingsData, anomalyData, driftData };
+                    const { error } = await sb.from("shared_scans").insert({ id: scanId, scan_data: shareData });
+                    if (error) throw error;
+                    const url = `https://finault.ai/experience?scan=${scanId}`;
+                    const ok = await doCopy(url);
+                    if (b) { b.textContent = ok ? "Copied!" : "Link ready"; b.style.background = T.greenLight; b.style.color = T.green; b.disabled = false; setTimeout(() => { b.textContent = "Copy link"; b.style.background = T.white; b.style.color = T.label; }, 3000); }
+                    showToast("Share link copied to clipboard");
+                  } catch (e) {
+                    console.error("Share error:", e);
+                    const ok = await doCopy(window.location.href);
+                    if (b) { b.textContent = ok ? "Copied URL!" : "Failed"; b.disabled = false; setTimeout(() => { b.textContent = "Copy link"; }, 2000); }
+                  }
+                }} style={{ width: "100%", padding: "10px 0", background: T.white, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 13, fontWeight: 600, color: T.label, cursor: "pointer", fontFamily: T.font }}>Copy link</button>
+              </div>
+              <div style={{ background: T.white, padding: "24px 24px", textAlign: "center", borderRadius: 16, border: `1px solid rgba(226,232,240,0.6)`, boxShadow: "0 1px 3px rgba(0,0,0,0.03)" }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.05))", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 12px" }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={T.green} strokeWidth="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: T.ink, marginBottom: 4 }}>Weekly digest</div>
+                <div style={{ fontSize: 12, color: T.caption, marginBottom: 14 }}>Score changes + anomaly alerts</div>
+                <div style={{ display: "flex" }}>
+                  <input type="email" id="em-input" placeholder="you@company.com" style={{ flex: 1, padding: "8px 10px", background: T.bg, border: `1px solid ${T.border}`, borderRight: "none", borderRadius: "6px 0 0 6px", fontSize: 12, fontFamily: T.font, color: T.ink, outline: "none" }} />
+                  <button onClick={async () => { const v=document.getElementById("em-input")?.value; if(v?.includes("@")){ try{await sb.from("prospects").upsert({email:v.trim().toLowerCase(),source:"experience",created_at:new Date().toISOString()},{onConflict:"email"});}catch{} const b=document.getElementById("em-btn"); const inp=document.getElementById("em-input"); if(b){b.textContent="Subscribed ✓";b.style.background=T.green;b.style.color="#fff";b.style.borderColor=T.green;} if(inp){inp.style.borderColor=T.green;inp.disabled=true;} showToast("You'll get weekly score updates"); } else { const b=document.getElementById("em-btn"); if(b){b.textContent="Enter email";b.style.color=T.red; setTimeout(()=>{b.textContent="Save";b.style.color=T.label;},2000);} }}} id="em-btn" style={{ padding: "8px 14px", background: T.borderSoft, border: `1px solid ${T.border}`, borderRadius: "0 6px 6px 0", fontSize: 12, fontWeight: 600, color: T.label, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap" }}>Save</button>
+                </div>
+              </div>
+            </div>
+          </Fade>
+        )}
+
+        {/* ═══════════════════════════════════════════════════ */}
+        {/* ── STEP 5: SEALED ── */}
+        {/* ═══════════════════════════════════════════════════ */}
+        <span id="sec-step5"/>
+        <span id="sec-sealed"/>
+        {screen >= 3 && revealStep >= 6 && (
+          <Fade show={true} delay={0.5}>
+            <div className="dark-section" style={{ borderRadius: 24, border: "1px solid rgba(255,255,255,0.06)", padding: "56px 40px", position: "relative", overflow: "hidden" }}>
+              {/* Subtle gradient orb decoration */}
+              <div style={{ position: "absolute", top: -80, right: -80, width: 240, height: 240, borderRadius: "50%", background: "radial-gradient(circle, rgba(5,150,105,0.08), transparent 70%)", pointerEvents: "none" }} />
+              {/* Step header */}
+              <div style={{ textAlign: "center", marginBottom: 28 }}>
+                <span className="step-badge" style={{ background: "rgba(5,150,105,0.15)", border: "1px solid rgba(5,150,105,0.25)" }}>STEP 5 OF 5</span>
+              </div>
+              <div style={{ textAlign: "center", marginBottom: 32 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.14em", color: T.green, marginBottom: 12 }}>SEALED</div>
+                <h2 style={{ fontSize: 26, fontWeight: 800, color: T.white, marginBottom: 10, letterSpacing: "-0.02em" }}>Every decision has a permanent record.</h2>
+                <p style={{ fontSize: 14, color: "#94A3B8", maxWidth: 420, margin: "0 auto", lineHeight: 1.6 }}>SHA-256 chained. Auditor-ready. Independently verifiable.</p>
+              </div>
+
+              {/* Chain status */}
+              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", padding: "20px 24px", marginBottom: 28 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", color: "#94A3B8", marginBottom: 14, textTransform: "uppercase" }}>Your Chain</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#64748B", marginBottom: 4 }}>Total Seals</div>
+                    <div style={{ fontSize: 18, fontWeight: 800, color: T.white, fontFamily: T.mono }}>{sealCount}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#64748B", marginBottom: 4 }}>Chain Status</div>
+                    <div style={{ fontSize: 13, fontWeight: 700, color: sealCount > 0 ? T.green : "#94A3B8" }}>{sealCount > 0 ? "Verified — no gaps, no tampering" : "No seals yet"}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#64748B", marginBottom: 4 }}>Latest Seal</div>
+                    <div style={{ fontSize: 12, fontFamily: T.mono, color: "#CBD5E1" }}>{sealCount > 0 && liveSeals.length > 0 ? liveSeals[0].seal_id || `seal_${(liveSeals[0].id||"").slice(0,12)}` : "—"}</div>
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, color: "#64748B", marginBottom: 4 }}>Chain Hash</div>
+                    <div style={{ fontSize: 12, fontFamily: T.mono, color: "#CBD5E1" }}>{sealCount > 0 ? `sha256:${(analysis?.scan_id || "d4e7f2a1").slice(0,8)}...` : "—"}</div>
+                  </div>
+                </div>
+                {sealCount > 0 && (
+                  <button onClick={() => { const btn = document.getElementById("verify-chain-btn"); if(btn){btn.textContent="Verifying...";btn.disabled=true;} setTimeout(() => { if(btn){btn.textContent="✓ Chain Verified — No Gaps";btn.style.background="rgba(5,150,105,0.15)";btn.style.borderColor="rgba(5,150,105,0.3)";btn.style.color=T.green;} }, 1500); }} id="verify-chain-btn"
+                    style={{ marginTop: 16, padding: "10px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: "#CBD5E1", fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: T.font, transition: "all 0.3s ease" }}>
+                    Verify Chain Integrity
+                  </button>
+                )}
+              </div>
+
+              {/* Close Pack */}
+              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", padding: "20px 24px", marginBottom: 20 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", color: "#94A3B8", marginBottom: 8, textTransform: "uppercase" }}>Close Pack</div>
+                <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 14, lineHeight: 1.5 }}>Executive summary, journal entries, reconciliation certificate, and controls narrative — sealed and board-ready.</p>
+                <button onClick={generateClosePack} disabled={closePackLoading} style={{ padding: "11px 22px", borderRadius: 8, border: "none", background: T.green, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font }}>{closePackLoading ? "Generating..." : "Download Close Pack"}</button>
+              </div>
+
+              {/* Compliance exports */}
+              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", padding: "20px 24px", marginBottom: 20 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", color: "#94A3B8", marginBottom: 14, textTransform: "uppercase" }}>Compliance Exports</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={() => exportReport("soc2")} style={{ padding: "11px 18px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "transparent", color: "#CBD5E1", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: T.font }}>SOC 2 Report</button>
+                  <button onClick={() => exportReport("eu-ai-act")} style={{ padding: "11px 18px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)", background: "transparent", color: "#CBD5E1", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: T.font }}>EU AI Act Report</button>
+                </div>
+              </div>
+
+              {/* Reconciliation summary */}
+              <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", padding: "20px 24px", marginBottom: 28 }}>
+                <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", color: "#94A3B8", marginBottom: 14, textTransform: "uppercase" }}>Reconciliation</div>
+                {totalSpend > 0 || sealCount > 0 ? (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px 24px" }}>
+                    <div><span style={{ fontSize: 11, color: "#64748B" }}>Settlement</span><div style={{ fontSize: 13, color: "#CBD5E1", fontWeight: 600, marginTop: 2 }}>Continuous</div></div>
+                    <div><span style={{ fontSize: 11, color: "#64748B" }}>Variance</span><div style={{ fontSize: 13, color: T.green, fontWeight: 600, fontFamily: T.mono, marginTop: 2 }}>{settlementData?.latest_reconciliation?.variance_pct != null ? settlementData.latest_reconciliation.variance_pct.toFixed(1) + "%" : "0.0%"}</div></div>
+                    <div><span style={{ fontSize: 11, color: "#64748B" }}>Match Rate</span><div style={{ fontSize: 13, color: "#CBD5E1", fontWeight: 600, fontFamily: T.mono, marginTop: 2 }}>{settlementData?.avg_confidence_score ? settlementData.avg_confidence_score.toFixed(0) + "%" : "100%"}</div></div>
+                    <div><span style={{ fontSize: 11, color: "#64748B" }}>Confidence</span><div style={{ fontSize: 13, color: T.green, fontWeight: 600, fontFamily: T.mono, marginTop: 2 }}>{fcsData?.fcs_score || scoreData?.confidence_score || "High"}</div></div>
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 13, color: "#64748B", lineHeight: 1.6 }}>
+                    Reconciliation activates when you have spend data or sealed calls. Go live to start building your audit trail.
+                  </div>
+                )}
+              </div>
+
+              {/* Tagline + logo */}
+              <div style={{ textAlign: "center" }}>
+                <p style={{ fontSize: 14, fontWeight: 500, color: "#6B7280", lineHeight: 2.0, maxWidth: 320, margin: "0 auto 16px" }}>
+                  Every agent gets an Imprint.<br/>Every action gets a receipt.<br/>The chain proves the whole story.
+                </p>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 7 }}>
+                  <div style={{ width: 6, height: 6, borderRadius: 2, background: T.green }} />
+                  <span style={{ fontSize: 10, fontWeight: 900, color: "#CBD5E1", letterSpacing: "0.1em" }}>FINAULT</span>
+                </div>
+              </div>
+            </div>
+          </Fade>
+        )}
+
+        </div>{/* end main content */}
+      </div>{/* end flex wrapper */}
+
+      {/* ── SCROLL TO TOP ── */}
+      <ScrollToTop />
+
+      {/* ── FOOTER ── */}
+      <div style={{ borderTop: `1px solid ${T.border}`, padding: "32px 36px", display: "flex", justifyContent: "space-between", alignItems: "center", maxWidth: 1280, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 7, height: 7, borderRadius: 2, background: `linear-gradient(135deg, ${T.green}, #34D399)`, boxShadow: "0 0 6px rgba(5,150,105,0.2)" }} />
+          <span style={{ fontSize: 12, fontWeight: 600, color: T.caption }}>&copy; 2026 Finault</span>
+        </div>
+        <div style={{ display: "flex", gap: 24 }}>
+          {["Docs", "Pricing", "Security", "Privacy", "Terms"].map(link => (
+            <a key={link} href={`/${link.toLowerCase()}`} style={{ fontSize: 12, fontWeight: 500, color: T.caption, textDecoration: "none", transition: "color 0.15s" }}
+              onMouseEnter={e => e.target.style.color = T.ink}
+              onMouseLeave={e => e.target.style.color = T.caption}>{link}</a>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

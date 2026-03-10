@@ -1,157 +1,132 @@
-# Finault — AI Cost Governance Platform
+# Finault
 
-**The finance-safe layer for enterprise AI spending.**
+The financial operating system for AI.
 
-Finault gives finance teams, CFOs, and engineering leaders a single source of truth for their organization's AI costs. Upload a CSV invoice from any AI provider, get instant cost allocation, unit economics, model-swap savings, and a sealed Close Pack of audit-ready artifacts.
+Every AI transaction gets a Seal. Every agent gets an Imprint.
+The chain proves the whole story.
 
-**Live at [finault.ai](https://finault.ai)**
+## What This Is
 
-## What Finault Does
-
-1. **Ingests** raw AI provider invoices (OpenAI, Anthropic, AWS Bedrock, Azure AI, Google Vertex)
-2. **Allocates** costs to business cost centers via keyword fuzzy matching with confidence scoring
-3. **Benchmarks** unit economics against the Bessemer Venture Partners AI framework
-4. **Identifies** model-swap savings using 30+ model pricing registry and 17 verified downgrade paths
-5. **Produces** a sealed, hash-verified Close Pack of 5 audit-ready artifacts monthly
-6. **Chains** Close Packs via SHA-256 temporal chain for cryptographic audit trail
+Finault is the accountability layer for the AI economy. We sit between your application and your AI providers. Every API call gets a cryptographic receipt. Every agent gets a permanent identity. The chain is tamper-proof and independently verifiable.
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────┐
-│                  static/app.html                     │
-│              Single-file SPA (~4,570 lines)          │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌────────┐ │
-│  │  Upload   │ │ Results  │ │Unit Econ │ │Settings│ │
-│  │  (Parse)  │ │(Analyze) │ │(Margins) │ │(Config)│ │
-│  └────┬─────┘ └────┬─────┘ └────┬─────┘ └────────┘ │
-│       │             │            │                    │
-│  ┌────▼─────────────▼────────────▼──────────────┐   │
-│  │  parseCSV → generateAllocations → computeFCS  │   │
-│  │  computeSavings → generateClosePack → SHA-256 │   │
-│  └──────────────────────────────────────────────┘   │
-└─────────────────────┬───────────────────────────────┘
-                      │
-        ┌─────────────┼─────────────┐
-        ▼             ▼             ▼
-   ┌─────────┐  ┌──────────┐  ┌──────────┐
-   │Supabase │  │Cloudflare│  │   Slack   │
-   │ Auth+DB │  │  Pages   │  │ Webhooks  │
-   └─────────┘  └──────────┘  └──────────┘
+Four layers:
+
+1. **Rails** — Gateway proxy (OpenAI, Anthropic, Google, Azure, Bedrock), Seal engine (SHA-256 + HMAC), Imprint system, AIEI open standard
+2. **Intelligence** — Finault Score (6 dimensions), anomaly detection, drift analysis, savings engine, budget enforcement
+3. **Reconciliation & Settlement** — 3-way match (usage vs invoices vs rate cards), immutable certificates, 14 exception codes, continuous reconciliation, dispute auto-generation, GL journal entries
+4. **Network** — Finault Index, Live Close Pack, chain verification portal (building)
+
+## Live Infrastructure
+
+| What | Where |
+|------|-------|
+| Product | [finault.ai](https://finault.ai) |
+| Gateway | gateway.finault.ai (api.finault.ai) |
+| First Imprint | [api.finault.ai/seal/seal_de8ad2460a2e](https://api.finault.ai/seal/seal_de8ad2460a2e) |
+| AIEI Spec | [github.com/Finault/aiei-spec](https://github.com/Finault/aiei-spec) |
+| Python SDK | `pip install finault` |
+| Node SDK | `npm install finault` |
+| Chain | 15+ seals, self-sovereign (SHA-256, no Ethereum) |
+
+## Quick Start
+
+### Scan your AI spend
+Go to [finault.ai/experience](https://finault.ai/experience), paste your API key.
+
+### Route through the gateway
+```python
+import openai
+client = openai.OpenAI(
+    base_url="https://gateway.finault.ai/v1",
+    api_key="your-key"
+)
 ```
 
-## Technology Stack
-
-| Component | Technology |
-|-----------|-----------|
-| Frontend | Single-file SPA, vanilla JS, CSS custom properties, no build step |
-| Backend/Auth | Supabase (PostgreSQL + Auth + Row-Level Security) |
-| Hosting | Cloudflare Pages (static), Cloudflare Workers (gateway) |
-| PDF Generation | jsPDF (client-side, no server dependency) |
-| ZIP Generation | JSZip (client-side Close Pack bundling) |
-| Cryptography | Web Crypto API (SHA-256) with djb2 fallback |
-| MCP Server | TypeScript + @modelcontextprotocol/sdk, published as @finault/mcp-server |
-| Email Delivery | Cloudflare Worker gateway (/v1/send-closepack) |
+### Install the SDK
+```bash
+pip install finault
+# or
+npm install finault
+```
 
 ## Repository Structure
 
 ```
-finault-monorepo/
-├── static/                    # Production site (Cloudflare Pages)
-│   ├── app.html              # ★ Main application (~4,570 lines)
-│   ├── index.html            # Marketing landing page
-│   ├── login.html            # Authentication
-│   ├── pricing.html          # Pricing tiers
+finault/
+├── apps/
+│   ├── gateway/              # Cloudflare Worker — core gateway proxy
+│   │   ├── gateway-wired.js  # Main handler (900KB+, 32+ route handlers)
+│   │   └── wrangler.toml
+│   └── dashboard/            # Next.js admin dashboard
+│
+├── static/                   # Cloudflare Pages — finault.ai
+│   ├── index.html            # Landing page
+│   ├── experience.html       # 5-step product experience
+│   ├── pricing.html          # Pricing
 │   ├── docs.html             # Documentation
-│   └── ...                   # Other static pages
+│   ├── login.html            # Auth
+│   └── ...                   # All deployed pages
+│
+├── sdks/                     # Multi-language SDKs
+│   ├── python/               # finault on PyPI
+│   ├── node/                 # finault on npm
+│   ├── go/                   # Go client
+│   ├── java/                 # Java client
+│   └── ruby/                 # Ruby client
+│
+├── platform/                 # Backend orchestration & modules
+│   ├── orchestrator.js       # Core platform orchestrator
+│   └── modules/              # Intelligence modules
+│
+├── agentos/                  # Agent operating system
+│   ├── core/                 # Agent runtime
+│   ├── protocols/            # AIEI protocol implementation
+│   └── tools/                # Agent tool definitions
+│
+├── database/                 # Supabase schema & migrations
+│   └── migrations/           # 23 SQL migration files
 │
 ├── mcp-server/               # MCP Server for Claude Desktop
-│   ├── index.ts              # TypeScript source (12 tools)
-│   ├── package.json          # @finault/mcp-server v3.0.0
-│   └── dist/                 # Compiled output
+│   └── src/                  # 12 tools for AI cost management
 │
-├── apps/
-│   ├── gateway/              # Cloudflare Worker (API gateway)
-│   └── status-page/          # Public status page
-│
-├── dashboard/                # Next.js dashboard (supplementary)
-│   └── src/                  # React components + TypeScript API
-│
-├── platform/                 # Backend modules
-│   ├── closepack-generator-v2.js
-│   └── modules/              # Diamond tier modules
-│
-├── database/                 # Supabase migrations
-│   └── migrations/           # SQL migration files
-│
-├── CODEBASE_MAP.md          # ★ Developer quick-reference (line numbers, functions)
-└── README.md                # This file
+├── integrations/             # ERP, SSO, provider connectors
+├── modules/                  # Anomaly detection, policy engine
+├── services/                 # Microservices (billing, notifications)
+├── tools/                    # CLI tools
+├── tests/                    # Test suites
+└── docs/                     # Architecture documentation
 ```
 
-## Key Features
+## Database
 
-### Close Pack System
-A sealed ZIP bundle containing 5 artifacts + MANIFEST.json, SHA-256 hash-verified, temporally chained:
-- **Executive Summary PDF** — 2-page audit-ready report with dynamic sections
-- **GL Journal Entry CSV** — Debit/credit entries with CSV formula injection protection
-- **Reconciliation Certificate PDF** — Temporal chain details, FCS score
-- **Controls Narrative PDF** — SOX 404 structure with 5 CTRL codes
-- **Unit Economics PDF** — Board-ready summary with Bessemer classification
+100+ Supabase tables, 23 migrations. Key tables include: seals and seal_chain (the immutable chain), imprints and agent_careers (agent identity system), reconciliation_reports and reconciliation_certificates (settlement layer), finault_scores, anomalies, and drift_alerts (intelligence layer).
 
-### Finault Confidence Score (FCS)
-Weighted 0–100 composite score across 5 audit dimensions:
-- Coverage (30%) — percentage of allocations with confidence >= 85%
-- Exceptions (25%) — count of low-confidence allocations
-- Reconciliation (20%) — allocation total vs invoice total match
-- Comparability (15%) — existence of prior Close Pack for comparison
-- Drift (10%) — month-over-month spend change severity
+## Standards & Compliance
 
-### Model Pricing & Savings Engine
-- 30+ model pricing registry (Anthropic, OpenAI, Google, Meta, DeepSeek)
-- 17 verified downgrade paths with real savings ratios
-- 60/40 input/output token split assumption
-- Per-model-swap cards with monthly and annual projections
-
-### MCP Server (12 Tools)
-Claude Desktop integration via @finault/mcp-server:
-- **Visibility:** get_spend_summary, get_team_spend, compare_spend, get_trends
-- **Control:** check_budget, set_budget_alert, request_budget_increase
-- **Optimization:** get_recommendations, simulate_model_switch, calculate_roi
-- **Reporting:** generate_close_pack, get_attestation
-
-### Integrations
-- **ERP Export:** QuickBooks Online JSON, generic CSV (Xero/NetSuite/Sage)
-- **Slack Webhook:** Block Kit notifications on Close Pack sealing
-- **Email Delivery:** Close Pack artifacts via Cloudflare Worker gateway
-- **Board Summary:** One-click clipboard copy for board decks
+- AIEI v1.0.0 (Apache 2.0)
+- EU AI Act Article 12 compatible
+- Colorado SB205 compatible
+- SOC 2 readiness exports
+- NIST AI Agent Standards aligned
 
 ## Deployment
 
 ```bash
-# Deploy static site to Cloudflare Pages
-npx wrangler pages deploy static --project-name=finault-site
+# Deploy site to Cloudflare Pages
+cd static && npx wrangler pages deploy . --project-name finault
 
 # Deploy gateway worker
 cd apps/gateway && npx wrangler deploy
-
-# Publish MCP server to npm
-cd mcp-server && npm publish
 ```
 
-| Environment | URL |
-|------------|-----|
-| Production | [finault.ai](https://finault.ai) |
-| Staging | finault-site.pages.dev |
-| Gateway | finault-gateway.finault.workers.dev |
+## Team
 
-## Compliance & Standards
-- U.S. GAAP (ASC 350-40) categorization
-- SOX Section 404 control structure (5 CTRL codes)
-- IRS Publication 946 depreciation references
-- FinOps FOCUS 1.3 Specification alignment
-- SHA-256 data integrity verification
-- 7-year document retention recommendation
+Bernie Cotter — Founder & CEO (bernard.cotter@finault.co)
+Ian Lapham — Advisor (ex-Uniswap)
+David Rubin — Advisor (MathWorks)
 
-## For Developers
+## License
 
-See **[CODEBASE_MAP.md](CODEBASE_MAP.md)** for a complete line-by-line reference to every function, constant, and section in the codebase. This is the fastest way to orient yourself for any coding task.
+Apache 2.0

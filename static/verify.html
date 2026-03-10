@@ -690,6 +690,14 @@
 
   <!-- Verification Script -->
   <script>
+    function showToast(msg, type) {
+      var t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 24px;border-radius:8px;font-size:14px;font-weight:500;z-index:9999;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:opacity 0.3s;max-width:500px;text-align:center;';
+      t.style.background = type === 'error' ? '#dc2626' : type === 'success' ? '#16a34a' : '#1a1a1a';
+      document.body.appendChild(t);
+      setTimeout(function() { t.style.opacity = '0'; setTimeout(function() { t.remove(); }, 300); }, 4000);
+    }
     const uploadZone = document.getElementById('uploadZone');
     const fileInput = document.getElementById('fileInput');
     const verifyingState = document.getElementById('verifyingState');
@@ -730,7 +738,7 @@
     // Main file handler
     async function handleFile(file) {
       if (!file.name.endsWith('.zip')) {
-        alert('Please select a .zip file');
+        showToast('Please select a .zip file', 'error');
         return;
       }
 
@@ -793,7 +801,7 @@
         displayResults(manifest, results, allMatch);
 
       } catch (error) {
-        alert('Error verifying file: ' + error.message);
+        showToast('Error verifying file: ' + error.message, 'error');
         uploadZone.classList.remove('hidden');
         verifyingState.classList.add('hidden');
       }

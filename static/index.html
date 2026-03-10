@@ -10,10 +10,19 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finault — AI Unit Economics Platform | Are Your AI Features Profitable?</title>
-    <meta name="description" content="Know your AI margin per customer, per feature, per dollar of revenue. Real-time unit economics that turn spend data into pricing decisions.">
-    <meta property="og:title" content="Finault — AI Unit Economics Platform">
-    <meta property="og:description" content="Are your AI features making money — or quietly killing your margins? Know your cost-to-serve per customer in real time.">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <script>
+    // Clean up cache-bust parameter if present (from experience.html redirect fix)
+    if (window.location.search.indexOf('_cb=') !== -1) {
+      window.history.replaceState({}, '', '/');
+    }
+    </script>
+    <title>Finault — You think you know what your AI costs.</title>
+    <meta name="description" content="Paste your API key. We'll show you what you're missing. Finault reveals your complete AI economics — margins, savings, anomalies, and a sealed audit trail.">
+    <meta property="og:title" content="Finault — You think you know what your AI costs.">
+    <meta property="og:description" content="Paste your API key. We'll show you what you're missing. See your complete AI economics in 15 seconds.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://finault.ai">
     <link rel="icon" href="/favicon.ico" sizes="any">
@@ -121,7 +130,7 @@
         /* ===== LIVE DEMO ===== */
         .demo {
             padding: 0 24px 80px;
-            max-width: 960px; margin: 0 auto;
+            max-width: 1100px; margin: 0 auto;
         }
         .demo-window {
             border: 1px solid var(--gray-200); border-radius: 16px;
@@ -141,7 +150,7 @@
             background: var(--white); border: 1px solid var(--gray-200);
             padding: 4px 12px; border-radius: 6px; flex: 1; max-width: 300px;
         }
-        .demo-body { padding: 32px; min-height: 420px; position: relative; }
+        .demo-body { padding: 40px 48px; min-height: 480px; position: relative; }
 
         /* Phase 1: CSV */
         .demo-csv {
@@ -218,32 +227,32 @@
         }
         .demo-stat.pop { opacity: 1; transform: scale(1); }
         .demo-stat-value {
-            font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+            font-size: 32px; font-weight: 700; letter-spacing: -0.02em;
             color: var(--gray-900);
         }
-        .demo-stat-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+        .demo-stat-label { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
         .demo-stat-value.green { color: var(--green); }
         .demo-stat-value.red { color: #dc2626; }
         .demo-stat-value.amber { color: #d97706; }
 
         .demo-model-bars { margin-bottom: 20px; }
         .demo-model-bar-row {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 6px;
-            font-size: 12px; opacity: 0; transform: translateX(-8px);
+            display: flex; align-items: center; gap: 12px; margin-bottom: 10px;
+            font-size: 14px; opacity: 0; transform: translateX(-8px);
             transition: all 0.3s ease;
         }
         .demo-model-bar-row.visible { opacity: 1; transform: translateX(0); }
-        .demo-model-name { width: 120px; text-align: right; color: var(--gray-600); font-weight: 500; flex-shrink: 0; }
-        .demo-model-track { flex: 1; height: 20px; background: var(--gray-100); border-radius: 4px; overflow: hidden; }
+        .demo-model-name { width: 150px; text-align: right; color: var(--gray-600); font-weight: 500; flex-shrink: 0; }
+        .demo-model-track { flex: 1; height: 28px; background: var(--gray-100); border-radius: 6px; overflow: hidden; }
         .demo-model-fill {
-            height: 100%; background: var(--green); border-radius: 4px;
+            height: 100%; background: var(--green); border-radius: 6px;
             width: 0; transition: width 0.8s ease;
         }
-        .demo-model-cost { width: 72px; font-weight: 600; color: var(--gray-900); font-size: 12px; }
+        .demo-model-cost { width: 80px; font-weight: 600; color: var(--gray-900); font-size: 14px; }
 
         .demo-anomaly-row {
-            display: flex; align-items: center; gap: 10px; padding: 8px 12px;
-            border-radius: 8px; font-size: 12px; margin-bottom: 6px;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            border-radius: 8px; font-size: 14px; margin-bottom: 8px;
             opacity: 0; transform: translateY(6px);
             transition: all 0.3s ease;
         }
@@ -593,26 +602,27 @@
     <nav>
         <a href="/" class="logo"><img src="/logo.svg" alt="Finault" style="height:28px;width:28px;vertical-align:middle;margin-right:8px;border-radius:6px;">Finault</a>
         <div class="nav-right">
-            <a href="/app" class="nav-link">Free Audit</a>
-            <a href="/sdk" class="nav-link">SDK</a>
-            <a href="/pricing" class="nav-link">Pricing</a>
             <a href="/docs" class="nav-link">Docs</a>
-            <a href="/login" class="nav-cta" id="navAuthLink">Sign In</a>
+            <a href="/pricing" class="nav-link">Pricing</a>
+            <a href="/security" class="nav-link">Security</a>
+            <a href="/login" class="nav-cta" id="navAuthLink" style="background:transparent;color:var(--gray-600);border:1px solid var(--gray-200);">Sign In</a>
+            <a href="/experience" class="nav-cta" id="navStartLink">Get Started</a>
         </div>
     </nav>
 
-    <!-- Hero: The Stripe moment. One headline. One CTA. -->
+    <!-- Hero: Create doubt, then resolve it. -->
     <section class="hero">
-        <h1>Are your AI features making money — <span class="accent">or quietly killing your margins?</span></h1>
-        <p class="hero-sub">Know your cost-to-serve per customer, per feature, per dollar of revenue. The AI unit economics platform that turns spend data into pricing decisions.</p>
+        <h1>You think you know<br>what your <span class="accent">AI costs.</span></h1>
+        <p class="hero-sub">Paste your API key. We'll show you what you're missing.</p>
+
         <div class="hero-cta-group">
-            <a href="/app" class="btn-primary">
-                Check Your Margins — Free
+            <a href="/experience" class="btn-primary">
+                Get Started — Free
                 <svg class="btn-arrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
-            <a href="/login?redirect=app" class="btn-secondary">Get Your API Key</a>
+            <a href="#demo" class="btn-secondary">See It Live</a>
         </div>
-        <p class="hero-proof">No signup. No credit card. See your margins in 60 seconds.</p>
+        <p class="hero-proof">Free forever. No signup required. Works with OpenAI, Anthropic, AWS, Azure, and Google.</p>
     </section>
 
     <!-- LIVE DEMO: The aha moment. Product runs on the page. -->
@@ -692,7 +702,16 @@
                             <div class="demo-cp-title">Close Pack Ready</div>
                             <div class="demo-cp-sub">4 artifacts &middot; SHA-256 sealed &middot; HMAC signed</div>
                         </div>
-                        <a href="/app" class="demo-cp-btn">Try with your data</a>
+                        <a href="/experience" class="demo-cp-btn">Try with your data</a>
+                    </div>
+
+                    <!-- Upsell bridge: sample → real data conversion -->
+                    <div id="demoUpsell" style="display:none;margin-top:16px;padding:20px;background:linear-gradient(135deg,#f0fdf4,#f5f5f5);border:1px solid var(--green-border);border-radius:12px;text-align:center;">
+                        <p style="font-size:15px;font-weight:600;color:var(--gray-900);margin-bottom:6px;">This was sample data.</p>
+                        <p style="font-size:13px;color:var(--gray-600);margin-bottom:16px;line-height:1.5;">Upload your real AI billing CSV to see your actual margins, anomalies, and optimization opportunities. Every analysis gets a sealed receipt.</p>
+                        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+                            <a href="/experience" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--green);color:var(--white);font-size:13px;font-weight:600;border-radius:8px;text-decoration:none;">Upload Your CSV &rarr;</a>
+                        </div>
                     </div>
 
                     <!-- Margin Analysis Input -->
@@ -744,74 +763,37 @@
                 </div>
             </div>
         </div>
-        <p class="demo-label">This is live output from sample data. <a href="/app">Upload your own CSV</a> for real results.</p>
+        <p class="demo-label">This is sample data. <a href="/experience">Paste your API key</a> to see your real numbers.</p>
     </section>
 
-    <!-- Browser-Native Banner: The Plaid differentiator. -->
-    <section class="browser-native">
-        <div class="browser-native-inner">
-            <div class="browser-native-item">
-                <div class="browser-native-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
-                </div>
-                <div>
-                    <div class="browser-native-text">Browser-native processing</div>
-                    <div class="browser-native-sub">Your CSV is parsed locally. Nothing is uploaded.</div>
-                </div>
-            </div>
-            <div class="browser-native-item">
-                <div class="browser-native-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
-                </div>
-                <div>
-                    <div class="browser-native-text">Zero data exposure</div>
-                    <div class="browser-native-sub">No servers. No accounts. No API keys.</div>
-                </div>
-            </div>
-            <div class="browser-native-item">
-                <div class="browser-native-icon">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <div>
-                    <div class="browser-native-text">60-second results</div>
-                    <div class="browser-native-sub">Upload to close pack. One click.</div>
-                </div>
-            </div>
+    <!-- The Line: the single best differentiator — right after the demo while attention is high -->
+    <section class="gap" style="padding:80px 24px;">
+        <div class="gap-inner">
+            <p class="gap-text" style="font-size:clamp(26px, 4.5vw, 38px);">Every other tool tells you <span class="accent">what you spent</span>.<br>Finault tells you <span class="accent">what you earned</span>.</p>
         </div>
     </section>
 
-    <!-- How It Works: Collison's seven lines of code. Three steps. Done. -->
+    <!-- How It Works: Three steps to margin clarity -->
     <section class="how" id="how">
         <div class="how-inner">
             <p class="section-label">How It Works</p>
-            <h2 class="section-title">Three steps. Sixty seconds. Margin clarity.</h2>
-            <p class="section-desc">No configuration. No integration. Upload one CSV and know exactly which customers are profitable.</p>
+            <h2 class="section-title">Paste. Scan. Know.</h2>
+            <p class="section-desc">15 seconds from API key to full economics. No installation. No code changes. No signup.</p>
             <div class="steps-grid">
                 <div class="step">
                     <div class="step-number">1</div>
-                    <h3>Upload your billing CSV</h3>
-                    <p>Drag and drop your AI provider billing export. We support AWS, Azure, OpenAI, Google, and Anthropic. Format is detected automatically.</p>
+                    <h3>Paste your API key</h3>
+                    <p>Paste any provider key — OpenAI, Anthropic, Google, Azure, or AWS Bedrock. Finault detects the provider automatically. Read-only access, never stored.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">2</div>
-                    <h3>We calculate your margins</h3>
-                    <p>Each SKU is matched against our 40+ model pricing database. Costs are broken down by customer and feature, margin metrics calculated against Bessemer benchmarks, and unprofitable customers flagged.</p>
+                    <h3>See what you're really spending</h3>
+                    <p>Your Finault Score, savings opportunities, anomaly detection, and cost breakdown by model. Not just what you spent — whether you're making money.</p>
                 </div>
                 <div class="step">
                     <div class="step-number">3</div>
-                    <h3>Know who's profitable</h3>
-                    <p>See your AI margin per customer, health scores for every account, Bessemer benchmark comparison, and exactly which customers are subsidized. Pricing simulator included.</p>
-                </div>
-            </div>
-
-            <div style="text-align:center; margin-top:48px; padding:28px; background:var(--gray-50); border-radius:12px; border:1px solid var(--border);">
-                <p style="font-size:15px; color:var(--gray-600); margin-bottom:12px;">
-                    <strong>Want real-time cost tracking instead?</strong> Install the SDK — one line, every AI call tracked automatically.
-                </p>
-                <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
-                    <a href="/sdk" style="color:var(--green); font-weight:600; font-size:14px; text-decoration:none;">Install the SDK &rarr;</a>
-                    <span style="color:var(--gray-400);">&middot;</span>
-                    <a href="/sdk" style="color:var(--green); font-weight:600; font-size:14px; text-decoration:none;">Learn more &rarr;</a>
+                    <h3>Get a sealed audit trail</h3>
+                    <p>Every scan generates a SHA-256 sealed receipt linked to the last one. Over time, you build an unbreakable chain of verified AI cost history.</p>
                 </div>
             </div>
         </div>
@@ -856,13 +838,33 @@
         </div>
     </section>
 
-    <!-- The Gap: Perret's infrastructure positioning -->
-    <section class="gap">
-        <div class="gap-inner">
-            <p class="gap-text">Every other tool tells you <span class="accent">what you spent</span>.<br>Finault tells you <span class="accent">what you earned</span>.</p>
-            <p style="font-size:15px;color:var(--gray-500);margin-top:20px;line-height:1.6;">Cost dashboards are table stakes. Finault is the AI unit economics platform — the layer between your AI spend and your pricing decisions. We don't just show you the bill. We tell you which customers to reprice, which features to optimize, and when your margins are about to go negative.</p>
+    <!-- Seal Chain: The moat -->
+    <section style="padding:80px 24px;background:#1a1625">
+        <div style="max-width:800px;margin:0 auto;text-align:center">
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border-radius:20px;border:1px solid rgba(22,163,74,0.3);background:rgba(22,163,74,0.08);margin-bottom:24px">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+                <span style="font-size:13px;color:#4ade80;font-weight:500">Finault Seal Chain</span>
+            </div>
+            <h2 style="font-size:clamp(28px,4vw,40px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:16px;letter-spacing:-0.02em">Every AI decision.<br>Sealed forever.</h2>
+            <p style="font-size:17px;color:rgba(255,255,255,0.55);line-height:1.7;max-width:600px;margin:0 auto 40px">Every analysis gets a sealed receipt linked to the last one. Rip it out and the chain breaks forever.</p>
+            <div style="display:flex;justify-content:center;gap:48px;flex-wrap:wrap">
+                <div>
+                    <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em">SHA-256</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Cryptographic hash</div>
+                </div>
+                <div>
+                    <div style="font-size:32px;font-weight:700;color:#4ade80;letter-spacing:-0.02em">∞</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Receipts live forever</div>
+                </div>
+                <div>
+                    <div style="font-size:32px;font-weight:700;color:#fff;letter-spacing:-0.02em">Chain</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,0.4);margin-top:4px">Linked to every prior seal</div>
+                </div>
+            </div>
         </div>
     </section>
+
+    <!-- (Gap section moved up — right after the demo) -->
 
     <!-- Providers -->
     <section class="providers">
@@ -876,6 +878,72 @@
                 <span class="provider-pill">OpenAI</span>
                 <span class="provider-pill">Google Vertex AI</span>
                 <span class="provider-pill">Anthropic</span>
+            </div>
+            <div class="provider-logos" style="margin-top:12px">
+                <span class="provider-pill" style="border-color:rgba(22,163,74,0.3);color:var(--green)">Stripe</span>
+                <span class="provider-pill" style="border-color:rgba(22,163,74,0.3);color:var(--green)">Revenue CSV</span>
+                <span class="provider-pill" style="border-color:rgba(22,163,74,0.3);color:var(--green)">Manual Entry</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Competitive Table -->
+    <section style="padding:80px 24px;background:var(--white)">
+        <div style="max-width:800px;margin:0 auto;text-align:center">
+            <p class="section-label">Why Finault</p>
+            <h2 class="section-title" style="margin-bottom:40px">Ten capabilities. One platform.</h2>
+            <table style="width:100%;border-collapse:collapse;text-align:left;font-size:14px">
+                <thead>
+                    <tr style="border-bottom:2px solid var(--gray-200)">
+                        <th style="padding:12px 16px;font-weight:600;color:var(--gray-900)">Capability</th>
+                        <th style="padding:12px 16px;text-align:center;font-weight:700;color:var(--green)">Finault</th>
+                        <th style="padding:12px 16px;text-align:center;font-weight:500;color:var(--gray-500)">Helicone</th>
+                        <th style="padding:12px 16px;text-align:center;font-weight:500;color:var(--gray-500)">Portkey</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Per-request cost capture</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--green)">Yes</td><td style="text-align:center;color:var(--green)">Yes</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Revenue data ingestion</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Per-customer margin calculation</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Margin-aware model routing</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Sealed financial records</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Compliance-grade Close Packs</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Pre-request budget enforcement</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:#d97706">Partial</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Invoice reconciliation &amp; dispute drafts</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr style="border-bottom:1px solid var(--gray-100)"><td style="padding:10px 16px">Continuous settlement &amp; chain verification</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                    <tr><td style="padding:10px 16px">Open standard (AIEI)</td><td style="text-align:center;color:var(--green);font-weight:700">Yes</td><td style="text-align:center;color:var(--gray-400)">No</td><td style="text-align:center;color:var(--gray-400)">No</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- AIEI Standard -->
+    <section style="padding:80px 24px;background:var(--gray-50)">
+        <div style="max-width:700px;margin:0 auto;text-align:center">
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:0.02em;text-transform:uppercase;color:var(--green);background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);margin-bottom:20px;">Open Standard</div>
+            <h2 class="section-title" style="margin-bottom:12px">The AI Economic Identity Envelope</h2>
+            <p style="font-size:15px;color:var(--gray-500);line-height:1.65;margin-bottom:32px">Five fields that make every AI transaction economically self-aware. Published at <a href="https://github.com/Finault/aiei-spec" style="color:var(--green);text-decoration:none;font-weight:600">github.com/Finault/aiei-spec</a> under MIT license.</p>
+            <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;text-align:center">
+                <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:20px 12px">
+                    <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:4px">who</div>
+                    <div style="font-size:12px;color:var(--gray-500)">Customer, user, agent, session</div>
+                </div>
+                <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:20px 12px">
+                    <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:4px">what</div>
+                    <div style="font-size:12px;color:var(--gray-500)">Provider, model, tokens, cost</div>
+                </div>
+                <div style="background:var(--white);border:1px solid var(--green);border-radius:12px;padding:20px 12px;box-shadow:0 0 0 3px rgba(22,163,74,0.08)">
+                    <div style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:4px">worth</div>
+                    <div style="font-size:12px;color:var(--gray-500)">Revenue, margin, underwater flag</div>
+                </div>
+                <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:20px 12px">
+                    <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:4px">rules</div>
+                    <div style="font-size:12px;color:var(--gray-500)">Budget, margin floor, compliance</div>
+                </div>
+                <div style="background:var(--white);border:1px solid var(--gray-200);border-radius:12px;padding:20px 12px">
+                    <div style="font-size:20px;font-weight:700;color:var(--gray-900);margin-bottom:4px">proof</div>
+                    <div style="font-size:12px;color:var(--gray-500)">SHA-256 hash, chain, HMAC</div>
+                </div>
             </div>
         </div>
     </section>
@@ -918,6 +986,22 @@
         </div>
     </section>
 
+    <!-- Finault Seal: The cryptographic backbone -->
+    <section class="gap" style="background:var(--gray-900);padding:60px 24px;">
+        <div class="gap-inner" style="max-width:700px;margin:0 auto;text-align:center;">
+            <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 14px;border-radius:100px;font-size:12px;font-weight:600;letter-spacing:0.02em;text-transform:uppercase;color:var(--green);background:rgba(22,163,74,0.1);border:1px solid rgba(22,163,74,0.3);margin-bottom:20px;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px;"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+                Powered by Finault Seal
+            </div>
+            <h2 style="font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--white);letter-spacing:-0.03em;line-height:1.15;margin-bottom:16px;">Every AI decision. <span style="color:var(--green);">Verified forever.</span></h2>
+            <p style="font-size:16px;color:var(--gray-400);max-width:520px;margin:0 auto 28px;line-height:1.65;">Every Close Pack, every margin calculation, every anomaly flag is cryptographically sealed with SHA-256 hashing and HMAC signatures. Optional blockchain anchoring makes your audit trail tamper-proof.</p>
+            <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+                <a href="/seal" style="display:inline-flex;align-items:center;gap:6px;padding:10px 22px;background:var(--green);color:var(--white);font-size:14px;font-weight:600;border-radius:8px;text-decoration:none;transition:opacity 0.2s;">Learn About Seal</a>
+                <a href="/docs#seal" style="display:inline-flex;align-items:center;gap:6px;padding:10px 22px;background:transparent;color:var(--gray-400);font-size:14px;font-weight:500;border-radius:8px;text-decoration:none;border:1px solid var(--gray-600);transition:color 0.2s;">View SDK Docs</a>
+            </div>
+        </div>
+    </section>
+
     <!-- Who It's For: Perret — sell to the practitioner -->
     <section class="buyers">
         <div class="buyers-inner">
@@ -940,17 +1024,18 @@
         </div>
     </section>
 
-    <!-- CTA: The Collison Installation. Try it now. -->
+    <!-- CTA -->
     <section class="cta">
-        <h2>Know your AI margins. Protect them automatically.</h2>
-        <p class="cta-sub">See your cost-to-serve per customer, simulate pricing changes, and get alerted before margins go negative.</p>
-        <div class="hero-cta-group">
-            <a href="/app" class="btn-primary">
-                Check Your Margins — Free
+        <h2>15 seconds. One API key.</h2>
+        <p class="cta-sub">Paste your key. See what you're really spending. Get a sealed audit trail that grows with every scan.</p>
+        <div class="hero-cta-group" style="gap:12px;">
+            <a href="/experience" class="btn-primary">
+                Get Started — Free
                 <svg class="btn-arrow" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
             </a>
+            <a href="/docs" class="btn-secondary">Read the Docs</a>
         </div>
-        <p class="hero-proof" style="margin-top:20px">No credit card. No signup. <strong>See your margins in 60 seconds.</strong></p>
+        <p class="hero-proof" style="margin-top:20px">Free forever. <strong>No signup required.</strong></p>
     </section>
 
     <!-- Footer -->
@@ -958,11 +1043,18 @@
         <div class="footer-inner">
             <span class="footer-copy">&copy; 2026 Finault. All rights reserved.</span>
             <div class="footer-links">
-                <a href="/sdk">SDK</a>
-                <a href="/pricing">Pricing</a>
+                <a href="/experience">Free Audit</a>
                 <a href="/docs">Docs</a>
+                <a href="/pricing">Pricing</a>
                 <a href="/security">Security</a>
-                <a href="mailto:bernard.cotter@finault.ai">Contact</a>
+                <a href="/privacy">Privacy</a>
+                <a href="/terms">Terms</a>
+                <a href="https://linkedin.com/company/finault" target="_blank" rel="noopener" aria-label="LinkedIn">
+                    <svg style="width:16px;height:16px;vertical-align:middle;" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                </a>
+                <a href="https://x.com/finaboratory" target="_blank" rel="noopener" aria-label="X (Twitter)">
+                    <svg style="width:16px;height:16px;vertical-align:middle;" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
             </div>
         </div>
     </footer>
@@ -972,9 +1064,14 @@
     (function() {
         var token = localStorage.getItem('finault_token');
         var el = document.getElementById('navAuthLink');
+        var startEl = document.getElementById('navStartLink');
         if (token && el) {
             el.textContent = 'Dashboard';
-            el.href = 'https://dashboard.finault.ai/dashboard';
+            el.href = '/experience';
+            el.style.background = 'var(--green)';
+            el.style.color = 'var(--white)';
+            el.style.border = 'none';
+            if (startEl) startEl.style.display = 'none';
         }
     })();
 
@@ -1098,6 +1195,11 @@
                     // Close pack
                     setTimeout(function() {
                         document.getElementById('demoClosePack').classList.add('visible');
+                        // Show upsell bridge after close pack appears
+                        setTimeout(function() {
+                            var upsell = document.getElementById('demoUpsell');
+                            if (upsell) { upsell.style.display = 'block'; upsell.style.opacity = '0'; upsell.style.transition = 'opacity 0.5s'; setTimeout(function(){ upsell.style.opacity = '1'; }, 50); }
+                        }, 800);
                     }, 1800);
 
                 }, steps.length * stepDelay + 400);
