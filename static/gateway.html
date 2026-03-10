@@ -44,7 +44,8 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid transparent;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
     }
     .logo {
       display: flex;
@@ -133,7 +134,8 @@
     .code-header {
       padding: 12px 16px;
       background: #1a1a1a;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid transparent;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -191,7 +193,8 @@
       gap: 48px;
       padding: 40px 0;
       border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid transparent;
+            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
       margin: 60px 0;
     }
     .stat { text-align: center; }
