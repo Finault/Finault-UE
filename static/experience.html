@@ -152,6 +152,76 @@
   @media (max-width: 480px) {
     .preview-grid { grid-template-columns: 1fr 1fr !important; }
   }
+
+  /* ── GLOBAL VISUAL OVERRIDES ── */
+  /* Denser, more premium layout inspired by Stripe/Linear */
+  
+  /* All cards get visible borders and less shadow */
+  .card-hover {
+    border: 1px solid #DDE1E8 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+    border-radius: 12px !important;
+  }
+  .card-hover:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    border-color: #C8CED8 !important;
+    transform: translateY(-1px);
+  }
+  
+  /* Metric cards — tighter */
+  .metric-card {
+    padding: 18px 20px !important;
+    border-radius: 10px !important;
+    border: 1px solid #DDE1E8 !important;
+  }
+  
+  /* Step badges — more subtle */
+  .step-badge {
+    font-size: 10px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.1em !important;
+    padding: 4px 10px !important;
+    border-radius: 4px !important;
+    background: transparent !important;
+    border: 1px solid #DDE1E8 !important;
+    color: #8893A5 !important;
+  }
+  
+  /* Primary buttons — flat, solid, no gradient */
+  .btn-primary {
+    border-radius: 8px !important;
+    padding: 10px 24px !important;
+    font-size: 13px !important;
+    box-shadow: none !important;
+    background: #0C1322 !important;
+    color: #fff !important;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background: #1a2538 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+  }
+  
+  /* Dark section — tighter radius, better integration */
+  .dark-section {
+    border-radius: 12px !important;
+    background: #0C1322 !important;
+  }
+  
+  /* Section dividers — barely visible */
+  .section-divider {
+    margin: 32px 0 !important;
+    opacity: 0.5;
+  }
+  
+  /* Sidebar nav items */
+  .sidebar-nav button {
+    border-radius: 6px !important;
+  }
+  
+  /* Make the page background slightly cooler */
+  body {
+    background: #F5F6F8 !important;
+  }
 </style>
 </head>
 <body>
@@ -1135,10 +1205,10 @@ function App() {
         </div>
       </div>
 
-      <div style={{ display: "flex", maxWidth: 1280, margin: "0 auto", padding: "0 32px", gap: 0 }}>
+      <div style={{ display: "flex", maxWidth: 1120, margin: "0 auto", padding: "0 28px", gap: 0 }}>
 
         {/* ── SIDEBAR: 5-STEP JOURNEY ── */}
-        <div className="sidebar-nav" style={{ width: 220, flexShrink: 0, position: "sticky", top: 52, height: "calc(100vh - 52px)", overflowY: "auto", padding: "28px 20px 24px 0", borderRight: `1px solid ${T.border}`, marginRight: 44, display: screen < 3 ? "none" : "block" }}>
+        <div className="sidebar-nav" style={{ width: 200, flexShrink: 0, position: "sticky", top: 52, height: "calc(100vh - 52px)", overflowY: "auto", padding: "24px 12px 24px 0", borderRight: `1px solid ${T.border}`, marginRight: 36, display: screen < 3 ? "none" : "block" }}>
           {[
             { step: 1, id: "step1", label: "Scan", completed: journeyStep >= 1, locked: false,
               subtitle: journeyStep >= 1 ? `Score: ${score}/100` : "Paste API key",
@@ -1189,8 +1259,8 @@ function App() {
                   {item.completed ? "✓" : (item.locked ? "🔒" : item.step)}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 700, color: item.locked ? T.ghost : T.ink, marginBottom: 1 }}>{item.label}</div>
-                  <div style={{ fontSize: 11, color: item.locked ? T.ghost : T.caption, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.subtitle}</div>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: item.locked ? T.ghost : T.ink, marginBottom: 0, letterSpacing: "-0.01em" }}>{item.label}</div>
+                  <div style={{ fontSize: 10, color: item.locked ? T.ghost : T.caption, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.subtitle}</div>
                 </div>
               </button>
               {item.completed && item.subs.length > 0 && (
@@ -1210,7 +1280,7 @@ function App() {
         </div>
 
         {/* ── MAIN CONTENT ── */}
-        <div style={{ flex: 1, minWidth: 0, padding: "48px 0" }}>
+        <div style={{ flex: 1, minWidth: 0, padding: "32px 0" }}>
 
         {/* ═══════════════════════════════════════════════════
              FIRST SCREEN: The three things.
@@ -1298,9 +1368,9 @@ function App() {
 
         {/* ── 2. THE SCORE + ONE SENTENCE ── */}
         <Fade show={revealStep >= 1} delay={0.3}>
-          <div style={{ display: "flex", alignItems: "center", gap: 28, padding: "28px 32px", background: T.white, borderRadius: 16, border: `1px solid ${T.border}`, marginBottom: 24, boxShadow: "0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05)", position: "relative", overflow: "hidden" }} className="score-hero">
+          <div style={{ display: "flex", alignItems: "center", gap: 24, padding: "24px 28px", background: T.white, borderRadius: 12, border: `1px solid #DDE1E8`, marginBottom: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04)", position: "relative", overflow: "hidden" }} className="score-hero">
             <div style={{ flexShrink: 0 }}>
-              <AnimatedScoreRing score={score} grade={grade} size={110} />
+              <AnimatedScoreRing score={score} grade={grade} size={96} />
             </div>
             <div style={{ flex: 1 }}>
               <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
@@ -1588,8 +1658,8 @@ function App() {
                 <span className="step-badge">STEP 2 OF 5</span>
                 <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
               </div>
-              <h2 style={{ fontSize: 24, fontWeight: 900, color: T.ink, letterSpacing: "-0.02em", marginBottom: 6 }}>Go Live</h2>
-              <p style={{ fontSize: 15, color: T.label, marginBottom: 28, lineHeight: 1.5 }}>Send one real API call through Finault. Watch the Seal appear. Meet your first agent.</p>
+              <h2 style={{ fontSize: 20, fontWeight: 800, color: T.ink, letterSpacing: "-0.02em", marginBottom: 4 }}>Go Live</h2>
+              <p style={{ fontSize: 13, color: T.label, marginBottom: 24, lineHeight: 1.5 }}>Send one real API call through Finault. Watch the Seal appear. Meet your first agent.</p>
 
               {/* ── INPUT PHASE ── */}
               {goLivePhase === "input" && (
