@@ -38,104 +38,122 @@
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* ═══════════════════════════════════════════════════════════
+     FINAULT DESIGN SYSTEM — Unified with landing page
+     Aesthetic: Linear restraint + Stripe density + Finault green glow
+     ═══════════════════════════════════════════════════════════ */
   :root {
-    --bg: #F8F9FB;
-    --bg-subtle: #F1F3F6;
-    --white: #FFFFFF;
-    --ink: #0C1322;
-    --body: #3B4559;
-    --label: #5E6B81;
-    --caption: #8893A5;
-    --ghost: #C1C9D6;
-    --border: #E0E5ED;
-    --border-soft: #EEF1F6;
+    --black: #0C1322;
+    --dark: #151B2B;
+    --white: #fff;
     --green: #10B981;
     --green-dark: #059669;
     --green-light: #ECFDF5;
     --green-border: #A7F3D0;
+    --gray-50: #F8F9FB;
+    --gray-100: #EEF1F6;
+    --gray-200: #E0E5ED;
+    --gray-300: #C1C9D6;
+    --gray-400: #8893A5;
+    --gray-500: #5E6B81;
+    --gray-600: #3B4559;
+    --gray-900: #0C1322;
     --red: #EF4444;
     --red-light: #FEF2F2;
     --red-border: #FECACA;
     --amber: #F59E0B;
     --amber-light: #FFFBEB;
-    --code-bg: #0B0F1A;
+    --border: #E0E5ED;
     --shadow-sm: 0 1px 2px rgba(12,19,34,0.04);
     --shadow-md: 0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05);
-    --shadow-lg: 0 2px 6px rgba(12,19,34,0.04), 0 8px 24px rgba(12,19,34,0.07), 0 20px 48px rgba(12,19,34,0.04);
-    --shadow-glow: 0 0 0 1px rgba(16,185,129,0.12), 0 4px 16px rgba(16,185,129,0.08);
-    --radius: 12px;
-    --radius-lg: 16px;
+    --shadow-lg: 0 2px 6px rgba(12,19,34,0.04), 0 8px 24px rgba(12,19,34,0.07);
+    --radius: 10px;
+    --radius-lg: 12px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
   body {
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
-    background: var(--bg);
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    color: var(--ink);
+    background: var(--white);
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: var(--gray-900);
     letter-spacing: -0.015em;
     font-size: 14px;
     line-height: 1.55;
   }
+  
+  /* Signature Finault green ambient glow — matches landing page hero::before */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -250px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1000px;
+    height: 600px;
+    background: radial-gradient(ellipse at center, rgba(16,185,129,0.06) 0%, rgba(16,185,129,0.02) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+  }
+  
   ::selection { background: #D1FAE5; color: #065F46; }
 
-  @keyframes rise { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: translateY(0) } }
   @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
   @keyframes fillRing { from { stroke-dashoffset: var(--circ) } }
   @keyframes pulse { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
   @keyframes breathe { 0%,100% { transform: scale(1) } 50% { transform: scale(1.02) } }
   @keyframes subtleFloat { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
   @keyframes gradientShift { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
-
-  input:focus { outline: none; border-color: var(--green) !important; box-shadow: 0 0 0 4px rgba(5,150,105,0.10), 0 0 0 1px rgba(5,150,105,0.3); }
-  button { transition: all 0.2s cubic-bezier(0.16,1,0.3,1); }
-  button:hover:not(:disabled) { transform: translateY(-1px); }
-  button:active:not(:disabled) { transform: translateY(0) scale(0.98); }
-
-  .mono { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--ghost); border-radius: 3px; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--label); }
-
   @keyframes spin { from { transform: rotate(0deg) } to { transform: rotate(360deg) } }
   @keyframes shimmer { 0% { background-position: -200% 0 } 100% { background-position: 200% 0 } }
   @keyframes countUp { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
   @keyframes slideInToast { from { transform: translateX(120%); opacity: 0 } to { transform: translateX(0); opacity: 1 } }
   @keyframes slideOutToast { from { transform: translateX(0); opacity: 1 } to { transform: translateX(120%); opacity: 0 } }
   @keyframes progressGrow { from { width: 0% } }
-  @keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(5,150,105,0.1) } 50% { box-shadow: 0 0 40px rgba(5,150,105,0.2) } }
+  @keyframes glowPulse { 0%,100% { box-shadow: 0 0 20px rgba(16,185,129,0.1) } 50% { box-shadow: 0 0 40px rgba(16,185,129,0.2) } }
 
-  .card-hover { transition: box-shadow 0.25s cubic-bezier(0.16,1,0.3,1), transform 0.25s cubic-bezier(0.16,1,0.3,1), border-color 0.25s ease; }
-  .card-hover:hover { box-shadow: var(--shadow-lg) !important; transform: translateY(-1px); border-color: rgba(16,185,129,0.18) !important; }
+  input:focus { outline: none; border-color: var(--green) !important; box-shadow: 0 0 0 3px rgba(16,185,129,0.10); }
+  button { transition: all 0.15s ease; }
+  button:hover:not(:disabled) { transform: translateY(-1px); }
+  button:active:not(:disabled) { transform: translateY(0); }
+  .mono { font-family: 'JetBrains Mono', 'SF Mono', monospace; }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--gray-400); }
+
+  /* ── Cards ── */
+  .card-hover { transition: all 0.2s ease; border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); }
+  .card-hover:hover { box-shadow: var(--shadow-md) !important; transform: translateY(-1px); }
+  .premium-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); transition: all 0.2s ease; }
+  .premium-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+  /* ── Nav progress ── */
   .nav-progress { position: fixed; top: 0; left: 0; height: 2px; background: var(--green); z-index: 9999; transition: width 0.15s ease; }
 
-  /* Premium card base */
-  .premium-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-md); transition: all 0.25s cubic-bezier(0.16,1,0.3,1); }
-  .premium-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-1px); border-color: rgba(16,185,129,0.18); }
+  /* ── Step badges — matches landing page section-label style ── */
+  .step-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); background: transparent; border: none; padding: 0; }
 
-  /* Step section headers */
-  .step-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--green); background: rgba(16,185,129,0.06); border: 1px solid rgba(16,185,129,0.14); border-radius: 100px; padding: 5px 14px; }
+  /* ── Buttons — matches landing page .btn-primary exactly ── */
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--gray-900); color: var(--white); font-size: 14px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  .btn-primary:hover:not(:disabled) { background: #1a2538; transform: translateY(-1px); }
 
-  /* Primary CTA button */
-  .btn-primary { padding: 12px 28px; border-radius: 10px; border: none; background: var(--green); color: white; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 1px 3px rgba(16,185,129,0.3), 0 0 0 1px rgba(16,185,129,0.1); }
-  .btn-primary:hover:not(:disabled) { background: var(--green-dark); box-shadow: 0 2px 8px rgba(16,185,129,0.35), 0 0 0 1px rgba(16,185,129,0.15); transform: translateY(-1px); }
+  /* ── Section dividers ── */
+  .section-divider { height: 1px; background: var(--border); margin: 28px 0; }
 
-  /* Section dividers */
-  .section-divider { height: 1px; background: linear-gradient(to right, transparent, var(--border), transparent); margin: 40px 0; }
-
-  /* Metric card */
-  .metric-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); padding: 22px; position: relative; overflow: hidden; transition: all 0.2s ease; }
+  /* ── Metric cards ── */
+  .metric-card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow-sm); padding: 20px; position: relative; overflow: hidden; transition: all 0.2s ease; }
   .metric-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--green); opacity: 0; transition: opacity 0.2s ease; }
-  .metric-card:hover { box-shadow: var(--shadow-md); border-color: rgba(16,185,129,0.15); }
+  .metric-card:hover { box-shadow: var(--shadow-md); }
   .metric-card:hover::before { opacity: 1; }
 
-  /* Dark section */
-  .dark-section { background: linear-gradient(180deg, #0B0F1A 0%, #151B2B 100%); border-radius: var(--radius-lg); }
+  /* ── Dark section — matches landing page .browser-native ── */
+  .dark-section { background: var(--gray-900); border-radius: var(--radius-lg); }
 
   @media (max-width: 640px) {
     .metrics-grid { grid-template-columns: 1fr !important; }
@@ -144,83 +162,12 @@
     .margin-grid { font-size: 11px !important; grid-template-columns: 2fr 1fr 1fr !important; }
     .margin-grid span:nth-child(4), .margin-grid span:nth-child(5) { display: none !important; }
     .share-grid { grid-template-columns: 1fr !important; }
-    body { font-size: 14px; }
   }
   @media (max-width: 860px) {
     .sidebar-nav { display: none !important; }
   }
   @media (max-width: 480px) {
     .preview-grid { grid-template-columns: 1fr 1fr !important; }
-  }
-
-  /* ── GLOBAL VISUAL OVERRIDES ── */
-  /* Denser, more premium layout inspired by Stripe/Linear */
-  
-  /* All cards get visible borders and less shadow */
-  .card-hover {
-    border: 1px solid #DDE1E8 !important;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
-    border-radius: 12px !important;
-  }
-  .card-hover:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
-    border-color: #C8CED8 !important;
-    transform: translateY(-1px);
-  }
-  
-  /* Metric cards — tighter */
-  .metric-card {
-    padding: 18px 20px !important;
-    border-radius: 10px !important;
-    border: 1px solid #DDE1E8 !important;
-  }
-  
-  /* Step badges — more subtle */
-  .step-badge {
-    font-size: 10px !important;
-    font-weight: 600 !important;
-    letter-spacing: 0.1em !important;
-    padding: 4px 10px !important;
-    border-radius: 4px !important;
-    background: transparent !important;
-    border: 1px solid #DDE1E8 !important;
-    color: #8893A5 !important;
-  }
-  
-  /* Primary buttons — flat, solid, no gradient */
-  .btn-primary {
-    border-radius: 8px !important;
-    padding: 10px 24px !important;
-    font-size: 13px !important;
-    box-shadow: none !important;
-    background: #0C1322 !important;
-    color: #fff !important;
-  }
-  .btn-primary:hover:not(:disabled) {
-    background: #1a2538 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-  }
-  
-  /* Dark section — tighter radius, better integration */
-  .dark-section {
-    border-radius: 12px !important;
-    background: #0C1322 !important;
-  }
-  
-  /* Section dividers — barely visible */
-  .section-divider {
-    margin: 32px 0 !important;
-    opacity: 0.5;
-  }
-  
-  /* Sidebar nav items */
-  .sidebar-nav button {
-    border-radius: 6px !important;
-  }
-  
-  /* Make the page background slightly cooler */
-  body {
-    background: #F5F6F8 !important;
   }
 </style>
 </head>
@@ -234,7 +181,7 @@ const SUPABASE_URL = "https://bejoptgsrhmklmllkobu.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkzMTIyMzUsImV4cCI6MjA4NDg4ODIzNX0.JGBeXweyIg2I4bMv6Dk_gd6veeodL5V_3TSYJeAK6kU";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// ─── Design Tokens ───
+// ─── Design Tokens (matches landing page CSS variables) ───
 const T = {
   ink: "#0C1322", body: "#3B4559", label: "#5E6B81", caption: "#8893A5", ghost: "#C1C9D6",
   border: "#E0E5ED", borderSoft: "#EEF1F6", white: "#FFFFFF", bg: "#F8F9FB",
@@ -244,7 +191,7 @@ const T = {
   blue: "#3B82F6", blueLight: "#EFF6FF", purple: "#635bff",
   font: "'Satoshi', -apple-system, BlinkMacSystemFont, sans-serif",
   mono: "'JetBrains Mono', 'SF Mono', monospace",
-  codeBg: "#0B0F1A",
+  codeBg: "#0C1322",
 };
 
 const fmtUSD = (n) => "$" + (n || 0).toLocaleString(undefined, { maximumFractionDigits: 0 });
@@ -286,8 +233,8 @@ function ScoreRing({ score, grade, size = 140 }) {
 
 // ─── Card ───
 function Card({ children, style = {}, id, accent }) {
-  return <div id={id} className="card-hover" style={{ background: T.white, borderRadius: 16, border: `1px solid ${T.border}`, boxShadow: "0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05)", transition: "all 0.25s cubic-bezier(0.16,1,0.3,1)", position: "relative", overflow: "hidden", ...style }}>
-    {accent && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: T.green, borderRadius: "16px 16px 0 0" }} />}
+  return <div id={id} className="card-hover" style={{ background: T.white, position: "relative", overflow: "hidden", ...style }}>
+    {accent && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 2, background: T.green }} />}
     {children}
   </div>;
 }
@@ -987,9 +934,9 @@ function App() {
         <div style={{ position: "absolute", top: -300, left: "50%", transform: "translateX(-50%)", width: 1000, height: 700, background: "radial-gradient(ellipse at center, rgba(16,185,129,0.07) 0%, rgba(16,185,129,0.02) 40%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
         {/* ── NAV ── */}
-        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 36px", maxWidth: 1120, margin: "0 auto", position: "relative", zIndex: 1 }}>
+        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0 36px", height: 56, position: "relative", zIndex: 1 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 7, height: 7, borderRadius: 2, background: T.green, boxShadow: "0 0 6px rgba(16,185,129,0.3)" }} />
+            <div style={{ width: 7, height: 7, borderRadius: 2, background: T.green }} />
             <span style={{ fontSize: 13, fontWeight: 900, color: T.ink, letterSpacing: "0.08em" }}>FINAULT</span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
@@ -1009,11 +956,11 @@ function App() {
 
         {/* ── KEY INPUT ── */}
         <div style={{ padding: "100px 24px 48px", maxWidth: 520, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
-          <h1 style={{ fontSize: 34, fontWeight: 900, color: T.ink, letterSpacing: "-0.035em", marginBottom: 10, opacity: 0, animation: "rise 0.6s ease 0.1s both" }}>Paste your API key</h1>
-          <p style={{ fontSize: 16, color: T.label, marginBottom: 36, lineHeight: 1.5, opacity: 0, animation: "rise 0.6s ease 0.2s both" }}>See your Finault Score, find savings, and get a sealed audit — in 15 seconds.</p>
+          <h1 style={{ fontSize: "clamp(36px, 5vw, 52px)", fontWeight: 900, color: T.ink, letterSpacing: "-0.04em", lineHeight: 1.05, marginBottom: 16, opacity: 0, animation: "rise 0.6s ease 0.1s both" }}>Paste your <span style={{ color: T.green }}>API key</span></h1>
+          <p style={{ fontSize: 17, color: T.label, marginBottom: 36, lineHeight: 1.6, maxWidth: 480, margin: "0 auto 36px", opacity: 0, animation: "rise 0.6s ease 0.2s both" }}>See your Finault Score, find savings, and get a sealed audit trail — in 15 seconds.</p>
 
           <div style={{ maxWidth: 520, margin: "0 auto", opacity: 0, animation: "rise 0.6s ease 0.3s both" }}>
-            <div style={{ display: "flex", border: `1.5px solid ${T.border}`, borderRadius: 10, overflow: "hidden", background: T.white, boxShadow: "0 1px 4px rgba(12,19,34,0.04), 0 6px 20px rgba(12,19,34,0.04)" }}>
+            <div style={{ display: "flex", border: `1px solid ${T.border}`, borderRadius: 10, overflow: "hidden", background: T.white, boxShadow: "0 1px 3px rgba(12,19,34,0.03), 0 4px 12px rgba(12,19,34,0.05)" }}>
               <input id="hero-input" type="password" placeholder="Paste any API key — OpenAI, Anthropic, Google" autoFocus
                 value={openaiKey || anthropicKey}
                 onChange={e => { const v = e.target.value.trim(); if (v.startsWith("sk-ant-")) { setOpenaiKey(""); setAnthropicKey(v); } else { setOpenaiKey(v); setAnthropicKey(""); } }}
@@ -1170,16 +1117,16 @@ function App() {
     : score >= 90 ? "Exceptionally well-managed." : score >= 80 ? "Strong. Small optimizations remain." : score >= 70 ? "Solid, but there's money on the table." : score >= 60 ? "Real savings you're not capturing." : score >= 40 ? "Significant unmanaged costs." : (totalCalls === 0 && totalSpend === 0) ? "Scan complete. Go live to start building your score." : "Needs immediate attention.";
 
   return (
-    <div style={{ fontFamily: T.font, background: T.bg, minHeight: "100vh", position: "relative" }}>
+    <div style={{ fontFamily: T.font, background: T.white, minHeight: "100vh", position: "relative" }}>
       {/* Subtle green glow at top */}
       <div style={{ position: "fixed", top: -400, left: "50%", transform: "translateX(-50%)", width: 1200, height: 600, background: "radial-gradient(ellipse at center, rgba(16,185,129,0.04) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
       <ToastContainer />
       <PageProgress />
 
       {/* ── NAV ── */}
-      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(255,255,255,0.85)", backdropFilter: "blur(16px) saturate(180%)", WebkitBackdropFilter: "blur(16px) saturate(180%)", borderBottom: `1px solid ${T.border}`, padding: "12px 36px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div style={{ position: "sticky", top: 0, zIndex: 100, background: "rgba(255,255,255,0.85)", backdropFilter: "blur(16px) saturate(180%)", WebkitBackdropFilter: "blur(16px) saturate(180%)", borderBottom: `1px solid ${T.border}`, padding: "0 36px", height: 56, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 7, height: 7, borderRadius: 2, background: T.green, boxShadow: "0 0 6px rgba(16,185,129,0.3)" }} />
+          <div style={{ width: 7, height: 7, borderRadius: 2, background: T.green }} />
           <span style={{ fontSize: 13, fontWeight: 900, letterSpacing: "0.08em", color: T.ink }}>FINAULT</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 13, fontWeight: 600 }}>
