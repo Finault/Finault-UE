@@ -1203,7 +1203,7 @@ function App() {
                 <div style={{
                   width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 2,
-                  background: item.completed ? T.green : "transparent",
+                  background: item.completed ? T.ink : "transparent",
                   color: item.completed ? T.white : (item.locked ? T.ghost : T.label),
                   border: item.completed ? "none" : `1.5px solid ${item.locked ? T.borderSoft : T.ghost}`,
                 }}>
@@ -1369,7 +1369,7 @@ function App() {
                   <div style={{ fontSize: 13, color: T.label, marginTop: 4 }}>Route their requests to cost-efficient models or adjust pricing to recover margins.</div>
                 </div>
                 <button onClick={() => document.getElementById("sec-margins")?.scrollIntoView({ behavior: "smooth" })}
-                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.red, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.ink, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
                   See margins
                 </button>
               </div>
@@ -1382,7 +1382,7 @@ function App() {
                   <div style={{ fontSize: 13, color: T.label, marginTop: 4 }}>This saves {fmtUSD(biggestSaving.monthly_savings || biggestSaving.savings || 0)}/month{biggestSaving.quality_impact ? ` with ${biggestSaving.quality_impact} quality impact` : ""}.</div>
                 </div>
                 <button onClick={() => document.getElementById("sec-savings")?.scrollIntoView({ behavior: "smooth" })}
-                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.green, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.ink, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
                   See all savings
                 </button>
               </div>
@@ -1583,7 +1583,7 @@ function App() {
                 <div style={{ fontSize: 13, color: T.body, marginTop: 2 }}>Create a free account and your scan will be here when you come back.</div>
               </div>
               <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
-                <a href="/login?tab=signup&redirect=/experience" onClick={() => { try { localStorage.setItem('finault_pending_scan', JSON.stringify({ analysis, scoreData, savingsData, anomalyData, driftData, fcsData, sealCount, revealStep })); } catch(e){} }} style={{ padding: "8px 16px", borderRadius: 6, border: "none", background: T.green, color: T.white, fontSize: 13, fontWeight: 700, fontFamily: T.font, textDecoration: "none", whiteSpace: "nowrap" }}>Sign Up</a>
+                <a href="/login?tab=signup&redirect=/experience" onClick={() => { try { localStorage.setItem('finault_pending_scan', JSON.stringify({ analysis, scoreData, savingsData, anomalyData, driftData, fcsData, sealCount, revealStep })); } catch(e){} }} style={{ padding: "8px 16px", borderRadius: 6, border: "none", background: T.ink, color: T.white, fontSize: 13, fontWeight: 700, fontFamily: T.font, textDecoration: "none", whiteSpace: "nowrap" }}>Sign Up</a>
                 <button onClick={() => setSavePromptDismissed(true)} style={{ padding: "8px 12px", borderRadius: 6, border: `1px solid ${T.border}`, background: T.white, color: T.caption, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: T.font }}>Dismiss</button>
               </div>
             </div>
@@ -2443,7 +2443,7 @@ client = openai.OpenAI(
               <div style={{ background: "rgba(255,255,255,0.03)", borderRadius: 16, border: "1px solid rgba(255,255,255,0.06)", backdropFilter: "blur(8px)", padding: "20px 24px", marginBottom: 20 }}>
                 <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.1em", color: "#94A3B8", marginBottom: 8, textTransform: "uppercase" }}>Close Pack</div>
                 <p style={{ fontSize: 12, color: "#94A3B8", marginBottom: 14, lineHeight: 1.5 }}>Executive summary, journal entries, reconciliation certificate, and controls narrative — sealed and board-ready.</p>
-                <button onClick={generateClosePack} disabled={closePackLoading} style={{ padding: "11px 22px", borderRadius: 8, border: "none", background: T.green, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font }}>{closePackLoading ? "Generating..." : "Download Close Pack"}</button>
+                <button onClick={generateClosePack} disabled={closePackLoading} style={{ padding: "11px 22px", borderRadius: 8, border: "none", background: T.ink, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font }}>{closePackLoading ? "Generating..." : "Download Close Pack"}</button>
               </div>
 
               {/* Compliance exports */}
