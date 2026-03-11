@@ -1234,201 +1234,126 @@ function App() {
         <div style={{ flex: 1, minWidth: 0, padding: "32px 0" }}>
 
         {/* ═══════════════════════════════════════════════════
-             FIRST SCREEN: The three things.
-             1. The dollar amount (Zhang) — the number for the board slide
-             2. The score + one sentence (Jobs) — the shorthand + context
-             3. The one action (Lawson) — what to do right now
-             Everything else is below the fold, earned by scrolling.
+             THE REVELATION — not a wizard, not steps.
+             Lead with the story. The score is the headline.
+             The finding is the hook. The action is the close.
              ═══════════════════════════════════════════════════ */}
 
-        {/* ═══ STEP 1: SCAN ═══ */}
         <span id="sec-step1"/>
+        <span id="sec-score"/>
 
+        {/* ── THE FINDING: What we discovered ── */}
         <Fade show={revealStep >= 1} delay={0}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 24 }}>
-            <span className="step-badge">STEP 1 OF 5</span>
-            <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
-          </div>
-        </Fade>
+          <div style={{ marginBottom: 32 }}>
+            {/* Score + Narrative — the opening statement */}
+            <div style={{ display: "flex", gap: 32, alignItems: "flex-start", marginBottom: 28 }} className="score-hero">
+              <div style={{ flexShrink: 0 }}>
+                <AnimatedScoreRing score={score} grade={grade} size={120} />
+              </div>
+              <div style={{ flex: 1, paddingTop: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase", marginBottom: 10 }}>FINAULT SCORE</div>
+                <h1 style={{ fontSize: "clamp(24px, 3vw, 32px)", fontWeight: 900, color: T.ink, letterSpacing: "-0.03em", lineHeight: 1.2, marginBottom: 8 }}>{scoreContext}</h1>
+                
+                {/* The key number */}
+                {totalSpend > 0 ? (
+                  <p style={{ fontSize: 15, color: T.label, lineHeight: 1.5 }}>
+                    <span style={{ fontWeight: 700, color: T.ink, fontFamily: T.mono }}>{fmtUSD(totalSpend)}</span> spent across {totalCalls.toLocaleString()} calls and {getModelBreakdown().length || 0} models in the last 30 days.
+                    {recoverableAmt > 0 && <span style={{ color: T.green, fontWeight: 600 }}> {fmtUSD(recoverableAmt)}/mo recoverable.</span>}
+                  </p>
+                ) : totalCalls > 0 ? (
+                  <p style={{ fontSize: 15, color: T.label, lineHeight: 1.5 }}>
+                    <span style={{ fontWeight: 700, color: T.ink }}>{totalCalls.toLocaleString()} API calls</span> on the free tier — no cost data to analyze yet. Go live to start tracking.
+                  </p>
+                ) : (
+                  <p style={{ fontSize: 15, color: T.label, lineHeight: 1.5 }}>
+                    Your scan is complete. Go live below to start sealing every transaction.
+                  </p>
+                )}
 
-        {/* ── 1. THE DOLLAR AMOUNT ── */}
-        <Fade show={revealStep >= 1} delay={0}>
-          <div id="sec-score" style={{ textAlign: "center", padding: "40px 0 32px" }}>
-            {/* The headline number — what a CFO puts in a slide */}
+                {/* Dimension bars — inline, compact */}
+                {dims.length > 0 && (
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px 20px", marginTop: 16 }}>
+                    {[...dims].sort((a, b) => (a.score || a.value || 0) - (b.score || b.value || 0)).slice(0, 6).map((d, i) => {
+                      const val = d.score || d.value || 0;
+                      const col = val >= 70 ? T.green : val >= 40 ? T.amber : T.red;
+                      return (
+                        <div key={i}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 3 }}>
+                            <span style={{ fontSize: 11, color: T.caption, textTransform: "capitalize" }}>{(d.name || d.dimension || "")}</span>
+                            <span style={{ fontSize: 11, fontWeight: 700, color: col, fontFamily: T.mono }}>{val}</span>
+                          </div>
+                          <div style={{ height: 3, background: T.borderSoft, borderRadius: 2, overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: `${val}%`, background: col, borderRadius: 2, transition: "width 1.2s cubic-bezier(0.34,1.2,0.64,1)" }} />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ── THE ACTION: One thing to do right now ── */}
             {(() => {
-              // Pick the most impactful dollar figure
+              const biggestSaving = getSavings().sort((a, b) => (b.monthly_savings || b.savings || 0) - (a.monthly_savings || a.savings || 0))[0];
               const uwCustomers = customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0));
-              const uwBurn = uwCustomers.reduce((s, c) => s + ((c.cost||0) - (c.revenue||c.mrr_usd||0)), 0);
               
-              if (uwBurn > 0) return (
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.red, textTransform: "uppercase", marginBottom: 8 }}>You're losing money</div>
-                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.red, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>{fmtUSD(uwBurn)}/mo</div>
-                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
-                    {uwCustomers.length} of {customers.length} customers cost more to serve than they pay you.
+              if (uwCustomers.length > 0) return (
+                <div style={{ background: T.ink, borderRadius: 12, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>{uwCustomers.length} customer{uwCustomers.length !== 1 ? "s" : ""} cost more to serve than they pay you</div>
+                    <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 4 }}>Reprice or reroute to cost-efficient models to recover margins.</div>
                   </div>
+                  <button onClick={() => document.getElementById("sec-margins")?.scrollIntoView({ behavior: "smooth" })}
+                    style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                    See margins →
+                  </button>
                 </div>
               );
               
-              if (recoverableAmt > 0) return (
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase", marginBottom: 8 }}>Savings found</div>
-                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.greenDark, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>{fmtUSD(recoverableAmt)}/mo</div>
-                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
-                    in recoverable savings across {getSavings().length} recommendation{getSavings().length !== 1 ? "s" : ""}.
-                    {totalSpend > 0 ? ` That's ${Math.round(recoverableAmt/totalSpend*100)}% of your total AI spend.` : ""}
+              if (biggestSaving) return (
+                <div style={{ background: T.ink, borderRadius: 12, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>{biggestSaving.recommendation || biggestSaving.action || biggestSaving.description}</div>
+                    <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 4 }}>Saves {fmtUSD(biggestSaving.monthly_savings || biggestSaving.savings || 0)}/month{biggestSaving.quality_impact ? ` · ${biggestSaving.quality_impact} quality impact` : ""}.</div>
                   </div>
-                </div>
-              );
-              
-              if (totalSpend > 0) return (
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.ink, textTransform: "uppercase", marginBottom: 8 }}>Your AI spend</div>
-                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.ink, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>{fmtUSD(totalSpend)}</div>
-                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
-                    across {totalCalls.toLocaleString()} calls and {getModelBreakdown().length || 0} models in the last 30 days.
-                  </div>
+                  <button onClick={() => document.getElementById("sec-savings")?.scrollIntoView({ behavior: "smooth" })}
+                    style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                    See all savings →
+                  </button>
                 </div>
               );
 
-              if (totalCalls > 0) return (
-                <div>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.caption, textTransform: "uppercase", marginBottom: 8 }}>Free tier detected</div>
-                  <div style={{ fontSize: "clamp(36px, 6vw, 56px)", fontWeight: 900, color: T.ink, fontFamily: T.mono, letterSpacing: "-0.04em", lineHeight: 1 }}>$0 spent</div>
-                  <div style={{ fontSize: 15, color: T.label, marginTop: 10, lineHeight: 1.5 }}>
-                    but {totalCalls.toLocaleString()} calls made across {getModelBreakdown().length || 0} model{getModelBreakdown().length !== 1 ? "s" : ""}. You're on a free tier.
+              if (screen < 5) return (
+                <div style={{ background: T.ink, borderRadius: 12, padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>Seal every transaction. One line of code.</div>
+                    <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 4 }}>Route through Finault's gateway. Every call gets a cryptographic receipt.</div>
                   </div>
+                  <button onClick={() => document.getElementById("sec-step2")?.scrollIntoView({ behavior: "smooth" })}
+                    style={{ padding: "10px 20px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.15)", background: "transparent", color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
+                    Go live →
+                  </button>
                 </div>
               );
 
-              return (
-                <div>
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "6px 16px", borderRadius: 20, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.06))", border: "1px solid rgba(5,150,105,0.15)", marginBottom: 16 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: "50%", background: T.green, animation: "pulse 2s ease infinite" }} />
-                    <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: T.green, textTransform: "uppercase" }}>Ready to analyze</span>
-                  </div>
-                  <div style={{ fontSize: "clamp(32px, 5vw, 48px)", fontWeight: 900, color: T.ink, letterSpacing: "-0.03em", lineHeight: 1.1 }}>Your AI cost dashboard</div>
-                  <div style={{ fontSize: 16, color: T.label, marginTop: 14, lineHeight: 1.6, maxWidth: 480, margin: "14px auto 0" }}>
-                    Go live below to start tracking costs, agents, and seals in real time.
-                  </div>
-                </div>
-              );
+              return null;
             })()}
           </div>
         </Fade>
 
-        {/* ── 2. THE SCORE + ONE SENTENCE ── */}
-        <Fade show={revealStep >= 1} delay={0.3}>
-          <div style={{ display: "flex", alignItems: "center", gap: 24, padding: "24px 28px", background: T.white, borderRadius: 12, border: `1px solid #DDE1E8`, marginBottom: 20, boxShadow: "0 1px 2px rgba(0,0,0,0.04)", position: "relative", overflow: "hidden" }} className="score-hero">
-            <div style={{ flexShrink: 0 }}>
-              <AnimatedScoreRing score={score} grade={grade} size={96} />
-            </div>
-            <div style={{ flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "baseline", gap: 8, marginBottom: 4 }}>
-                <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.1em", color: T.caption, textTransform: "uppercase" }}>Finault Score</span>
-              </div>
-              <p style={{ fontSize: 16, fontWeight: 700, color: T.ink, lineHeight: 1.4, marginBottom: 4 }}>{scoreContext}</p>
-              {dims.length > 0 ? (
-                <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
-                  {[...dims].sort((a, b) => (a.score || a.value || 0) - (b.score || b.value || 0)).slice(0, 4).map((d, i) => {
-                    const val = d.score || d.value || 0;
-                    const col = val >= 70 ? T.green : val >= 40 ? T.amber : T.red;
-                    return (
-                      <div key={i} style={{ flex: "1 1 80px", minWidth: 70 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 2 }}>
-                          <span style={{ fontSize: 10, color: T.caption, textTransform: "capitalize" }}>{(d.name || d.dimension || "").split(" ")[0]}</span>
-                          <span style={{ fontSize: 10, fontWeight: 700, color: col, fontFamily: T.mono }}>{val}</span>
-                        </div>
-                        <div style={{ height: 3, background: T.borderSoft, borderRadius: 2, overflow: "hidden" }}>
-                          <div style={{ height: "100%", width: `${val}%`, background: col, borderRadius: 2, transition: "width 1.2s cubic-bezier(0.34,1.2,0.64,1)" }} />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              ) : (
-                <p style={{ fontSize: 13, color: T.label, lineHeight: 1.5 }}>
-                  Your score measures AI cost health across 6 dimensions: cost efficiency, margin health, model optimization, governance, diversification, and trajectory.
-                </p>
-              )}
-            </div>
-          </div>
-        </Fade>
-
-        {/* ── 3. THE ONE ACTION ── */}
+        {/* ── THE EVIDENCE: Compact metrics strip ── */}
         <Fade show={revealStep >= 2} delay={0}>
-          {(() => {
-            // Pick the single most important action
-            const biggestSaving = getSavings().sort((a, b) => (b.monthly_savings || b.savings || 0) - (a.monthly_savings || a.savings || 0))[0];
-            const uwCustomers = customers.filter(c => (c.cost||0) > (c.revenue||c.mrr_usd||0));
-            
-            if (uwCustomers.length > 0) return (
-              <div style={{ background: T.redLight, border: `1px solid ${T.redBorder}`, borderRadius: 10, padding: "20px 24px", marginBottom: 28, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: T.ink }}>Action: Reprice or reroute {uwCustomers.length} underwater customer{uwCustomers.length !== 1 ? "s" : ""}</div>
-                  <div style={{ fontSize: 13, color: T.label, marginTop: 4 }}>Route their requests to cost-efficient models or adjust pricing to recover margins.</div>
-                </div>
-                <button onClick={() => document.getElementById("sec-margins")?.scrollIntoView({ behavior: "smooth" })}
-                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.ink, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
-                  See margins
-                </button>
-              </div>
-            );
-            
-            if (biggestSaving) return (
-              <div style={{ background: T.greenLight, border: `1px solid ${T.greenBorder}`, borderRadius: 10, padding: "20px 24px", marginBottom: 28, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: T.ink }}>Action: {biggestSaving.recommendation || biggestSaving.action || biggestSaving.description}</div>
-                  <div style={{ fontSize: 13, color: T.label, marginTop: 4 }}>This saves {fmtUSD(biggestSaving.monthly_savings || biggestSaving.savings || 0)}/month{biggestSaving.quality_impact ? ` with ${biggestSaving.quality_impact} quality impact` : ""}.</div>
-                </div>
-                <button onClick={() => document.getElementById("sec-savings")?.scrollIntoView({ behavior: "smooth" })}
-                  style={{ padding: "10px 20px", borderRadius: 8, border: "none", background: T.ink, color: T.white, fontSize: 13, fontWeight: 700, cursor: "pointer", fontFamily: T.font, whiteSpace: "nowrap", flexShrink: 0 }}>
-                  See all savings
-                </button>
-              </div>
-            );
-
-            if (screen < 5) return (
-              <div style={{ background: "linear-gradient(135deg, #0F172A, #1E293B)", borderRadius: 16, padding: "24px 28px", marginBottom: 32, display: "flex", justifyContent: "space-between", alignItems: "center", border: "1px solid rgba(255,255,255,0.06)", boxShadow: "0 4px 24px rgba(0,0,0,0.12)" }}>
-                <div>
-                  <div style={{ fontSize: 15, fontWeight: 700, color: T.white }}>Action: See this in real time</div>
-                  <div style={{ fontSize: 13, color: "#94A3B8", marginTop: 5 }}>Change one line of code. Every call gets a sealed receipt. Anomalies trigger instantly.</div>
-                </div>
-                <button className="btn-primary" onClick={() => document.getElementById("sec-step2")?.scrollIntoView({ behavior: "smooth" })}
-                  style={{ whiteSpace: "nowrap", flexShrink: 0 }}>
-                  Go live
-                </button>
-              </div>
-            );
-
-            return null;
-          })()}
-        </Fade>
-
-        {/* ═══════════════════════════════════════════════════
-             BELOW THE FOLD: The evidence. Earned by scrolling.
-             ═══════════════════════════════════════════════════ */}
-
-        {/* Section divider */}
-        <Fade show={revealStep >= 2} delay={0}>
-          <div className="section-divider" />
-        </Fade>
-
-        {/* ── METRICS ── */}
-        <Fade show={revealStep >= 2} delay={0.1}>
-          <div id="sec-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }} className="metrics-grid">
+          <div style={{ borderTop: `1px solid ${T.border}`, borderBottom: `1px solid ${T.border}`, padding: "16px 0", marginBottom: 28, display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 0 }} className="metrics-grid">
             {[
-              { label: "Total Spend", value: fmtUSD(totalSpend), sub: "last 30 days", icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg> },
-              { label: "Recoverable", value: recoverableAmt > 0 ? fmtUSD(recoverableAmt) : "$0", sub: recoverableAmt > 0 ? `${totalSpend > 0 ? Math.round(recoverableAmt/totalSpend*100) : 0}% of spend` : "fully optimized", color: recoverableAmt > 0 ? T.greenDark : T.caption, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke={recoverableAmt > 0 ? "#059669" : "#94A3B8"} strokeWidth="2" strokeLinecap="round"><path d="M23 6l-9.5 9.5-5-5L1 18"/><path d="M17 6h6v6"/></svg> },
-              { label: "API Calls", value: totalCalls > 0 ? totalCalls.toLocaleString() : "0", sub: `${getModelBreakdown().length || 0} model${(getModelBreakdown().length || 0) !== 1 ? "s" : ""}`, icon: <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" strokeWidth="2" strokeLinecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> },
+              { label: "Total Spend", value: fmtUSD(totalSpend) },
+              { label: "Recoverable", value: recoverableAmt > 0 ? fmtUSD(recoverableAmt) : "$0", color: recoverableAmt > 0 ? T.green : T.caption },
+              { label: "API Calls", value: totalCalls > 0 ? totalCalls.toLocaleString() : "0" },
+              { label: "Settlement", value: "Continuous", color: T.green },
             ].map((m, i) => (
-              <div key={m.label} className="metric-card">
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                  <div style={{ width: 32, height: 32, borderRadius: 8, background: "linear-gradient(135deg, rgba(5,150,105,0.08), rgba(52,211,153,0.05))", display: "flex", alignItems: "center", justifyContent: "center" }}>{m.icon}</div>
-                  <span style={{ fontSize: 11, fontWeight: 700, color: T.caption, letterSpacing: "0.08em", textTransform: "uppercase" }}>{m.label}</span>
-                </div>
-                <div style={{ fontSize: 28, fontWeight: 800, color: m.color || T.ink, fontFamily: T.mono, letterSpacing: "-0.03em" }}>{m.value}</div>
-                <div style={{ fontSize: 12, color: T.caption, marginTop: 4 }}>{m.sub}</div>
+              <div key={m.label} style={{ padding: "0 20px", borderRight: i < 3 ? `1px solid ${T.border}` : "none" }}>
+                <div style={{ fontSize: 11, fontWeight: 600, color: T.caption, letterSpacing: "0.04em", textTransform: "uppercase", marginBottom: 4 }}>{m.label}</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: m.color || T.ink, fontFamily: T.mono, letterSpacing: "-0.02em" }}>{m.value}</div>
               </div>
             ))}
           </div>
@@ -1606,7 +1531,7 @@ function App() {
             <div style={{ marginBottom: 28, paddingTop: 16 }}>
               {/* Step header */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, marginTop: 8 }}>
-                <span className="step-badge">STEP 2 OF 5</span>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase" }}>GO LIVE</span>
                 <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
               </div>
               <h2 style={{ fontSize: 20, fontWeight: 800, color: T.ink, letterSpacing: "-0.02em", marginBottom: 4 }}>Go Live</h2>
@@ -1880,7 +1805,7 @@ client = openai.OpenAI(
           <Fade show={true} delay={0.2}>
             <div style={{ marginBottom: 20 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, marginTop: 8 }}>
-                <span className="step-badge">STEP 3 OF 5</span>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase" }}>YOUR AGENTS</span>
                 <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
               </div>
               {agentRoster.length > 0 ? (
@@ -2208,7 +2133,7 @@ client = openai.OpenAI(
             <div style={{ marginBottom: 28 }}>
               {/* Step header */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 18, marginTop: 8 }}>
-                <span className="step-badge">STEP 4 OF 5</span>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase" }}>MARGINS</span>
                 <div style={{ flex: 1, height: 1, background: `linear-gradient(to right, ${T.border}, transparent)` }} />
               </div>
               <h2 style={{ fontSize: 24, fontWeight: 900, color: T.ink, letterSpacing: "-0.02em", marginBottom: 6 }}>Your Margins</h2>
@@ -2402,7 +2327,7 @@ client = openai.OpenAI(
               <div style={{ position: "absolute", top: -80, right: -80, width: 200, height: 200, borderRadius: "50%", background: "radial-gradient(circle, rgba(16,185,129,0.06), transparent 70%)", pointerEvents: "none" }} />
               {/* Step header */}
               <div style={{ textAlign: "center", marginBottom: 28 }}>
-                <span className="step-badge" style={{ background: "rgba(5,150,105,0.15)", border: "1px solid rgba(5,150,105,0.25)" }}>STEP 5 OF 5</span>
+                <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.1em", color: T.green, textTransform: "uppercase" }}>SEALED</span>
               </div>
               <div style={{ textAlign: "center", marginBottom: 32 }}>
                 <div style={{ fontSize: 10, fontWeight: 800, letterSpacing: "0.14em", color: T.green, marginBottom: 12 }}>SEALED</div>
