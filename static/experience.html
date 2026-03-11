@@ -139,8 +139,8 @@
   /* ── Step badges — matches landing page section-label style ── */
   .step-badge { display: inline-flex; align-items: center; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green); background: transparent; border: none; padding: 0; }
 
-  /* ── Buttons — matches landing page .btn-primary exactly ── */
-  .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 24px; background: var(--gray-900); color: var(--white); font-size: 14px; font-weight: 700; border-radius: 8px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+  /* ── Buttons — dark primary matches landing page hero .btn-primary ── */
+  .btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; background: var(--gray-900); color: var(--white); font-size: 15px; font-weight: 700; border-radius: 10px; border: none; cursor: pointer; font-family: inherit; transition: all 0.2s; }
   .btn-primary:hover:not(:disabled) { background: #1a2538; transform: translateY(-1px); }
 
   /* ── Section dividers ── */
@@ -949,7 +949,7 @@ function App() {
                 <button onClick={handleSignOut} style={{ fontSize: 12, fontWeight: 600, color: T.caption, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 12px", cursor: "pointer", fontFamily: T.font }}>Sign Out</button>
               </div>
             ) : (
-              <a href="/login?redirect=/experience" style={{ fontSize: 13, fontWeight: 600, color: T.white, background: T.ink, border: "none", borderRadius: 8, padding: "7px 16px", textDecoration: "none" }}>Sign In</a>
+              <a href="/login?redirect=/experience" style={{ fontSize: 13, fontWeight: 600, color: T.body, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 8, padding: "7px 16px", textDecoration: "none" }}>Sign In</a>
             )}
           </div>
         </nav>
@@ -1203,7 +1203,7 @@ function App() {
                 <div style={{
                   width: 20, height: 20, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center",
                   fontSize: 10, fontWeight: 700, flexShrink: 0, marginTop: 2,
-                  background: item.completed ? T.ink : "transparent",
+                  background: item.completed ? T.green : "transparent",
                   color: item.completed ? T.white : (item.locked ? T.ghost : T.label),
                   border: item.completed ? "none" : `1.5px solid ${item.locked ? T.borderSoft : T.ghost}`,
                 }}>
