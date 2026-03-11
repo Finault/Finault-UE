@@ -982,31 +982,33 @@ function App() {
   // ═══════════════════════════════
   if (screen === 1) {
     return (
-      <div style={{ fontFamily: T.font, background: T.white, minHeight: "100vh" }}>
+      <div style={{ fontFamily: T.font, background: T.white, minHeight: "100vh", position: "relative", overflow: "hidden" }}>
+        {/* Green glow */}
+        <div style={{ position: "absolute", top: -300, left: "50%", transform: "translateX(-50%)", width: 1000, height: 700, background: "radial-gradient(ellipse at center, rgba(16,185,129,0.07) 0%, rgba(16,185,129,0.02) 40%, transparent 70%)", pointerEvents: "none", zIndex: 0 }} />
 
         {/* ── NAV ── */}
-        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 36px", maxWidth: 1280, margin: "0 auto" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: T.green }} />
-            <span style={{ fontSize: 15, fontWeight: 900, color: T.ink, letterSpacing: "-0.02em" }}>Finault</span>
+        <nav style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 36px", maxWidth: 1120, margin: "0 auto", position: "relative", zIndex: 1 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 7, height: 7, borderRadius: 2, background: T.green, boxShadow: "0 0 6px rgba(16,185,129,0.3)" }} />
+            <span style={{ fontSize: 13, fontWeight: 900, color: T.ink, letterSpacing: "0.08em" }}>FINAULT</span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 32 }}>
-            <a href="/docs" style={{ fontSize: 14, fontWeight: 500, color: T.label, textDecoration: "none" }}>Docs</a>
-            <a href="/pricing" style={{ fontSize: 14, fontWeight: 500, color: T.label, textDecoration: "none" }}>Pricing</a>
-            <a href="/security" style={{ fontSize: 14, fontWeight: 500, color: T.label, textDecoration: "none" }}>Security</a>
+          <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+            <a href="/docs" style={{ fontSize: 13, fontWeight: 500, color: T.label, textDecoration: "none" }}>Docs</a>
+            <a href="/pricing" style={{ fontSize: 13, fontWeight: 500, color: T.label, textDecoration: "none" }}>Pricing</a>
+            <a href="/security" style={{ fontSize: 13, fontWeight: 500, color: T.label, textDecoration: "none" }}>Security</a>
             {user ? (
               <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                 <span style={{ fontSize: 12, color: T.label, fontFamily: T.mono }}>{user.email?.length > 20 ? user.email.slice(0, 18) + '...' : user.email}</span>
                 <button onClick={handleSignOut} style={{ fontSize: 12, fontWeight: 600, color: T.caption, background: "none", border: `1px solid ${T.border}`, borderRadius: 6, padding: "6px 12px", cursor: "pointer", fontFamily: T.font }}>Sign Out</button>
               </div>
             ) : (
-              <a href="/login?redirect=/experience" style={{ fontSize: 13, fontWeight: 600, color: T.label, background: "transparent", border: `1px solid ${T.border}`, borderRadius: 6, padding: "8px 16px", textDecoration: "none" }}>Sign In</a>
+              <a href="/login?redirect=/experience" style={{ fontSize: 13, fontWeight: 600, color: T.white, background: T.ink, border: "none", borderRadius: 8, padding: "7px 16px", textDecoration: "none" }}>Sign In</a>
             )}
           </div>
         </nav>
 
         {/* ── KEY INPUT ── */}
-        <div style={{ padding: "80px 24px 48px", maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+        <div style={{ padding: "100px 24px 48px", maxWidth: 520, margin: "0 auto", textAlign: "center", position: "relative", zIndex: 1 }}>
           <h1 style={{ fontSize: 34, fontWeight: 900, color: T.ink, letterSpacing: "-0.035em", marginBottom: 10, opacity: 0, animation: "rise 0.6s ease 0.1s both" }}>Paste your API key</h1>
           <p style={{ fontSize: 16, color: T.label, marginBottom: 36, lineHeight: 1.5, opacity: 0, animation: "rise 0.6s ease 0.2s both" }}>See your Finault Score, find savings, and get a sealed audit — in 15 seconds.</p>
 
@@ -1018,7 +1020,7 @@ function App() {
                 onKeyDown={e => e.key === "Enter" && (openaiKey || anthropicKey) && startScan()}
                 style={{ flex: 1, padding: "15px 16px", border: "none", outline: "none", fontFamily: T.mono, fontSize: 14, color: T.ink, background: "transparent" }} />
               <button id="scan-btn" onClick={startScan} disabled={!openaiKey && !anthropicKey}
-                style={{ padding: "15px 28px", background: (openaiKey || anthropicKey) ? T.green : T.borderSoft, border: "none", borderLeft: `1px solid ${T.border}`, color: (openaiKey || anthropicKey) ? T.white : T.ghost, fontSize: 14, fontWeight: 700, fontFamily: T.font, cursor: (openaiKey || anthropicKey) ? "pointer" : "default" }}>
+                style={{ padding: "15px 28px", background: (openaiKey || anthropicKey) ? T.ink : T.borderSoft, border: "none", borderLeft: `1px solid ${T.border}`, color: (openaiKey || anthropicKey) ? T.white : T.ghost, fontSize: 14, fontWeight: 700, fontFamily: T.font, cursor: (openaiKey || anthropicKey) ? "pointer" : "default" }}>
                 Scan
               </button>
             </div>
@@ -1168,7 +1170,9 @@ function App() {
     : score >= 90 ? "Exceptionally well-managed." : score >= 80 ? "Strong. Small optimizations remain." : score >= 70 ? "Solid, but there's money on the table." : score >= 60 ? "Real savings you're not capturing." : score >= 40 ? "Significant unmanaged costs." : (totalCalls === 0 && totalSpend === 0) ? "Scan complete. Go live to start building your score." : "Needs immediate attention.";
 
   return (
-    <div style={{ fontFamily: T.font, background: T.bg, minHeight: "100vh" }}>
+    <div style={{ fontFamily: T.font, background: T.bg, minHeight: "100vh", position: "relative" }}>
+      {/* Subtle green glow at top */}
+      <div style={{ position: "fixed", top: -400, left: "50%", transform: "translateX(-50%)", width: 1200, height: 600, background: "radial-gradient(ellipse at center, rgba(16,185,129,0.04) 0%, transparent 60%)", pointerEvents: "none", zIndex: 0 }} />
       <ToastContainer />
       <PageProgress />
 
