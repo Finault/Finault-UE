@@ -1084,6 +1084,9 @@ function App() {
             <button onClick={() => { setScreen(1); setScanError(null); }} style={{ padding: "10px 24px", borderRadius: 8, border: `1px solid ${T.border}`, background: T.white, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: T.font, color: T.ink }}>Try again</button>
           </div>
         )}
+        {!scanError && (
+          <button onClick={() => { setScreen(1); setScanError(null); setScanLogs([]); setScanProgress(0); }} style={{ marginTop: 20, padding: "8px 16px", borderRadius: 6, border: "none", background: "transparent", fontSize: 12, fontWeight: 500, cursor: "pointer", fontFamily: T.font, color: T.caption }}>Cancel</button>
+        )}
       </div>
     );
   }
