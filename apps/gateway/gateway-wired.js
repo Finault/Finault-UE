@@ -3368,20 +3368,20 @@ export default {
 
         if (providers.openai?.api_key) {
           try {
-            // Try /v1/models first (works for regular keys)
-            const testResp = await fetch('https://api.openai.com/v1/models', {
-              headers: { 'Authorization': `Bearer ${providers.openai.api_key}` },
-            });
-            if (!testResp.ok) {
-              // If models fails and key looks like admin key, try org endpoint
-              if (providers.openai.api_key.startsWith('sk-admin-')) {
-                const adminResp = await fetch('https://api.openai.com/v1/organization/usage?date=' + new Date().toISOString().slice(0, 10), {
-                  headers: { 'Authorization': `Bearer ${providers.openai.api_key}` },
-                });
-                if (!adminResp.ok) return scanCors(jsonResponse({ error: 'Admin key rejected by OpenAI usage API' }, 401));
-              } else {
-                return scanCors(jsonResponse({ error: 'Invalid API key' }, 401));
-              }
+            const key = providers.openai.api_key;
+            if (key.startsWith('sk-admin-')) {
+              // Admin keys: validate against /v1/organization/costs (the correct admin endpoint)
+              const startTime = Math.floor(Date.now() / 1000) - (30 * 86400);
+              const adminResp = await fetch(`https://api.openai.com/v1/organization/costs?start_time=${startTime}&limit=1`, {
+                headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
+              });
+              if (!adminResp.ok) return scanCors(jsonResponse({ error: 'Admin key rejected by OpenAI. Ensure you have an Organization Owner admin key.' }, 401));
+            } else {
+              // Regular keys: validate against /v1/models
+              const testResp = await fetch('https://api.openai.com/v1/models', {
+                headers: { 'Authorization': `Bearer ${key}` },
+              });
+              if (!testResp.ok) return scanCors(jsonResponse({ error: 'Invalid API key' }, 401));
             }
           } catch (e) {
             return scanCors(jsonResponse({ error: 'Could not reach OpenAI' }, 502));
