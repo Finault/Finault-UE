@@ -3409,7 +3409,13 @@ export default {
           return supabase.from('seals').select('*').order('timestamp', { ascending: false }).limit(1000);
         }, { endpoint: '/v1/time-machine/analyze', requestId });
 
-        const records = sealResult.data || [];
+        // Filter out junk test data: exclude n/a models, unknown models, and absurd costs (>$1000 per call)
+        const junkModels = ['n/a', 'unknown', 'test', '', null, undefined];
+        const records = (sealResult.data || []).filter(s => {
+          if (junkModels.includes(s.model)) return false;
+          if ((s.cost_usd || 0) > 1000) return false; // No single API call costs >$1000
+          return true;
+        });
         const totalCost = records.reduce((sum, s) => sum + (s.cost_usd || 0), 0);
         const totalCalls = records.length;
         const models = [...new Set(records.map(s => s.model).filter(Boolean))];
@@ -3437,7 +3443,8 @@ export default {
           return supabase.from('seals').select('*').limit(1000);
         }, { endpoint: '/v1/score', requestId });
 
-        const records = sealResult.data || [];
+        const junkModels = ['n/a', 'unknown', 'test', '', null, undefined];
+        const records = (sealResult.data || []).filter(s => !junkModels.includes(s.model) && (s.cost_usd || 0) <= 1000);
         const models = [...new Set(records.map(s => s.model).filter(Boolean))];
         const totalCost = records.reduce((sum, s) => sum + (s.cost_usd || 0), 0);
 
