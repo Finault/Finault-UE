@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC 2 Evidence Dashboard | Finault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a25;
+            --accent: #7c3aed;
+            --accent-blue: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border: #2a2a35;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .main {
+            padding: 40px 0;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+        }
+
+        .overview-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 40px;
+        }
+
+        .overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 24px;
+            margin-top: 24px;
+        }
+
+        .metric-card {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .metric-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        .criteria-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .criteria-card h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .criteria-icon {
+            font-size: 24px;
+        }
+
+        .criteria-description {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            margin-bottom: 24px;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .progress-label-text {
+            font-weight: 600;
+        }
+
+        .progress-percentage {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-blue));
+            border-radius: 4px;
+            transition: width 0.6s ease;
+        }
+
+        .evidence-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .evidence-item {
+            padding: 12px;
+            background: var(--bg-primary);
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            font-size: 13px;
+        }
+
+        .evidence-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .evidence-status {
+            flex-shrink: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-collected {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-collecting {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+            animation: pulse 2s infinite;
+        }
+
+        .status-gap {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .evidence-content {
+            flex: 1;
+        }
+
+        .evidence-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .evidence-subtitle {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .timeline-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+        }
+
+        .timeline-section h2 {
+            font-size: 20px;
+            margin-bottom: 24px;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border);
+        }
+
+        .timeline-item {
+            margin-bottom: 24px;
+            padding-left: 60px;
+            position: relative;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 4px;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--accent);
+            border: 3px solid var(--bg-primary);
+        }
+
+        .timeline-date {
+            font-size: 13px;
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .timeline-event {
+            font-size: 14px;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .timeline-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .export-section {
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(59, 130, 246, 0.1));
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .export-section h2 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .export-section p {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+
+        .export-button {
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .export-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+        }
+
+        .export-options {
+            margin-top: 16px;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 60px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 24px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+        }
+
+        .legend-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .indicator-collected {
+            background: var(--success);
+        }
+
+        .indicator-collecting {
+            background: var(--warning);
+        }
+
+        .indicator-gap {
+            background: var(--error);
+        }
+
+        @media (max-width: 768px) {
+            .criteria-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .overview-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <div class="logo">⚡ Finault</div>
+                    <div class="header-subtitle">SOC 2 Type II Evidence Dashboard</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main container">
+        <h1>SOC 2 Type II Compliance Status</h1>
+        <p class="subtitle">Real-time tracking of evidence collection across Trust Service Criteria</p>
+
+        <div class="overview-section">
+            <h2 style="font-size: 18px; margin-bottom: 8px;">Overall Readiness</h2>
+            <div class="overview-grid">
+                <div class="metric-card">
+                    <div class="metric-value" id="overall-readiness">78%</div>
+                    <div class="metric-label">Overall Progress</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="evidence-count">34</div>
+                    <div class="metric-label">Evidence Items Collected</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="criteria-ready">4</div>
+                    <div class="metric-label">Criteria Ready</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value" id="gaps-remaining">1</div>
+                    <div class="metric-label">Gaps Remaining</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="criteria-grid">
+            <!-- Security Criteria -->
+            <div class="criteria-card">
+                <h2>
+                    <span class="criteria-icon">🔒</span>
+                    Security
+                </h2>
+                <p class="criteria-description">Systems are protected against unauthorized access, use, disclosure, disruption, modification, and destruction.</p>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-label-text">Evidence Collected</span>
+                        <span class="progress-percentage">95%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 95%"></div>
+                    </div>
+                </div>
+
+                <ul class="evidence-list">
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Access Control Logs</div>
+                            <div class="evidence-subtitle">Last collected: March 18, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Encryption Confirmation</div>
+                            <div class="evidence-subtitle">Last collected: March 19, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Network Security Assessment</div>
+                            <div class="evidence-subtitle">Last collected: March 15, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collecting">◆</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Penetration Test Results</div>
+                            <div class="evidence-subtitle">Collecting... Q2 2026</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Availability Criteria -->
+            <div class="criteria-card">
+                <h2>
+                    <span class="criteria-icon">⚡</span>
+                    Availability
+                </h2>
+                <p class="criteria-description">Systems are available for operation and use as committed or agreed upon in a timely manner.</p>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-label-text">Evidence Collected</span>
+                        <span class="progress-percentage">85%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 85%"></div>
+                    </div>
+                </div>
+
+                <ul class="evidence-list">
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Uptime Monitoring</div>
+                            <div class="evidence-subtitle">Last collected: March 20, 2026 (99.98% uptime)</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Disaster Recovery Plan</div>
+                            <div class="evidence-subtitle">Last collected: March 12, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Backup Verification</div>
+                            <div class="evidence-subtitle">Last collected: March 19, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collecting">◆</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Load Testing Results</div>
+                            <div class="evidence-subtitle">Collecting... Q2 2026</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Processing Integrity Criteria -->
+            <div class="criteria-card">
+                <h2>
+                    <span class="criteria-icon">⚙️</span>
+                    Processing Integrity
+                </h2>
+                <p class="criteria-description">System processes are complete, accurate, timely, and authorized.</p>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-label-text">Evidence Collected</span>
+                        <span class="progress-percentage">75%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <ul class="evidence-list">
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Data Validation Rules</div>
+                            <div class="evidence-subtitle">Last collected: March 18, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Error Handling Documentation</div>
+                            <div class="evidence-subtitle">Last collected: March 17, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-gap">✗</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">End-to-End Testing Report</div>
+                            <div class="evidence-subtitle">Gap identified - Due by May 15, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collecting">◆</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">API Rate Limiting Audit</div>
+                            <div class="evidence-subtitle">Collecting... April 2026</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Confidentiality Criteria -->
+            <div class="criteria-card">
+                <h2>
+                    <span class="criteria-icon">🔐</span>
+                    Confidentiality
+                </h2>
+                <p class="criteria-description">Information designated as confidential is protected as committed or agreed upon.</p>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-label-text">Evidence Collected</span>
+                        <span class="progress-percentage">90%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 90%"></div>
+                    </div>
+                </div>
+
+                <ul class="evidence-list">
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Data Classification Policy</div>
+                            <div class="evidence-subtitle">Last collected: March 16, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Encryption in Transit & Rest</div>
+                            <div class="evidence-subtitle">Last collected: March 19, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Access Restriction Controls</div>
+                            <div class="evidence-subtitle">Last collected: March 20, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collecting">◆</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Key Management Audit</div>
+                            <div class="evidence-subtitle">Collecting... April 2026</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Privacy Criteria -->
+            <div class="criteria-card">
+                <h2>
+                    <span class="criteria-icon">👤</span>
+                    Privacy
+                </h2>
+                <p class="criteria-description">Personal information is collected, used, retained, disclosed, and destroyed in accordance with applicable laws.</p>
+
+                <div class="progress-container">
+                    <div class="progress-label">
+                        <span class="progress-label-text">Evidence Collected</span>
+                        <span class="progress-percentage">80%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 80%"></div>
+                    </div>
+                </div>
+
+                <ul class="evidence-list">
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Privacy Policy</div>
+                            <div class="evidence-subtitle">Last collected: March 10, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Data Retention Schedule</div>
+                            <div class="evidence-subtitle">Last collected: March 15, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collected">✓</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">GDPR Compliance Assessment</div>
+                            <div class="evidence-subtitle">Last collected: March 19, 2026</div>
+                        </div>
+                    </li>
+                    <li class="evidence-item">
+                        <div class="evidence-status status-collecting">◆</div>
+                        <div class="evidence-content">
+                            <div class="evidence-title">Data Subject Rights Documentation</div>
+                            <div class="evidence-subtitle">Collecting... May 2026</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-indicator indicator-collected"></div>
+                <span>Collected</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-indicator indicator-collecting"></div>
+                <span>Collecting</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-indicator indicator-gap"></div>
+                <span>Gap Identified</span>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div class="timeline-section">
+            <h2>Evidence Collection Timeline</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">March 20, 2026</div>
+                    <div class="timeline-event">Uptime Monitoring Data Collected</div>
+                    <div class="timeline-details">99.98% availability confirmed for March</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">March 19, 2026</div>
+                    <div class="timeline-event">Encryption & Key Management Review Completed</div>
+                    <div class="timeline-details">All critical systems using AES-256 and TLS 1.3</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">March 18, 2026</div>
+                    <div class="timeline-event">Access Control Audit</div>
+                    <div class="timeline-details">Role-based access controls verified for all services</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">March 15, 2026</div>
+                    <div class="timeline-event">Disaster Recovery Plan Reviewed</div>
+                    <div class="timeline-details">RTO/RPO targets met: RTO 4hrs, RPO 1hr</div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-date">March 10, 2026</div>
+                    <div class="timeline-event">Privacy Policy Audit</div>
+                    <div class="timeline-details">Updated to comply with latest GDPR requirements</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export Section -->
+        <div class="export-section">
+            <h2>Export Evidence Package</h2>
+            <p>Generate a comprehensive evidence package for your auditor or compliance team.</p>
+            <button class="export-button" onclick="exportEvidence()">Generate PDF Report</button>
+            <div class="export-options">
+                Also available: JSON | CSV | ZIP (all evidence documents)
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Finault. All rights reserved. | <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="#">Contact</a></p>
+        </div>
+    </footer>
+
+    <script>
+        function exportEvidence() {
+            // Simulate export
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = 'Generating...';
+            button.disabled = true;
+
+            setTimeout(() => {
+                alert('Evidence package generated successfully! Download will begin shortly.\n\nFile: finault-soc2-evidence-2026-03-20.pdf');
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1500);
+        }
+
+        // Animate progress bars on page load
+        window.addEventListener('load', () => {
+            const fills = document.querySelectorAll('.progress-fill');
+            fills.forEach(fill => {
+                const width = fill.style.width;
+                fill.style.width = '0';
+                setTimeout(() => {
+                    fill.style.width = width;
+                }, 100);
+            });
+        });
+    </script>
+</body>
+</html>

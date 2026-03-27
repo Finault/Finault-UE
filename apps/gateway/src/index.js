@@ -20,16 +20,34 @@ import { jsonResponse, errorResponse, safeFetch } from './utils.js';
 import { handleCORS, getSecurityHeaders } from './security.js';
 import { routeRequest } from './router.js';
 
-// Import all handlers
+// Import LIVE handlers only (stub handlers disabled for launch)
 import * as dashboardHandlers from './handlers/dashboard.js';
-import * as budgetHandlers from './handlers/budget.js';
-import * as closepackHandlers from './handlers/closepack.js';
-import * as erpHandlers from './handlers/erp.js';
-import * as keysHandlers from './handlers/keys.js';
-import * as savingsHandlers from './handlers/savings.js';
-import * as anomalyHandlers from './handlers/anomaly.js';
 import * as marginAlertsHandlers from './handlers/margin-alerts.js';
-import * as magicHandlers from './handlers/magic.js';
+import * as autoCloseHandlers from './handlers/auto-close.js';
+import * as llmHandlers from './handlers/llm.js';
+
+// New handlers for Merkle tree, Intelligence, Compliance
+import * as merkleTreeHandlers from './handlers/merkle-tree.js';
+import * as webhookHandlers from './handlers/webhook-system-v2.js';
+import * as cacheDetectorHandlers from './handlers/cache-detector.js';
+import * as routingEngineHandlers from './handlers/routing-engine.js';
+import * as complianceHandlers from './handlers/compliance-generator-v2.js';
+import * as costAnomalyHandlers from './handlers/cost-anomaly.js';
+
+// New handlers for unified reports and advanced features
+import * as intelligenceReportV2Handlers from './handlers/intelligence-report-v2.js';
+import * as closePackV2Handlers from './handlers/close-pack-v2.js';
+import * as agentDependencyHandlers from './handlers/agent-dependency.js';
+import * as glJournalHandlers from './handlers/gl-journal.js';
+import * as finaultIndexHandlers from './handlers/finault-index.js';
+
+// DISABLED — these return hardcoded/fabricated data:
+// import * as budgetHandlers from './handlers/budget.js';
+// import * as closepackHandlers from './handlers/closepack.js';
+// import * as erpHandlers from './handlers/erp.js';
+// import * as keysHandlers from './handlers/keys.js';
+// import * as savingsHandlers from './handlers/savings.js';
+// import * as magicHandlers from './handlers/magic.js';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MODULE INITIALIZATION
@@ -47,9 +65,14 @@ const initializeGateway = (env) => {
 
   config = getConfig(env);
 
-  // Assemble handler map
+  // Assemble handler map — ONLY live/real handlers registered
   handlers = {
-    // Dashboard handlers
+    // LLM Proxy handlers (THE MAGIC MOMENT — proxies + costs + writes usage)
+    handleLLMChat: llmHandlers.handleLLMChat,
+    handleLLMCompletions: llmHandlers.handleLLMCompletions,
+    handleLLMEmbeddings: llmHandlers.handleLLMEmbeddings,
+
+    // Dashboard handlers (REAL — queries Supabase usage table)
     handleDashboard: dashboardHandlers.handleDashboard,
     handleDrillDown: dashboardHandlers.handleDrillDown,
     handleBenchmarks: dashboardHandlers.handleBenchmarks,
@@ -59,60 +82,59 @@ const initializeGateway = (env) => {
     handleGoals: dashboardHandlers.handleGoals,
     handleAlerts: dashboardHandlers.handleAlerts,
 
-    // Budget handlers
-    handleBudget: budgetHandlers.handleBudgetList,
-    handleBudgetById: budgetHandlers.handleBudgetById,
-    handleBudgetCheck: budgetHandlers.handleBudgetCheck,
-    handleBudgetForecast: budgetHandlers.handleBudgetForecast,
-    handleBudgetAllocation: budgetHandlers.handleBudgetAllocation,
-
-    // Close Pack handlers
-    handleClosePackGenerate: closepackHandlers.handleClosePackGenerate,
-    handleClosePackEmail: closepackHandlers.handleClosePackEmail,
-    handleClosePackValidate: closepackHandlers.handleClosePackValidate,
-    handleClosePackDownload: closepackHandlers.handleClosePackDownload,
-    handleClosePackList: closepackHandlers.handleClosePackList,
-
-    // ERP handlers
-    handleERPConnect: erpHandlers.handleERPConnect,
-    handleERPPush: erpHandlers.handleERPPush,
-    handleERPVariance: erpHandlers.handleERPVariance,
-    handleERPReconcile: erpHandlers.handleERPReconcile,
-    handleERPStatus: erpHandlers.handleERPStatus,
-
-    // API Keys handlers
-    handleAPIKeys: keysHandlers.handleAPIKeysList,
-    handleAPIKeyById: keysHandlers.handleAPIKeyById,
-    handleAPIKeyRotate: keysHandlers.handleAPIKeyRotate,
-    handleAPIKeyUsage: keysHandlers.handleAPIKeyUsage,
-
-    // Savings handlers
-    handleSavingsAnalyze: savingsHandlers.handleSavingsAnalyze,
-    handleSavingsRecommend: savingsHandlers.handleSavingsRecommend,
-    handleSavingsImplement: savingsHandlers.handleSavingsImplement,
-    handleSavingsROI: savingsHandlers.handleSavingsROI,
-    handleModelRecommendation: savingsHandlers.handleModelRecommendation,
-
-    // Anomaly handlers
-    handleAnomalyDetect: anomalyHandlers.handleAnomalyDetect,
-    handleAnomaliesList: anomalyHandlers.handleAnomaliesList,
-    handleAnomalyAck: anomalyHandlers.handleAnomalyAck,
-    handleAnomalyConfig: anomalyHandlers.handleAnomalyConfig,
-    handleAnomalyDetail: anomalyHandlers.handleAnomalyDetail,
-
-    // Margin Alerts handlers
+    // Margin Alerts handlers (REAL — queries Supabase)
     handleMarginAlertsList: marginAlertsHandlers.handleMarginAlertsList,
     handleMarginAlertDetail: marginAlertsHandlers.handleMarginAlertDetail,
     handleMarginAlertAck: marginAlertsHandlers.handleMarginAlertAck,
     handleMarginAlertConfig: marginAlertsHandlers.handleMarginAlertConfig,
     handleMarginAlertsCheck: marginAlertsHandlers.handleMarginAlertsCheck,
 
-    // Magic handlers
-    handleMagicOnboarding: magicHandlers.handleMagicOnboarding,
-    handleMagicParse: magicHandlers.handleMagicParse,
-    handleMagicComplete: magicHandlers.handleMagicComplete,
-    handleMagicStatus: magicHandlers.handleMagicStatus,
-    handleMagicList: magicHandlers.handleMagicList,
+    // Auto-Close Pipeline handlers (REAL — queries Supabase)
+    handleOrgConfigure: autoCloseHandlers.handleOrgConfigure,
+    handleAutoClose: autoCloseHandlers.handleAutoClose,
+    handleGetScore: autoCloseHandlers.handleGetScore,
+
+    // Merkle Tree & Cryptographic Seals (RFC 6962)
+    handleInclusionProof: merkleTreeHandlers.handleInclusionProof,
+    handleConsistencyProof: merkleTreeHandlers.handleConsistencyProof,
+    handleTreeHead: merkleTreeHandlers.handleTreeHead,
+    handleVerificationKey: merkleTreeHandlers.handleVerificationKey,
+
+    // Intelligence Engine
+    handleCacheAnalysis: cacheDetectorHandlers.handleCacheAnalysis,
+    handleCacheAnalysisTrigger: cacheDetectorHandlers.handleCacheAnalysisTrigger,
+    handleRoutingRecommendations: routingEngineHandlers.handleRoutingRecommendations,
+    handlePricingSync: routingEngineHandlers.handlePricingSync,
+    handleAnomalyCheck: costAnomalyHandlers.handleAnomalyCheck,
+    handleAnomalyTrigger: costAnomalyHandlers.handleAnomalyTrigger,
+
+    // Intelligence Report v2 (unified)
+    handleIntelligenceReport: intelligenceReportV2Handlers.handleIntelligenceReport,
+    handleIntelligenceGenerate: intelligenceReportV2Handlers.handleIntelligenceGenerate,
+
+    // Agent Dependency & Blast Radius
+    handleAgentMap: agentDependencyHandlers.handleAgentMap,
+    handleBlastRadius: agentDependencyHandlers.handleBlastRadius,
+
+    // Finault Index
+    handleFinaultIndex: finaultIndexHandlers.handleFinaultIndex,
+
+    // Compliance & Regulation
+    handleComplianceReport: complianceHandlers.handleComplianceReport,
+
+    // Close Pack v2
+    handleClosePackGenerate: closePackV2Handlers.handleClosePackGenerate,
+    handleClosePackGet: closePackV2Handlers.handleClosePackGet,
+    handleClosePackLatest: closePackV2Handlers.handleClosePackLatest,
+
+    // GL Journal Export
+    handleGLJournal: glJournalHandlers.handleGLJournal,
+
+    // Webhooks
+    handleWebhookRegister: webhookHandlers.handleWebhookRegister,
+    handleWebhookList: webhookHandlers.handleWebhookList,
+    handleWebhookDelete: webhookHandlers.handleWebhookDelete,
+    handleWebhookTest: webhookHandlers.handleWebhookTest,
 
     // Health check handlers
     healthHandler: async () => jsonResponse({

@@ -1,0 +1,114 @@
+# Cloudflare Wrangler Configuration — Durable Objects
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# This configuration file defines the Durable Object bindings for Finault Gateway.
+# Include this in your main wrangler.toml using:
+#   [env.production.durable_objects.bindings]
+#   # (paste contents below)
+#
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DURABLE OBJECT BINDINGS
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# These bindings make the Durable Objects available to the Worker via env.
+#
+
+[[durable_objects.bindings]]
+# Budget Counter — per-organization spend tracking
+name = "BUDGET_COUNTER"
+class_name = "BudgetCounter"
+script_name = "finault-gateway"
+
+[[durable_objects.bindings]]
+# Seal Chain — per-organization cryptographic audit trail
+name = "SEAL_CHAIN"
+class_name = "SealChain"
+script_name = "finault-gateway"
+
+[[durable_objects.bindings]]
+# Dashboard Stream — per-organization WebSocket management
+name = "DASHBOARD_STREAM"
+class_name = "DashboardStream"
+script_name = "finault-gateway"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# MIGRATION CONFIGURATION
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Tells Wrangler how to migrate/rename Durable Objects during updates
+
+[[migrations]]
+tag = "v2"
+new_classes = ["BudgetCounter", "SealChain", "DashboardStream"]
+
+# If you're renaming or migrating from older versions:
+# renamed_classes = [{ from = "OldClassName", to = "NewClassName" }]
+# deleted_classes = ["ObsoleteClassName"]
+
+# ─────────────────────────────────────────────────────────────────────────────
+# USAGE IN MAIN wrangler.toml
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# In your main wrangler.toml, reference these bindings:
+#
+# [env.production]
+# durable_objects.bindings = [
+#   { name = "BUDGET_COUNTER", class_name = "BudgetCounter", script_name = "finault-gateway" },
+#   { name = "SEAL_CHAIN", class_name = "SealChain", script_name = "finault-gateway" },
+#   { name = "DASHBOARD_STREAM", class_name = "DashboardStream", script_name = "finault-gateway" },
+# ]
+#
+# Then import and use in your code:
+#   const budgetDO = env.BUDGET_COUNTER.get(orgId);
+#   const result = await budgetDO.fetch(new Request(url, { method: 'POST', body: ... }));
+#
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DEPLOYMENT NOTES
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# 1. Durable Object classes must be exported from your Worker code:
+#
+#    // In src/index.js or equivalent
+#    export { BudgetCounter } from './durable-objects/budget-counter.js';
+#    export { SealChain } from './durable-objects/seal-chain.js';
+#    export { DashboardStream } from './durable-objects/dashboard-stream.js';
+#
+# 2. Each Durable Object is instantiated per-organization (org_id = namespace)
+#
+#    // Usage in handlers
+#    const budgetCounter = env.BUDGET_COUNTER.get(orgId);
+#    await budgetCounter.fetch(new Request('https://do/spend', {
+#      method: 'POST',
+#      body: JSON.stringify({ org_id: orgId, amount: 123.45, monthly_budget: 5000 })
+#    }));
+#
+# 3. Data persists across requests within the same DO instance
+#    Storage: state.storage.get(key) / state.storage.put(key, value)
+#
+# 4. Alarms can trigger periodic tasks (e.g., persist to database every 60s)
+#    state.storage.setAlarm(futureTimestamp) → triggers alarm() method
+#
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PERFORMANCE & BILLING
+# ─────────────────────────────────────────────────────────────────────────────
+#
+# Durable Objects billing (typical):
+# - Class creation: $0.15/mo per unique class
+# - Operations: $0.15 per million read/write operations
+# - Storage: $0.20/GB per month
+#
+# Cost estimates for Finault:
+# - 3 classes (BudgetCounter, SealChain, DashboardStream): $0.45/mo base
+# - 100 orgs × ~10 operations/sec = 864M ops/month = ~$130/mo
+# - Typical storage: 1GB for all orgs = ~$0.20/mo
+# - Total: ~$131/month for 100 orgs
+#
+# Scaling considerations:
+# - Each organization gets its own DO instance (no contention)
+# - SealChain: ~1KB per seal, 1000 seals/day = 1GB/3 years
+# - BudgetCounter: ~1KB per org, negligible storage
+# - DashboardStream: Transient (messages queued but not persisted)
+#

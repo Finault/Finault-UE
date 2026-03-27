@@ -10,7 +10,7 @@ export class Dashboard extends Resource {
    * Get dashboard overview with key metrics
    */
   async overview(): Promise<DashboardOverview> {
-    const response = await this.client.request<DashboardOverview>(
+    const response = await this.client.request(
       'GET',
       '/v1/dashboard/overview'
     );
@@ -22,7 +22,7 @@ export class Dashboard extends Resource {
    * Get dashboard insights and recommendations
    */
   async insights(): Promise<DashboardInsights> {
-    const response = await this.client.request<DashboardInsights>(
+    const response = await this.client.request(
       'GET',
       '/v1/dashboard/insights'
     );

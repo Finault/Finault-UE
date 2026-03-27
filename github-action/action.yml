@@ -1,0 +1,22 @@
+name: "Finault Cost Check"
+description: "Estimates the cost impact of AI-related code changes in your PR"
+
+inputs:
+  finault_api_key:
+    description: "API key for Finault service"
+    required: true
+  github_token:
+    description: "GitHub token for posting PR comments"
+    required: true
+  threshold:
+    description: "Cost threshold in USD for warning (default: 100)"
+    required: false
+    default: "100"
+  fail_on_exceed:
+    description: "Fail the action if cost exceeds threshold (default: false)"
+    required: false
+    default: "false"
+
+runs:
+  using: "node20"
+  main: "index.js"

@@ -27,7 +27,9 @@
  *   });
  */
 
-import { Request, Response, NextFunction } from 'express';
+type Request = any;
+type Response = any;
+type NextFunction = (err?: any) => void;
 
 /**
  * Options for cost tracking configuration
@@ -79,7 +81,6 @@ export interface IFinaultSession {
 export class Finault {
   private apiKey: string;
   private baseUrl: string;
-  private sessionLocal: Map<NodeJS.Timeout | undefined, string> = new Map();
 
   /**
    * Initialize Finault SDK
@@ -120,7 +121,7 @@ export class Finault {
    * }));
    */
   expressMiddleware(defaultOptions?: CostTrackingOptions) {
-    return (req: Request, res: Response, next: NextFunction) => {
+    return (req: Request, _res: Response, next: NextFunction) => {
       // Attach Finault context to request
       if (!req.finault) {
         (req as any).finault = {};
@@ -275,7 +276,7 @@ export class Finault {
     const feature = this.resolveValue(options.feature, req);
     const product = this.resolveValue(options.product, req);
     const team = this.resolveValue(options.team, req);
-    const extraTags = this.resolveValue(options.extraTags, req);
+    const extraTags = this.resolveValue(options.extraTags as any, req) as Record<string, string> | undefined;
 
     // Build cost center format: customer:value|feature:value|...
     if (customer) {
@@ -331,10 +332,8 @@ export class Finault {
  */
 class FinaultSession implements IFinaultSession {
   sessionId: string;
-  private finault: Finault;
 
-  constructor(finault: Finault, sessionId?: string) {
-    this.finault = finault;
+  constructor(_finault: Finault, sessionId?: string) {
     this.sessionId = sessionId || `sess_${this.generateId()}`;
   }
 
@@ -433,7 +432,7 @@ export function getSessionId(req: Request): string | undefined {
 export function createCostTrackingMiddleware(
   options: CostTrackingOptions
 ): (req: Request, res: Response, next: NextFunction) => void {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     // Validate cost tracking options on first use
     if (!options || typeof options !== 'object') {
       throw new Error('Invalid cost tracking options');
@@ -461,7 +460,7 @@ export function createCostTrackingMiddleware(
 export function finaultErrorHandler(
   err: Error,
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): void {
   console.error('Finault tracking error:', {

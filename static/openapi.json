@@ -1,0 +1,159 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Finault API",
+    "description": "AI Unit Economics Infrastructure — The Fourth Protocol for the Agent Economy",
+    "version": "1.0.0",
+    "contact": { "name": "Finault", "url": "https://finault.ai", "email": "support@finault.ai" }
+  },
+  "servers": [
+    { "url": "https://api.finault.ai", "description": "Production" },
+    { "url": "https://api-staging.finault.ai", "description": "Staging" }
+  ],
+  "security": [{ "BearerAuth": [] }, { "ApiKeyAuth": [] }],
+  "paths": {
+    "/v1/chat/completions": {
+      "post": {
+        "summary": "Proxy OpenAI Chat Completion",
+        "description": "Proxies to OpenAI with cost tracking. Returns standard OpenAI response with Finault cost headers.",
+        "tags": ["Gateway Proxy"],
+        "parameters": [
+          { "name": "X-Finault-Customer-Id", "in": "header", "schema": { "type": "string" }, "description": "Customer ID for margin attribution" },
+          { "name": "X-Finault-Agent-Id", "in": "header", "schema": { "type": "string" }, "description": "Agent ID for per-agent economics" },
+          { "name": "X-Idempotency-Key", "in": "header", "schema": { "type": "string" }, "description": "Idempotency key for retry safety" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat completion with cost headers",
+            "headers": {
+              "X-Finault-Cost-Dollars": { "schema": { "type": "string" }, "description": "Cost in USD" },
+              "X-Finault-Model": { "schema": { "type": "string" }, "description": "Model used" },
+              "X-Finault-Tokens-In": { "schema": { "type": "string" }, "description": "Input tokens" },
+              "X-Finault-Tokens-Out": { "schema": { "type": "string" }, "description": "Output tokens" },
+              "X-Finault-Latency-Ms": { "schema": { "type": "string" }, "description": "Latency in ms" },
+              "X-Finault-Request-Id": { "schema": { "type": "string" }, "description": "Request ID for tracking" },
+              "X-Finault-Idempotency-Key": { "schema": { "type": "string" }, "description": "Idempotency key" }
+            }
+          }
+        }
+      }
+    },
+    "/v1/cost/{request_id}": {
+      "get": {
+        "summary": "Get cost of any AI call",
+        "description": "Provider-agnostic cost lookup by request ID",
+        "tags": ["Cost Tracking"],
+        "parameters": [{ "name": "request_id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Transaction cost data" } }
+      }
+    },
+    "/v1/margins": {
+      "get": {
+        "summary": "Get customer margins",
+        "description": "Returns per-customer margins for the org",
+        "tags": ["Margins"],
+        "parameters": [
+          { "name": "customer_id", "in": "query", "schema": { "type": "string" }, "description": "Filter by customer" },
+          { "name": "period", "in": "query", "schema": { "type": "string" }, "description": "Period in YYYY-MM format" }
+        ],
+        "responses": { "200": { "description": "Customer margin data" } }
+      }
+    },
+    "/v1/savings": {
+      "get": {
+        "summary": "Get cumulative savings",
+        "description": "Returns savings events aggregated by type",
+        "tags": ["Savings"],
+        "responses": { "200": { "description": "Savings data" } }
+      }
+    },
+    "/v1/agents": {
+      "get": {
+        "summary": "List agents",
+        "description": "Returns all agents with spend, revenue, margin, and budget status",
+        "tags": ["Agents"],
+        "responses": { "200": { "description": "Agent fleet data" } }
+      }
+    },
+    "/v1/score": {
+      "get": {
+        "summary": "Get Finault Score",
+        "description": "Returns the 6-dimension Finault Score for the org",
+        "tags": ["Score"],
+        "responses": { "200": { "description": "Finault Score with grade and dimensions" } }
+      }
+    },
+    "/v1/billing/webhook": {
+      "post": {
+        "summary": "Billing webhook",
+        "description": "Accept revenue data from Stripe, Paddle, or custom JSON",
+        "tags": ["Revenue"],
+        "responses": { "200": { "description": "Revenue entry stored" } }
+      }
+    },
+    "/v1/intelligence/share": {
+      "post": {
+        "summary": "Share Intelligence Report",
+        "description": "Generate a time-limited shareable URL for the Intelligence Report",
+        "tags": ["Intelligence"],
+        "responses": { "200": { "description": "Share URL and token" } }
+      }
+    },
+    "/v1/negotiation/{provider}": {
+      "get": {
+        "summary": "Provider negotiation package",
+        "description": "Generate negotiation data for vendor discussions",
+        "tags": ["Negotiation"],
+        "parameters": [{ "name": "provider", "in": "path", "required": true, "schema": { "type": "string", "enum": ["openai", "anthropic", "google", "deepseek", "meta"] } }],
+        "responses": { "200": { "description": "Negotiation package with spend history and recommendations" } }
+      }
+    },
+    "/v1/compliance/eu-ai-act": {
+      "get": {
+        "summary": "EU AI Act compliance checklist",
+        "description": "Generate compliance checklist with Finault coverage mapping",
+        "tags": ["Compliance"],
+        "responses": { "200": { "description": "Compliance checklist" } }
+      }
+    },
+    "/v1/compliance/colorado-sb205": {
+      "get": {
+        "summary": "Colorado SB205 impact assessment",
+        "description": "Generate SB205 compliance assessment",
+        "tags": ["Compliance"],
+        "responses": { "200": { "description": "Impact assessment" } }
+      }
+    },
+    "/v1/board-slide": {
+      "get": {
+        "summary": "Board deck slide data",
+        "description": "Generate executive board slide with metrics, risks, and opportunities",
+        "tags": ["Executive"],
+        "responses": { "200": { "description": "Board slide data" } }
+      }
+    },
+    "/v1/customers/{id}/value-proof": {
+      "get": {
+        "summary": "Customer value proof",
+        "description": "Generate ROI and value proof for a customer",
+        "tags": ["Renewal Intelligence"],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }],
+        "responses": { "200": { "description": "Value proof with ROI" } }
+      }
+    },
+    "/v1/first-fact": {
+      "get": {
+        "summary": "First Fact data",
+        "description": "Get the First Fact banner data after initial gateway usage",
+        "tags": ["Onboarding"],
+        "responses": { "200": { "description": "First fact data or null" } }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": { "type": "http", "scheme": "bearer", "description": "Finault API key (fk_live_... or fk_test_...)" },
+      "ApiKeyAuth": { "type": "apiKey", "in": "header", "name": "X-Finault-API-Key", "description": "Finault API key" }
+    }
+  }
+}

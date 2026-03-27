@@ -545,6 +545,129 @@ const handleGetUsage = async (request, env, ctx) => {
 
 /**
  * POST /v1/billing/webhook
+ * Generic billing webhook handler - auto-detects format and normalizes to revenue_entries
+ * Public endpoint (no auth required)
+ * Accepts:
+ *   - Generic Finault format: {customer_id, event_type, amount_usd, ...}
+ *   - Stripe webhook format: {type, data.object, ...}
+ *   - Paddle format: {event_type, data.attributes, ...}
+ */
+const handleBillingWebhook = async (request, env, ctx) => {
+  try {
+    const body = await request.json();
+    let normalized = null;
+
+    // Auto-detect format and normalize
+    if (body.customer_id && body.event_type && body.amount_usd !== undefined) {
+      // Generic Finault format
+      normalized = {
+        customer_id: body.customer_id,
+        amount_usd: body.amount_usd,
+        currency: body.currency || 'USD',
+        period_start: body.period_start || new Date().toISOString(),
+        period_end: body.period_end || new Date().toISOString(),
+        plan_tier: body.plan_tier || 'unknown',
+        source: 'finault',
+        org_id: body.org_id,
+        event_type: body.event_type,
+      };
+    } else if (body.type && (body.type.startsWith('invoice.') || body.type.startsWith('checkout.')) && body.data?.object) {
+      // Stripe webhook format
+      const obj = body.data.object;
+      normalized = {
+        customer_id: obj.customer || obj.customer_id,
+        amount_usd: (obj.amount_paid || obj.amount || 0) / 100, // Stripe uses cents
+        currency: obj.currency?.toUpperCase() || 'USD',
+        period_start: obj.period_start ? new Date(obj.period_start * 1000).toISOString() : new Date().toISOString(),
+        period_end: obj.period_end ? new Date(obj.period_end * 1000).toISOString() : new Date().toISOString(),
+        plan_tier: obj.lines?.data?.[0]?.plan?.nickname || 'unknown',
+        source: 'stripe',
+        org_id: null, // Will need to lookup by customer
+        event_type: body.type,
+      };
+    } else if (body.event_type && body.data?.attributes) {
+      // Paddle format
+      const attrs = body.data.attributes;
+      normalized = {
+        customer_id: attrs.customer_id || attrs.customer?.id,
+        amount_usd: attrs.checkout?.subtotal_usd || attrs.amount || 0,
+        currency: attrs.currency || 'USD',
+        period_start: attrs.period_start || new Date().toISOString(),
+        period_end: attrs.period_end || new Date().toISOString(),
+        plan_tier: attrs.plan?.name || 'unknown',
+        source: 'paddle',
+        org_id: null, // Will need to lookup by customer
+        event_type: body.event_type,
+      };
+    } else {
+      console.warn('[BILLING-WEBHOOK] Could not detect webhook format');
+      return jsonResponse({ received: true, error: 'Unknown format' }, 400);
+    }
+
+    // Validate amount
+    if (!normalized.amount_usd || normalized.amount_usd < 0) {
+      console.warn('[BILLING-WEBHOOK] Invalid or missing amount_usd');
+      return jsonResponse({ received: true, error: 'Invalid amount' }, 400);
+    }
+
+    // If org_id is null, try to lookup by customer_id
+    if (!normalized.org_id && normalized.customer_id) {
+      try {
+        const { data } = await env.supabase
+          .from('subscriptions')
+          .select('org_id')
+          .eq('stripe_customer_id', normalized.customer_id)
+          .single();
+        normalized.org_id = data?.org_id;
+      } catch (err) {
+        console.warn('[BILLING-WEBHOOK] Could not lookup org_id from customer_id:', normalized.customer_id);
+      }
+    }
+
+    if (!normalized.org_id) {
+      console.warn('[BILLING-WEBHOOK] Missing org_id, cannot store revenue entry');
+      return jsonResponse({ received: true, error: 'Missing org_id' }, 400);
+    }
+
+    // Store in revenue_entries table
+    const revenueEntry = {
+      org_id: normalized.org_id,
+      cost_center: normalized.customer_id,
+      revenue_amount: normalized.amount_usd,
+      currency: normalized.currency,
+      period_start: normalized.period_start,
+      period_end: normalized.period_end,
+      plan_tier: normalized.plan_tier,
+      source: normalized.source,
+      source_event: normalized.event_type,
+      created_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await env.supabase
+      .from('revenue_entries')
+      .insert([revenueEntry])
+      .select();
+
+    if (error) {
+      console.error('[BILLING-WEBHOOK] Insert error:', error);
+      return jsonResponse({ received: true, error: error.message }, 500);
+    }
+
+    const entryId = data?.[0]?.id;
+    console.log(`[BILLING-WEBHOOK] Revenue entry created: ${entryId} for org ${normalized.org_id}`);
+
+    return jsonResponse({
+      received: true,
+      revenue_entry_id: entryId,
+    }, 200);
+  } catch (error) {
+    console.error('[BILLING-WEBHOOK] Error:', error);
+    return jsonResponse({ received: true, error: error.message }, 500);
+  }
+};
+
+/**
+ * POST /v1/billing/webhook
  * Stripe webhook handler - processes subscription events
  * Public endpoint (no auth required) - validates signature instead
  * Handles:
@@ -656,6 +779,7 @@ export {
   handleGetSubscription,
   handleReportUsage,
   handleGetUsage,
+  handleBillingWebhook,
   handleWebhook,
 };
 
@@ -669,7 +793,8 @@ export {
  *   GET /v1/billing/subscription
  *   POST /v1/billing/usage
  *   GET /v1/billing/usage
- *   POST /v1/billing/webhook (public, no auth)
+ *   POST /v1/billing/webhook (Stripe webhook, public)
+ *   POST /v1/billing/webhook-generic (Multi-format webhook, public)
  */
 export function registerBillingRoutes(router) {
   router.post('/v1/billing/checkout', handleCheckout);
@@ -678,6 +803,7 @@ export function registerBillingRoutes(router) {
   router.post('/v1/billing/usage', handleReportUsage);
   router.get('/v1/billing/usage', handleGetUsage);
   router.post('/v1/billing/webhook', handleWebhook);
+  router.post('/v1/billing/webhook-generic', handleBillingWebhook);
 }
 
 export default {
@@ -686,6 +812,7 @@ export default {
   handleGetSubscription,
   handleReportUsage,
   handleGetUsage,
+  handleBillingWebhook,
   handleWebhook,
   registerBillingRoutes,
   PRICING_TIERS,

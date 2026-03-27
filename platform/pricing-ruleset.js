@@ -11,6 +11,10 @@
  *   - Sealed rulesets are immutable
  *   - Every reconciliation must cite a specific ruleset version
  *
+ * CANONICAL PRICING SOURCE: platform/model-registry.js LOCAL_FALLBACK_PRICING
+ * Per-token values here = model-registry per-1K values ÷ 1000
+ * Last aligned: 2026-03-01
+ *
  * ═══════════════════════════════════════════════════════════════════════════════
  */
 

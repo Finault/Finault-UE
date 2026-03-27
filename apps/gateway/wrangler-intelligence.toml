@@ -1,0 +1,103 @@
+name = "finault-intelligence"
+type = "javascript"
+account_id = "YOUR_ACCOUNT_ID"
+workers_dev = true
+route = "intelligence.finault.ai/*"
+zone_id = "YOUR_ZONE_ID"
+
+# Durable Objects for state management
+[[durable_objects.bindings]]
+name = "BUDGET_STORE"
+class_name = "BudgetStore"
+script_name = "finault-intelligence"
+
+[[durable_objects.bindings]]
+name = "ANOMALY_DETECTOR"
+class_name = "AnomalyDetector"
+script_name = "finault-intelligence"
+
+# KV Namespaces
+[[kv_namespaces]]
+binding = "BUDGET_KV"
+id = "YOUR_BUDGET_KV_ID"
+preview_id = "YOUR_BUDGET_KV_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "CUSTOMER_CACHE"
+id = "YOUR_CUSTOMER_CACHE_KV_ID"
+preview_id = "YOUR_CUSTOMER_CACHE_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "RATE_LIMIT_KV"
+id = "YOUR_RATE_LIMIT_KV_ID"
+preview_id = "YOUR_RATE_LIMIT_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "BASELINE_CACHE"
+id = "YOUR_BASELINE_CACHE_KV_ID"
+preview_id = "YOUR_BASELINE_CACHE_PREVIEW_ID"
+
+[[kv_namespaces]]
+binding = "TRANSACTION_LOG"
+id = "YOUR_TRANSACTION_LOG_KV_ID"
+preview_id = "YOUR_TRANSACTION_LOG_PREVIEW_ID"
+
+# Supabase Database Binding (via pooled connection)
+[env.production.vars]
+SUPABASE_URL = "https://YOUR_PROJECT.supabase.co"
+SUPABASE_ANON_KEY = "YOUR_ANON_KEY"
+SUPABASE_SERVICE_ROLE_KEY = "YOUR_SERVICE_ROLE_KEY"
+
+# Analytics Engine
+[analytics_engine_datasets]
+binding = "ANALYTICS"
+
+# Webhook for alerts
+[env.production.vars]
+SLACK_WEBHOOK_URL = "https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+PAGERDUTY_INTEGRATION_KEY = "YOUR_PAGERDUTY_KEY"
+
+# Environment configuration
+[env.production]
+route = "intelligence.finault.ai/*"
+zone_id = "YOUR_ZONE_ID"
+vars = {
+  ENVIRONMENT = "production",
+  LOG_LEVEL = "info",
+  CACHE_TTL = "3600"
+}
+
+[env.staging]
+route = "staging-intelligence.finault.ai/*"
+zone_id = "YOUR_ZONE_ID"
+vars = {
+  ENVIRONMENT = "staging",
+  LOG_LEVEL = "debug",
+  CACHE_TTL = "300"
+}
+
+# Build configuration
+[build]
+cwd = "."
+command = "npm install && npm run build"
+watch_paths = ["src/**/*.js"]
+
+[build.upload]
+format = "service-worker"
+main = "./intelligence.js"
+
+# Triggers for background jobs
+[[triggers.crons]]
+cron = "*/5 * * * *"  # Every 5 minutes
+handler = "processAnomalies"
+
+[[triggers.crons]]
+cron = "0 * * * *"  # Every hour
+handler = "computeBaselines"
+
+[[triggers.crons]]
+cron = "0 0 * * *"  # Daily
+handler = "generateAnalyticsReport"
+
+# Limits
+limits = { cpu_ms = 50 }

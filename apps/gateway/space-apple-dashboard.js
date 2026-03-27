@@ -43,7 +43,7 @@ class ProactiveAlertSystem {
       // Fetch organization and current billing period
       const { data: org, error: orgError } = await this.supabase
         .from('organizations')
-        .select('id, monthly_budget, name, alert_email')
+        .select('id, monthly_budget, name, alert_email, slack_webhook')
         .eq('id', orgId)
         .single();
 
@@ -122,10 +122,95 @@ class ProactiveAlertSystem {
         }
       }
 
+      // Deliver alerts to Slack if configured
+      if (alerts.length > 0 && org.slack_webhook) {
+        await this.deliverToSlack(alerts, org);
+      }
+
       return alerts;
     } catch (error) {
       console.error('ProactiveAlertSystem.checkAndAlert error:', error);
       return [];
+    }
+  }
+
+  /**
+   * Deliver alerts to Slack via incoming webhook
+   * Uses Block Kit for rich formatting
+   */
+  async deliverToSlack(alerts, org) {
+    try {
+      const severityEmoji = { critical: ':rotating_light:', warning: ':warning:', info: ':information_source:' };
+      const severityColor = { critical: '#dc2626', warning: '#f59e0b', info: '#3b82f6' };
+
+      const blocks = [
+        {
+          type: 'header',
+          text: { type: 'plain_text', text: `Finault Alert — ${org.name || 'Your Organization'}`, emoji: true }
+        },
+        { type: 'divider' }
+      ];
+
+      for (const alert of alerts) {
+        const emoji = severityEmoji[alert.severity] || ':bell:';
+        const color = severityColor[alert.severity] || '#6b7280';
+
+        blocks.push({
+          type: 'section',
+          text: {
+            type: 'mrkdwn',
+            text: `${emoji} *${alert.type.replace(/_/g, ' ').toUpperCase()}*\n${alert.message}`
+          }
+        });
+
+        // Add context with data details
+        if (alert.data) {
+          const details = [];
+          if (alert.data.current !== undefined) details.push(`Current: $${Number(alert.data.current).toLocaleString()}`);
+          if (alert.data.budget !== undefined) details.push(`Budget: $${Number(alert.data.budget).toLocaleString()}`);
+          if (alert.data.average !== undefined) details.push(`Avg: $${Number(alert.data.average).toFixed(2)}`);
+          if (alert.data.count !== undefined) details.push(`Count: ${alert.data.count}`);
+          if (alert.data.monthlyCost !== undefined) details.push(`Monthly waste: $${Number(alert.data.monthlyCost).toFixed(2)}`);
+
+          if (details.length > 0) {
+            blocks.push({
+              type: 'context',
+              elements: [{ type: 'mrkdwn', text: details.join(' · ') }]
+            });
+          }
+        }
+      }
+
+      blocks.push(
+        { type: 'divider' },
+        {
+          type: 'context',
+          elements: [{ type: 'mrkdwn', text: `<https://app.finault.ai|View Dashboard> · ${new Date().toISOString().slice(0, 16).replace('T', ' ')} UTC` }]
+        }
+      );
+
+      // Use Slack attachments for colored sidebar
+      const payload = {
+        attachments: [{
+          color: alerts.some(a => a.severity === 'critical') ? '#dc2626' : alerts.some(a => a.severity === 'warning') ? '#f59e0b' : '#3b82f6',
+          blocks
+        }]
+      };
+
+      const resp = await fetch(org.slack_webhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (!resp.ok) {
+        console.error(`[SLACK] Delivery failed for org ${org.id}: ${resp.status}`);
+      } else {
+        console.log(`[SLACK] Delivered ${alerts.length} alert(s) to org ${org.id}`);
+      }
+    } catch (error) {
+      // Fire-and-forget — don't let Slack failures break alerting
+      console.error(`[SLACK] Error delivering to org ${org.id}:`, error.message);
     }
   }
 }

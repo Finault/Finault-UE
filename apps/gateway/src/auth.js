@@ -22,7 +22,11 @@ const PUBLIC_ENDPOINTS = [
   '/v1/verify',
   '/v1/logs/verify',
   '/v1/analytics/public',
-  '/public/*'
+  '/v1/chain/status',
+  '/v1/chain/verify',
+  '/v1/settlement/status',
+  '/public/*',
+  '/v1/agents/*/credential'
 ];
 
 /**

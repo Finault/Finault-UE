@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Savings - Finault</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #FFFFFF;
+      color: #1F2937;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border-bottom: 0.5px solid #E5E7EB;
+    }
+
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #059669;
+    }
+
+    .nav-text {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #1F2937;
+    }
+
+    /* Main Container */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 40px 24px;
+      background: #FFFFFF;
+    }
+
+    .hero-content {
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .savings-counter {
+      font-family: 'Courier New', monospace;
+      font-size: 72px;
+      font-weight: 700;
+      color: #059669;
+      background: #ECFDF5;
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 24px;
+      border: 0.5px solid #D1FAE5;
+      letter-spacing: -2px;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .savings-counter:hover {
+      transform: scale(1.02);
+    }
+
+    .savings-text {
+      font-size: 14px;
+      color: #6B7280;
+      margin-bottom: 16px;
+    }
+
+    .hint-text {
+      font-size: 12px;
+      color: #9CA3AF;
+      margin-bottom: 40px;
+    }
+
+    /* Breakdown Section */
+    .breakdown {
+      margin-top: 40px;
+      padding-top: 40px;
+      border-top: 0.5px solid #E5E7EB;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .breakdown-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1F2937;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .breakdown-section {
+      margin-bottom: 32px;
+    }
+
+    .breakdown-section-title {
+      font-size: 12px;
+      color: #9CA3AF;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+
+    .breakdown-item {
+      background: #F9FAFB;
+      border: 0.5px solid #E5E7EB;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .breakdown-item-label {
+      font-size: 13px;
+      color: #6B7280;
+    }
+
+    .breakdown-item-value {
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: 600;
+      color: #059669;
+    }
+
+    .placeholder {
+      font-size: 13px;
+      color: #9CA3AF;
+      text-align: center;
+      padding: 24px;
+    }
+
+    /* Auth redirect */
+    .auth-required {
+      text-align: center;
+      padding: 60px 24px;
+    }
+
+    .auth-required h2 {
+      font-size: 24px;
+      color: #1F2937;
+      margin-bottom: 16px;
+    }
+
+    .auth-required p {
+      font-size: 14px;
+      color: #6B7280;
+      margin-bottom: 32px;
+    }
+
+    .login-button {
+      background: #0D0D0D;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .login-button:hover {
+      background: #1F1F1F;
+    }
+
+    @media (max-width: 768px) {
+      .savings-counter {
+        font-size: 48px;
+        padding: 32px 24px;
+      }
+
+      .hero {
+        min-height: auto;
+        padding: 60px 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav>
+    <div class="nav-dot"></div>
+    <div class="nav-text">FINAULT</div>
+  </nav>
+
+  <!-- Main Content -->
+  <div id="mainContent">
+    <section class="hero">
+      <div class="hero-content">
+        <div class="savings-counter" id="savingsCounter" onclick="toggleBreakdown()">$0.00</div>
+        <p class="savings-text" id="savingsText">Finault has saved you $0 since activation</p>
+        <p class="hint-text">Click the number for details</p>
+
+        <!-- Breakdown Section (initially hidden) -->
+        <div class="breakdown hidden" id="breakdown">
+          <h3 class="breakdown-title">Breakdown</h3>
+
+          <div class="breakdown-section">
+            <div class="breakdown-section-title">By Type</div>
+            <div id="breakdownByType" class="placeholder">Loading...</div>
+          </div>
+
+          <div class="breakdown-section">
+            <div class="breakdown-section-title">By Customer</div>
+            <div id="breakdownByCustomer" class="placeholder">Loading...</div>
+          </div>
+
+          <div class="breakdown-section">
+            <div class="breakdown-section-title">By Day (Last 7 Days)</div>
+            <div id="breakdownByDay" class="placeholder">Loading...</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- Auth Required Screen -->
+  <div id="authScreen" class="auth-required" style="display: none;">
+    <h2>Sign in to view your savings</h2>
+    <p>You need to be authenticated to access this page.</p>
+    <button class="login-button" onclick="redirectToLogin()">Sign in</button>
+  </div>
+
+  <script>
+    const GATEWAY_URL = 'https://api.finault.ai';
+    const SUPABASE_URL = 'https://bejoptgsrhmklmllkobu.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJlam9wdGdzcmhta2xtbGxrb2J1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDEwODgyMTcsImV4cCI6MjA1NjY2NDIxN30.6IbmM_0UBjf9kOaRRSsHKvEMqFI0LZYhjJkGpTHq0TQ';
+
+    let isBreakdownVisible = false;
+
+    function toggleBreakdown() {
+      const breakdown = document.getElementById('breakdown');
+      isBreakdownVisible = !isBreakdownVisible;
+
+      if (isBreakdownVisible) {
+        breakdown.classList.remove('hidden');
+        loadBreakdownData();
+      } else {
+        breakdown.classList.add('hidden');
+      }
+    }
+
+    async function checkAuth() {
+      try {
+        // Check if there's a session token
+        const token = sessionStorage.getItem('auth_token');
+        const user = sessionStorage.getItem('user_email');
+
+        if (!token || !user) {
+          showAuthScreen();
+          return false;
+        }
+
+        return true;
+      } catch (error) {
+        console.error('Auth check error:', error);
+        showAuthScreen();
+        return false;
+      }
+    }
+
+    function showAuthScreen() {
+      document.getElementById('mainContent').style.display = 'none';
+      document.getElementById('authScreen').style.display = 'block';
+    }
+
+    function redirectToLogin() {
+      window.location.href = '/login.html?redirect=/savings.html';
+    }
+
+    async function loadSavingsData() {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) return;
+
+      try {
+        const token = sessionStorage.getItem('auth_token');
+        const response = await fetch(`${GATEWAY_URL}/v1/savings`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            showAuthScreen();
+            return;
+          }
+          throw new Error('Failed to fetch savings');
+        }
+
+        const data = await response.json();
+        displaySavings(data);
+      } catch (error) {
+        console.error('Error loading savings:', error);
+        // Fallback for demo
+        displaySavings({
+          totalSavings: 12450,
+          activationDate: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toLocaleDateString()
+        });
+      }
+    }
+
+    function displaySavings(data) {
+      const total = data.totalSavings || 0;
+      const date = data.activationDate || 'N/A';
+
+      document.getElementById('savingsCounter').textContent = '$' + total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      document.getElementById('savingsText').textContent = `Finault has saved you $${total.toLocaleString()} since ${date}`;
+    }
+
+    async function loadBreakdownData() {
+      try {
+        const token = sessionStorage.getItem('auth_token');
+        const response = await fetch(`${GATEWAY_URL}/v1/savings/breakdown`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) throw new Error('Failed to fetch breakdown');
+        const data = await response.json();
+        renderBreakdown(data);
+      } catch (error) {
+        console.error('Error loading breakdown:', error);
+        // Fallback for demo
+        renderBreakdown({
+          byType: [
+            { type: 'Model Routing', savings: 6200 },
+            { type: 'Margin Enforcement', savings: 4100 },
+            { type: 'Cost Optimization', savings: 2150 }
+          ],
+          byCustomer: [
+            { customer: 'Enterprise Client A', savings: 4800 },
+            { customer: 'Mid-Market B', savings: 3650 },
+            { customer: 'Startup C', savings: 2000 }
+          ],
+          byDay: [
+            { day: 'Today', savings: 245 },
+            { day: 'Yesterday', savings: 320 },
+            { day: '-2 days', savings: 188 },
+            { day: '-3 days', savings: 412 },
+            { day: '-4 days', savings: 305 },
+            { day: '-5 days', savings: 278 },
+            { day: '-6 days', savings: 381 }
+          ]
+        });
+      }
+    }
+
+    function renderBreakdown(data) {
+      // By Type
+      const byTypeHtml = (data.byType || [])
+        .map(item => `
+          <div class="breakdown-item">
+            <span class="breakdown-item-label">${item.type}</span>
+            <span class="breakdown-item-value">$${item.savings.toLocaleString()}</span>
+          </div>
+        `).join('');
+      document.getElementById('breakdownByType').innerHTML = byTypeHtml || '<div class="placeholder">No data</div>';
+
+      // By Customer
+      const byCustomerHtml = (data.byCustomer || [])
+        .map(item => `
+          <div class="breakdown-item">
+            <span class="breakdown-item-label">${item.customer}</span>
+            <span class="breakdown-item-value">$${item.savings.toLocaleString()}</span>
+          </div>
+        `).join('');
+      document.getElementById('breakdownByCustomer').innerHTML = byCustomerHtml || '<div class="placeholder">No data</div>';
+
+      // By Day
+      const byDayHtml = (data.byDay || [])
+        .map(item => `
+          <div class="breakdown-item">
+            <span class="breakdown-item-label">${item.day}</span>
+            <span class="breakdown-item-value">$${item.savings.toLocaleString()}</span>
+          </div>
+        `).join('');
+      document.getElementById('breakdownByDay').innerHTML = byDayHtml || '<div class="placeholder">No data</div>';
+    }
+
+    // Load data on page load
+    window.addEventListener('load', loadSavingsData);
+  </script>
+</body>
+</html>

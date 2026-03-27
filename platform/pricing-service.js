@@ -238,11 +238,13 @@ const FALLBACK_MODEL_PRICING = {
     contextWindow: 128000,
     capabilities: ['text', 'vision', 'reasoning', 'code'],
   },
+  // CANONICAL SOURCE: platform/model-registry.js LOCAL_FALLBACK_PRICING
+  // gpt-4o: $2.50/$10 per 1M tokens (updated 2026-03-01, post OpenAI price cut)
   'gpt-4o': {
     provider: 'OpenAI',
     family: 'GPT-4',
-    inputCost: 0.005,
-    outputCost: 0.015,
+    inputCost: 0.0025,
+    outputCost: 0.01,
     qualityScore: 0.92,
     speedScore: 0.88,
     releaseDate: '2024-05-13',
@@ -502,21 +504,42 @@ const FALLBACK_AI_DOMAINS = {
   },
 };
 
+// CANONICAL SOURCE: platform/model-registry.js LOCAL_FALLBACK_PRICING
+// Values here = model-registry per-1K-token values × 100 (to get cents)
+// Updated 2026-03-01 to match canonical table
 const FALLBACK_KNOWN_PRICING_CENTS_PER_1K = {
   'gpt-4': { input: 3.0, output: 6.0 },
   'gpt-4-turbo': { input: 1.0, output: 3.0 },
-  'gpt-4o': { input: 0.25, output: 1.0 },
-  'gpt-4o-mini': { input: 0.015, output: 0.06 },
+  'gpt-4o': { input: 0.25, output: 1.0 },          // $2.50/$10 per 1M
+  'gpt-4o-mini': { input: 0.015, output: 0.06 },    // $0.15/$0.60 per 1M
   'gpt-3.5-turbo': { input: 0.05, output: 0.15 },
+  'gpt-4.1': { input: 0.2, output: 0.8 },           // $2/$8 per 1M
+  'gpt-4.1-mini': { input: 0.04, output: 0.16 },    // $0.40/$1.60 per 1M
+  'gpt-4.1-nano': { input: 0.01, output: 0.04 },    // $0.10/$0.40 per 1M
+  'o1': { input: 1.5, output: 6.0 },                 // $15/$60 per 1M
+  'o1-mini': { input: 0.3, output: 1.2 },            // $3/$12 per 1M
+  'o3': { input: 0.2, output: 0.8 },                 // $2/$8 per 1M
+  'o3-mini': { input: 0.11, output: 0.44 },          // $1.10/$4.40 per 1M
+  'o4-mini': { input: 0.11, output: 0.44 },          // $1.10/$4.40 per 1M
+  'claude-opus-4.5': { input: 0.5, output: 2.5 },    // $5/$25 per 1M
+  'claude-opus-4': { input: 1.5, output: 7.5 },      // $15/$75 per 1M
+  'claude-sonnet-4.5': { input: 0.3, output: 1.5 },  // $3/$15 per 1M
+  'claude-sonnet-4': { input: 0.3, output: 1.5 },    // $3/$15 per 1M
+  'claude-haiku-4.5': { input: 0.1, output: 0.5 },   // $1/$5 per 1M
   'claude-3-opus': { input: 1.5, output: 7.5 },
   'claude-3.5-sonnet': { input: 0.3, output: 1.5 },
   'claude-3-sonnet': { input: 0.3, output: 1.5 },
   'claude-3-haiku': { input: 0.025, output: 0.125 },
   'claude-3.5-haiku': { input: 0.08, output: 0.4 },
+  'gemini-2.5-pro': { input: 0.125, output: 1.0 },   // $1.25/$10 per 1M
+  'gemini-2.5-flash': { input: 0.015, output: 0.35 }, // $0.15/$3.50 per 1M
+  'gemini-2.0-flash': { input: 0.01, output: 0.04 },  // $0.10/$0.40 per 1M
   'gemini-1.5-pro': { input: 0.125, output: 0.5 },
   'gemini-1.5-flash': { input: 0.0075, output: 0.03 },
+  'deepseek-v3': { input: 0.027, output: 0.11 },      // $0.27/$1.10 per 1M
+  'deepseek-r1': { input: 0.055, output: 0.22 },      // $0.55/$2.19 per 1M
   'mistral-large': { input: 0.2, output: 0.6 },
-  'mistral-small': { input: 0.1, output: 0.3 },
+  'mistral-small': { input: 0.01, output: 0.03 },
 };
 
 // ============================================================================

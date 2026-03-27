@@ -1,0 +1,7 @@
+{
+  "name": "finault-status",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Status page worker for Finault",
+  "main": "status-worker.js"
+}

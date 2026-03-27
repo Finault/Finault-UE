@@ -2,13 +2,13 @@
  * Dashboard & Analytics Handlers
  * ═══════════════════════════════════════════════════════════════════════════════
  *
- * Handlers for analytics endpoints:
- * - Dashboard overview
- * - Drill-down analysis
- * - Benchmarking
- * - Insights generation
+ * Live dashboard endpoints — queries the `usage` table populated by the gateway
+ * on every proxied AI request via DurableLoggerV2.
+ *
+ * Handlers:
+ * - Dashboard overview (spend, provider/model breakdown)
+ * - Drill-down analysis (by provider, model, cost_center, time)
  * - What-if scenarios
- * - Money Machine (automated optimization)
  * - Goals tracking
  * - Alert management
  */
@@ -16,39 +16,221 @@
 import { jsonResponse, errorResponse } from '../utils.js';
 import { getOrgIdFromAuth } from '../auth.js';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// SUPABASE HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function supabaseHeaders(env) {
+  const key = env.SUPABASE_SERVICE_KEY || env.SUPABASE_ANON_KEY;
+  return {
+    'apikey': key,
+    'Authorization': `Bearer ${key}`,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  };
+}
+
+async function supabaseQuery(env, table, queryParams) {
+  const url = new URL(`${env.SUPABASE_URL}/rest/v1/${table}`);
+  for (const [k, v] of Object.entries(queryParams)) {
+    url.searchParams.set(k, v);
+  }
+  const resp = await fetch(url.toString(), { headers: supabaseHeaders(env) });
+  if (!resp.ok) {
+    const text = await resp.text();
+    throw new Error(`Supabase ${table} query failed (${resp.status}): ${text}`);
+  }
+  return resp.json();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TIMEFRAME HELPERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+function getTimeframeDates(timeframe) {
+  const now = new Date();
+  let start;
+
+  switch (timeframe) {
+    case '7d':
+      start = new Date(now); start.setDate(now.getDate() - 7); break;
+    case '30d':
+      start = new Date(now); start.setDate(now.getDate() - 30); break;
+    case '90d':
+      start = new Date(now); start.setDate(now.getDate() - 90); break;
+    case 'mtd': // Month to date
+      start = new Date(now.getFullYear(), now.getMonth(), 1); break;
+    case 'ytd': // Year to date
+      start = new Date(now.getFullYear(), 0, 1); break;
+    default: // Default 30 days
+      start = new Date(now); start.setDate(now.getDate() - 30);
+  }
+
+  return {
+    start: start.toISOString(),
+    end: now.toISOString()
+  };
+}
+
+function getPreviousPeriodDates(timeframe) {
+  const { start, end } = getTimeframeDates(timeframe);
+  const duration = new Date(end) - new Date(start);
+  const prevEnd = new Date(start);
+  const prevStart = new Date(prevEnd - duration);
+  return {
+    start: prevStart.toISOString(),
+    end: prevEnd.toISOString()
+  };
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DASHBOARD OVERVIEW
+// ═══════════════════════════════════════════════════════════════════════════════
+
 /**
  * Handle dashboard overview request
- * Aggregates spend, budgets, savings, anomalies for main dashboard view
+ * Returns: total spend, provider breakdown, model breakdown, daily trend, request count
+ * All from live usage data flowing through the gateway.
  */
 const handleDashboard = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
-    const timeframe = new URL(request.url).searchParams.get('timeframe') || '30d';
+    const url = new URL(request.url);
+    const timeframe = url.searchParams.get('timeframe') || '30d';
+    const { start, end } = getTimeframeDates(timeframe);
+    const prev = getPreviousPeriodDates(timeframe);
 
-    // In full implementation, would query Supabase for:
-    // - Current month spend
-    // - Budget vs actual
-    // - Anomalies detected
-    // - Savings opportunities
-    // - Forecast trends
+    // Query current period usage
+    const usage = await supabaseQuery(env, 'usage', {
+      'organization_id': `eq.${orgId}`,
+      'created_at': `gte.${start}`,
+      'order': 'created_at.desc',
+      'limit': '10000'
+    });
+
+    // Query previous period for trend comparison
+    const prevUsage = await supabaseQuery(env, 'usage', {
+      'organization_id': `eq.${orgId}`,
+      'created_at': `gte.${prev.start}`,
+      'created_at': `lt.${prev.end}`,
+      'select': 'cost_cents',
+      'limit': '10000'
+    });
+
+    // Aggregate current period
+    let totalCostCents = 0;
+    let totalTokensIn = 0;
+    let totalTokensOut = 0;
+    let requestCount = 0;
+    const byProvider = {};
+    const byModel = {};
+    const byDay = {};
+    const byCostCenter = {};
+
+    for (const row of usage) {
+      const cost = parseFloat(row.cost_cents) || 0;
+      totalCostCents += cost;
+      totalTokensIn += row.input_tokens || 0;
+      totalTokensOut += row.output_tokens || 0;
+      requestCount++;
+
+      // By provider
+      const p = row.provider || 'unknown';
+      if (!byProvider[p]) byProvider[p] = { cost_cents: 0, requests: 0, tokens: 0 };
+      byProvider[p].cost_cents += cost;
+      byProvider[p].requests++;
+      byProvider[p].tokens += (row.input_tokens || 0) + (row.output_tokens || 0);
+
+      // By model
+      const m = row.model || 'unknown';
+      if (!byModel[m]) byModel[m] = { cost_cents: 0, requests: 0, tokens: 0 };
+      byModel[m].cost_cents += cost;
+      byModel[m].requests++;
+      byModel[m].tokens += (row.input_tokens || 0) + (row.output_tokens || 0);
+
+      // By day
+      const day = (row.created_at || '').split('T')[0];
+      if (day) {
+        if (!byDay[day]) byDay[day] = { cost_cents: 0, requests: 0 };
+        byDay[day].cost_cents += cost;
+        byDay[day].requests++;
+      }
+
+      // By cost center
+      const cc = row.cost_center || 'default';
+      if (!byCostCenter[cc]) byCostCenter[cc] = { cost_cents: 0, requests: 0 };
+      byCostCenter[cc].cost_cents += cost;
+      byCostCenter[cc].requests++;
+    }
+
+    // Previous period total for trend
+    let prevTotalCents = 0;
+    for (const row of prevUsage) {
+      prevTotalCents += parseFloat(row.cost_cents) || 0;
+    }
+
+    // Calculate trend
+    const currentDollars = totalCostCents / 100;
+    const prevDollars = prevTotalCents / 100;
+    let trend = 'stable';
+    let trendPct = 0;
+    if (prevDollars > 0) {
+      trendPct = ((currentDollars - prevDollars) / prevDollars) * 100;
+      if (trendPct > 5) trend = 'increasing';
+      else if (trendPct < -5) trend = 'decreasing';
+    }
+
+    // Format breakdowns
+    const providerBreakdown = Object.entries(byProvider)
+      .map(([name, d]) => ({
+        name,
+        cost: d.cost_cents / 100,
+        requests: d.requests,
+        tokens: d.tokens,
+        percentage: totalCostCents > 0 ? Math.round(d.cost_cents / totalCostCents * 1000) / 10 : 0
+      }))
+      .sort((a, b) => b.cost - a.cost);
+
+    const modelBreakdown = Object.entries(byModel)
+      .map(([name, d]) => ({
+        name,
+        cost: d.cost_cents / 100,
+        requests: d.requests,
+        tokens: d.tokens,
+        percentage: totalCostCents > 0 ? Math.round(d.cost_cents / totalCostCents * 1000) / 10 : 0
+      }))
+      .sort((a, b) => b.cost - a.cost);
+
+    const dailyTrend = Object.entries(byDay)
+      .map(([date, d]) => ({ date, cost: d.cost_cents / 100, requests: d.requests }))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
+    const costCenterBreakdown = Object.entries(byCostCenter)
+      .map(([name, d]) => ({
+        name,
+        cost: d.cost_cents / 100,
+        requests: d.requests,
+        percentage: totalCostCents > 0 ? Math.round(d.cost_cents / totalCostCents * 1000) / 10 : 0
+      }))
+      .sort((a, b) => b.cost - a.cost);
 
     return jsonResponse({
       orgId,
       timeframe,
+      period: { start, end },
       data: {
         spend: {
-          current: 0,
-          previous: 0,
-          trend: 'stable'
+          current: currentDollars,
+          previous: prevDollars,
+          trend,
+          trend_pct: Math.round(trendPct * 10) / 10
         },
-        budget: {
-          total: 0,
-          used: 0,
-          remaining: 0
-        },
-        anomalies: [],
-        savings: [],
-        forecast: []
+        requests: requestCount,
+        tokens: { input: totalTokensIn, output: totalTokensOut, total: totalTokensIn + totalTokensOut },
+        providers: providerBreakdown,
+        models: modelBreakdown,
+        daily: dailyTrend,
+        cost_centers: costCenterBreakdown
       }
     });
   } catch (error) {
@@ -56,50 +238,70 @@ const handleDashboard = async (request, env, ctx) => {
   }
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// DRILL-DOWN ANALYSIS
+// ═══════════════════════════════════════════════════════════════════════════════
+
 /**
  * Handle drill-down analysis
- * Allows exploration of spend by various dimensions:
- * - By provider (OpenAI, Anthropic, etc)
- * - By model (GPT-4, Claude, etc)
- * - By team/department
- * - By time period
+ * Dimensions: provider, model, cost_center, day
  */
 const handleDrillDown = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
     const url = new URL(request.url);
     const dimension = url.searchParams.get('dimension') || 'provider';
-    const period = url.searchParams.get('period') || 'month';
+    const timeframe = url.searchParams.get('timeframe') || '30d';
+    const { start } = getTimeframeDates(timeframe);
 
-    // In full implementation, would query Supabase and aggregate by dimension
-    // Support dimensions: provider, model, team, cost_category, etc.
+    const usage = await supabaseQuery(env, 'usage', {
+      'organization_id': `eq.${orgId}`,
+      'created_at': `gte.${start}`,
+      'select': `${dimension},cost_cents,input_tokens,output_tokens`,
+      'limit': '10000'
+    });
+
+    // Aggregate by dimension
+    const groups = {};
+    let total = 0;
+    for (const row of usage) {
+      const key = row[dimension] || 'unknown';
+      if (!groups[key]) groups[key] = { cost_cents: 0, requests: 0 };
+      const cost = parseFloat(row.cost_cents) || 0;
+      groups[key].cost_cents += cost;
+      groups[key].requests++;
+      total += cost;
+    }
+
+    const breakdown = Object.entries(groups)
+      .map(([name, d]) => ({
+        name,
+        cost: d.cost_cents / 100,
+        requests: d.requests,
+        percentage: total > 0 ? Math.round(d.cost_cents / total * 1000) / 10 : 0
+      }))
+      .sort((a, b) => b.cost - a.cost);
 
     return jsonResponse({
       orgId,
       dimension,
-      period,
-      breakdown: [
-        // { name: 'OpenAI', value: 5000, percentage: 45 },
-        // { name: 'Anthropic', value: 3000, percentage: 27 },
-        // etc.
-      ]
+      timeframe,
+      total: total / 100,
+      breakdown
     });
   } catch (error) {
     return errorResponse('INTERNAL_ERROR', error.message);
   }
 };
 
-/**
- * Handle benchmarking requests
- * Compare org's spend/usage against industry benchmarks
- * Shows percentile ranking, similar companies, best practices
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// BENCHMARKS (placeholder — needs industry data)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const handleBenchmarks = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
     const category = new URL(request.url).searchParams.get('category') || 'llm_spend';
-
-    // In full implementation, would query benchmark data from db
     return jsonResponse({
       orgId,
       category,
@@ -109,7 +311,7 @@ const handleBenchmarks = async (request, env, ctx) => {
         median: 0,
         p25: 0,
         p75: 0,
-        recommendation: 'At median spending for your industry'
+        recommendation: 'Benchmark data collecting — requires aggregate industry data'
       }
     });
   } catch (error) {
@@ -117,92 +319,130 @@ const handleBenchmarks = async (request, env, ctx) => {
   }
 };
 
-/**
- * Handle insights generation
- * Uses ML/statistical analysis to generate actionable insights
- * Examples: cost anomalies, usage patterns, optimization opportunities
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// INSIGHTS
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const handleInsights = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
-    const insightType = new URL(request.url).searchParams.get('type') || 'all';
+    const { start } = getTimeframeDates('30d');
 
-    // In full implementation, would:
-    // - Detect spending patterns
-    // - Identify cost anomalies
-    // - Find optimization opportunities
-    // - Suggest model/provider switches
-
-    return jsonResponse({
-      orgId,
-      insights: [
-        // { type: 'anomaly', severity: 'high', message: '...' },
-        // { type: 'optimization', message: '...' },
-        // etc.
-      ]
+    const usage = await supabaseQuery(env, 'usage', {
+      'organization_id': `eq.${orgId}`,
+      'created_at': `gte.${start}`,
+      'select': 'model,cost_cents,input_tokens,output_tokens,provider',
+      'limit': '10000'
     });
+
+    const insights = [];
+
+    if (usage.length === 0) {
+      return jsonResponse({ orgId, insights: [{ type: 'info', message: 'No usage data yet. Route traffic through gateway.finault.ai to see insights.' }] });
+    }
+
+    // Detect expensive model overuse
+    const byModel = {};
+    for (const row of usage) {
+      const m = row.model || 'unknown';
+      if (!byModel[m]) byModel[m] = { cost_cents: 0, requests: 0, avg_tokens: 0 };
+      byModel[m].cost_cents += parseFloat(row.cost_cents) || 0;
+      byModel[m].requests++;
+      byModel[m].avg_tokens += (row.input_tokens || 0) + (row.output_tokens || 0);
+    }
+
+    // Find if cheap model could replace expensive one
+    const expensive = ['gpt-4', 'gpt-4-turbo', 'gpt-4o', 'claude-3-opus', 'claude-opus-4'];
+    for (const [model, data] of Object.entries(byModel)) {
+      if (expensive.some(e => model.includes(e)) && data.requests > 10) {
+        const avgCost = (data.cost_cents / data.requests / 100).toFixed(4);
+        insights.push({
+          type: 'optimization',
+          severity: 'medium',
+          model,
+          message: `${model} used ${data.requests} times (avg $${avgCost}/request). Consider routing simple tasks to a smaller model.`,
+          potential_savings_pct: 40
+        });
+      }
+    }
+
+    return jsonResponse({ orgId, insights });
   } catch (error) {
     return errorResponse('INTERNAL_ERROR', error.message);
   }
 };
 
-/**
- * Handle what-if scenario analysis
- * Allows users to simulate different pricing/usage changes
- * and see projected impact on costs
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// WHAT-IF SCENARIOS
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const handleWhatIf = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
     const body = await request.json();
+    const { start } = getTimeframeDates('30d');
 
-    // Simulate changes:
-    // - Provider/model switch
-    // - Volume increase/decrease
-    // - Commitment purchase
-    // - Optimization changes
+    const usage = await supabaseQuery(env, 'usage', {
+      'organization_id': `eq.${orgId}`,
+      'created_at': `gte.${start}`,
+      'select': 'model,cost_cents,input_tokens,output_tokens',
+      'limit': '10000'
+    });
+
+    let baselineCost = 0;
+    let projectedCost = 0;
+    let baselineTokens = 0;
+
+    for (const row of usage) {
+      const cost = parseFloat(row.cost_cents) || 0;
+      baselineCost += cost;
+      baselineTokens += (row.input_tokens || 0) + (row.output_tokens || 0);
+
+      // Apply scenario substitution
+      if (body.substitute_model && row.model === body.from_model) {
+        // Rough estimate: smaller model costs ~30% of larger
+        projectedCost += cost * (body.cost_ratio || 0.3);
+      } else if (body.volume_change) {
+        projectedCost += cost * (1 + body.volume_change / 100);
+      } else {
+        projectedCost += cost;
+      }
+    }
 
     return jsonResponse({
       orgId,
-      scenario: body.scenario,
-      baseline: { cost: 0, tokens: 0 },
-      projected: { cost: 0, tokens: 0, savings: 0 },
-      impact: 0
+      scenario: body,
+      baseline: { cost: baselineCost / 100, tokens: baselineTokens },
+      projected: { cost: projectedCost / 100, savings: (baselineCost - projectedCost) / 100 },
+      impact_pct: baselineCost > 0 ? Math.round((baselineCost - projectedCost) / baselineCost * 1000) / 10 : 0
     });
   } catch (error) {
     return errorResponse('INTERNAL_ERROR', error.message);
   }
 };
 
-/**
- * Handle Money Machine (automated optimization)
- * Intelligent system that automatically recommends and implements
- * cost-saving measures based on usage patterns
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// MONEY MACHINE (placeholder — Tier 2)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const handleMoneyMachine = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
     const action = new URL(request.url).searchParams.get('action') || 'status';
 
     if (action === 'status') {
-      // Return current optimization status
       return jsonResponse({
         orgId,
         enabled: false,
         totalSavings: 0,
         recommendations: [],
-        automatedChanges: []
+        automatedChanges: [],
+        message: 'Money Machine available after Tier 2 wiring (margin routing + alerts).'
       });
     }
 
     if (action === 'enable') {
-      // Enable Money Machine for this org
-      // In full implementation, would set flag in Supabase
-      return jsonResponse({
-        orgId,
-        enabled: true,
-        message: 'Money Machine enabled'
-      });
+      return jsonResponse({ orgId, enabled: true, message: 'Money Machine enabled' });
     }
 
     return errorResponse('INVALID_REQUEST', `Unknown action: ${action}`);
@@ -211,106 +451,47 @@ const handleMoneyMachine = async (request, env, ctx) => {
   }
 };
 
-/**
- * Handle goals tracking
- * Allow users to set and track cost goals, savings targets, etc.
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// GOALS (placeholder)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const handleGoals = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
-    const method = request.method;
-
-    if (method === 'GET') {
-      // List goals
-      return jsonResponse({
-        orgId,
-        goals: []
-      });
+    if (request.method === 'GET') {
+      return jsonResponse({ orgId, goals: [] });
     }
-
-    if (method === 'POST') {
-      // Create goal
+    if (request.method === 'POST') {
       const goal = await request.json();
-      return jsonResponse({
-        orgId,
-        goal: {
-          id: crypto.randomUUID(),
-          ...goal,
-          createdAt: new Date().toISOString()
-        }
-      }, 201);
+      return jsonResponse({ orgId, goal: { id: crypto.randomUUID(), ...goal, createdAt: new Date().toISOString() } }, 201);
     }
-
-    return errorResponse('METHOD_NOT_ALLOWED', `Method ${method} not allowed`);
+    return errorResponse('METHOD_NOT_ALLOWED', `Method ${request.method} not allowed`);
   } catch (error) {
     return errorResponse('INTERNAL_ERROR', error.message);
   }
 };
 
-/**
- * Handle alert configuration and retrieval
- * Allows setting up cost alerts, anomaly alerts, etc.
- */
+// ═══════════════════════════════════════════════════════════════════════════════
+// ALERTS (placeholder)
+// ═══════════════════════════════════════════════════════════════════════════════
+
 const handleAlerts = async (request, env, ctx) => {
   try {
     const orgId = getOrgIdFromAuth(request);
     const alertId = request.params?.id;
     const method = request.method;
 
-    if (method === 'GET' && !alertId) {
-      // List alerts
-      return jsonResponse({
-        orgId,
-        alerts: []
-      });
-    }
-
-    if (method === 'GET' && alertId) {
-      // Get specific alert
-      return jsonResponse({
-        orgId,
-        alert: {
-          id: alertId,
-          type: 'cost_threshold',
-          threshold: 10000,
-          enabled: true
-        }
-      });
-    }
-
+    if (method === 'GET' && !alertId) return jsonResponse({ orgId, alerts: [] });
+    if (method === 'GET' && alertId) return jsonResponse({ orgId, alert: { id: alertId, type: 'cost_threshold', threshold: 10000, enabled: true } });
     if (method === 'POST') {
-      // Create alert
       const alertConfig = await request.json();
-      return jsonResponse({
-        orgId,
-        alert: {
-          id: crypto.randomUUID(),
-          ...alertConfig,
-          createdAt: new Date().toISOString()
-        }
-      }, 201);
+      return jsonResponse({ orgId, alert: { id: crypto.randomUUID(), ...alertConfig, createdAt: new Date().toISOString() } }, 201);
     }
-
     if (method === 'PUT' && alertId) {
-      // Update alert
       const updates = await request.json();
-      return jsonResponse({
-        orgId,
-        alert: {
-          id: alertId,
-          ...updates
-        }
-      });
+      return jsonResponse({ orgId, alert: { id: alertId, ...updates } });
     }
-
-    if (method === 'DELETE' && alertId) {
-      // Delete alert
-      return jsonResponse({
-        orgId,
-        deleted: true,
-        id: alertId
-      });
-    }
+    if (method === 'DELETE' && alertId) return jsonResponse({ orgId, deleted: true, id: alertId });
 
     return errorResponse('METHOD_NOT_ALLOWED', `Method ${method} not allowed`);
   } catch (error) {

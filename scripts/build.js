@@ -41,6 +41,7 @@ async function buildGateway() {
         'node:util',
         'node:stream',
         'node:buffer',
+        'node-fetch',
         'cloudflare:*'
       ],
 

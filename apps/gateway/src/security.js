@@ -30,6 +30,10 @@ const ALLOWED_HEADERS = [
   'Content-Type',
   'Authorization',
   'X-Finault-API-Key',
+  'X-Finault-Cost-Center',
+  'X-Finault-Project',
+  'X-Finault-User-Id',
+  'X-Finault-Environment',
   'X-Request-ID',
   'X-Org-ID'
 ];
@@ -61,7 +65,16 @@ const getCORSHeaders = (origin, options = {}) => {
       'X-RateLimit-Limit',
       'X-RateLimit-Remaining',
       'X-RateLimit-Reset',
-      'X-Request-ID'
+      'X-Request-ID',
+      'X-Finault-Cost',
+      'X-Finault-Cost-Currency',
+      'X-Finault-Cost-Cents',
+      'X-Finault-Model',
+      'X-Finault-Provider',
+      'X-Finault-Tokens-In',
+      'X-Finault-Tokens-Out',
+      'X-Finault-Latency-Ms',
+      'X-Finault-Request-Id'
     ].join(', ')
   };
 };

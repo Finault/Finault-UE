@@ -238,7 +238,7 @@ function summarizeCostHeaders(response) {
 }
 
 // Export all functions
-module.exports = {
+export {
   addCostResponseHeaders,
   calculateSessionCost,
   generateRequestId,

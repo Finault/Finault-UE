@@ -17,21 +17,21 @@ export class Anomalies extends Resource {
     if (options?.severity) params.severity = options.severity;
     if (options?.acknowledged !== undefined) params.acknowledged = options.acknowledged;
 
-    const response = await this.client.request<ListResponse<Anomaly>>(
+    const response = await this.client.request(
       'GET',
       '/v1/anomalies',
       undefined,
       { params }
-    );
+    ) as ListResponse<Anomaly>;
 
-    return (response.items || []).map((item) => this.normalizeResponse(item));
+    return (response.items || []).map((item: any) => this.normalizeResponse(item));
   }
 
   /**
    * Get a specific anomaly
    */
   async get(anomalyId: string): Promise<Anomaly> {
-    const response = await this.client.request<Anomaly>(
+    const response = await this.client.request(
       'GET',
       `/v1/anomalies/${anomalyId}`
     );
@@ -43,7 +43,7 @@ export class Anomalies extends Resource {
    * Mark an anomaly as acknowledged
    */
   async acknowledge(anomalyId: string): Promise<Anomaly> {
-    const response = await this.client.request<Anomaly>(
+    const response = await this.client.request(
       'POST',
       `/v1/anomalies/${anomalyId}/acknowledge`
     );

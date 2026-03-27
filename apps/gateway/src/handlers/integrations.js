@@ -5,6 +5,45 @@
  */
 
 // ============================================================================
+// Encryption Helper Functions
+// ============================================================================
+
+/**
+ * Encrypt a string using AES-GCM with crypto.subtle
+ * @param {string} plaintext - The string to encrypt
+ * @param {string} keyHex - 256-bit key as hex string
+ * @returns {Promise<string>} Base64-encoded ciphertext with IV prepended
+ */
+async function encryptAESGCM(plaintext, keyHex) {
+  const keyBytes = new Uint8Array(keyHex.match(/.{2}/g).map(b => parseInt(b, 16)));
+  const key = await crypto.subtle.importKey('raw', keyBytes, 'AES-GCM', false, ['encrypt']);
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const encoded = new TextEncoder().encode(plaintext);
+  const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, encoded);
+  // Prepend IV to ciphertext
+  const combined = new Uint8Array(iv.length + ciphertext.byteLength);
+  combined.set(iv);
+  combined.set(new Uint8Array(ciphertext), iv.length);
+  return btoa(String.fromCharCode(...combined));
+}
+
+/**
+ * Decrypt an AES-GCM encrypted string
+ * @param {string} encryptedBase64 - Base64-encoded ciphertext with IV
+ * @param {string} keyHex - 256-bit key as hex string
+ * @returns {Promise<string>} Decrypted plaintext
+ */
+async function decryptAESGCM(encryptedBase64, keyHex) {
+  const keyBytes = new Uint8Array(keyHex.match(/.{2}/g).map(b => parseInt(b, 16)));
+  const key = await crypto.subtle.importKey('raw', keyBytes, 'AES-GCM', false, ['decrypt']);
+  const combined = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+  const iv = combined.slice(0, 12);
+  const ciphertext = combined.slice(12);
+  const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, ciphertext);
+  return new TextDecoder().decode(decrypted);
+}
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
@@ -215,15 +254,18 @@ export async function handleConnectStripe(request, env) {
       return errorResponse('STRIPE_AUTH_FAILED', 'Invalid or expired Stripe API key', 401);
     }
 
-    // Store connector config in database
+    // Store connector config in database with encrypted API key
+    const encryptedKey = env.STRIPE_ENCRYPTION_KEY
+      ? await encryptAESGCM(apiKey, env.STRIPE_ENCRYPTION_KEY)
+      : apiKey;  // Fallback for dev without encryption key
+
     const connectorData = {
       org_id: orgId,
       connector_type: 'stripe',
       config: {
         api_key_preview: apiKey.substring(0, 10) + '...',
-        // TODO: Implement proper encryption (AWS KMS, Cloudflare Encrypted Fields, etc.)
-        // For now storing plaintext - SECURITY CONCERN
-        api_key: apiKey,
+        api_key_encrypted: encryptedKey,
+        encryption_version: env.STRIPE_ENCRYPTION_KEY ? 'aes-gcm-v1' : 'none',
       },
       status: 'active',
       cost_center_mapping: mapping,
@@ -295,7 +337,11 @@ export async function handleStripeSync(request, env) {
     }
 
     const connector = connectors[0];
-    const apiKey = connector.config.api_key;
+    // Decrypt API key if encrypted, otherwise use plaintext fallback
+    const encryptedKey = connector.config.api_key_encrypted || connector.config.api_key;
+    const apiKey = connector.config.encryption_version === 'aes-gcm-v1'
+      ? await decryptAESGCM(encryptedKey, env.STRIPE_ENCRYPTION_KEY)
+      : encryptedKey;
     const costCenterMapping = connector.cost_center_mapping || {};
     let connectorId = connector.id;
 
@@ -515,7 +561,11 @@ export async function handleGetMapping(request, env) {
     }
 
     const connector = connectors[0];
-    const apiKey = connector.config.api_key;
+    // Decrypt API key if encrypted, otherwise use plaintext fallback
+    const encryptedKey = connector.config.api_key_encrypted || connector.config.api_key;
+    const apiKey = connector.config.encryption_version === 'aes-gcm-v1'
+      ? await decryptAESGCM(encryptedKey, env.STRIPE_ENCRYPTION_KEY)
+      : encryptedKey;
     const currentMapping = connector.cost_center_mapping || {};
 
     // Fetch all Stripe customers

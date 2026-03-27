@@ -1,0 +1,15 @@
+# Cloudflare Pages Redirects — Finault Dashboard
+# Prevents cached 301s from old deployments sending / to /connect
+
+# Root serves the landing page (override any cached redirects)
+/ /index.html 200
+
+# Auth convenience redirects
+/signup /login 301
+/register /login 301
+/sign-up /login 301
+
+# Legacy route cleanup — send old paths to correct pages
+/experience / 301
+/console /dashboard 301
+/app /dashboard 301

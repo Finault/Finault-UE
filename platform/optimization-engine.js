@@ -15,6 +15,10 @@
 
 // ═══════════════════════════════════════════════════════════════════
 // MODEL PRICING & CAPABILITIES
+// CANONICAL SOURCE: platform/model-registry.js LOCAL_FALLBACK_PRICING
+// Values here are per 1M tokens. To verify alignment:
+//   model-registry per-1K-token value × 1000 = these values
+// Last aligned: 2026-03-01
 // ═══════════════════════════════════════════════════════════════════
 
 const MODEL_CATALOG = {

@@ -1,0 +1,6 @@
+customer_id,customer_name,mrr,plan
+cust_acme_corp,Acme Corp,499.00,Professional
+cust_globex_inc,Globex Inc,999.00,Enterprise
+cust_initech_llc,Initech LLC,199.00,Starter
+cust_wayne_ent,Wayne Enterprises,2499.00,Enterprise Plus
+cust_umbrella_co,Umbrella Corp,499.00,Professional

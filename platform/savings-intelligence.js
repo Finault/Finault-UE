@@ -5,7 +5,9 @@
  */
 
 // ============================================================================
-// PRICING DATA - Updated January 2026
+// PRICING DATA
+// CANONICAL SOURCE: platform/model-registry.js LOCAL_FALLBACK_PRICING
+// All values per 1K tokens. Last aligned: 2026-03-01
 // ============================================================================
 
 const MODEL_PRICING = {
@@ -13,8 +15,8 @@ const MODEL_PRICING = {
   'gpt-4-turbo': {
     provider: 'OpenAI',
     family: 'GPT-4',
-    inputCost: 0.01,       // per 1K tokens
-    outputCost: 0.03,      // per 1K tokens
+    inputCost: 0.01,       // per 1K tokens — $10/1M
+    outputCost: 0.03,      // per 1K tokens — $30/1M
     qualityScore: 0.95,
     speedScore: 0.85,
     releaseDate: '2024-04-09',
@@ -25,8 +27,8 @@ const MODEL_PRICING = {
   'gpt-4o': {
     provider: 'OpenAI',
     family: 'GPT-4',
-    inputCost: 0.005,
-    outputCost: 0.015,
+    inputCost: 0.0025,    // per 1K tokens — $2.50/1M (post price cut)
+    outputCost: 0.01,     // per 1K tokens — $10/1M
     qualityScore: 0.92,
     speedScore: 0.88,
     releaseDate: '2024-05-13',

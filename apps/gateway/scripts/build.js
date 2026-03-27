@@ -33,7 +33,7 @@ const ESBUILD_CONFIG = {
   platform: 'node',
   minify: true,
   sourcemap: false,
-  external: [], // Cloudflare Workers builtins handled by runtime
+  external: ['node-fetch'], // node-fetch provided by CF Workers runtime with nodejs_compat
   define: {
     'process.env.NODE_ENV': '"production"'
   },
@@ -134,7 +134,7 @@ const runEsBuild = () => {
     fs.writeFileSync(configFile, configJson);
 
     console.log('[BUILD] Running esbuild...');
-    const command = `npx esbuild --bundle ${ENTRY_FILE} --outfile ${OUTPUT_FILE} --format=es --target=es2022 --minify`;
+    const command = `npx esbuild --bundle ${ENTRY_FILE} --outfile ${OUTPUT_FILE} --format=es --target=es2022 --minify --external:node-fetch`;
     execSync(command, { stdio: 'inherit', cwd: GATEWAY_DIR });
 
     // Clean up config file

@@ -1,0 +1,39 @@
+{
+  "name": "@finault/aiei-validator",
+  "version": "1.0.0",
+  "description": "Open-source validator for AIEI (AI Inference Economic Identity) receipts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/finault/finault-monorepo"
+  },
+  "keywords": [
+    "aiei",
+    "receipt",
+    "validator",
+    "ai",
+    "inference",
+    "billing",
+    "tracking"
+  ],
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

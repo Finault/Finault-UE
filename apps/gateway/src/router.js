@@ -81,119 +81,158 @@ const routeTable = [
     handler: 'handleInsights'
   },
 
-  // Budget Management
+  // ─── STUB ROUTES REMOVED FOR LAUNCH ─────────────────────────────────────
+  // The following route groups have been disabled because their handlers
+  // return hardcoded/fabricated data. They will be re-enabled one-by-one
+  // as each handler is wired to real Supabase queries:
+  //   - /v1/budgets/*       (budget.js — stub)
+  //   - /v1/closepack/*     (closepack.js — stub, client-side generation used instead)
+  //   - /v1/erp/*           (erp.js — stub)
+  //   - /v1/keys/*          (keys.js — stub, client-side generation used instead)
+  //   - /v1/savings/*       (savings.js — stub)
+  //   - /v1/anomalies/*     (anomaly.js — stub)
+  //   - /v1/magic/*         (magic.js — stub)
+  // ──────────────────────────────────────────────────────────────────────────
+
+  // Merkle Proofs (RFC 6962 Transparency Log)
   {
-    pattern: '/v1/budgets',
-    methods: ['GET', 'POST'],
-    handler: 'handleBudget'
-  },
-  {
-    pattern: '/v1/budgets/:id',
-    methods: ['GET', 'PUT', 'DELETE'],
-    handler: 'handleBudgetById'
-  },
-  {
-    pattern: '/v1/budgets/:id/check',
-    methods: ['POST'],
-    handler: 'handleBudgetCheck'
-  },
-  {
-    pattern: '/v1/budgets/:id/forecast',
+    pattern: '/v1/proofs/inclusion',
     methods: ['GET'],
-    handler: 'handleBudgetForecast'
+    handler: 'handleInclusionProof'
+  },
+  {
+    pattern: '/v1/proofs/consistency',
+    methods: ['GET'],
+    handler: 'handleConsistencyProof'
+  },
+  {
+    pattern: '/v1/proofs/tree-head',
+    methods: ['GET'],
+    handler: 'handleTreeHead'
+  },
+  {
+    pattern: '/.well-known/finault-verification-key',
+    methods: ['GET'],
+    handler: 'handleVerificationKey'
   },
 
-  // Close Pack
+  // Intelligence Engine
+  {
+    pattern: '/v1/intelligence/cache-analysis',
+    methods: ['GET'],
+    handler: 'handleCacheAnalysis'
+  },
+  {
+    pattern: '/v1/intelligence/cache-analysis/run',
+    methods: ['POST'],
+    handler: 'handleCacheAnalysisTrigger'
+  },
+  {
+    pattern: '/v1/intelligence/routing',
+    methods: ['GET'],
+    handler: 'handleRoutingRecommendations'
+  },
+  {
+    pattern: '/v1/intelligence/pricing-sync',
+    methods: ['POST'],
+    handler: 'handlePricingSync'
+  },
+  {
+    pattern: '/v1/intelligence/anomalies',
+    methods: ['GET'],
+    handler: 'handleAnomalyCheck'
+  },
+  {
+    pattern: '/v1/intelligence/anomalies/run',
+    methods: ['POST'],
+    handler: 'handleAnomalyTrigger'
+  },
+
+  // Intelligence Report v2 (unified)
+  {
+    pattern: '/v1/intelligence/report',
+    methods: ['GET'],
+    handler: 'handleIntelligenceReport'
+  },
+  {
+    pattern: '/v1/intelligence/report/generate',
+    methods: ['POST'],
+    handler: 'handleIntelligenceGenerate'
+  },
+
+  // Agent Dependency Mapping
+  {
+    pattern: '/v1/intelligence/agent-map',
+    methods: ['GET'],
+    handler: 'handleAgentMap'
+  },
+  {
+    pattern: '/v1/intelligence/blast-radius',
+    methods: ['GET'],
+    handler: 'handleBlastRadius'
+  },
+
+  // Finault Index (Benchmarks)
+  {
+    pattern: '/v1/intelligence/index',
+    methods: ['GET'],
+    handler: 'handleFinaultIndex'
+  },
+
+  // Compliance
+  {
+    pattern: '/v1/compliance/report',
+    methods: ['GET'],
+    handler: 'handleComplianceReport'
+  },
+
+  // Close Pack v2
   {
     pattern: '/v1/closepack/generate',
     methods: ['POST'],
     handler: 'handleClosePackGenerate'
   },
   {
-    pattern: '/v1/closepack/email',
-    methods: ['POST'],
-    handler: 'handleClosePackEmail'
-  },
-  {
-    pattern: '/v1/closepack/download',
+    pattern: '/v1/closepack/latest',
     methods: ['GET'],
-    handler: 'handleClosePackDownload'
-  },
-
-  // ERP Integration
-  {
-    pattern: '/v1/erp/connect',
-    methods: ['POST'],
-    handler: 'handleERPConnect'
+    handler: 'handleClosePackLatest'
   },
   {
-    pattern: '/v1/erp/push',
-    methods: ['POST'],
-    handler: 'handleERPPush'
-  },
-  {
-    pattern: '/v1/erp/variance',
+    pattern: '/v1/closepack/:id',
     methods: ['GET'],
-    handler: 'handleERPVariance'
-  },
-  {
-    pattern: '/v1/erp/reconcile',
-    methods: ['POST'],
-    handler: 'handleERPReconcile'
+    handler: 'handleClosePackGet'
   },
 
-  // API Key Management
+  // GL Journal Export
   {
-    pattern: '/v1/keys',
-    methods: ['GET', 'POST'],
-    handler: 'handleAPIKeys'
-  },
-  {
-    pattern: '/v1/keys/:id',
-    methods: ['GET', 'DELETE'],
-    handler: 'handleAPIKeyById'
-  },
-  {
-    pattern: '/v1/keys/:id/rotate',
-    methods: ['POST'],
-    handler: 'handleAPIKeyRotate'
-  },
-
-  // Savings & Optimization
-  {
-    pattern: '/v1/savings/analyze',
-    methods: ['POST'],
-    handler: 'handleSavingsAnalyze'
-  },
-  {
-    pattern: '/v1/savings/recommend',
+    pattern: '/v1/export/gl-journal',
     methods: ['GET'],
-    handler: 'handleSavingsRecommend'
-  },
-  {
-    pattern: '/v1/savings/implement',
-    methods: ['POST'],
-    handler: 'handleSavingsImplement'
+    handler: 'handleGLJournal'
   },
 
-  // Anomaly Detection
+  // Webhooks
   {
-    pattern: '/v1/anomalies/detect',
+    pattern: '/v1/webhooks',
     methods: ['POST'],
-    handler: 'handleAnomalyDetect'
+    handler: 'handleWebhookRegister'
   },
   {
-    pattern: '/v1/anomalies',
+    pattern: '/v1/webhooks',
     methods: ['GET'],
-    handler: 'handleAnomaliesList'
+    handler: 'handleWebhookList'
   },
   {
-    pattern: '/v1/anomalies/:id/acknowledge',
+    pattern: '/v1/webhooks/:id',
+    methods: ['DELETE'],
+    handler: 'handleWebhookDelete'
+  },
+  {
+    pattern: '/v1/webhooks/:id/test',
     methods: ['POST'],
-    handler: 'handleAnomalyAck'
+    handler: 'handleWebhookTest'
   },
 
-  // Margin Alerts
+  // Margin Alerts (REAL — queries Supabase)
   {
     pattern: '/v1/alerts/margin/config',
     methods: ['GET', 'PUT'],
@@ -220,16 +259,26 @@ const routeTable = [
     handler: 'handleMarginAlertsCheck'
   },
 
-  // Magic Onboarding
+  // CSV Ingest & Auto-Close Pipeline (REAL — queries Supabase)
   {
-    pattern: '/v1/magic/onboard',
+    pattern: '/v1/ingest/csv',
     methods: ['POST'],
-    handler: 'handleMagicOnboarding'
+    handler: 'handleCSVIngest'
   },
   {
-    pattern: '/v1/magic/parse',
+    pattern: '/v1/org/configure',
     methods: ['POST'],
-    handler: 'handleMagicParse'
+    handler: 'handleOrgConfigure'
+  },
+  {
+    pattern: '/v1/ingest/csv/auto-close',
+    methods: ['POST'],
+    handler: 'handleAutoClose'
+  },
+  {
+    pattern: '/v1/score',
+    methods: ['GET'],
+    handler: 'handleGetScore'
   }
 ];
 

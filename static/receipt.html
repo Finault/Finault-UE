@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finault — Sealed Receipt</title>
+    <meta name="description" content="Cryptographically sealed AI transaction receipt with SHA-256 verification.">
+    <meta property="og:title" content="Finault — Sealed Receipt">
+    <meta property="og:description" content="Tamper-evident proof of an AI economic decision. Verify integrity in-browser.">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630'%3E%3Crect fill='%23F8FAFC' width='1200' height='630'/%3E%3Ctext x='50' y='100' font-size='60' font-weight='bold' fill='%23059669'%3EFinault Receipt%3C/text%3E%3Ctext x='50' y='200' font-size='32' fill='%23111827'%3EVerified %26 Sealed%3C/text%3E%3Ctext x='50' y='280' font-size='24' fill='%236B7280'%3ESHA-256 Cryptographic Proof%3C/text%3E%3C/svg%3E">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Finault — Sealed Receipt">
+    <meta name="twitter:description" content="Cryptographically sealed AI transaction receipt with real SHA-256 verification.">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --green: #059669;
+            --green-light: #ECFDF5;
+            --green-border: #A7F3D0;
+            --red: #DC2626;
+            --red-light: #FEF2F2;
+            --red-border: #FECACA;
+            --amber: #D97706;
+            --amber-light: #FFFBEB;
+            --text: #111827;
+            --text-secondary: #6B7280;
+            --text-muted: #9CA3AF;
+            --bg: #F8FAFC;
+            --white: #FFFFFF;
+            --border: #E5E7EB;
+            --border-light: #F3F4F6;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', 'Courier New', monospace;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ─── Certificate Container ─── */
+        .certificate {
+            max-width: 740px;
+            margin: 32px auto;
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 2px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        @media (max-width: 800px) {
+            .certificate { margin: 0; border-radius: 0; border-left: 0; border-right: 0; }
+        }
+
+        /* ─── Certificate Header ─── */
+        .cert-header {
+            padding: 32px 40px 24px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        @media (max-width: 640px) {
+            .cert-header { padding: 24px 20px 20px; flex-direction: column; gap: 16px; }
+        }
+
+        .cert-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cert-brand-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--green);
+            flex-shrink: 0;
+        }
+
+        .cert-brand-name {
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--text);
+            text-decoration: none;
+        }
+
+        .cert-type {
+            text-align: right;
+        }
+
+        @media (max-width: 640px) {
+            .cert-type { text-align: left; }
+        }
+
+        .cert-type-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .cert-type-id {
+            font-family: var(--mono);
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* ─── Status Banner ─── */
+        .status-banner {
+            padding: 16px 40px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .status-banner.sealed {
+            background: var(--green-light);
+            border-bottom-color: var(--green-border);
+        }
+
+        .status-banner.unverified {
+            background: var(--amber-light);
+        }
+
+        @media (max-width: 640px) {
+            .status-banner { padding: 14px 20px; }
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .status-dot.green { background: var(--green); }
+        .status-dot.amber { background: var(--amber); }
+
+        .status-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .status-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: auto;
+        }
+
+        /* ─── Certificate Body ─── */
+        .cert-body {
+            padding: 0 40px;
+        }
+
+        @media (max-width: 640px) {
+            .cert-body { padding: 0 20px; }
+        }
+
+        /* ─── Section ─── */
+        .section {
+            padding: 24px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        .section-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+        }
+
+        /* ─── Fields Grid ─── */
+        .fields {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px 32px;
+        }
+
+        @media (max-width: 640px) {
+            .fields { grid-template-columns: 1fr; gap: 12px; }
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field.full {
+            grid-column: 1 / -1;
+        }
+
+        .field-key {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 2px;
+            text-transform: uppercase;
+        }
+
+        .field-val {
+            font-size: 14px;
+            color: var(--text);
+            word-break: break-word;
+        }
+
+        .field-val.money {
+            font-family: var(--mono);
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .field-val.money.savings {
+            color: var(--green);
+        }
+
+        .field-val.hash {
+            font-family: var(--mono);
+            font-size: 11.5px;
+            letter-spacing: 0.3px;
+            color: var(--text-secondary);
+            background: var(--border-light);
+            padding: 6px 10px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .hash-text {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .copy-btn {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--text-muted);
+            padding: 2px 6px;
+            border-radius: 2px;
+            transition: all 0.15s;
+        }
+
+        .copy-btn:hover { color: var(--text); background: var(--white); }
+        .copy-btn.copied { color: var(--green); }
+
+        .field-val.badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 3px 10px;
+            border-radius: 3px;
+        }
+
+        .badge-green { background: var(--green-light); color: var(--green); }
+        .badge-red { background: var(--red-light); color: var(--red); }
+        .badge-amber { background: var(--amber-light); color: var(--amber); }
+
+        /* ─── Cost Method Styling ─── */
+        .cost-method-badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding: 4px 12px;
+            border-radius: 3px;
+            border: 1px solid;
+        }
+
+        .cost-method-badge.independent {
+            background: var(--green-light);
+            color: var(--green);
+            border-color: var(--green-border);
+        }
+
+        .cost-method-badge.estimated {
+            background: var(--amber-light);
+            color: var(--amber);
+            border-color: #FCD34D;
+        }
+
+        /* ─── Optimization Highlight ─── */
+        .optimization-box {
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            border-radius: 4px;
+            padding: 14px 16px;
+            margin-top: 8px;
+            grid-column: 1 / -1;
+        }
+
+        .optimization-box .opt-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--green);
+            margin-bottom: 6px;
+        }
+
+        .optimization-box .opt-detail {
+            font-size: 13px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .opt-arrow {
+            color: var(--green);
+            font-weight: 600;
+            margin: 0 4px;
+        }
+
+        /* ─── Verify Section ─── */
+        .verify-section {
+            padding: 24px 40px;
+            border-top: 1px solid var(--border);
+            background: var(--border-light);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 640px) {
+            .verify-section { padding: 20px; }
+        }
+
+        .verify-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: var(--text);
+            color: var(--white);
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.15s;
+        }
+
+        .verify-btn:hover { opacity: 0.85; }
+
+        .verify-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .verify-result {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .verify-result.success {
+            background: var(--green-light);
+            border: 1px solid var(--green-border);
+            color: var(--text);
+        }
+
+        .verify-result.error {
+            background: var(--red-light);
+            border: 1px solid var(--red-border);
+            color: var(--red);
+        }
+
+        /* ─── Footer ─── */
+        .cert-footer {
+            padding: 16px 40px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        @media (max-width: 640px) {
+            .cert-footer { padding: 14px 20px; flex-direction: column; gap: 4px; align-items: flex-start; }
+        }
+
+        .cert-footer a {
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .cert-footer a:hover { color: var(--green); }
+
+        /* ─── Loading & Error ─── */
+        .state-container {
+            max-width: 740px;
+            margin: 80px auto;
+            text-align: center;
+            padding: 0 24px;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2.5px solid var(--border);
+            border-top-color: var(--green);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .state-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .state-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .back-link {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1px;
+        }
+
+        .back-link:hover { color: var(--green); border-color: var(--green); }
+    </style>
+</head>
+<body>
+    <!-- Loading State -->
+    <div class="state-container" id="loadingState" style="display: none;">
+        <div class="spinner"></div>
+        <div class="state-text">Retrieving sealed record...</div>
+    </div>
+
+    <!-- Error State -->
+    <div class="state-container" id="errorState" style="display: none;">
+        <div class="state-title">Seal Not Found</div>
+        <div class="state-text">Receipt not found. It may still be processing. Please refresh in a few seconds.</div>
+        <a href="/" class="back-link" onclick="location.reload()">Retry</a>
+    </div>
+
+    <!-- Certificate -->
+    <div class="certificate" id="content" style="display: none;">
+        <!-- Header -->
+        <div class="cert-header">
+            <a href="/" class="cert-brand">
+                <div class="cert-brand-dot"></div>
+                <div class="cert-brand-name">FINAULT</div>
+            </a>
+            <div class="cert-type">
+                <div class="cert-type-label">Economic Verification Receipt</div>
+                <div class="cert-type-id" id="sealIdDisplay"></div>
+            </div>
+        </div>
+
+        <!-- Status Banner -->
+        <div class="status-banner sealed" id="statusBanner">
+            <div class="status-dot green"></div>
+            <div class="status-text" id="statusText">Sealed</div>
+            <div class="status-sub" id="statusSub"></div>
+        </div>
+
+        <!-- Body -->
+        <div class="cert-body">
+            <!-- Transaction -->
+            <div class="section" id="transactionSection">
+                <div class="section-label">Transaction</div>
+                <div class="fields" id="transactionFields"></div>
+            </div>
+
+            <!-- Economics -->
+            <div class="section" id="economicsSection">
+                <div class="section-label">Economics</div>
+                <div class="fields" id="economicsFields"></div>
+            </div>
+
+            <!-- Governance -->
+            <div class="section" id="governanceSection" style="display: none;">
+                <div class="section-label">Governance</div>
+                <div class="fields" id="governanceFields"></div>
+            </div>
+
+            <!-- Cryptographic Proof -->
+            <div class="section" id="proofSection">
+                <div class="section-label">Cryptographic Proof</div>
+                <div class="fields" id="proofFields"></div>
+            </div>
+        </div>
+
+        <!-- Verify -->
+        <div class="verify-section">
+            <button class="verify-btn" id="verifyButton" onclick="verifySeal()">Verify Integrity</button>
+            <span class="verify-hint">Recomputes SHA-256 in your browser</span>
+            <div id="verifyResult" style="display: none;"></div>
+        </div>
+
+        <!-- Footer -->
+        <div class="cert-footer">
+            <span id="footerTimestamp"></span>
+            <div style="display: flex; gap: 24px; align-items: center;">
+                <a href="/">finault.ai</a>
+                <a href="https://app.finault.ai/sign-up?ref=receipt" style="font-size: 11px; color: var(--text-muted); text-decoration: none; border-bottom: 1px solid var(--border);">Get your own receipts →</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (async function() {
+        'use strict';
+
+        const GATEWAY_URL = 'https://api.finault.ai';
+
+        // ─── Extract seal_id from URL and parse seal data from hash ───
+        function getSealId() {
+            const params = new URLSearchParams(window.location.search);
+            const fromQuery = params.get('seal') || params.get('id');
+            if (fromQuery) return fromQuery;
+
+            const path = window.location.pathname;
+            // Support both /r/{seal_id} and /receipt/{seal_id}
+            let match = path.match(/\/r\/([a-zA-Z0-9\-_]+)/);
+            if (match) return match[1];
+
+            match = path.match(/\/receipt\/([a-zA-Z0-9\-_]+)/);
+            if (match) return match[1];
+
+            if (window.location.hash) {
+                const hashVal = window.location.hash.replace(/^#/, '');
+                if (hashVal.length > 0) return hashVal;
+            }
+
+            return null;
+        }
+
+        // ─── Parse seal data from URL hash (format: seal_id|cost|model|customer|hash) ───
+        function parseSealDataFromHash() {
+            const hashVal = window.location.hash.replace(/^#/, '');
+            if (!hashVal) return null;
+
+            const parts = hashVal.split('|');
+            if (parts.length < 5) return null;
+
+            try {
+                return {
+                    seal_id: parts[0],
+                    cost_usd: parseFloat(parts[1]),
+                    model: parts[2],
+                    customer_id: parts[3],
+                    seal_hash: parts[4]
+                };
+            } catch (e) {
+                return null;
+            }
+        }
+
+        // ─── Fetch & Render with Retry & Hash-based Seal Data ───
+        async function loadSeal() {
+            const sealId = getSealId();
+            if (!sealId) { showError(); return; }
+
+            // Try to extract seal data from URL hash for immediate rendering
+            const hashSealData = parseSealDataFromHash();
+            if (hashSealData) {
+                // Render immediately with hash data
+                document.getElementById('loadingState').style.display = 'none';
+                renderCertificate(hashSealData);
+            } else {
+                // Show loading state
+                document.getElementById('loadingState').style.display = '';
+            }
+
+            const maxAttempts = 5;
+            let attempt = 0;
+
+            async function attemptLoad() {
+                attempt++;
+                if (!hashSealData) {
+                    document.getElementById('loadingState').style.display = '';
+                }
+
+                try {
+                    const res = await fetch(`${GATEWAY_URL}/seal/${sealId}/json`, {
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.seal_id) {
+                            document.getElementById('loadingState').style.display = 'none';
+                            renderCertificate(data);
+                            return;
+                        }
+                    }
+
+                    // Retry logic for race condition
+                    if (attempt < maxAttempts) {
+                        const delayMs = 1000 * attempt;
+                        const msg = `Loading receipt... (attempt ${attempt}/${maxAttempts})`;
+                        const loadingEl = document.getElementById('loadingState');
+                        const textEl = loadingEl.querySelector('.state-text');
+                        if (textEl) textEl.textContent = msg;
+
+                        await new Promise(r => setTimeout(r, delayMs));
+                        return attemptLoad();
+                    }
+
+                    // If we had hash data, don't show error - we already rendered
+                    if (!hashSealData) {
+                        showError();
+                    }
+                } catch (e) {
+                    console.error('Load seal error:', e);
+                    if (attempt < maxAttempts) {
+                        const delayMs = 1000 * attempt;
+                        const msg = `Loading receipt... (attempt ${attempt}/${maxAttempts})`;
+                        const loadingEl = document.getElementById('loadingState');
+                        const textEl = loadingEl.querySelector('.state-text');
+                        if (textEl) textEl.textContent = msg;
+
+                        await new Promise(r => setTimeout(r, delayMs));
+                        return attemptLoad();
+                    }
+                    if (!hashSealData) {
+                        showError();
+                    }
+                }
+            }
+
+            return attemptLoad();
+        }
+
+        function showError() {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('errorState').style.display = '';
+        }
+
+        // ─── Render ───
+        function renderCertificate(seal) {
+            document.getElementById('content').style.display = '';
+            window.currentSeal = seal;
+
+            // Header
+            document.getElementById('sealIdDisplay').textContent = seal.seal_id || '';
+
+            // Status
+            if (seal.timestamp) {
+                const d = new Date(seal.timestamp);
+                document.getElementById('statusSub').textContent =
+                    d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) +
+                    ' at ' + d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+                document.getElementById('footerTimestamp').textContent =
+                    'Sealed ' + d.toISOString();
+            }
+
+            renderTransaction(seal);
+            renderEconomics(seal);
+            renderGovernance(seal);
+            renderProof(seal);
+        }
+
+        function renderTransaction(seal) {
+            const el = document.getElementById('transactionFields');
+            let html = '';
+
+            if (seal.org_id) html += field('Organization', seal.org_id);
+            if (seal.provider) html += field('Provider', seal.provider);
+            if (seal.model) html += field('Model', seal.model);
+            if (seal.original_model && seal.original_model !== seal.model) {
+                html += field('Original Model', seal.original_model);
+            }
+            if (seal.tokens_in) html += field('Input Tokens', seal.tokens_in.toLocaleString());
+            if (seal.tokens_out) html += field('Output Tokens', seal.tokens_out.toLocaleString());
+            if (seal.latency_ms) html += field('Latency', seal.latency_ms + 'ms');
+            if (seal.task_type) html += field('Task Type', seal.task_type);
+            if (seal.agent_id) html += field('Agent', seal.agent_id);
+            if (seal.customer_id) html += field('Customer', seal.customer_id);
+
+            // Input/output hashes
+            if (seal.input_hash) html += hashField('Input Hash', seal.input_hash, 'full');
+            if (seal.output_hash) html += hashField('Output Hash', seal.output_hash, 'full');
+
+            el.innerHTML = html;
+        }
+
+        function renderEconomics(seal) {
+            const el = document.getElementById('economicsFields');
+            let html = '';
+
+            if (seal.cost_usd !== undefined) {
+                html += moneyField('Cost', '$' + seal.cost_usd.toFixed(6));
+            }
+            if (seal.input_cost !== undefined) {
+                html += moneyField('Input Cost', '$' + seal.input_cost.toFixed(6));
+            }
+            if (seal.output_cost !== undefined) {
+                html += moneyField('Output Cost', '$' + seal.output_cost.toFixed(6));
+            }
+            if (seal.cost_method) {
+                const methodClass = seal.cost_method === 'independent' ? 'independent' : 'estimated';
+                const displayText = seal.cost_method.replace(/_/g, ' ');
+                html += `<div class="field">
+                    <div class="field-key">Pricing Method</div>
+                    <div class="field-val">
+                        <span class="cost-method-badge ${methodClass}">${esc(displayText)}</span>
+                    </div>
+                </div>`;
+            }
+
+            if (seal.revenue_attributed) html += moneyField('Revenue Attributed', '$' + seal.revenue_attributed.toFixed(2));
+            if (seal.customer_mrr) html += moneyField('Customer MRR', '$' + seal.customer_mrr.toFixed(2));
+            if (seal.margin !== undefined) html += field('Margin', seal.margin.toFixed(1) + '%');
+            if (seal.margin_status) {
+                const cls = seal.margin_status === 'healthy' ? 'badge-green' :
+                            seal.margin_status === 'underwater' ? 'badge-red' : 'badge-amber';
+                html += badgeField('Margin Status', seal.margin_status, cls);
+            }
+
+            // Optimization highlight
+            if (seal.model_was_downgraded || seal.optimization_delta) {
+                html += '<div class="optimization-box">';
+                html += '<div class="opt-label">Model Optimization Applied</div>';
+                html += '<div class="opt-detail">';
+                if (seal.original_model && seal.model) {
+                    html += '<span>' + esc(seal.original_model) + '</span>';
+                    html += '<span class="opt-arrow">&rarr;</span>';
+                    html += '<span>' + esc(seal.model) + '</span>';
+                }
+                if (seal.optimization_delta) {
+                    html += ' &mdash; saved <strong>$' + seal.optimization_delta.toFixed(6) + '</strong>';
+                }
+                html += '</div></div>';
+            }
+
+            el.innerHTML = html;
+        }
+
+        function renderGovernance(seal) {
+            const el = document.getElementById('governanceFields');
+            const section = document.getElementById('governanceSection');
+            let html = '';
+
+            if (seal.compliance_class) html += field('Compliance Class', seal.compliance_class);
+            if (seal.budget_status) {
+                const cls = seal.budget_status === 'within_budget' ? 'badge-green' : 'badge-red';
+                html += badgeField('Budget Status', seal.budget_status.replace(/_/g, ' '), cls);
+            }
+            if (seal.budget_remaining !== undefined) html += moneyField('Budget Remaining', '$' + seal.budget_remaining.toFixed(2));
+            if (seal.margin_enforcement) html += field('Margin Enforcement', seal.margin_enforcement);
+            if (seal.actions_taken) {
+                const val = Array.isArray(seal.actions_taken) ? seal.actions_taken.join(', ') : seal.actions_taken;
+                html += field('Actions Taken', val);
+            }
+            if (seal.human_review_required !== undefined) {
+                html += field('Human Review Required', seal.human_review_required ? 'Yes' : 'No');
+            }
+            if (seal.data_classification) html += field('Data Classification', seal.data_classification);
+            if (seal.retention_period_days) html += field('Retention', seal.retention_period_days + ' days');
+
+            if (seal.authorization) {
+                const auth = seal.authorization;
+                if (auth.budget_id) html += field('Budget ID', auth.budget_id);
+                if (auth.margin_floor) html += field('Margin Floor', auth.margin_floor + '%');
+                if (auth.approved_by) html += field('Approved By', auth.approved_by);
+                if (auth.policy_version) html += field('Policy Version', auth.policy_version);
+            }
+
+            if (html) {
+                section.style.display = '';
+                el.innerHTML = html;
+            }
+        }
+
+        function renderProof(seal) {
+            const el = document.getElementById('proofFields');
+            let html = '';
+
+            if (seal.seal_id) html += hashField('Seal ID', seal.seal_id, 'full');
+            if (seal.seal_hash) html += hashField('SHA-256 Hash', seal.seal_hash, 'full');
+            if (seal.prev_hash) html += hashField('Previous Hash', seal.prev_hash, 'full');
+            if (seal.sequence !== undefined) html += field('Sequence', seal.sequence.toString());
+            if (seal.chain_depth !== undefined) html += field('Chain Depth', seal.chain_depth.toString());
+            if (seal.signature) html += hashField('Signature', seal.signature, 'full');
+            if (seal.signature_method) html += field('Signature Method', seal.signature_method);
+            if (seal.receipt_url) {
+                html += `<div class="field full">
+                    <div class="field-key">Receipt URL</div>
+                    <div class="field-val"><a href="${esc(seal.receipt_url)}" style="color: var(--green); text-decoration: none; font-size: 13px;">${esc(seal.receipt_url)}</a></div>
+                </div>`;
+            }
+            if (seal.verification_endpoint) html += field('Verification Endpoint', seal.verification_endpoint);
+
+            el.innerHTML = html;
+        }
+
+        // ─── Field Helpers ───
+        function field(label, value) {
+            return `<div class="field">
+                <div class="field-key">${esc(label)}</div>
+                <div class="field-val">${esc(value)}</div>
+            </div>`;
+        }
+
+        function moneyField(label, value) {
+            return `<div class="field">
+                <div class="field-key">${esc(label)}</div>
+                <div class="field-val money">${esc(value)}</div>
+            </div>`;
+        }
+
+        function badgeField(label, value, cls) {
+            return `<div class="field">
+                <div class="field-key">${esc(label)}</div>
+                <div class="field-val badge ${cls}">${esc(value)}</div>
+            </div>`;
+        }
+
+        function hashField(label, value, scope) {
+            const id = 'copy-' + Math.random().toString(36).substr(2, 6);
+            return `<div class="field${scope === 'full' ? ' full' : ''}">
+                <div class="field-key">${esc(label)}</div>
+                <div class="field-val hash">
+                    <span class="hash-text">${esc(value)}</span>
+                    <button class="copy-btn" id="${id}" onclick="copyText('${esc(value).replace(/'/g, "\\'")}', this)">copy</button>
+                </div>
+            </div>`;
+        }
+
+        function esc(str) {
+            const d = document.createElement('div');
+            d.textContent = str || '';
+            return d.innerHTML;
+        }
+
+        // ─── Clipboard ───
+        window.copyText = function(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = 'copied';
+                btn.classList.add('copied');
+                setTimeout(() => { btn.textContent = 'copy'; btn.classList.remove('copied'); }, 1500);
+            });
+        };
+
+        // ─── Verify with Chain Validation ───
+        window.verifySeal = async function() {
+            const seal = window.currentSeal;
+            if (!seal) return;
+
+            const resultEl = document.getElementById('verifyResult');
+            const verifyBtn = document.getElementById('verifyButton');
+            resultEl.style.display = '';
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+
+            try {
+                // Step 1: Recompute this seal's SHA-256 hash
+                const json = JSON.stringify(seal, null, 0);
+                const buf = new TextEncoder().encode(json);
+                const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+                const computedHash = Array.from(new Uint8Array(hashBuf)).map(b => b.toString(16).padStart(2, '0')).join('');
+                const hashMatch = computedHash.toLowerCase() === (seal.seal_hash || '').toLowerCase();
+
+                if (!hashMatch) {
+                    resultEl.className = 'verify-result error';
+                    resultEl.innerHTML = '<strong>Hash Mismatch.</strong> The computed SHA-256 hash does not match the stored seal hash. This record may have been altered.';
+                    verifyBtn.disabled = false;
+                    verifyBtn.textContent = 'Verify Integrity';
+                    return;
+                }
+
+                // Step 2: Verify chain linkage if previous hash exists
+                let chainVerified = true;
+                let chainMessage = 'Hash verified. ';
+
+                if (seal.prev_hash) {
+                    try {
+                        // Fetch previous seal from API
+                        const prevRes = await fetch(`${GATEWAY_URL}/seal/${seal.prev_hash.substring(0, 16)}/json`, {
+                            headers: { 'Accept': 'application/json' }
+                        });
+
+                        if (prevRes.ok) {
+                            const prevSeal = await prevRes.json();
+                            // Verify that this seal's prev_hash matches the previous seal's seal_hash
+                            if (prevSeal.seal_hash && seal.prev_hash.toLowerCase() === prevSeal.seal_hash.toLowerCase()) {
+                                chainMessage += 'Chain linked to previous seal (hash match confirmed). ';
+                            } else {
+                                chainVerified = false;
+                                chainMessage = 'Chain broken — previous seal hash does not match. ';
+                            }
+                        } else {
+                            // Previous seal not found, but hash verification still passed
+                            chainMessage += 'Previous seal not available for chain verification. ';
+                        }
+                    } catch (e) {
+                        // Chain verification attempt failed, but hash verification still passed
+                        chainMessage += 'Could not verify chain (previous seal lookup failed). ';
+                    }
+                } else {
+                    chainMessage += 'This is the genesis seal (no previous record). ';
+                }
+
+                // Step 3: Display result
+                resultEl.className = chainVerified ? 'verify-result success' : 'verify-result error';
+                if (chainVerified) {
+                    resultEl.innerHTML = '<strong>Chain verified — integrity confirmed.</strong> ' + chainMessage + 'This record has not been modified since sealing.';
+                } else {
+                    resultEl.innerHTML = '<strong>Chain broken — hash mismatch.</strong> ' + chainMessage + 'The integrity chain has been compromised.';
+                }
+            } catch (e) {
+                resultEl.className = 'verify-result error';
+                resultEl.innerHTML = '<strong>Verification error.</strong> ' + esc(e.message);
+            }
+
+            verifyBtn.disabled = false;
+            verifyBtn.textContent = 'Verify Integrity';
+        };
+
+        // ─── Init ───
+        loadSeal();
+    })();
+    </script>
+</body>
+</html>

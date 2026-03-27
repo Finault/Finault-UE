@@ -25,7 +25,7 @@ export class Budgets extends Resource {
       payload.alerts = options.alerts;
     }
 
-    const response = await this.client.request<Budget>(
+    const response = await this.client.request(
       'POST',
       '/v1/budgets',
       payload
@@ -41,21 +41,21 @@ export class Budgets extends Resource {
     const params: Record<string, string> = {};
     if (options?.status) params.status = options.status;
 
-    const response = await this.client.request<ListResponse<Budget>>(
+    const response = await this.client.request(
       'GET',
       '/v1/budgets',
       undefined,
       { params }
-    );
+    ) as ListResponse<Budget>;
 
-    return (response.items || []).map((item) => this.normalizeResponse(item));
+    return (response.items || []).map((item: any) => this.normalizeResponse(item));
   }
 
   /**
    * Get a specific budget
    */
   async get(budgetId: string): Promise<Budget> {
-    const response = await this.client.request<Budget>(
+    const response = await this.client.request(
       'GET',
       `/v1/budgets/${budgetId}`
     );
@@ -80,7 +80,7 @@ export class Budgets extends Resource {
     if (options.limit !== undefined) payload.limit = options.limit;
     if (options.status !== undefined) payload.status = options.status;
 
-    const response = await this.client.request<Budget>(
+    const response = await this.client.request(
       'PATCH',
       `/v1/budgets/${budgetId}`,
       payload

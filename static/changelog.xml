@@ -1,0 +1,330 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Finault API Changelog</title>
+    <link>https://finault.ai/changelog</link>
+    <description>Updates, features, and improvements to the Finault API</description>
+    <language>en-us</language>
+    <atom:link href="https://finault.ai/changelog.xml" rel="self" type="application/rss+xml" />
+
+    <item>
+      <title>Webhook signature verification timeout fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Thu, 19 Mar 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-03-19-fixed-webhook-signature</guid>
+      <description>Fixed race condition in webhook signing verification that could cause occasional validation failures on high-throughput systems.</description>
+      <category>webhooks</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Intelligence Report exports now available</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sun, 15 Mar 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-03-15-added-intelligence-exports</guid>
+      <description>Added ability to export Intelligence Reports in CSV, JSON, and PDF formats with configurable date ranges and metrics.</description>
+      <category>intelligence-reports</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Finault Score calculation improved</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Wed, 12 Mar 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-03-12-changed-score-calculation</guid>
+      <description>Updated scoring algorithm to better account for marginal cost changes and adjusted the weighting of cost optimization vs risk factors.</description>
+      <category>scoring</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>AIEI receipt validation fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Fri, 08 Mar 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-03-08-fixed-aiei-validation</guid>
+      <description>Fixed JSON schema validation for AIEI receipts that was rejecting valid custom metadata fields.</description>
+      <category>aiei</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Idempotency key support added</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Wed, 05 Mar 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-03-05-added-idempotency</guid>
+      <description>All POST endpoints now support Idempotency-Key header to prevent duplicate processing on network retries.</description>
+      <category>core</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Legacy v1/decisions endpoint deprecated</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sat, 28 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-28-deprecated-decisions-v1</guid>
+      <description>The v1/decisions endpoint is deprecated in favor of v1/decisions/sync and v1/decisions/async. Legacy support will be removed in version 4.0.</description>
+      <category>api</category>
+      <category>deprecated</category>
+    </item>
+
+    <item>
+      <title>Close Pack processing optimized</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Wed, 25 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-25-changed-close-pack-perf</guid>
+      <description>Improved Close Pack batch processing speed by 40% through optimized database queries and parallel processing of independent reconciliations.</description>
+      <category>close-pack</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Webhook request signing added</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Thu, 20 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-20-added-webhook-signing</guid>
+      <description>Webhooks now include HMAC-SHA256 signature in X-Finault-Signature header for secure validation of event authenticity.</description>
+      <category>webhooks</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Intelligence Report date boundaries fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 18 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-18-fixed-report-boundaries</guid>
+      <description>Fixed off-by-one error in Intelligence Report generation that was excluding events on the end date.</description>
+      <category>intelligence-reports</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Finault Score percentile calculation adjusted</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sat, 15 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-15-changed-percentile</guid>
+      <description>Adjusted percentile bucket sizes for Finault Score to provide more granular scoring distribution across customer cohorts.</description>
+      <category>scoring</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Batch decision limits increased</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 10 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-10-added-batch-limits</guid>
+      <description>Increased maximum batch size for v1/decisions/batch from 100 to 500 decisions per request.</description>
+      <category>api</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Close Pack v2 API released</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-08-added-close-pack-v2</guid>
+      <description>Released new Close Pack API with support for partial reconciliations, incremental updates, and idempotent operations.</description>
+      <category>close-pack</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>AIEI receipt timestamp precision fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Wed, 05 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-05-fixed-aiei-timestamp</guid>
+      <description>Fixed millisecond truncation in AIEI receipt timestamps that was causing timestamp mismatches in high-volume scenarios.</description>
+      <category>aiei</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>EU AI Act compliance reporting enhanced</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 01 Feb 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-02-01-changed-compliance</guid>
+      <description>Enhanced compliance reporting to include decision rationale and audit trail for EU AI Act transparency requirements.</description>
+      <category>compliance</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Webhook event filtering added</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 28 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-28-added-webhook-filtering</guid>
+      <description>Added ability to configure which event types trigger webhook calls, reducing unnecessary traffic and improving system efficiency.</description>
+      <category>webhooks</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Intelligence Report memory leak fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sat, 25 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-25-fixed-report-memory</guid>
+      <description>Fixed memory leak in Intelligence Report generation for reports spanning more than 30 days of data.</description>
+      <category>intelligence-reports</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Finault Score ranking algorithm updated</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 20 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-20-changed-score-ranking</guid>
+      <description>Introduced normalized comparative scoring to better account for differences in customer scale and transaction patterns.</description>
+      <category>scoring</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Rate limiting transparency added</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Fri, 18 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-18-added-rate-limit-headers</guid>
+      <description>Added X-RateLimit-* headers to all API responses showing remaining quota and reset time.</description>
+      <category>api</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Legacy webhook format deprecated</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Wed, 15 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-15-deprecated-webhook-v1</guid>
+      <description>Legacy webhook format (v1) is deprecated. Migrate to v2 format before June 2026.</description>
+      <category>webhooks</category>
+      <category>deprecated</category>
+    </item>
+
+    <item>
+      <title>AIEI receipt caching issue fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Mon, 12 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-12-fixed-aiei-caching</guid>
+      <description>Fixed caching behavior that could return stale AIEI receipts for concurrent requests within the same second.</description>
+      <category>aiei</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Close Pack reconciliation timeout increased</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Fri, 08 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-08-changed-close-pack-timeout</guid>
+      <description>Increased timeout for Close Pack reconciliation from 30s to 60s to accommodate larger batches.</description>
+      <category>close-pack</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Intelligence Reports GA</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 05 Jan 2026 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2026-01-05-added-intelligence-reports</guid>
+      <description>General availability of Intelligence Reports feature for all enterprise customers. Includes automated report generation, custom metrics, and scheduled delivery.</description>
+      <category>intelligence-reports</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>API response encoding fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sun, 28 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-28-fixed-encoding</guid>
+      <description>Fixed UTF-8 encoding issue in API responses that could truncate special characters in metadata fields.</description>
+      <category>api</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Webhook retry exponential backoff implemented</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sun, 22 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-22-added-webhook-backoff</guid>
+      <description>Implemented exponential backoff for failed webhook deliveries with configurable retry policy.</description>
+      <category>webhooks</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>Finault Score baseline updated</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Fri, 20 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-20-changed-score-baseline</guid>
+      <description>Updated baseline metrics for Finault Score calculation based on Q4 2025 customer cohort data.</description>
+      <category>scoring</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Close Pack null value handling fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Wed, 18 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-18-fixed-close-pack-nulls</guid>
+      <description>Fixed handling of null values in Close Pack reconciliation that could cause validation errors.</description>
+      <category>close-pack</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Compliance audit logging added</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sun, 15 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-15-added-audit-logging</guid>
+      <description>Added comprehensive audit logging for all compliance-related API calls including decision rationale and regulatory references.</description>
+      <category>compliance</category>
+      <category>added</category>
+    </item>
+
+    <item>
+      <title>AIEI receipt schema validation fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Thu, 12 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-12-fixed-aiei-schema</guid>
+      <description>Fixed JSON schema validation to properly handle nested objects in AIEI receipt metadata.</description>
+      <category>aiei</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Deprecated v1/health/legacy endpoint removed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 10 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-10-removed-health-legacy</guid>
+      <description>Removed v1/health/legacy endpoint. Use v1/health instead.</description>
+      <category>api</category>
+      <category>removed</category>
+    </item>
+
+    <item>
+      <title>Intelligence Report performance optimized</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Sun, 08 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-08-changed-report-perf</guid>
+      <description>Optimized Intelligence Report query performance for accounts with &gt;1M decisions by introducing time-range indexing.</description>
+      <category>intelligence-reports</category>
+      <category>changed</category>
+    </item>
+
+    <item>
+      <title>Webhook delivery ordering fixed</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Fri, 05 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-05-fixed-webhook-ordering</guid>
+      <description>Fixed race condition that could cause webhook events to be delivered out of order during high concurrency.</description>
+      <category>webhooks</category>
+      <category>fixed</category>
+    </item>
+
+    <item>
+      <title>Finault Score released</title>
+      <link>https://finault.ai/changelog</link>
+      <pubDate>Tue, 01 Dec 2025 00:00:00 GMT</pubDate>
+      <guid>finault-changelog-2025-12-01-added-finault-score</guid>
+      <description>Launched new Finault Score metric providing normalized profitability ranking across customer cohorts with daily updates.</description>
+      <category>scoring</category>
+      <category>added</category>
+    </item>
+  </channel>
+</rss>

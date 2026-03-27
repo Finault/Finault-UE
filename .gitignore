@@ -51,3 +51,24 @@ test-sandbox-receipts/
 *.tmp
 *.bak
 vitest.config.ts.timestamp-*
+
+# Archive (moved during repo cleanup, not for production)
+_archive/
+
+# Egg info
+*.egg-info/
+
+# SQLite
+*.sqlite
+
+# Sync logs
+sdks/python/.finault/
+
+# Claude Code
+.claude/
+
+# Supabase CLI temp
+supabase/.temp/
+
+# Python build artifacts
+sdks/python/finault-1.0.0/

@@ -1,0 +1,7 @@
+{
+  "name": "finault-mcp",
+  "version": "4.2.0",
+  "type": "module",
+  "main": "mcp-server.js",
+  "description": "Finault MCP Server for Claude Desktop integration"
+}

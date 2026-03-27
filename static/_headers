@@ -17,6 +17,18 @@
 /index.html
   Cache-Control: public, max-age=60, must-revalidate
 
+/app.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/dashboard.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/console.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
+/analysis.html
+  Cache-Control: no-cache, no-store, must-revalidate
+
 /*.html
   Cache-Control: public, max-age=60, must-revalidate
 

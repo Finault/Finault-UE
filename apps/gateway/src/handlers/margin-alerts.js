@@ -220,6 +220,129 @@ const checkMarginAlerts = async (orgId, period, supabaseClient, config = null) =
 };
 
 /**
+ * Get org configuration including Slack webhook
+ */
+const getOrgConfig = async (orgId, supabaseClient) => {
+  try {
+    const { data, error } = await supabaseClient
+      .from('org_settings')
+      .select('slack_webhook, notification_email, company_name')
+      .eq('org_id', orgId)
+      .single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data || {};
+  } catch (err) {
+    console.error('[MARGIN-ALERTS] Failed to get org config:', err.message);
+    return {};
+  }
+};
+
+/**
+ * Build Slack Block Kit payload for a margin alert
+ */
+const buildSlackAlertPayload = (alert) => {
+  const emoji = alert.severity === 'critical' ? '🚨' : '⚠️';
+  const color = alert.severity === 'critical' ? '#FF0000' : '#FFA500';
+  const details = alert.details || {};
+
+  return {
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: `${emoji} Finault Alert: ${alert.type === 'negative_margin' ? 'Margin Negative' : 'Margin Breach'}`,
+        },
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*${alert.cost_center || 'Unknown'}* ${alert.type === 'negative_margin' ? 'is margin-negative' : 'is approaching margin threshold'}.\n*Cost:* $${(details.cost || 0).toFixed(2)} | *Revenue:* $${(details.revenue || 0).toFixed(2)} | *Margin:* $${(details.margin || 0).toFixed(2)} (${(details.margin_pct || 0).toFixed(1)}%)\n*Period:* ${details.period || 'current'}`,
+        },
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `Finault Margin Alert | ${new Date().toISOString().split('T')[0]}`,
+          },
+        ],
+      },
+    ],
+  };
+};
+
+/**
+ * Build Slack payload for token burn alerts
+ */
+const buildSlackBurnPayload = (burnData) => {
+  return {
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: '🔥 Finault Alert: Token Burn Detected',
+        },
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Agent:* ${burnData.agent_id || 'Unknown'}\n*Pattern:* ${burnData.pattern || 'Retry loop'} — ${burnData.count || 0} requests in ${burnData.window_minutes || 0} minutes\n*Estimated waste:* $${(burnData.estimated_cost || 0).toFixed(2)}\n*Action:* ${burnData.action || 'Flagged for review'}`,
+        },
+      },
+    ],
+  };
+};
+
+/**
+ * Build Slack payload for budget exceeded alerts
+ */
+const buildSlackBudgetPayload = (budgetData) => {
+  return {
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: '💰 Finault Alert: Budget Exceeded',
+        },
+      },
+      {
+        type: 'section',
+        text: {
+          type: 'mrkdwn',
+          text: `*Agent:* ${budgetData.agent_id || 'org-wide'}\n*Budget:* $${(budgetData.budget || 0).toFixed(2)}\n*Actual spend:* $${(budgetData.actual || 0).toFixed(2)}\n*Enforcement:* ${budgetData.enforcement || 'ALERT_ONLY'}`,
+        },
+      },
+    ],
+  };
+};
+
+/**
+ * Generic dispatch function for any alert type to Slack
+ * @param {string} webhookUrl - Slack webhook URL
+ * @param {Object} payload - Slack Block Kit payload
+ */
+const dispatchSlackAlert = async (webhookUrl, payload) => {
+  if (!webhookUrl) return false;
+  try {
+    const resp = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return resp.ok;
+  } catch (err) {
+    console.error('[MARGIN-ALERTS] Slack dispatch error:', err.message);
+    return false;
+  }
+};
+
+/**
  * Store alerts in database and trigger notifications
  * @param {Array} alerts - Alert objects to store
  * @param {string} orgId - Organization UUID
@@ -246,8 +369,46 @@ const processMarginAlerts = async (alerts, orgId, supabaseClient) => {
     // Log alert generation
     console.log(`[MARGIN-ALERTS] Generated ${data?.length || 0} alerts for org ${orgId}`);
 
-    // TODO: Trigger email notifications based on config
-    // TODO: Trigger Slack/webhook notifications if configured
+    // Dispatch notifications
+    const orgConfig = await getOrgConfig(orgId, supabaseClient);
+
+    for (const alert of (data || [])) {
+      // Slack dispatch
+      if (orgConfig?.slack_webhook) {
+        try {
+          const slackPayload = buildSlackAlertPayload(alert);
+          await fetch(orgConfig.slack_webhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(slackPayload),
+          });
+          console.log(`[MARGIN-ALERTS] Slack notification sent for alert ${alert.id}`);
+        } catch (slackErr) {
+          console.error(`[MARGIN-ALERTS] Slack dispatch failed: ${slackErr.message}`);
+        }
+      }
+
+      // Email dispatch
+      if (orgConfig?.notification_email) {
+        try {
+          // Store email notification in alert_history for async processing
+          await supabaseClient.from('alert_history').insert({
+            org_id: orgId,
+            alert_id: alert.id,
+            alert_type: alert.type,
+            severity: alert.severity,
+            customer_id: alert.cost_center,
+            message: alert.message,
+            dispatched_to: orgConfig.notification_email,
+            dispatch_type: 'email',
+            dispatched_at: new Date().toISOString(),
+          });
+          console.log(`[MARGIN-ALERTS] Email record created for alert ${alert.id}`);
+        } catch (emailErr) {
+          console.error(`[MARGIN-ALERTS] Email record failed: ${emailErr.message}`);
+        }
+      }
+    }
 
     return data || [];
   } catch (error) {
@@ -530,7 +691,10 @@ export {
   handleMarginAlertsCheck,
   checkMarginAlerts,
   getMarginAlertConfig,
-  processMarginAlerts
+  processMarginAlerts,
+  dispatchSlackAlert,
+  buildSlackBurnPayload,
+  buildSlackBudgetPayload
 };
 
 export default {
@@ -541,5 +705,8 @@ export default {
   handleMarginAlertsCheck,
   checkMarginAlerts,
   getMarginAlertConfig,
-  processMarginAlerts
+  processMarginAlerts,
+  dispatchSlackAlert,
+  buildSlackBurnPayload,
+  buildSlackBudgetPayload
 };

@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Finault Verified Badge - AI Economics Audited</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #0a0a0f;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 32px;
+      border-bottom: 1px solid rgba(124, 58, 237, 0.2);
+      background: rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #7c3aed;
+    }
+
+    .nav-text {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #ffffff;
+    }
+
+    .nav-link {
+      color: #b4a5d6;
+      text-decoration: none;
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .nav-link:hover {
+      background: rgba(124, 58, 237, 0.1);
+      color: #7c3aed;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 80px 32px;
+      text-align: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 56px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #7c3aed 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 18px;
+      color: #b4a5d6;
+      margin-bottom: 48px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* Shield Badge SVG */
+    .badge-showcase {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 80px;
+    }
+
+    .shield-badge {
+      width: 200px;
+      height: 200px;
+      filter: drop-shadow(0 20px 40px rgba(124, 58, 237, 0.3));
+    }
+
+    /* Content Sections */
+    .content-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px 80px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+    }
+
+    .section {
+      background: rgba(124, 58, 237, 0.05);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 12px;
+      padding: 40px;
+    }
+
+    .section h2 {
+      font-size: 24px;
+      margin-bottom: 24px;
+      color: #7c3aed;
+    }
+
+    .section p {
+      color: #b4a5d6;
+      margin-bottom: 16px;
+      line-height: 1.8;
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-top: 24px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+      color: #b4a5d6;
+    }
+
+    .feature-list li:before {
+      content: "✓";
+      color: #7c3aed;
+      font-weight: bold;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* Badge Generator Section */
+    .generator-section {
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 0 32px;
+    }
+
+    .generator-section h2 {
+      font-size: 32px;
+      margin-bottom: 32px;
+      text-align: center;
+      color: #7c3aed;
+    }
+
+    .generator-form {
+      background: rgba(124, 58, 237, 0.08);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 40px;
+    }
+
+    .form-group {
+      margin-bottom: 24px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 8px;
+      color: #ffffff;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #7c3aed;
+      background: rgba(124, 58, 237, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #6b7280;
+    }
+
+    .badge-style-selector {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .style-option {
+      position: relative;
+    }
+
+    .style-option input {
+      display: none;
+    }
+
+    .style-label {
+      display: block;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 2px solid rgba(124, 58, 237, 0.2);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 13px;
+      color: #b4a5d6;
+    }
+
+    .style-option input:checked + .style-label {
+      background: rgba(124, 58, 237, 0.2);
+      border-color: #7c3aed;
+      color: #7c3aed;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: #7c3aed;
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #6d28d9;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(124, 58, 237, 0.1);
+      color: #7c3aed;
+      border: 1px solid rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(124, 58, 237, 0.15);
+      border-color: #7c3aed;
+    }
+
+    /* Badge Previews */
+    .preview-section {
+      background: rgba(124, 58, 237, 0.08);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 12px;
+      padding: 40px;
+      margin-bottom: 40px;
+    }
+
+    .preview-section h3 {
+      font-size: 16px;
+      color: #7c3aed;
+      margin-bottom: 24px;
+      font-weight: 600;
+    }
+
+    .badge-previews {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+
+    .badge-preview {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      min-height: 120px;
+    }
+
+    .badge-minimal {
+      font-size: 12px;
+      font-weight: 600;
+      color: #7c3aed;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .badge-standard {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #7c3aed;
+    }
+
+    .badge-icon {
+      width: 24px;
+      height: 24px;
+      background: #7c3aed;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a0a0f;
+      font-size: 14px;
+    }
+
+    .badge-full {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .badge-full-icon {
+      width: 40px;
+      height: 40px;
+      background: #7c3aed;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #0a0a0f;
+      font-size: 20px;
+    }
+
+    .badge-full-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: #7c3aed;
+    }
+
+    .badge-full-score {
+      font-size: 14px;
+      color: #b4a5d6;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: #b4a5d6;
+      overflow-x: auto;
+      position: relative;
+      margin-bottom: 16px;
+    }
+
+    .code-block.html {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #7c3aed;
+      color: #ffffff;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: #6d28d9;
+    }
+
+    .copy-btn.copied {
+      background: #10b981;
+    }
+
+    /* Verification Section */
+    .verification-section {
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 0 32px;
+      background: rgba(124, 58, 237, 0.08);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 12px;
+      padding: 40px;
+    }
+
+    .verification-section h2 {
+      font-size: 28px;
+      margin-bottom: 24px;
+      color: #7c3aed;
+    }
+
+    .verification-section p {
+      color: #b4a5d6;
+      margin-bottom: 24px;
+      line-height: 1.8;
+    }
+
+    .verification-details {
+      background: rgba(0, 0, 0, 0.3);
+      border-left: 3px solid #7c3aed;
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 24px;
+    }
+
+    .verification-details p {
+      margin-bottom: 12px;
+    }
+
+    .verification-details p:last-child {
+      margin-bottom: 0;
+    }
+
+    .verify-link {
+      color: #7c3aed;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .verify-link:hover {
+      color: #a78bfa;
+      text-decoration: underline;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid rgba(124, 58, 237, 0.2);
+      padding: 40px 32px;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+      margin-top: 80px;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding-bottom: 40px;
+      }
+
+      .badge-previews {
+        grid-template-columns: 1fr;
+      }
+
+      .badge-style-selector {
+        grid-template-columns: 1fr;
+      }
+
+      .button-group {
+        flex-direction: column;
+      }
+
+      nav {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+
+      .nav-link {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="nav-left">
+      <div class="nav-dot"></div>
+      <span class="nav-text">FINAULT VERIFIED</span>
+    </div>
+    <a href="/index.html" class="nav-link">← Back to App</a>
+  </nav>
+
+  <div class="hero">
+    <h1>AI Economics Verified by Finault</h1>
+    <p>Get a cryptographically sealed badge proving your AI economics are audited, transparent, and sustainable.</p>
+
+    <div class="badge-showcase">
+      <svg class="shield-badge" viewBox="0 0 200 240" xmlns="http://www.w3.org/2000/svg">
+        <!-- Shield shape -->
+        <defs>
+          <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:#7c3aed;stop-opacity:1" />
+            <stop offset="100%" style="stop-color:#a78bfa;stop-opacity:1" />
+          </linearGradient>
+        </defs>
+
+        <!-- Shield outline -->
+        <path d="M 100 20 L 170 55 L 170 130 Q 100 210 100 210 Q 30 130 30 130 L 30 55 Z"
+              fill="url(#shieldGrad)"
+              stroke="rgba(255, 255, 255, 0.2)"
+              stroke-width="2"/>
+
+        <!-- Inner badge circle -->
+        <circle cx="100" cy="110" r="45" fill="rgba(255, 255, 255, 0.1)" stroke="rgba(255, 255, 255, 0.3)" stroke-width="1"/>
+
+        <!-- Checkmark -->
+        <path d="M 85 105 L 95 118 L 120 90"
+              stroke="#ffffff"
+              stroke-width="6"
+              fill="none"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <div class="section">
+      <h2>What Verified Means</h2>
+      <p>The Finault Verified badge proves your AI economics have been audited using cryptographic Close Packs—immutable records of your actual spending and revenue.</p>
+      <ul class="feature-list">
+        <li>Cryptographically sealed Close Packs</li>
+        <li>Chain hash integrity verified</li>
+        <li>Margins tracked and audited</li>
+        <li>Public verification link</li>
+        <li>Zero third-party data sharing</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>Why It Matters</h2>
+      <p>Investors, partners, and customers want proof that your AI economics are sustainable. Finault Verified badges signal operational maturity and financial transparency.</p>
+      <ul class="feature-list">
+        <li>Build trust with stakeholders</li>
+        <li>Differentiate from competitors</li>
+        <li>Demonstrate governance rigor</li>
+        <li>Attract investment-grade partners</li>
+        <li>Publicly verifiable credentials</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="generator-section">
+    <h2>Generate Your Badge</h2>
+
+    <div class="generator-form">
+      <form id="badgeForm">
+        <div class="form-group">
+          <label for="orgId">Organization ID</label>
+          <input
+            type="text"
+            id="orgId"
+            placeholder="Enter your organization ID (e.g., org_abc123)"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label>Badge Style</label>
+          <div class="badge-style-selector">
+            <div class="style-option">
+              <input type="radio" id="style_minimal" name="style" value="minimal" checked>
+              <label for="style_minimal" class="style-label">Minimal</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" id="style_standard" name="style" value="standard">
+              <label for="style_standard" class="style-label">Standard</label>
+            </div>
+            <div class="style-option">
+              <input type="radio" id="style_full" name="style" value="full">
+              <label for="style_full" class="style-label">Full</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button type="button" class="btn btn-primary" onclick="generateBadge()">Generate Embed Code</button>
+          <button type="button" class="btn btn-secondary" onclick="previewBadge()">Preview Badge</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="preview-section" id="previewSection" style="display: none;">
+      <h3>Badge Preview</h3>
+      <div class="badge-previews">
+        <div class="badge-preview" id="previewMinimal">
+          <div class="badge-minimal">FINAULT VERIFIED</div>
+        </div>
+        <div class="badge-preview" id="previewStandard">
+          <div class="badge-standard">
+            <div class="badge-icon">✓</div>
+            VERIFIED
+          </div>
+        </div>
+        <div class="badge-preview" id="previewFull">
+          <div class="badge-full">
+            <div class="badge-full-icon">✓</div>
+            <div class="badge-full-text">FINAULT</div>
+            <div class="badge-full-text">VERIFIED</div>
+            <div class="badge-full-score" id="scoreDisplay">Score: —</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Embed Code</h3>
+      <div class="code-block html" id="embedCode"></div>
+      <button type="button" class="btn btn-primary" onclick="copyEmbedCode()" style="width: 100%;">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <div class="verification-section">
+    <h2>Public Verification</h2>
+    <p>Any visitor can verify your badge's authenticity using our public verification link. Your badge links to a verification page that validates the chain hash and confirms data integrity.</p>
+
+    <div class="verification-details">
+      <p><strong>How it works:</strong></p>
+      <p>Your badge includes a verification link in the format:</p>
+      <p style="font-family: 'Courier New', monospace; background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 4px; margin: 12px 0;">
+        finault.app/verify?org=org_abc123
+      </p>
+      <p>Clicking this link shows:</p>
+      <ul class="feature-list">
+        <li>Cryptographic proof of Close Pack integrity</li>
+        <li>Chain hash verification status</li>
+        <li>Latest audited margin metrics</li>
+        <li>Timestamp of last verification</li>
+      </ul>
+    </div>
+
+    <p>No sensitive data is exposed. The verification page only shows public metrics that prove audit completeness.</p>
+  </div>
+
+  <footer>
+    <p>© 2026 Finault. AI economics transparency platform. | <a href="/index.html" class="verify-link">Back to Dashboard</a></p>
+  </footer>
+
+  <script>
+    function generateBadge() {
+      const orgId = document.getElementById('orgId').value;
+      const style = document.querySelector('input[name="style"]:checked').value;
+
+      if (!orgId.trim()) {
+        alert('Please enter an Organization ID');
+        return;
+      }
+
+      const orgIdClean = orgId.replace(/\s+/g, '');
+      displayEmbedCode(orgIdClean, style);
+      document.getElementById('previewSection').style.display = 'block';
+      scrollToPreview();
+    }
+
+    function previewBadge() {
+      const orgId = document.getElementById('orgId').value;
+      if (!orgId.trim()) {
+        alert('Please enter an Organization ID');
+        return;
+      }
+      document.getElementById('previewSection').style.display = 'block';
+      scrollToPreview();
+    }
+
+    function displayEmbedCode(orgId, style) {
+      const verifyLink = `https://finault.app/verify?org=${orgId}`;
+
+      let embedCode = '';
+
+      if (style === 'minimal') {
+        embedCode = `<a href="${verifyLink}" style="display: inline-block; text-decoration: none; color: #7c3aed; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+  FINAULT VERIFIED
+</a>`;
+      } else if (style === 'standard') {
+        embedCode = `<a href="${verifyLink}" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; color: #7c3aed; font-size: 13px; font-weight: 600;">
+  <span style="width: 24px; height: 24px; background: #7c3aed; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 14px;">✓</span>
+  VERIFIED
+</a>`;
+      } else {
+        embedCode = `<a href="${verifyLink}" style="display: inline-flex; flex-direction: column; align-items: center; gap: 8px; text-decoration: none;">
+  <span style="width: 40px; height: 40px; background: #7c3aed; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 20px;">✓</span>
+  <span style="font-size: 12px; font-weight: 600; color: #7c3aed;">FINAULT</span>
+  <span style="font-size: 12px; font-weight: 600; color: #7c3aed;">VERIFIED</span>
+  <span style="font-size: 11px; color: #b4a5d6;">Score: 87</span>
+</a>`;
+      }
+
+      const codeElement = document.getElementById('embedCode');
+      codeElement.textContent = embedCode;
+
+      // Add copy button functionality
+      const copyBtn = document.querySelector('.copy-btn');
+      if (copyBtn) {
+        copyBtn.onclick = copyEmbedCode;
+      }
+    }
+
+    function copyEmbedCode() {
+      const codeElement = document.getElementById('embedCode');
+      const code = codeElement.textContent;
+
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = event.target;
+        const originalText = btn.textContent;
+        btn.textContent = 'Copied!';
+        btn.classList.add('copied');
+
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.classList.remove('copied');
+        }, 2000);
+      }).catch(err => {
+        alert('Failed to copy: ' + err);
+      });
+    }
+
+    function scrollToPreview() {
+      const previewSection = document.getElementById('previewSection');
+      previewSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Demo data - simulate fetching a score
+    function getScoreForOrg(orgId) {
+      const scores = {
+        'org_123': 92,
+        'org_456': 78,
+        'org_789': 85,
+        'org_abc123': 87
+      };
+      return scores[orgId] || Math.floor(Math.random() * (95 - 60 + 1) + 60);
+    }
+
+    // Update preview when org ID changes
+    document.getElementById('orgId').addEventListener('change', function() {
+      const orgId = this.value.replace(/\s+/g, '');
+      const score = getScoreForOrg(orgId);
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      if (scoreDisplay) {
+        scoreDisplay.textContent = `Score: ${score}`;
+      }
+    });
+  </script>
+</body>
+</html>

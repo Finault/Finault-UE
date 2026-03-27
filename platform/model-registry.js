@@ -774,52 +774,111 @@ const MODEL_ID_ALIASES = Object.freeze({
 // W-001 HARDENING: Timestamp when LOCAL_FALLBACK_PRICING was last verified.
 // If this date is > 30 days old, the fallback data is considered stale and
 // recommendation methods will refuse to serve results based on it.
-const LOCAL_FALLBACK_PRICING_VERIFIED_AT = '2025-05-01T00:00:00Z';
+const LOCAL_FALLBACK_PRICING_VERIFIED_AT = '2026-03-01T00:00:00Z';
 const LOCAL_FALLBACK_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// CANONICAL PRICING TABLE — ALL PRICES PER 1K TOKENS (USD)
+// ═══════════════════════════════════════════════════════════════════════════════
+// THIS IS THE SINGLE SOURCE OF TRUTH FOR ALL MODEL PRICING IN FINAULT.
+// Every other file in the codebase must either:
+//   1. Import from this module (JS/TS files), or
+//   2. Mirror these exact values with a comment referencing this file (Python SDK)
+//
+// To update pricing: change ONLY this table, then run `node scripts/verify-pricing-sync.js`
+// to confirm all downstream files are aligned.
+//
+// Last verified against provider pricing pages: 2026-03-01
+// ═══════════════════════════════════════════════════════════════════════════════
 const LOCAL_FALLBACK_PRICING = {
-    // ── OpenAI ──
-    'gpt-4': { inputCost: 0.03, outputCost: 0.06 },
-    'gpt-3.5-turbo': { inputCost: 0.0005, outputCost: 0.0015 },
-    'o1': { inputCost: 0.015, outputCost: 0.06 },
-    'o1-mini': { inputCost: 0.003, outputCost: 0.012 },
-    'o3': { inputCost: 0.002, outputCost: 0.008 },
-    'o3-mini': { inputCost: 0.0011, outputCost: 0.0044 },
-    'o4-mini': { inputCost: 0.0011, outputCost: 0.0044 },
-    'gpt-4.1': { inputCost: 0.002, outputCost: 0.008 },
-    'gpt-4.1-mini': { inputCost: 0.0004, outputCost: 0.0016 },
-    'gpt-4.1-nano': { inputCost: 0.0001, outputCost: 0.0004 },
-    // ── Anthropic ──
-    // Fix: Opus 4.5 = $5/$25 per MTok (NOT $15/$75 which is Opus 4 pricing)
-    'claude-opus-4.5': { inputCost: 0.005, outputCost: 0.025 },
-    'claude-opus-4': { inputCost: 0.015, outputCost: 0.075 },
-    'claude-sonnet-4': { inputCost: 0.003, outputCost: 0.015 },
-    'claude-sonnet-4.5': { inputCost: 0.003, outputCost: 0.015 },
-    'claude-haiku-4.5': { inputCost: 0.001, outputCost: 0.005 },
-    'claude-3-opus': { inputCost: 0.015, outputCost: 0.075 },
-    'claude-3-sonnet': { inputCost: 0.003, outputCost: 0.015 },
-    'claude-3-haiku': { inputCost: 0.00025, outputCost: 0.00125 },
-    // ── Google ──
-    'gemini-2.5-pro': { inputCost: 0.00125, outputCost: 0.01 },
-    'gemini-2.5-flash': { inputCost: 0.0005, outputCost: 0.003 },
-    // ── Meta ──
-    'llama-4-scout': { inputCost: 0.00015, outputCost: 0.0005 },
-    'llama-4-maverick': { inputCost: 0.00022, outputCost: 0.00085 },
-    // ── DeepSeek ──
-    'deepseek-v3': { inputCost: 0.0003, outputCost: 0.0012 },
-    'deepseek-r1': { inputCost: 0.0007, outputCost: 0.0025 },
-    // ── Mistral ──
-    'mistral-large-3': { inputCost: 0.0005, outputCost: 0.0015 },
-    'codestral': { inputCost: 0.0003, outputCost: 0.0009 },
-    'mistral-small-3': { inputCost: 0.00006, outputCost: 0.00018 },
-    // ── Cohere ──
-    'command-a': { inputCost: 0.0025, outputCost: 0.01 },
-    'command-r': { inputCost: 0.00015, outputCost: 0.0006 },
-    // ── Amazon ──
-    'nova-pro': { inputCost: 0.0008, outputCost: 0.0032 },
-    'nova-lite': { inputCost: 0.00006, outputCost: 0.00024 },
-    'nova-micro': { inputCost: 0.000035, outputCost: 0.00014 },
+    // ── OpenAI ──────────────────────────────────────────────────────────────
+    'gpt-4o':           { inputCost: 0.0025,   outputCost: 0.01 },     // $2.50/$10 per 1M
+    'gpt-4o-mini':      { inputCost: 0.00015,  outputCost: 0.0006 },   // $0.15/$0.60 per 1M
+    'gpt-4-turbo':      { inputCost: 0.01,     outputCost: 0.03 },     // $10/$30 per 1M
+    'gpt-4':            { inputCost: 0.03,     outputCost: 0.06 },     // $30/$60 per 1M (legacy)
+    'gpt-3.5-turbo':    { inputCost: 0.0005,  outputCost: 0.0015 },   // $0.50/$1.50 per 1M (legacy)
+    'o1':               { inputCost: 0.015,    outputCost: 0.06 },     // $15/$60 per 1M
+    'o1-mini':          { inputCost: 0.003,    outputCost: 0.012 },    // $3/$12 per 1M
+    'o3':               { inputCost: 0.002,    outputCost: 0.008 },    // $2/$8 per 1M
+    'o3-mini':          { inputCost: 0.0011,   outputCost: 0.0044 },   // $1.10/$4.40 per 1M
+    'o4-mini':          { inputCost: 0.0011,   outputCost: 0.0044 },   // $1.10/$4.40 per 1M
+    'gpt-4.1':          { inputCost: 0.002,    outputCost: 0.008 },    // $2/$8 per 1M
+    'gpt-4.1-mini':     { inputCost: 0.0004,   outputCost: 0.0016 },   // $0.40/$1.60 per 1M
+    'gpt-4.1-nano':     { inputCost: 0.0001,   outputCost: 0.0004 },   // $0.10/$0.40 per 1M
+    // ── Anthropic ───────────────────────────────────────────────────────────
+    'claude-opus-4.5':  { inputCost: 0.005,    outputCost: 0.025 },    // $5/$25 per 1M
+    'claude-opus-4':    { inputCost: 0.015,    outputCost: 0.075 },    // $15/$75 per 1M
+    'claude-sonnet-4.5':{ inputCost: 0.003,    outputCost: 0.015 },    // $3/$15 per 1M
+    'claude-sonnet-4':  { inputCost: 0.003,    outputCost: 0.015 },    // $3/$15 per 1M
+    'claude-haiku-4.5': { inputCost: 0.001,    outputCost: 0.005 },    // $1/$5 per 1M
+    'claude-3.5-sonnet':{ inputCost: 0.003,    outputCost: 0.015 },    // $3/$15 per 1M
+    'claude-3.5-haiku': { inputCost: 0.0008,   outputCost: 0.004 },    // $0.80/$4 per 1M
+    'claude-3-opus':    { inputCost: 0.015,    outputCost: 0.075 },    // $15/$75 per 1M (legacy)
+    'claude-3-sonnet':  { inputCost: 0.003,    outputCost: 0.015 },    // $3/$15 per 1M (legacy)
+    'claude-3-haiku':   { inputCost: 0.00025,  outputCost: 0.00125 },  // $0.25/$1.25 per 1M (legacy)
+    // ── Google ──────────────────────────────────────────────────────────────
+    'gemini-2.5-pro':   { inputCost: 0.00125,  outputCost: 0.01 },     // $1.25/$10 per 1M
+    'gemini-2.5-flash': { inputCost: 0.00015,  outputCost: 0.0035 },   // $0.15/$3.50 per 1M
+    'gemini-2.0-flash': { inputCost: 0.0001,   outputCost: 0.0004 },   // $0.10/$0.40 per 1M
+    'gemini-1.5-pro':   { inputCost: 0.00125,  outputCost: 0.005 },    // $1.25/$5 per 1M
+    'gemini-1.5-flash': { inputCost: 0.000075, outputCost: 0.0003 },   // $0.075/$0.30 per 1M
+    // ── Meta (via hosted providers — Together, Fireworks, etc.) ─────────────
+    'llama-3.1-405b':   { inputCost: 0.003,    outputCost: 0.003 },    // ~$3/$3 per 1M (hosted)
+    'llama-3.1-70b':    { inputCost: 0.0009,   outputCost: 0.0009 },   // ~$0.90/$0.90 per 1M (hosted)
+    'llama-4-scout':    { inputCost: 0.00015,  outputCost: 0.0005 },   // $0.15/$0.50 per 1M
+    'llama-4-maverick': { inputCost: 0.00022,  outputCost: 0.00085 },  // $0.22/$0.85 per 1M
+    // ── DeepSeek ────────────────────────────────────────────────────────────
+    'deepseek-v3':      { inputCost: 0.00027,  outputCost: 0.0011 },   // $0.27/$1.10 per 1M
+    'deepseek-r1':      { inputCost: 0.00055,  outputCost: 0.0022 },   // $0.55/$2.19 per 1M
+    // ── Mistral ─────────────────────────────────────────────────────────────
+    'mistral-large-3':  { inputCost: 0.002,    outputCost: 0.006 },    // $2/$6 per 1M
+    'codestral':        { inputCost: 0.0003,   outputCost: 0.0009 },   // $0.30/$0.90 per 1M
+    'mistral-small-3':  { inputCost: 0.0001,   outputCost: 0.0003 },   // $0.10/$0.30 per 1M
+    // ── Cohere ──────────────────────────────────────────────────────────────
+    'command-a':        { inputCost: 0.0025,   outputCost: 0.01 },     // $2.50/$10 per 1M
+    'command-r':        { inputCost: 0.00015,  outputCost: 0.0006 },   // $0.15/$0.60 per 1M
+    // ── Amazon ──────────────────────────────────────────────────────────────
+    'nova-pro':         { inputCost: 0.0008,   outputCost: 0.0032 },   // $0.80/$3.20 per 1M
+    'nova-lite':        { inputCost: 0.00006,  outputCost: 0.00024 },  // $0.06/$0.24 per 1M
+    'nova-micro':       { inputCost: 0.000035, outputCost: 0.00014 },  // $0.035/$0.14 per 1M
 };
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// EXPORTED HELPERS — for downstream consumers that need canonical pricing
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Get canonical pricing for a model as { inputPer1M, outputPer1M }.
+ * This is the function every downstream module should call instead of
+ * maintaining its own pricing constants.
+ *
+ * @param {string} modelId
+ * @returns {{ inputPer1M: number, outputPer1M: number } | null}
+ */
+export function getCanonicalPricing(modelId) {
+    const p = LOCAL_FALLBACK_PRICING[modelId] || FALLBACK_MODEL_PRICING[modelId];
+    if (!p) return null;
+    return {
+        inputPer1M: p.inputCost * 1000,
+        outputPer1M: p.outputCost * 1000,
+    };
+}
+
+/**
+ * Get the full canonical pricing table as { modelId: { inputPer1M, outputPer1M } }.
+ * Used by sync.py alignment checks and pricing-ruleset.js.
+ */
+export function getCanonicalPricingTable() {
+    const merged = { ...LOCAL_FALLBACK_PRICING };
+    for (const [id, p] of Object.entries(FALLBACK_MODEL_PRICING)) {
+        if (!merged[id]) merged[id] = p;
+    }
+    const table = {};
+    for (const [id, p] of Object.entries(merged)) {
+        table[id] = { inputPer1M: p.inputCost * 1000, outputPer1M: p.outputCost * 1000 };
+    }
+    return table;
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PROVIDER DISCOUNT PROGRAMS
@@ -1896,6 +1955,235 @@ export class ModelRegistry {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// TIME MACHINE — HISTORICAL PRICING LOOKUPS
+// ─────────────────────────────────────────────────────────────────────────────
+// These functions power the Time Machine retroactive analysis engine.
+// They use model-price-history.json as the canonical source for historical
+// pricing data, including release dates, deprecation dates, and price changes.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import priceHistory from './model-price-history.json' assert { type: 'json' };
+
+/**
+ * Get the exact pricing for a model on a specific date.
+ * Uses binary search on pricing_events to find the price in effect.
+ *
+ * @param {string} modelId - Model identifier (e.g., 'gpt-4o', 'claude-3-opus')
+ * @param {string|Date} date - The date to look up pricing for
+ * @returns {{ input_per_mtok: number, output_per_mtok: number, effective_date: string } | null}
+ *          Returns null if model didn't exist on that date
+ */
+export function getPricingAtDate(modelId, date) {
+    const d = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+    const model = priceHistory.models[modelId];
+    if (!model) return null;
+
+    // Model not yet released on this date
+    if (d < model.release_date) return null;
+
+    // Model already deprecated on this date
+    if (model.deprecation_date && d >= model.deprecation_date) return null;
+
+    const events = model.pricing_events;
+    if (!events || events.length === 0) return null;
+
+    // Binary search: find the last event with effective_date <= d
+    let lo = 0, hi = events.length - 1, best = -1;
+    while (lo <= hi) {
+        const mid = (lo + hi) >> 1;
+        if (events[mid].effective_date <= d) {
+            best = mid;
+            lo = mid + 1;
+        } else {
+            hi = mid - 1;
+        }
+    }
+
+    if (best === -1) return null;
+
+    return {
+        input_per_mtok: events[best].input_per_mtok,
+        output_per_mtok: events[best].output_per_mtok,
+        effective_date: events[best].effective_date,
+        source: events[best].source
+    };
+}
+
+/**
+ * Get all models that were available (released and not deprecated) on a given date.
+ * Optionally filter by provider.
+ *
+ * @param {string|Date} date - The date to check
+ * @param {string} [provider] - Optional provider filter ('openai', 'anthropic', 'google', 'deepseek')
+ * @returns {Array<{ model_id: string, display_name: string, provider: string, tier: string, input_per_mtok: number, output_per_mtok: number }>}
+ */
+export function getAvailableModelsAtDate(date, provider) {
+    const d = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+    const results = [];
+
+    for (const [modelId, model] of Object.entries(priceHistory.models)) {
+        // Skip if not released yet
+        if (d < model.release_date) continue;
+        // Skip if deprecated
+        if (model.deprecation_date && d >= model.deprecation_date) continue;
+        // Skip if provider filter doesn't match
+        if (provider && model.provider !== provider) continue;
+
+        const pricing = getPricingAtDate(modelId, d);
+        if (!pricing) continue;
+
+        results.push({
+            model_id: modelId,
+            display_name: model.display_name,
+            provider: model.provider,
+            tier: model.capability_tier,
+            input_per_mtok: pricing.input_per_mtok,
+            output_per_mtok: pricing.output_per_mtok
+        });
+    }
+
+    // Sort by output cost ascending (cheapest first)
+    results.sort((a, b) => a.output_per_mtok - b.output_per_mtok);
+    return results;
+}
+
+/**
+ * Find the cheapest equivalent model available on a given date.
+ * "Equivalent" means same capability tier or acceptable substitution.
+ *
+ * @param {string} modelId - The model that was actually used
+ * @param {string|Date} date - The date of use
+ * @param {Object} [options]
+ * @param {boolean} [options.crossProvider=false] - Allow cross-provider substitution
+ * @param {boolean} [options.allowDowntier=false] - Allow dropping to a lower capability tier
+ * @param {number} [options.minSavingsPercent=10] - Minimum savings % to recommend a switch
+ * @returns {{ recommended_model: string, provider: string, tier: string, input_per_mtok: number, output_per_mtok: number, savings_percent: number, actual_input: number, actual_output: number } | null}
+ */
+export function getCheapestEquivalent(modelId, date, options = {}) {
+    const { crossProvider = false, allowDowntier = false, minSavingsPercent = 10 } = options;
+    const d = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+
+    const model = priceHistory.models[modelId];
+    if (!model) return null;
+
+    const actualPricing = getPricingAtDate(modelId, d);
+    if (!actualPricing) return null;
+
+    const actualTier = model.capability_tier;
+    const actualProvider = model.provider;
+
+    // Get all available models on that date
+    const available = getAvailableModelsAtDate(d);
+
+    // Determine acceptable tiers
+    const tierRank = { 'FLAGSHIP': 4, 'REASONING': 4, 'BALANCED': 3, 'FAST': 2, 'EMBEDDING': 1 };
+    const actualRank = tierRank[actualTier] || 3;
+
+    let best = null;
+    let bestCost = actualPricing.output_per_mtok; // Use output as primary cost comparator
+
+    for (const candidate of available) {
+        // Skip self
+        if (candidate.model_id === modelId) continue;
+
+        // Provider filter
+        if (!crossProvider && candidate.provider !== actualProvider) continue;
+
+        // Tier filter: must be same tier or higher, unless allowDowntier
+        const candidateRank = tierRank[candidate.tier] || 3;
+        if (!allowDowntier && candidateRank < actualRank) continue;
+
+        // Must be cheaper
+        if (candidate.output_per_mtok >= bestCost) continue;
+
+        // Calculate savings percentage (weighted: 30% input, 70% output — typical usage pattern)
+        const actualWeightedCost = actualPricing.input_per_mtok * 0.3 + actualPricing.output_per_mtok * 0.7;
+        const candidateWeightedCost = candidate.input_per_mtok * 0.3 + candidate.output_per_mtok * 0.7;
+        const savingsPercent = ((actualWeightedCost - candidateWeightedCost) / actualWeightedCost) * 100;
+
+        if (savingsPercent < minSavingsPercent) continue;
+
+        best = {
+            recommended_model: candidate.model_id,
+            display_name: candidate.display_name,
+            provider: candidate.provider,
+            tier: candidate.tier,
+            input_per_mtok: candidate.input_per_mtok,
+            output_per_mtok: candidate.output_per_mtok,
+            savings_percent: Math.round(savingsPercent * 10) / 10,
+            actual_input: actualPricing.input_per_mtok,
+            actual_output: actualPricing.output_per_mtok
+        };
+        bestCost = candidate.output_per_mtok;
+    }
+
+    return best;
+}
+
+/**
+ * Check if a feature (batch API, prompt caching) was available on a given date.
+ *
+ * @param {string} featureId - Feature identifier (e.g., 'openai_batch_api', 'anthropic_prompt_caching')
+ * @param {string|Date} date - The date to check
+ * @param {string} [modelId] - Optional model to check eligibility
+ * @returns {{ available: boolean, discount_percent: number, applies_to: string } | null}
+ */
+export function getFeatureAvailabilityAtDate(featureId, date, modelId) {
+    const d = typeof date === 'string' ? date : date.toISOString().split('T')[0];
+    const feature = priceHistory.feature_availability[featureId];
+    if (!feature) return null;
+
+    const available = d >= feature.launch_date;
+    const modelEligible = modelId ? feature.eligible_models.includes(modelId) : true;
+
+    return {
+        available: available && modelEligible,
+        discount_percent: feature.discount_percent,
+        applies_to: feature.applies_to,
+        launch_date: feature.launch_date
+    };
+}
+
+/**
+ * Calculate the cost of delay — how much a company lost by not switching to a
+ * cheaper model when it became available.
+ *
+ * @param {string} oldModelId - The model they were using
+ * @param {string} newModelId - The model they should have switched to
+ * @param {string|Date} switchDate - When the new model became available
+ * @param {string|Date} actualSwitchDate - When they actually switched (or end of analysis period)
+ * @param {number} dailyTokensInput - Average daily input tokens
+ * @param {number} dailyTokensOutput - Average daily output tokens
+ * @returns {{ days_delayed: number, daily_savings: number, total_cost_of_delay: number }}
+ */
+export function calculateCostOfDelay(oldModelId, newModelId, switchDate, actualSwitchDate, dailyTokensInput, dailyTokensOutput) {
+    const d1 = typeof switchDate === 'string' ? switchDate : switchDate.toISOString().split('T')[0];
+    const d2 = typeof actualSwitchDate === 'string' ? actualSwitchDate : actualSwitchDate.toISOString().split('T')[0];
+
+    const oldPricing = getPricingAtDate(oldModelId, d1);
+    const newPricing = getPricingAtDate(newModelId, d1);
+
+    if (!oldPricing || !newPricing) {
+        return { days_delayed: 0, daily_savings: 0, total_cost_of_delay: 0 };
+    }
+
+    const daysDelayed = Math.max(0, Math.floor((new Date(d2) - new Date(d1)) / (86400 * 1000)));
+
+    const oldDailyCost = (dailyTokensInput / 1_000_000) * oldPricing.input_per_mtok +
+                         (dailyTokensOutput / 1_000_000) * oldPricing.output_per_mtok;
+    const newDailyCost = (dailyTokensInput / 1_000_000) * newPricing.input_per_mtok +
+                         (dailyTokensOutput / 1_000_000) * newPricing.output_per_mtok;
+
+    const dailySavings = oldDailyCost - newDailyCost;
+
+    return {
+        days_delayed: daysDelayed,
+        daily_savings: Math.round(dailySavings * 100) / 100,
+        total_cost_of_delay: Math.round(dailySavings * daysDelayed * 100) / 100
+    };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // SINGLETON FACTORY
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -1940,3 +2228,4 @@ export function resetModelRegistry() {
 
 export default ModelRegistry;
 export { MODEL_CAPABILITIES, TIER_RANK, PROVIDER_DISCOUNTS, MODEL_ID_ALIASES };
+export { getPricingAtDate, getAvailableModelsAtDate, getCheapestEquivalent, getFeatureAvailabilityAtDate, calculateCostOfDelay };

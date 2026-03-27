@@ -1,0 +1,262 @@
+{
+  "version": "1.0.0",
+  "entries": [
+    {
+      "date": "2026-03-19",
+      "version": "3.4.1",
+      "type": "fixed",
+      "title": "Webhook signature verification timeout",
+      "description": "Fixed race condition in webhook signing verification that could cause occasional validation failures on high-throughput systems.",
+      "component": "webhooks"
+    },
+    {
+      "date": "2026-03-15",
+      "version": "3.4.0",
+      "type": "added",
+      "title": "Intelligence Report exports",
+      "description": "Added ability to export Intelligence Reports in CSV, JSON, and PDF formats with configurable date ranges and metrics.",
+      "component": "intelligence-reports"
+    },
+    {
+      "date": "2026-03-12",
+      "version": "3.3.9",
+      "type": "changed",
+      "title": "Improved Finault Score calculation",
+      "description": "Updated scoring algorithm to better account for marginal cost changes and adjusted the weighting of cost optimization vs risk factors.",
+      "component": "scoring"
+    },
+    {
+      "date": "2026-03-08",
+      "version": "3.3.8",
+      "type": "fixed",
+      "title": "AIEI receipt validation",
+      "description": "Fixed JSON schema validation for AIEI receipts that was rejecting valid custom metadata fields.",
+      "component": "aiei"
+    },
+    {
+      "date": "2026-03-05",
+      "version": "3.3.7",
+      "type": "added",
+      "title": "Idempotency key support",
+      "description": "All POST endpoints now support Idempotency-Key header to prevent duplicate processing on network retries.",
+      "component": "core"
+    },
+    {
+      "date": "2026-02-28",
+      "version": "3.3.6",
+      "type": "deprecated",
+      "title": "Legacy v1/decisions endpoint",
+      "description": "The v1/decisions endpoint is deprecated in favor of v1/decisions/sync and v1/decisions/async. Legacy support will be removed in version 4.0.",
+      "component": "api"
+    },
+    {
+      "date": "2026-02-25",
+      "version": "3.3.5",
+      "type": "changed",
+      "title": "Close Pack processing optimization",
+      "description": "Improved Close Pack batch processing speed by 40% through optimized database queries and parallel processing of independent reconciliations.",
+      "component": "close-pack"
+    },
+    {
+      "date": "2026-02-20",
+      "version": "3.3.4",
+      "type": "added",
+      "title": "Webhook request signing",
+      "description": "Webhooks now include HMAC-SHA256 signature in X-Finault-Signature header for secure validation of event authenticity.",
+      "component": "webhooks"
+    },
+    {
+      "date": "2026-02-18",
+      "version": "3.3.3",
+      "type": "fixed",
+      "title": "Intelligence Report date range boundaries",
+      "description": "Fixed off-by-one error in Intelligence Report generation that was excluding events on the end date.",
+      "component": "intelligence-reports"
+    },
+    {
+      "date": "2026-02-15",
+      "version": "3.3.2",
+      "type": "changed",
+      "title": "Finault Score percentile calculation",
+      "description": "Adjusted percentile bucket sizes for Finault Score to provide more granular scoring distribution across customer cohorts.",
+      "component": "scoring"
+    },
+    {
+      "date": "2026-02-10",
+      "version": "3.3.1",
+      "type": "added",
+      "title": "Batch decision limits increased",
+      "description": "Increased maximum batch size for v1/decisions/batch from 100 to 500 decisions per request.",
+      "component": "api"
+    },
+    {
+      "date": "2026-02-08",
+      "version": "3.3.0",
+      "type": "added",
+      "title": "Close Pack v2 API",
+      "description": "Released new Close Pack API with support for partial reconciliations, incremental updates, and idempotent operations.",
+      "component": "close-pack"
+    },
+    {
+      "date": "2026-02-05",
+      "version": "3.2.9",
+      "type": "fixed",
+      "title": "AIEI receipt timestamp precision",
+      "description": "Fixed millisecond truncation in AIEI receipt timestamps that was causing timestamp mismatches in high-volume scenarios.",
+      "component": "aiei"
+    },
+    {
+      "date": "2026-02-01",
+      "version": "3.2.8",
+      "type": "changed",
+      "title": "EU AI Act compliance reporting",
+      "description": "Enhanced compliance reporting to include decision rationale and audit trail for EU AI Act transparency requirements.",
+      "component": "compliance"
+    },
+    {
+      "date": "2026-01-28",
+      "version": "3.2.7",
+      "type": "added",
+      "title": "Webhook event filtering",
+      "description": "Added ability to configure which event types trigger webhook calls, reducing unnecessary traffic and improving system efficiency.",
+      "component": "webhooks"
+    },
+    {
+      "date": "2026-01-25",
+      "version": "3.2.6",
+      "type": "fixed",
+      "title": "Intelligence Report memory leak",
+      "description": "Fixed memory leak in Intelligence Report generation for reports spanning more than 30 days of data.",
+      "component": "intelligence-reports"
+    },
+    {
+      "date": "2026-01-20",
+      "version": "3.2.5",
+      "type": "changed",
+      "title": "Finault Score ranking algorithm",
+      "description": "Introduced normalized comparative scoring to better account for differences in customer scale and transaction patterns.",
+      "component": "scoring"
+    },
+    {
+      "date": "2026-01-18",
+      "version": "3.2.4",
+      "type": "added",
+      "title": "Rate limiting transparency",
+      "description": "Added X-RateLimit-* headers to all API responses showing remaining quota and reset time.",
+      "component": "api"
+    },
+    {
+      "date": "2026-01-15",
+      "version": "3.2.3",
+      "type": "deprecated",
+      "title": "Legacy webhook format",
+      "description": "Legacy webhook format (v1) is deprecated. Migrate to v2 format before June 2026.",
+      "component": "webhooks"
+    },
+    {
+      "date": "2026-01-12",
+      "version": "3.2.2",
+      "type": "fixed",
+      "title": "AIEI receipt caching issue",
+      "description": "Fixed caching behavior that could return stale AIEI receipts for concurrent requests within the same second.",
+      "component": "aiei"
+    },
+    {
+      "date": "2026-01-08",
+      "version": "3.2.1",
+      "type": "changed",
+      "title": "Close Pack reconciliation timeout",
+      "description": "Increased timeout for Close Pack reconciliation from 30s to 60s to accommodate larger batches.",
+      "component": "close-pack"
+    },
+    {
+      "date": "2026-01-05",
+      "version": "3.2.0",
+      "type": "added",
+      "title": "Intelligence Reports GA",
+      "description": "General availability of Intelligence Reports feature for all enterprise customers. Includes automated report generation, custom metrics, and scheduled delivery.",
+      "component": "intelligence-reports"
+    },
+    {
+      "date": "2025-12-28",
+      "version": "3.1.9",
+      "type": "fixed",
+      "title": "API response encoding",
+      "description": "Fixed UTF-8 encoding issue in API responses that could truncate special characters in metadata fields.",
+      "component": "api"
+    },
+    {
+      "date": "2025-12-22",
+      "version": "3.1.8",
+      "type": "added",
+      "title": "Webhook retry exponential backoff",
+      "description": "Implemented exponential backoff for failed webhook deliveries with configurable retry policy.",
+      "component": "webhooks"
+    },
+    {
+      "date": "2025-12-20",
+      "version": "3.1.7",
+      "type": "changed",
+      "title": "Finault Score baseline update",
+      "description": "Updated baseline metrics for Finault Score calculation based on Q4 2025 customer cohort data.",
+      "component": "scoring"
+    },
+    {
+      "date": "2025-12-18",
+      "version": "3.1.6",
+      "type": "fixed",
+      "title": "Close Pack null value handling",
+      "description": "Fixed handling of null values in Close Pack reconciliation that could cause validation errors.",
+      "component": "close-pack"
+    },
+    {
+      "date": "2025-12-15",
+      "version": "3.1.5",
+      "type": "added",
+      "title": "Compliance audit logging",
+      "description": "Added comprehensive audit logging for all compliance-related API calls including decision rationale and regulatory references.",
+      "component": "compliance"
+    },
+    {
+      "date": "2025-12-12",
+      "version": "3.1.4",
+      "type": "fixed",
+      "title": "AIEI receipt schema validation",
+      "description": "Fixed JSON schema validation to properly handle nested objects in AIEI receipt metadata.",
+      "component": "aiei"
+    },
+    {
+      "date": "2025-12-10",
+      "version": "3.1.3",
+      "type": "removed",
+      "title": "Deprecated v1/health/legacy endpoint",
+      "description": "Removed v1/health/legacy endpoint. Use v1/health instead.",
+      "component": "api"
+    },
+    {
+      "date": "2025-12-08",
+      "version": "3.1.2",
+      "type": "changed",
+      "title": "Intelligence Report performance",
+      "description": "Optimized Intelligence Report query performance for accounts with >1M decisions by introducing time-range indexing.",
+      "component": "intelligence-reports"
+    },
+    {
+      "date": "2025-12-05",
+      "version": "3.1.1",
+      "type": "fixed",
+      "title": "Webhook delivery ordering",
+      "description": "Fixed race condition that could cause webhook events to be delivered out of order during high concurrency.",
+      "component": "webhooks"
+    },
+    {
+      "date": "2025-12-01",
+      "version": "3.1.0",
+      "type": "added",
+      "title": "Finault Score release",
+      "description": "Launched new Finault Score metric providing normalized profitability ranking across customer cohorts with daily updates.",
+      "component": "scoring"
+    }
+  ],
+  "total": 32
+}

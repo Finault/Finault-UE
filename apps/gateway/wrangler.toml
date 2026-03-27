@@ -9,6 +9,15 @@ workers_dev = true
 #   { pattern = "api.finault.ai/*", zone_name = "finault.ai" }
 # ]
 
+# Custom domains — all subdomains route through this Worker via hostname detection in fetch handler
+# To activate each: Cloudflare Dashboard → Workers → finault-gateway-gold → Settings → Domains & Routes → Add
+# DNS: Cloudflare auto-creates a CNAME when custom domain is added to the Worker
+#
+# seal.finault.ai    → serves inline Seal landing page (SEAL_LANDING_HTML)
+# app.finault.ai     → proxies to finault.ai/app (Cloudflare Pages dashboard)
+# docs.finault.ai    → proxies to finault.ai/docs (Cloudflare Pages docs)
+# gateway.finault.ai → falls through to normal gateway API handling (no special routing)
+
 # FIX 8 (CRITICAL): KV Namespace IDs - MUST be set via CI/CD environment variables
 # ═══════════════════════════════════════════════════════════════════════════════════════════════════
 # SECURITY WARNING: The IDs below are EXAMPLES ONLY and must be replaced with actual production IDs
@@ -31,7 +40,8 @@ workers_dev = true
 kv_namespaces = [
   { binding = "CACHE", id = "9c42d13f96b9485db9b39896e534761b" },
   { binding = "KV_CACHE", id = "9c42d13f96b9485db9b39896e534761b" },
-  { binding = "SESSIONS", id = "139978519f58407f89418bdd96a3513c" }
+  { binding = "SESSIONS", id = "139978519f58407f89418bdd96a3513c" },
+  { binding = "AGENTGATE_CACHE", id = "74ec9f6375d64aa180808a4d2517589d" }
 ]
 
 # Environment variables (set via wrangler secret or dashboard)

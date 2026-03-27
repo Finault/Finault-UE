@@ -1,0 +1,11 @@
+name = "finault-status"
+main = "status-worker.js"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+[triggers]
+crons = ["* * * * *"]
+
+[[kv_namespaces]]
+binding = "STATUS_KV"
+id = "STATUS_KV_ID_PLACEHOLDER"

@@ -18,7 +18,7 @@ export class Completions extends Resource {
       throw new Error('Use createStream() for streaming responses');
     }
 
-    const response = await this.client.request<ChatCompletionResponse>(
+    const response = await this.client.request(
       'POST',
       '/v1/chat/completions',
       {
@@ -59,7 +59,7 @@ export class Completions extends Resource {
       ...(request.topP !== undefined && { top_p: request.topP }),
     };
 
-    return this.client.streamRequest<ChatCompletionChunk>(
+    return this.client.streamRequest(
       'POST',
       '/v1/chat/completions',
       payload

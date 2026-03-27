@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Partner Program | Finault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #1a1a25;
+            --accent: #7c3aed;
+            --accent-blue: #3b82f6;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --border: #2a2a35;
+            --success: #10b981;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(8px);
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        nav a {
+            margin-left: 32px;
+            color: var(--text-secondary);
+            transition: color 0.2s;
+        }
+
+        nav a:hover {
+            color: var(--text-primary);
+        }
+
+        .hero {
+            padding: 80px 0;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(124, 58, 237, 0.1), rgba(59, 130, 246, 0.1));
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            color: white;
+            padding: 14px 40px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(124, 58, 237, 0.3);
+        }
+
+        .section {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section h2 {
+            font-size: 40px;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            margin-bottom: 48px;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .benefit-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+
+        .benefit-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 8px 16px rgba(124, 58, 237, 0.1);
+            transform: translateY(-4px);
+        }
+
+        .benefit-icon {
+            font-size: 32px;
+            margin-bottom: 16px;
+        }
+
+        .benefit-card h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+
+        .benefit-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .form-container {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 48px;
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-submit {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-blue));
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .form-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(124, 58, 237, 0.3);
+        }
+
+        .testimonials {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .testimonial {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 32px;
+        }
+
+        .testimonial-text {
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--text-secondary);
+        }
+
+        .testimonial-author {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .testimonial-role {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .partners-showcase {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 32px;
+            margin-bottom: 48px;
+        }
+
+        .partner-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .partner-card.featured {
+            border-color: var(--accent);
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .partner-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-4px);
+        }
+
+        .partner-logo {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .partner-card h3 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .partner-card p {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(124, 58, 237, 0.2);
+            color: var(--accent);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-top: 12px;
+        }
+
+        .faq-item {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .faq-question:hover {
+            background: rgba(124, 58, 237, 0.05);
+        }
+
+        .faq-toggle {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s;
+            padding: 0 20px;
+        }
+
+        .faq-answer.active {
+            max-height: 500px;
+            padding: 0 20px 20px 20px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        footer {
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border);
+            padding: 40px 0;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 16px;
+            }
+
+            nav a {
+                margin-left: 16px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero p {
+                font-size: 16px;
+            }
+
+            .section h2 {
+                font-size: 28px;
+            }
+
+            .form-container {
+                padding: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">⚡ Finault</div>
+                <nav>
+                    <a href="#benefits">Benefits</a>
+                    <a href="#partners">Partners</a>
+                    <a href="#faq">FAQ</a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <h1>Build the Future of AI Economics With Us</h1>
+            <p>Join our exclusive Design Partner Program and help shape the next generation of cost intelligence and margin optimization for AI workloads.</p>
+            <button class="cta-button" onclick="document.getElementById('apply-form').scrollIntoView({behavior: 'smooth'})">Apply Now</button>
+        </div>
+    </section>
+
+    <section class="section" id="benefits">
+        <div class="container">
+            <h2>Program Benefits</h2>
+            <p class="section-subtitle">Exclusive advantages for our design partners</p>
+            <div class="benefits-grid">
+                <div class="benefit-card">
+                    <div class="benefit-icon">📅</div>
+                    <h3>Weekly Check-ins</h3>
+                    <p>Direct access to our product team for alignment, feedback sessions, and real-time collaboration on features that matter to you.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">💬</div>
+                    <h3>Private Slack Channel</h3>
+                    <p>Dedicated communication channel with the Finault team for fast support, early announcements, and peer discussions with other design partners.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">⭐</div>
+                    <h3>Priority Feature Implementation</h3>
+                    <p>Your requests get prioritized in our roadmap. See your ideas become reality faster than standard customers.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">📝</div>
+                    <h3>Co-authored Case Study</h3>
+                    <p>We'll work with you to create a detailed case study showcasing your success with Finault. Great for thought leadership.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎯</div>
+                    <h3>Advisory Board Position</h3>
+                    <p>Join our Product Advisory Board with other design partners to influence the strategic direction of Finault.</p>
+                </div>
+                <div class="benefit-card">
+                    <div class="benefit-icon">🚀</div>
+                    <h3>Early Access</h3>
+                    <p>Beta access to new features and products before general availability. Help us catch issues and provide feedback.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2 style="margin-bottom: 48px;">Apply to the Program</h2>
+            <div class="text-center">
+                <div class="form-container" style="margin: 0 auto;">
+                    <form id="apply-form">
+                        <div class="form-group">
+                            <label for="name">Full Name</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Work Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="company">Company Name</label>
+                            <input type="text" id="company" name="company" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="role">Your Role</label>
+                            <input type="text" id="role" name="role" placeholder="e.g., Head of Platform Engineering">
+                        </div>
+                        <div class="form-group">
+                            <label for="ai-spend">Annual AI Spend (USD)</label>
+                            <select id="ai-spend" name="ai-spend">
+                                <option value="">Select a range</option>
+                                <option value="0-100k">Under $100K</option>
+                                <option value="100k-1m">$100K - $1M</option>
+                                <option value="1m-10m">$1M - $10M</option>
+                                <option value="10m+">$10M+</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="use-case">Primary Use Case</label>
+                            <textarea id="use-case" name="use-case" placeholder="Tell us how you use AI/ML in your organization..." required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="interest">Why are you interested in the Design Partner Program?</label>
+                            <textarea id="interest" name="interest" placeholder="Share what you hope to achieve..." required></textarea>
+                        </div>
+                        <button type="submit" class="form-submit">Submit Application</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="partners">
+        <div class="container">
+            <h2>Meet Our Design Partners</h2>
+            <p class="section-subtitle">Leading organizations shaping the future of AI economics</p>
+            <div class="partners-showcase">
+                <div class="partner-card featured">
+                    <div class="partner-logo">☕</div>
+                    <h3>Mocha Analytics</h3>
+                    <p>Real-time cost analytics platform for machine learning infrastructure.</p>
+                    <div class="badge">Featured Partner</div>
+                </div>
+                <div class="partner-card featured">
+                    <div class="partner-logo">📊</div>
+                    <h3>Charriere Systems</h3>
+                    <p>Enterprise data platform optimizing cloud spend across global deployments.</p>
+                    <div class="badge">Featured Partner</div>
+                </div>
+                <div class="partner-card">
+                    <div class="partner-logo">🤖</div>
+                    <h3>Your Company Here</h3>
+                    <p>Ready to join our community of innovation leaders?</p>
+                    <div class="badge">Apply Now</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section">
+        <div class="container">
+            <h2>What Our Partners Say</h2>
+            <p class="section-subtitle">Testimonials from design partners</p>
+            <div class="testimonials">
+                <div class="testimonial">
+                    <div class="testimonial-text">"Finault's design partner program has been transformational for our cost management strategy. The weekly insights and priority access to features have saved us thousands."</div>
+                    <div class="testimonial-author">Jane Chen</div>
+                    <div class="testimonial-role">VP of Infrastructure, Mocha Analytics</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">"The feedback loop is incredible. We suggested three features and saw them implemented within weeks. That speed of iteration is invaluable."</div>
+                    <div class="testimonial-author">Marcus Johnson</div>
+                    <div class="testimonial-role">Platform Lead, Charriere Systems</div>
+                </div>
+                <div class="testimonial">
+                    <div class="testimonial-text">"Being part of the advisory board gives us a voice in shaping the product roadmap. It's a true partnership, not just a vendor relationship."</div>
+                    <div class="testimonial-author">Sarah Williams</div>
+                    <div class="testimonial-role">CTO, Tech Innovations Inc.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="faq">
+        <div class="container">
+            <h2>Frequently Asked Questions</h2>
+            <p class="section-subtitle">Common questions about the Design Partner Program</p>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Who can apply to the Design Partner Program?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Any organization currently running significant AI/ML workloads or cloud infrastructure is eligible. We're looking for companies with $100K+ annual spend and a commitment to optimizing their cloud economics.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Is there a cost to join the program?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>No, the Design Partner Program is completely free. We view it as a collaboration where both parties benefit. You get early access and priority features, and we get invaluable feedback that shapes our product.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What's the time commitment?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Minimal but meaningful. Typically 2-3 hours per week including our weekly 30-minute sync, Slack discussions, and feedback on prototypes. The time investment pays dividends in feature prioritization.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How long is the program commitment?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>We ask for a minimum 6-month commitment to ensure continuity and real impact. After that, you're welcome to continue or graduate to regular customer status.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>Can I share information about being a design partner?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>Absolutely! We love when partners share their involvement. Early access and partnership are great differentiators. We'll work with you on the case study and any public materials.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>What if my company's needs change?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>We understand business priorities shift. Let's talk! We're flexible and can adjust the partnership scope or transition you to a standard customer plan if needed.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFAQ(this)">
+                    <span>How are design partners selected?</span>
+                    <span class="faq-toggle">+</span>
+                </div>
+                <div class="faq-answer">
+                    <p>We review applications on a rolling basis. We look for organizations with significant cloud spend, a willingness to collaborate closely, and use cases that align with our roadmap. We typically accept 3-5 new partners per quarter.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Finault. All rights reserved. | <a href="#">Privacy</a> | <a href="#">Terms</a> | <a href="#">Contact</a></p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('apply-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Thank you for applying! We\'ll review your application and get back to you within 5 business days.');
+            this.reset();
+        });
+
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const toggle = element.querySelector('.faq-toggle');
+
+            answer.classList.toggle('active');
+            toggle.textContent = answer.classList.contains('active') ? '−' : '+';
+        }
+    </script>
+</body>
+</html>

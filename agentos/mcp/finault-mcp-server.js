@@ -280,6 +280,48 @@ const FINAULT_TOOLS = [
             },
             required: ['organization_id', 'invoice_data']
         }
+    },
+    {
+        name: 'finault_time_machine_sync',
+        description: 'Pull complete historical AI usage data from providers (OpenAI, Anthropic). This reconstructs the full financial history going back up to 12 months. Use when the user wants to see their historical AI spend or run a Time Machine analysis.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                organization_id: { type: 'string', description: 'Organization ID' },
+                providers: {
+                    type: 'object',
+                    description: 'Map of provider name to {api_key}. E.g. {"openai": {"api_key": "sk-admin-..."}}'
+                },
+                stripe_key: { type: 'string', description: 'Stripe API key for revenue matching (optional)' }
+            },
+            required: ['organization_id', 'providers']
+        }
+    },
+    {
+        name: 'finault_time_machine_analyze',
+        description: 'Run the AI Financial Time Machine analysis. Computes what the company SHOULD have spent using optimal models, batch processing, caching, and cross-provider arbitrage. Returns alternate timeline, savings breakdown, customer impact, and Finault Score. Use when the user asks "how much could I have saved?" or "what should I have spent?"',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                organization_id: { type: 'string', description: 'Organization ID' },
+                period_start: { type: 'string', description: 'Analysis start date (YYYY-MM-DD, optional)' },
+                period_end: { type: 'string', description: 'Analysis end date (YYYY-MM-DD, optional)' },
+                cross_provider: { type: 'boolean', description: 'Include cross-provider arbitrage analysis', default: false }
+            },
+            required: ['organization_id']
+        }
+    },
+    {
+        name: 'finault_time_machine_customer_impact',
+        description: 'Get per-customer margin impact from Time Machine analysis. Shows which customers are profitable, which are underwater, and how margins would improve with optimization. Use when the user asks about customer profitability or AI cost per customer.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                organization_id: { type: 'string', description: 'Organization ID' },
+                analysis_id: { type: 'string', description: 'Specific analysis ID (optional, uses latest)' }
+            },
+            required: ['organization_id']
+        }
     }
 ];
 
@@ -378,6 +420,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                         status: 'pending_implementation'
                     }
                 };
+                break;
+
+            case 'finault_time_machine_sync':
+                result = await finaultTools.timeMachineSync(args.organization_id, {
+                    providers: args.providers,
+                    stripe_key: args.stripe_key
+                });
+                break;
+
+            case 'finault_time_machine_analyze':
+                result = await finaultTools.timeMachineAnalyze(args.organization_id, {
+                    period_start: args.period_start,
+                    period_end: args.period_end,
+                    cross_provider: args.cross_provider
+                });
+                break;
+
+            case 'finault_time_machine_customer_impact':
+                result = await finaultTools.timeMachineCustomerImpact(args.organization_id, {
+                    analysis_id: args.analysis_id
+                });
                 break;
 
             default:

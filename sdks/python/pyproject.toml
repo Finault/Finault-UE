@@ -1,0 +1,73 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finault"
+version = "1.0.0"
+description = "Official Finault Python SDK — AI cost governance, sealed receipts, FinOps automation, and multi-provider usage sync"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.8"
+authors = [
+    {name = "Finault Inc.", email = "support@finault.ai"}
+]
+keywords = [
+    "finault", "finops", "ai-cost", "llm", "openai", "anthropic",
+    "cost-governance", "cloud-cost", "cost-optimization", "ai-spend",
+    "sealed-receipts", "invoice-reconciliation"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Office/Business :: Financial",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "requests>=2.28.0",
+]
+
+[project.optional-dependencies]
+seal = [
+    "cryptography>=41.0.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+]
+
+[project.urls]
+Homepage = "https://finault.ai"
+Documentation = "https://docs.finault.ai"
+Repository = "https://github.com/finault/finault-python"
+Issues = "https://github.com/finault/finault-python/issues"
+Changelog = "https://github.com/finault/finault-python/blob/main/CHANGELOG.md"
+
+[project.scripts]
+finault = "finault.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["finault*"]
+
+[tool.ruff]
+target-version = "py38"
+line-length = 120
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+
+[tool.mypy]
+python_version = "3.8"
+strict = true

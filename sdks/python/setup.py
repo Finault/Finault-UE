@@ -46,6 +46,11 @@ setup(
             "mypy>=0.950",
         ],
     },
-    keywords="finault ai cost governance api",
+    entry_points={
+        "console_scripts": [
+            "finault=finault.cli:main",
+        ],
+    },
+    keywords="finault ai cost governance api sdk cli sync",
     zip_safe=False,
 )

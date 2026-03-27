@@ -3,14 +3,14 @@
  */
 
 import { Resource } from './base';
-import { ClosePack, ListResponse } from '../types';
+import { ClosePack as ClosePackType, ListResponse } from '../types';
 
 export class ClosePack extends Resource {
   /**
    * Generate a close pack for a specific period
    */
-  async generate(options: { period: string }): Promise<ClosePack> {
-    const response = await this.client.request<ClosePack>(
+  async generate(options: { period: string }): Promise<ClosePackType> {
+    const response = await this.client.request(
       'POST',
       '/v1/closepack/generate',
       { period: options.period }
@@ -22,25 +22,25 @@ export class ClosePack extends Resource {
   /**
    * List close packs
    */
-  async list(options?: { limit?: number; offset?: number }): Promise<ClosePack[]> {
+  async list(options?: { limit?: number; offset?: number }): Promise<ClosePackType[]> {
     const params: Record<string, number> = {};
     if (options?.limit !== undefined) params.limit = options.limit;
     if (options?.offset !== undefined) params.offset = options.offset;
 
-    const response = await this.client.request<ListResponse<ClosePack>>(
+    const response = await this.client.request(
       'GET',
       '/v1/closepack',
       undefined,
       { params }
-    );
+    ) as ListResponse<ClosePackType>;
 
-    return (response.items || []).map((item) => this.normalizeResponse(item));
+    return (response.items || []).map((item: any) => this.normalizeResponse(item));
   }
 
   /**
    * Normalize snake_case response to camelCase
    */
-  private normalizeResponse(data: any): ClosePack {
+  private normalizeResponse(data: any): ClosePackType {
     return {
       id: data.id || '',
       period: data.period || '',

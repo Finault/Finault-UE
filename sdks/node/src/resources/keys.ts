@@ -10,7 +10,7 @@ export class Keys extends Resource {
    * Create a new API key
    */
   async create(options: { name: string }): Promise<APIKey> {
-    const response = await this.client.request<APIKey>(
+    const response = await this.client.request(
       'POST',
       '/v1/keys',
       { name: options.name }
@@ -23,12 +23,12 @@ export class Keys extends Resource {
    * List all API keys
    */
   async list(): Promise<APIKey[]> {
-    const response = await this.client.request<ListResponse<APIKey>>(
+    const response = await this.client.request(
       'GET',
       '/v1/keys'
-    );
+    ) as ListResponse<APIKey>;
 
-    return (response.items || []).map((item) => this.normalizeResponse(item));
+    return (response.items || []).map((item: any) => this.normalizeResponse(item));
   }
 
   /**

@@ -1,129 +1,97 @@
 # Finault
 
-The financial operating system for AI.
+The economic proof layer for AI. Sealed receipts connecting cost, revenue, and margin with SHA-256 cryptographic proof on every AI transaction.
 
-Every AI transaction gets a Seal. Every agent gets an Imprint.
-The chain proves the whole story.
-
-## What This Is
-
-Finault is the accountability layer for the AI economy. We sit between your application and your AI providers. Every API call gets a cryptographic receipt. Every agent gets a permanent identity. The chain is tamper-proof and independently verifiable.
+**Live at [finault.ai](https://finault.ai)**
 
 ## Architecture
 
-Four layers:
+```
+finault-monorepo/
+├── apps/
+│   ├── gateway/          # Cloudflare Worker — THE gateway (47K lines)
+│   │   ├── gateway-wired.js   # Main gateway (deployed as finault-gateway-gold)
+│   │   └── src/               # Modularized handlers + provider adapters
+│   ├── mcp/              # MCP Server for Claude Desktop (6 tools)
+│   └── status/           # Status page worker (status.finault.ai)
+├── database/
+│   └── migrations/       # Supabase SQL migrations (001-071)
+├── packages/
+│   ├── aiei-spec/        # AIEI standard (Apache 2.0)
+│   └── aiei-validator/   # Schema validator
+├── sdks/
+│   ├── python/           # Python SDK + CLI (`pip install finault`)
+│   └── node/             # Node/TypeScript SDK (`npm install finault`)
+├── static/               # Cloudflare Pages static files
+│   ├── app.html          # Dashboard SPA
+│   ├── index.html        # Landing page
+│   └── experience.html   # Receipt / experience page
+├── dashboard/            # Next.js dashboard
+├── platform/             # Standalone modules (time machine, economic router)
+└── docs/                 # Architecture documentation
+```
 
-1. **Rails** — Gateway proxy (OpenAI, Anthropic, Google, Azure, Bedrock), Seal engine (SHA-256 + HMAC), Imprint system, AIEI open standard
-2. **Intelligence** — Finault Score (6 dimensions), anomaly detection, drift analysis, savings engine, budget enforcement
-3. **Reconciliation & Settlement** — 3-way match (usage vs invoices vs rate cards), immutable certificates, 14 exception codes, continuous reconciliation, dispute auto-generation, GL journal entries
-4. **Network** — Finault Index, Live Close Pack, chain verification portal (building)
+## Four-Layer Architecture
 
-## Live Infrastructure
-
-| What | Where |
-|------|-------|
-| Product | [finault.ai](https://finault.ai) |
-| Gateway | gateway.finault.ai (api.finault.ai) |
-| First Imprint | [api.finault.ai/seal/seal_de8ad2460a2e](https://api.finault.ai/seal/seal_de8ad2460a2e) |
-| AIEI Spec | [github.com/Finault/aiei-spec](https://github.com/Finault/aiei-spec) |
-| Python SDK | `pip install finault` |
-| Node SDK | `npm install finault` |
-| Chain | 15+ seals, self-sovereign (SHA-256, no Ethereum) |
+1. **Rails** — Gateway routing (OpenAI, Anthropic, Google, Azure, Bedrock), cryptographic sealing (SHA-256 + HMAC), agent identity, AIEI standard
+2. **Intelligence** — Finault Score (6 dimensions), anomaly detection, drift monitoring, cost optimization, budget management via Durable Objects
+3. **Reconciliation & Settlement** — Three-way matching (usage/invoices/rate cards), certificates, 14 exception codes, dispute generation, GL entries
+4. **Network** — Finault Index (cross-company benchmarks), Live Close Pack, verification portal, receipt network
 
 ## Quick Start
 
-### Scan your AI spend
-Go to [finault.ai/experience](https://finault.ai/experience), paste your API key.
-
-### Route through the gateway
 ```python
-import openai
-client = openai.OpenAI(
-    base_url="https://gateway.finault.ai/v1",
-    api_key="your-key"
+from finault import OpenAI
+
+client = OpenAI()  # Uses FINAULT_API_KEY from env
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello"}],
+    extra_headers={"X-Finault-Revenue": "0.15"}
 )
+# Every call is sealed. Check X-Finault-Seal header for receipt URL.
 ```
 
-### Install the SDK
-```bash
-pip install finault
-# or
-npm install finault
-```
-
-## Repository Structure
-
-```
-finault/
-├── apps/
-│   ├── gateway/              # Cloudflare Worker — core gateway proxy
-│   │   ├── gateway-wired.js  # Main handler (900KB+, 32+ route handlers)
-│   │   └── wrangler.toml
-│   └── dashboard/            # Next.js admin dashboard
-│
-├── static/                   # Cloudflare Pages — finault.ai
-│   ├── index.html            # Landing page
-│   ├── experience.html       # 5-step product experience
-│   ├── pricing.html          # Pricing
-│   ├── docs.html             # Documentation
-│   ├── login.html            # Auth
-│   └── ...                   # All deployed pages
-│
-├── sdks/                     # Multi-language SDKs
-│   ├── python/               # finault on PyPI
-│   ├── node/                 # finault on npm
-│   ├── go/                   # Go client
-│   ├── java/                 # Java client
-│   └── ruby/                 # Ruby client
-│
-├── platform/                 # Backend orchestration & modules
-│   ├── orchestrator.js       # Core platform orchestrator
-│   └── modules/              # Intelligence modules
-│
-├── agentos/                  # Agent operating system
-│   ├── core/                 # Agent runtime
-│   ├── protocols/            # AIEI protocol implementation
-│   └── tools/                # Agent tool definitions
-│
-├── database/                 # Supabase schema & migrations
-│   └── migrations/           # 23 SQL migration files
-│
-├── mcp-server/               # MCP Server for Claude Desktop
-│   └── src/                  # 12 tools for AI cost management
-│
-├── integrations/             # ERP, SSO, provider connectors
-├── modules/                  # Anomaly detection, policy engine
-├── services/                 # Microservices (billing, notifications)
-├── tools/                    # CLI tools
-├── tests/                    # Test suites
-└── docs/                     # Architecture documentation
-```
-
-## Database
-
-100+ Supabase tables, 23 migrations. Key tables include: seals and seal_chain (the immutable chain), imprints and agent_careers (agent identity system), reconciliation_reports and reconciliation_certificates (settlement layer), finault_scores, anomalies, and drift_alerts (intelligence layer).
-
-## Standards & Compliance
-
-- AIEI v1.0.0 (Apache 2.0)
-- EU AI Act Article 12 compatible
-- Colorado SB205 compatible
-- SOC 2 readiness exports
-- NIST AI Agent Standards aligned
-
-## Deployment
+## Deploy
 
 ```bash
-# Deploy site to Cloudflare Pages
-cd static && npx wrangler pages deploy . --project-name finault
-
-# Deploy gateway worker
-cd apps/gateway && npx wrangler deploy
+npx wrangler deploy apps/gateway/gateway-wired.js \
+  --name finault-gateway-gold \
+  --compatibility-date 2024-09-23 \
+  --compatibility-flags nodejs_compat
 ```
 
-## Team
+## Gateway Features (v4.2)
 
-Bernie Cotter — Founder & CEO (bernard.cotter@finault.co)
+The gateway (`apps/gateway/gateway-wired.js`) is a single 47K-line Cloudflare Worker with zero external dependencies. Key systems:
+
+- **FinaultRouter** — Express-style router with middleware chain (zero deps, replaces Hono)
+- **AES-256-GCM Encryption** — Stripe token encryption at rest
+- **KV Rate Limiter** — Sliding window counters across 7 category tiers
+- **Read-Through Cache** — KV→Supabase fallback with async cache population
+- **Durable Objects** — BudgetCounter, SealSequencer, DashboardStream
+- **D1 Hot-Path** — Edge SQLite for sub-ms auth lookups
+- **Schema Validation** — SealValidator rejecting malformed seals
+- **HMAC Webhooks** — Signed delivery for 8 event types
+- **Semantic Cache** — SHA-256 of canonicalized requests
+- **API Key Manager** — Generate/validate/revoke with D1→Supabase fallback
+- **Intelligence Reports** — Executive summaries, cost analysis, recommendations
+- **AI P&L** — Revenue, COGS, gross margin, dark debt sections
+- **Margin Forensics** — Period-over-period delta attribution
+- **Provider Abstraction** — OpenAI/Anthropic/Google with auto-detection
+- **Revenue Connectors** — Lago + Kill Bill integrations
+- **Finault Replay** — "What if" cost modeling
+- **Finault Index** — Cross-company benchmarks with percentile rankings
+- **Quality Signal** — Third axis of WORTH (cost, revenue, quality)
+- **Offline Seals** — Base64url compact proofs for offline verification
+
+## Links
+
+- **Site:** https://finault.ai
+- **API:** https://api.finault.ai
+- **Status:** https://status.finault.ai
+- **AIEI Spec:** https://github.com/Finault/aiei-spec
+- **First Imprint:** https://api.finault.ai/seal/seal_de8ad2460a2e
 
 ## License
 

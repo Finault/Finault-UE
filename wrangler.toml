@@ -1,5 +1,5 @@
 name = "finault-gateway"
-main = "dist/gateway.js"
+main = "apps/gateway/gateway-wired.js"
 compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
@@ -21,6 +21,29 @@ bucket_name = "finault-closepacks"
 [[kv_namespaces]]
 binding = "RATE_LIMIT"
 id = "d13878b328ce4836a0256687146a895b"
+
+# Durable Objects — Budget, Seal Chain, Dashboard Stream
+[[durable_objects.bindings]]
+name = "BUDGET_COUNTER"
+class_name = "BudgetCounter"
+
+[[durable_objects.bindings]]
+name = "SEAL_CHAIN"
+class_name = "SealChain"
+
+[[durable_objects.bindings]]
+name = "DASHBOARD_STREAM"
+class_name = "DashboardStream"
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["BudgetCounter", "SealChain", "DashboardStream"]
+
+# D1 edge database for hot-path reads (model pricing, org config)
+[[d1_databases]]
+binding = "D1"
+database_name = "finault-edge"
+database_id = "9357a776-3e20-46df-9ef6-7e785d8f5fb3"
 
 # Secrets (set via `wrangler secret put` for production)
 # wrangler secret put JWT_SECRET

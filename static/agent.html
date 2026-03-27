@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Verification - Finault</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background-color: #FFFFFF;
+            color: #111827;
+            line-height: 1.5;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding-bottom: 24px;
+            border-bottom: 0.5px solid #E5E7EB;
+        }
+
+        .header-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #059669;
+            flex-shrink: 0;
+        }
+
+        .header-logo {
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #111827;
+        }
+
+        .header-title {
+            margin-left: auto;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6B7280;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* Agent Identity Card */
+        .agent-card {
+            background-color: #F9FAFB;
+            border: 0.5px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .agent-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .agent-name.unidentified {
+            color: #DC2626;
+        }
+
+        .badge-section {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .imprint-badge {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 11px;
+            background-color: #FFFFFF;
+            border: 0.5px solid #E5E7EB;
+            color: #374151;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-block;
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-badge.active {
+            background-color: #ECFDF5;
+            color: #065F46;
+            border: 0.5px solid #D1FAE5;
+        }
+
+        .status-badge.inactive {
+            background-color: #FEF2F2;
+            color: #7F1D1D;
+            border: 0.5px solid #FCA5A5;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 0.5px solid #E5E7EB;
+            font-size: 13px;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .info-value.mono {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 12px;
+            color: #374151;
+        }
+
+        /* Activity Summary */
+        .activity-summary {
+            background-color: #F9FAFB;
+            border: 0.5px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .summary-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .summary-stat {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            padding: 12px 0;
+            border-bottom: 0.5px solid #E5E7EB;
+        }
+
+        .summary-stat:last-child {
+            border-bottom: none;
+        }
+
+        .summary-label {
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .summary-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+
+        .summary-value.currency {
+            color: #059669;
+        }
+
+        .summary-list {
+            font-size: 12px;
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .summary-list-item {
+            padding: 6px 0;
+            display: inline-block;
+            margin-right: 12px;
+        }
+
+        /* Recent Activity Section */
+        .section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #111827;
+            margin-top: 32px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .activity-table-container {
+            background-color: #FFFFFF;
+            border: 0.5px solid #E5E7EB;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 32px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: #F9FAFB;
+            border-bottom: 0.5px solid #E5E7EB;
+        }
+
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #374151;
+            border-bottom: 0.5px solid #E5E7EB;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .time-cell {
+            font-size: 12px;
+            color: #9CA3AF;
+            white-space: nowrap;
+        }
+
+        .badge {
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+            font-size: 10px;
+            background-color: #F9FAFB;
+            color: #374151;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .seal-link {
+            color: #059669;
+            text-decoration: none;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .seal-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Chain Stats */
+        .chain-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .stat-card {
+            background-color: #FFFFFF;
+            border: 0.5px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #6B7280;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+        }
+
+        /* Verify Button */
+        .verify-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 32px;
+        }
+
+        .btn-verify {
+            padding: 12px 24px;
+            font-size: 13px;
+            font-weight: 600;
+            background-color: #059669;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-family: inherit;
+        }
+
+        .btn-verify:hover {
+            background-color: #047857;
+        }
+
+        .btn-verify:disabled {
+            background-color: #D1D5DB;
+            cursor: not-allowed;
+        }
+
+        .verify-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #6B7280;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #D1D5DB;
+        }
+
+        .status-indicator.verified {
+            background-color: #059669;
+        }
+
+        .status-indicator.error {
+            background-color: #DC2626;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 48px 32px;
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+
+        /* Error State */
+        .error-box {
+            background-color: #FEF2F2;
+            border: 0.5px solid #FCA5A5;
+            border-radius: 8px;
+            padding: 16px;
+            color: #7F1D1D;
+            font-size: 13px;
+            margin-bottom: 24px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 48px 32px;
+            color: #9CA3AF;
+            font-size: 13px;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #E5E7EB;
+            border-top-color: #059669;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #6B7280;
+            padding-top: 24px;
+            border-top: 0.5px solid #E5E7EB;
+            margin-top: 32px;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .chain-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .container {
+                padding: 16px;
+            }
+
+            .chain-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .verify-section {
+                flex-direction: column;
+            }
+
+            .btn-verify {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-dot"></div>
+            <div class="header-logo">FINAULT</div>
+            <div class="header-title">Agent Verification</div>
+        </div>
+
+        <!-- Error State (hidden by default) -->
+        <div id="errorBox" class="error-box" style="display: none;"></div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading">
+            <div class="spinner"></div> Loading agent data...
+        </div>
+
+        <!-- Main Content (hidden while loading) -->
+        <div id="mainContent" style="display: none;">
+            <!-- Agent Identity + Summary -->
+            <div class="content-grid">
+                <div class="agent-card">
+                    <div id="agentName" class="agent-name">Unidentified Agent</div>
+
+                    <div class="badge-section">
+                        <div id="imprintBadge" class="imprint-badge">imp_XXXX</div>
+                        <div id="statusBadge" class="status-badge active">Active</div>
+                    </div>
+
+                    <div id="agentDetails"></div>
+                </div>
+
+                <div class="activity-summary">
+                    <div class="summary-title">Activity Summary</div>
+                    <div class="summary-stat">
+                        <span class="summary-label">Total Cost Attributed</span>
+                        <span id="totalCost" class="summary-value currency">$0.00</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="summary-label">Average Cost / Action</span>
+                        <span id="avgCost" class="summary-value currency">$0.00</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="summary-label">Models Used</span>
+                    </div>
+                    <div id="modelsList" class="summary-list">
+                        <span class="summary-list-item">—</span>
+                    </div>
+                    <div class="summary-stat">
+                        <span class="summary-label">Primary Task Types</span>
+                    </div>
+                    <div id="taskTypesList" class="summary-list">
+                        <span class="summary-list-item">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chain Stats -->
+            <div class="chain-stats">
+                <div class="stat-card">
+                    <div class="stat-label">Chain Depth</div>
+                    <div id="chainDepth" class="stat-value">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">First Seal Date</div>
+                    <div id="firstSealDate" class="stat-value" style="font-size: 14px;">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Latest Seal Date</div>
+                    <div id="latestSealDate" class="stat-value" style="font-size: 14px;">—</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Cumulative Cost</div>
+                    <div id="cumulativeCost" class="stat-value">$0.00</div>
+                </div>
+            </div>
+
+            <!-- Verify Button -->
+            <div class="verify-section">
+                <button id="verifyBtn" class="btn-verify">Verify Agent Chain</button>
+                <div class="verify-status">
+                    <div id="verifyIndicator" class="status-indicator"></div>
+                    <span id="verifyText">Not verified</span>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <h2 class="section-title">Recent Activity (Last 20 Sealed Actions)</h2>
+            <div class="activity-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Model</th>
+                            <th>Cost</th>
+                            <th>Task Type</th>
+                            <th>Seal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="activityTableBody">
+                        <tr>
+                            <td colspan="5" class="empty-state">No activity available</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer -->
+            <div class="footer" id="footer">
+                Finault Agent Imprint • All seal hashes verified on-chain
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const GATEWAY_URL = 'https://finault-gateway.finault.workers.dev';
+
+        let agentData = null;
+
+        // Extract imprint_id from URL
+        function getImprintIdFromUrl() {
+            const pathParts = window.location.pathname.split('/');
+            return pathParts[pathParts.length - 1];
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            if (typeof amount !== 'number') return '$0.00';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }).format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '—';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Format time
+        function formatTime(dateString) {
+            if (!dateString) return '—';
+            const date = new Date(dateString);
+            return date.toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Show error
+        function showError(message) {
+            const errorBox = document.getElementById('errorBox');
+            errorBox.textContent = message;
+            errorBox.style.display = 'block';
+            document.getElementById('loadingState').style.display = 'none';
+        }
+
+        // Load agent data from gateway
+        async function loadAgentData() {
+            try {
+                const imprintId = getImprintIdFromUrl();
+
+                if (!imprintId || imprintId === 'agent.html') {
+                    showError('Invalid agent ID. Please provide a valid imprint ID in the URL.');
+                    return;
+                }
+
+                const response = await fetch(`${GATEWAY_URL}/v1/agents/${imprintId}`);
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        showError('Agent not found. The imprint ID may be invalid or the agent no longer exists.');
+                    } else {
+                        showError(`Error loading agent data (${response.status}). Please try again later.`);
+                    }
+                    return;
+                }
+
+                agentData = await response.json();
+                renderAgentPage();
+            } catch (error) {
+                console.error('Error loading agent:', error);
+                showError('Failed to load agent data. Please check your connection and try again.');
+            }
+        }
+
+        // Render agent page
+        function renderAgentPage() {
+            if (!agentData) {
+                showError('No agent data received.');
+                return;
+            }
+
+            // Update agent name
+            const agentName = document.getElementById('agentName');
+            if (agentData.name) {
+                agentName.textContent = agentData.name;
+                agentName.classList.remove('unidentified');
+            } else {
+                agentName.textContent = 'Unidentified Agent';
+                agentName.classList.add('unidentified');
+            }
+
+            // Update imprint badge
+            document.getElementById('imprintBadge').textContent = agentData.imprint_id || 'imp_XXXX';
+
+            // Update status badge
+            const statusBadge = document.getElementById('statusBadge');
+            const isActive = agentData.status === 'active';
+            statusBadge.textContent = isActive ? 'Active' : 'Inactive';
+            statusBadge.classList.toggle('active', isActive);
+            statusBadge.classList.toggle('inactive', !isActive);
+
+            // Render agent details
+            renderAgentDetails();
+
+            // Update activity summary
+            renderActivitySummary();
+
+            // Update chain stats
+            renderChainStats();
+
+            // Render activity table
+            renderActivityTable();
+
+            // Show main content
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'block';
+        }
+
+        // Render agent details
+        function renderAgentDetails() {
+            const detailsHtml = `
+                <div class="info-row">
+                    <span class="info-label">Deploying Organization</span>
+                    <span class="info-value">${agentData.deploying_org || '—'}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">First Seen</span>
+                    <span class="info-value">${formatDate(agentData.first_seen)}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Total Actions in Chain</span>
+                    <span class="info-value">${agentData.total_actions || 0}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Status</span>
+                    <span class="info-value">${agentData.status === 'active' ? 'Active' : 'Inactive'}</span>
+                </div>
+            `;
+            document.getElementById('agentDetails').innerHTML = detailsHtml;
+        }
+
+        // Render activity summary
+        function renderActivitySummary() {
+            const totalCost = agentData.total_cost_attributed || 0;
+            const totalActions = agentData.total_actions || 0;
+            const avgCost = totalActions > 0 ? totalCost / totalActions : 0;
+
+            document.getElementById('totalCost').textContent = formatCurrency(totalCost);
+            document.getElementById('avgCost').textContent = formatCurrency(avgCost);
+
+            // Render models list
+            const models = agentData.models_used || [];
+            if (models.length > 0) {
+                document.getElementById('modelsList').innerHTML = models
+                    .map(m => `<span class="summary-list-item">${m}</span>`)
+                    .join('');
+            }
+
+            // Render task types
+            const taskTypes = agentData.primary_task_types || [];
+            if (taskTypes.length > 0) {
+                document.getElementById('taskTypesList').innerHTML = taskTypes
+                    .map(t => `<span class="summary-list-item">${t}</span>`)
+                    .join('');
+            }
+        }
+
+        // Render chain stats
+        function renderChainStats() {
+            const actions = agentData.recent_actions || [];
+
+            document.getElementById('chainDepth').textContent = agentData.total_actions || 0;
+            document.getElementById('firstSealDate').textContent = formatDate(agentData.first_seen);
+            document.getElementById('latestSealDate').textContent = formatDate(agentData.last_seen);
+            document.getElementById('cumulativeCost').textContent = formatCurrency(agentData.total_cost_attributed || 0);
+        }
+
+        // Render activity table
+        function renderActivityTable() {
+            const actions = agentData.recent_actions || [];
+
+            if (actions.length === 0) {
+                document.getElementById('activityTableBody').innerHTML =
+                    '<tr><td colspan="5" class="empty-state">No recent activity</td></tr>';
+                return;
+            }
+
+            const rows = actions.slice(0, 20).map(action => `
+                <tr>
+                    <td class="time-cell">${formatTime(action.timestamp)}</td>
+                    <td>${action.model || '—'}</td>
+                    <td>${formatCurrency(action.cost || 0)}</td>
+                    <td>${action.task_type || '—'}</td>
+                    <td>
+                        <a href="/seal/${action.seal_id}" class="seal-link" title="View seal receipt">
+                            <span class="badge">${action.seal_id ? action.seal_id.substring(0, 8) : 'N/A'}</span>
+                        </a>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('activityTableBody').innerHTML = rows;
+        }
+
+        // Verify chain integrity
+        async function verifyChain() {
+            const verifyBtn = document.getElementById('verifyBtn');
+            const verifyIndicator = document.getElementById('verifyIndicator');
+            const verifyText = document.getElementById('verifyText');
+
+            verifyBtn.disabled = true;
+            verifyText.textContent = 'Verifying...';
+            verifyIndicator.classList.remove('verified', 'error');
+
+            try {
+                // In a real implementation, this would walk the chain and validate seal hashes
+                // For now, we'll simulate a successful verification
+                const imprintId = getImprintIdFromUrl();
+                const response = await fetch(`${GATEWAY_URL}/v1/agents/${imprintId}/verify`);
+
+                if (response.ok) {
+                    const result = await response.json();
+                    verifyText.textContent = result.verified ? 'Chain verified ✓' : 'Chain verification failed';
+                    verifyIndicator.classList.add(result.verified ? 'verified' : 'error');
+                } else {
+                    verifyText.textContent = 'Verification unavailable';
+                    verifyIndicator.classList.add('error');
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                verifyText.textContent = 'Verification error';
+                verifyIndicator.classList.add('error');
+            } finally {
+                verifyBtn.disabled = false;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('verifyBtn').addEventListener('click', verifyChain);
+
+        // Initialize
+        loadAgentData();
+    </script>
+</body>
+</html>

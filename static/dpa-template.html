@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Processing Agreement - Finault</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/logo.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <style>
+        :root {
+            --green: #16a34a;
+            --black: #111;
+            --text-secondary: #666;
+            --border: #e5e5e5;
+            --bg-light: #f9f9f9;
+            --error-red: #dc2626;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            color: var(--black);
+            background: #fff;
+            line-height: 1.6;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--black);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--green);
+        }
+
+        .nav-cta {
+            background: var(--green);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .nav-cta:hover {
+            background: #15803d;
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            padding: 3rem 2rem;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .dpa-header {
+            background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+            padding: 2rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .dpa-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .dpa-header p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .dpa-meta {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .dpa-meta-item {
+            font-size: 0.9rem;
+        }
+
+        .dpa-meta-item strong {
+            color: var(--black);
+            display: block;
+            margin-bottom: 0.25rem;
+        }
+
+        .dpa-meta-item span {
+            color: var(--text-secondary);
+        }
+
+        /* Form Fields */
+        .form-group {
+            margin: 1.5rem 0;
+            padding: 1rem;
+            background: var(--bg-light);
+            border-radius: 6px;
+            border: 1px solid var(--border);
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--black);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 0.95rem;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+        }
+
+        /* DPA Content */
+        .dpa-document {
+            background: white;
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .dpa-document h2 {
+            font-size: 1.4rem;
+            margin: 2rem 0 1rem 0;
+            color: var(--black);
+            border-bottom: 2px solid var(--green);
+            padding-bottom: 0.5rem;
+        }
+
+        .dpa-document h3 {
+            font-size: 1.1rem;
+            margin: 1.5rem 0 0.75rem 0;
+            color: var(--black);
+        }
+
+        .dpa-document p {
+            margin-bottom: 1rem;
+            color: var(--black);
+            line-height: 1.8;
+        }
+
+        .dpa-document ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .dpa-document li {
+            margin-bottom: 0.5rem;
+            color: var(--black);
+        }
+
+        .subprocessor-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+
+        .subprocessor-table th {
+            background: var(--bg-light);
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid var(--border);
+        }
+
+        .subprocessor-table td {
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            color: var(--black);
+        }
+
+        .subprocessor-table tr:nth-child(even) {
+            background: var(--bg-light);
+        }
+
+        .highlight {
+            background: #fffbeb;
+            padding: 1rem;
+            border-left: 4px solid var(--green);
+            margin: 1rem 0;
+            border-radius: 4px;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--black);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            border-color: var(--green);
+        }
+
+        /* Print Styles */
+        @media print {
+            nav, .action-buttons, .form-group {
+                display: none;
+            }
+
+            .dpa-document {
+                border: none;
+                padding: 0;
+            }
+
+            .dpa-document h2 {
+                page-break-after: avoid;
+            }
+
+            .dpa-document h3 {
+                page-break-after: avoid;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1rem;
+            }
+
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.85rem;
+            }
+
+            main {
+                margin-top: 70px;
+                padding: 1.5rem 1rem;
+            }
+
+            .dpa-header h1 {
+                font-size: 1.5rem;
+            }
+
+            .dpa-meta {
+                gap: 1rem;
+            }
+
+            .dpa-document {
+                padding: 1rem;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="nav-logo">Finault</a>
+            <ul class="nav-links">
+                <li><a href="/security.html">Security</a></li>
+                <li><a href="/soc2.html">Compliance</a></li>
+                <li><a href="/terms.html">Legal</a></li>
+                <li><a href="/support.html" class="nav-cta">Support</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main>
+        <div class="container">
+            <div class="dpa-header">
+                <h1>Data Processing Agreement (DPA)</h1>
+                <p>Comprehensive data protection terms for Finault enterprise customers. This agreement defines how we process, protect, and handle your data in compliance with GDPR, CCPA, and global data protection regulations.</p>
+                <div class="dpa-meta">
+                    <div class="dpa-meta-item">
+                        <strong>Effective Date</strong>
+                        <span id="effectiveDate">March 20, 2026</span>
+                    </div>
+                    <div class="dpa-meta-item">
+                        <strong>Last Updated</strong>
+                        <span>March 20, 2026</span>
+                    </div>
+                    <div class="dpa-meta-item">
+                        <strong>Status</strong>
+                        <span>Active</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="companyName">Your Company Name (for documentation)</label>
+                <input type="text" id="companyName" placeholder="Enter your company name">
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="window.print()">Download as PDF</button>
+                <button class="btn btn-secondary" onclick="copyToClipboard()">Copy Agreement Text</button>
+            </div>
+
+            <div class="dpa-document">
+                <h2>1. Definitions</h2>
+                <p><strong>Data Controller</strong>: The entity that determines the purposes and means of personal data processing (your organization).</p>
+                <p><strong>Data Processor</strong>: Finault, which processes personal data on behalf of the Controller.</p>
+                <p><strong>Personal Data</strong>: Any information relating to an identified or identifiable natural person.</p>
+                <p><strong>Processing</strong>: Any operation performed on personal data, such as collection, recording, organization, structuring, storage, adaptation, retrieval, consultation, use, transmission, erasure, or destruction.</p>
+                <p><strong>Sub-processor</strong>: Any entity engaged by Finault to process personal data on behalf of the Data Controller.</p>
+                <p><strong>Data Subject</strong>: The individual to whom personal data relates.</p>
+
+                <h2>2. Scope of Processing</h2>
+                <p>This DPA applies to all processing of personal data conducted by Finault as a data processor on behalf of your organization (the data controller). The processing is limited to the following purposes:</p>
+                <ul>
+                    <li>Provision of the Finault intelligence and analytics platform</li>
+                    <li>Generation of financial insights and reports</li>
+                    <li>Fraud detection and anomaly identification</li>
+                    <li>Optimization and improvement of platform functionality</li>
+                    <li>Compliance with legal and regulatory obligations</li>
+                </ul>
+
+                <h2>3. Data Categories and Processing Activities</h2>
+                <h3>3.1 Categories of Personal Data</h3>
+                <p>Finault may process the following categories of personal data as necessary for service delivery:</p>
+                <ul>
+                    <li>Identifiers (names, email addresses, user IDs)</li>
+                    <li>Financial transaction data (amounts, descriptions, merchant information)</li>
+                    <li>Payment method information (last 4 digits, card type, expiration month/year)</li>
+                    <li>Behavioral data (login history, feature usage patterns)</li>
+                    <li>Communication data (support tickets, feedback submissions)</li>
+                </ul>
+
+                <h3>3.2 Categories of Data Subjects</h3>
+                <ul>
+                    <li>End users of the platform (authorized by your organization)</li>
+                    <li>Account administrators and billing contacts</li>
+                    <li>Individuals referenced in financial records (employees, contractors, vendors)</li>
+                </ul>
+
+                <h2>4. Data Retention and Deletion</h2>
+                <h3>4.1 Retention Periods</h3>
+                <ul>
+                    <li><strong>Active Account Data</strong>: Retained for the duration of the service agreement</li>
+                    <li><strong>Transaction Records</strong>: Retained for 7 years to comply with financial regulations</li>
+                    <li><strong>Deleted Account Data</strong>: Permanently deleted within 30 days of account termination</li>
+                    <li><strong>Backup Data</strong>: Retained for up to 90 days then permanently destroyed</li>
+                </ul>
+
+                <h3>4.2 Deletion Procedures</h3>
+                <p>Upon request or contract termination, Finault will securely delete all personal data within 30 days unless legal obligations require longer retention. Deletion includes:</p>
+                <ul>
+                    <li>Removal from primary production databases</li>
+                    <li>Deletion from backup systems within 90 days</li>
+                    <li>Secure cryptographic erasure to prevent recovery</li>
+                </ul>
+
+                <h2>5. Sub-processors</h2>
+                <p>Finault engages the following sub-processors to deliver the service. We maintain a current list available on our compliance dashboard.</p>
+
+                <table class="subprocessor-table">
+                    <thead>
+                        <tr>
+                            <th>Sub-processor</th>
+                            <th>Purpose</th>
+                            <th>Location</th>
+                            <th>Data Categories</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Cloudflare</td>
+                            <td>CDN, DDoS protection, Web Application Firewall, compute services</td>
+                            <td>Global (US, EU)</td>
+                            <td>Request metadata, logs, IP addresses</td>
+                        </tr>
+                        <tr>
+                            <td>Supabase (PostgreSQL)</td>
+                            <td>Primary database and data storage</td>
+                            <td>US (us-east-1), EU (eu-west-1)</td>
+                            <td>All application data, user records, transaction data</td>
+                        </tr>
+                        <tr>
+                            <td>Cloudflare R2</td>
+                            <td>Object storage for reports, exports, and backups</td>
+                            <td>Global (US, EU)</td>
+                            <td>Reports, documents, export files, backup snapshots</td>
+                        </tr>
+                        <tr>
+                            <td>Sentry</td>
+                            <td>Error tracking and performance monitoring</td>
+                            <td>US, EU</td>
+                            <td>Exception logs, error context, performance metrics</td>
+                        </tr>
+                        <tr>
+                            <td>PostHog</td>
+                            <td>Product analytics and feature usage tracking</td>
+                            <td>US</td>
+                            <td>User interaction events, feature usage patterns</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <p>You authorize Finault to engage these sub-processors. We notify you at least 30 days in advance of any changes to sub-processors, allowing you to object. New sub-processors are not engaged without your prior consent.</p>
+
+                <h2>6. Data Security Measures</h2>
+                <p>Finault implements comprehensive technical and organizational security measures:</p>
+                <ul>
+                    <li><strong>Encryption in Transit</strong>: TLS 1.3 or higher for all data transmission</li>
+                    <li><strong>Encryption at Rest</strong>: AES-256-GCM encryption for sensitive data fields</li>
+                    <li><strong>Authentication</strong>: SHA-256 hashing for authentication credentials, never stored plaintext</li>
+                    <li><strong>Access Control</strong>: Role-based access control (RBAC) limiting access to minimum necessary data</li>
+                    <li><strong>API Security</strong>: Rate limiting, IP allowlisting, API key rotation requirements</li>
+                    <li><strong>Infrastructure</strong>: Isolated VPC, network segmentation, DDoS protection via Cloudflare</li>
+                    <li><strong>Monitoring</strong>: Real-time security monitoring, intrusion detection, automated alerting</li>
+                    <li><strong>Backup Security</strong>: Encrypted backups with separate access controls</li>
+                </ul>
+
+                <h2>7. Data Subject Rights</h2>
+                <p>Finault supports all data subject rights as required by GDPR, CCPA, and similar regulations:</p>
+                <ul>
+                    <li><strong>Right to Access</strong>: Data subjects can request copies of their personal data</li>
+                    <li><strong>Right to Rectification</strong>: Data subjects can correct inaccurate information</li>
+                    <li><strong>Right to Erasure</strong>: Data subjects can request deletion of their data</li>
+                    <li><strong>Right to Restrict Processing</strong>: Data subjects can limit how their data is used</li>
+                    <li><strong>Right to Data Portability</strong>: Data subjects can export their data in standard formats</li>
+                    <li><strong>Right to Object</strong>: Data subjects can object to processing on legitimate interest grounds</li>
+                </ul>
+                <p>Your organization is responsible for responding to data subject rights requests. Finault provides technical support to fulfill these requests within 5 business days of notification.</p>
+
+                <h2>8. Data Breach Notification</h2>
+                <h3>8.1 Notification Timeline</h3>
+                <p>In the event of a confirmed personal data breach:</p>
+                <ul>
+                    <li><strong>Immediate (within 2 hours)</strong>: Internal escalation and investigation initiation</li>
+                    <li><strong>Within 24 hours</strong>: Notification to your designated security contact</li>
+                    <li><strong>Within 72 hours</strong>: Formal written notification with full details (as required by GDPR)</li>
+                    <li><strong>Within 5 business days</strong>: Complete incident report with forensic analysis</li>
+                </ul>
+
+                <h3>8.2 Breach Communication</h3>
+                <p>Notifications include: date of breach, scope of affected data, likely consequences, security measures taken, and recommended actions for data subjects.</p>
+
+                <h2>9. Data Residency and Transfers</h2>
+                <p><strong>Primary Data Location</strong>: Your data is stored in the United States (us-east-1 region) by default.</p>
+                <p><strong>EU Data Residency</strong>: Enterprise customers requiring EU data residency must request this at contract signature. EU data is stored exclusively in EU-West-1 (Ireland) with GDPR-compliant subprocessors.</p>
+                <p><strong>International Transfers</strong>: Any transfers outside the original region are governed by Standard Contractual Clauses or other approved mechanisms. Cross-border transfers occur only with explicit customer consent.</p>
+
+                <h2>10. Audit Rights</h2>
+                <p>You have the right to:</p>
+                <ul>
+                    <li>Request our SOC 2 Type II audit report (issued annually)</li>
+                    <li>Schedule security assessments up to twice per year with 30 days notice</li>
+                    <li>Access our security documentation and compliance certificates</li>
+                    <li>Request copies of sub-processor agreements and certifications</li>
+                </ul>
+                <p>Audit activities must be scheduled in advance and conducted during business hours. We will not disclose third-party secrets or other confidential information during audits.</p>
+
+                <h2>11. Compliance and Regulations</h2>
+                <p>Finault commits to compliance with:</p>
+                <ul>
+                    <li>GDPR (General Data Protection Regulation) - EU</li>
+                    <li>CCPA/CPRA (California Consumer Privacy Act) - US</li>
+                    <li>HIPAA (Health Insurance Portability and Accountability Act) - upon request and additional agreement</li>
+                    <li>PCI-DSS (Payment Card Industry Data Security Standard) - for payment data</li>
+                    <li>SOC 2 Type II (System and Organization Controls) - annual certification</li>
+                    <li>GDPR Binding Corporate Rules - for international data transfers</li>
+                </ul>
+
+                <h2>12. Term and Termination</h2>
+                <p>This DPA is effective as of the date your account is activated and continues for the duration of your service agreement. Upon termination or expiration:</p>
+                <ul>
+                    <li>Your organization retains the right to retrieve all personal data</li>
+                    <li>Finault deletes all personal data within 30 days of termination</li>
+                    <li>Backup data is securely destroyed within 90 days</li>
+                    <li>Obligations regarding confidentiality survive termination</li>
+                </ul>
+
+                <h2>13. Limitation of Liability</h2>
+                <p>Except in cases of gross negligence or willful misconduct, neither party's liability for violations of this DPA shall exceed the fees paid in the 12 months preceding the claim.</p>
+
+                <h2>14. Changes to This Agreement</h2>
+                <p>Finault may update this DPA to reflect changes in law, security practices, or our service offering. We will notify you of material changes at least 30 days in advance. Your continued use of the service constitutes acceptance of changes unless you notify us of your objection within 30 days.</p>
+
+                <h2>15. Contact and Inquiries</h2>
+                <h3>Data Protection Officer</h3>
+                <p>dpo@finault.com</p>
+
+                <h3>Security and Privacy Team</h3>
+                <p>security@finault.com</p>
+
+                <h3>Legal Notices</h3>
+                <p>legal@finault.com</p>
+
+                <h3>Incident Reporting</h3>
+                <p>incidents@finault.com (within 24 hours of discovery)</p>
+
+                <div class="highlight">
+                    <strong>Enterprise Note</strong>: If you require modifications to this DPA for your organization's specific requirements, please contact our legal team at legal@finault.com. We work with enterprise customers to accommodate reasonable data protection requirements.
+                </div>
+            </div>
+
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="window.print()">Download as PDF</button>
+                <button class="btn btn-secondary" onclick="downloadJSON()">Download as JSON</button>
+                <a href="/security.html" class="btn btn-secondary">Back to Security</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function copyToClipboard() {
+            const text = document.querySelector('.dpa-document').innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Agreement text copied to clipboard');
+            }).catch(() => {
+                alert('Failed to copy text');
+            });
+        }
+
+        function downloadJSON() {
+            const dpaData = {
+                title: 'Data Processing Agreement',
+                effectiveDate: document.getElementById('effectiveDate').textContent,
+                companyName: document.getElementById('companyName').value || 'Your Company',
+                documentContent: document.querySelector('.dpa-document').innerText,
+                subprocessors: [
+                    {
+                        name: 'Cloudflare',
+                        purpose: 'CDN, DDoS protection, WAF, compute',
+                        location: 'Global (US, EU)',
+                        dataCategories: 'Request metadata, logs, IP addresses'
+                    },
+                    {
+                        name: 'Supabase',
+                        purpose: 'Primary database and data storage',
+                        location: 'US, EU',
+                        dataCategories: 'All application data'
+                    },
+                    {
+                        name: 'Cloudflare R2',
+                        purpose: 'Object storage for reports and backups',
+                        location: 'Global',
+                        dataCategories: 'Reports, documents, backups'
+                    }
+                ],
+                generatedAt: new Date().toISOString()
+            };
+
+            const dataStr = JSON.stringify(dpaData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `DPA_${new Date().getFullYear()}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
