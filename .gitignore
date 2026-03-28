@@ -1,71 +1,42 @@
+# Archive
+_archive/
+
 # Dependencies
 node_modules/
-.npm
 
-# Build output
+# Build
 dist/
-out/
 *.tsbuildinfo
-.next/
-apps/dashboard/out/
-mcp-server/dist/
-
-# Wrangler
-.wrangler/
-.dev.vars
 
 # Environment
 .env
-.env.*
-**/.env
-**/.env.*
+.env.local
+.env.production
+.env.*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 
 # OS
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+sdks/python/.finault/
+
+# SQLite
+*.sqlite
+*.sqlite3
 
 # Logs
 *.log
 npm-debug.log*
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.egg-info/
-venv/
-.venv/
-
-# Test
-coverage/
-.jest/
-test-sandbox-receipts/
-
-# Temporary
-*.tmp
-*.bak
-vitest.config.ts.timestamp-*
-
-# Archive (moved during repo cleanup, not for production)
-_archive/
-
-# SQLite
-*.sqlite
-
-# Sync logs
-sdks/python/.finault/
-
-# Claude Code
-.claude/
-
-# Supabase CLI temp
-supabase/.temp/
-
-# Python build artifacts
-sdks/python/finault-1.0.0/
+# Dashboard build output
+dashboard/out/
