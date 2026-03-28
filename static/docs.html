@@ -24,12 +24,7 @@
             --black: #111;
             --text-secondary: #666;
             --text-tertiary: #999;
-            --border: #e8e8e8;
-            --shadow-sm: 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.03);
-            --shadow-md: 0 2px 4px rgba(0,0,0,0.03), 0 4px 16px rgba(0,0,0,0.04), 0 12px 40px rgba(0,0,0,0.03);
-            --shadow-lg: 0 4px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06), 0 24px 64px rgba(0,0,0,0.05);
-            --radius: 14px;
-            --radius-lg: 20px;
+            --border: #e5e5e5;
             --bg-light: #f9f9f9;
             --bg-code: #0f172a;
             --bg-code-alt: #1e293b;
@@ -64,8 +59,7 @@
             right: 0;
             height: 64px;
             background: #fff;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+            border-bottom: 1px solid var(--border);
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -407,8 +401,7 @@
 
         thead {
             background: var(--bg-light);
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+            border-bottom: 1px solid var(--border);
         }
 
         th {
@@ -422,8 +415,7 @@
         td {
             padding: 12px 16px;
             font-size: 14px;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+            border-bottom: 1px solid var(--border);
         }
 
         tr:last-child td {
@@ -610,8 +602,7 @@
 
         .error-table td {
             padding: 12px 16px;
-            border-bottom: 1px solid transparent;
-            transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
+            border-bottom: 1px solid var(--border);
         }
 
         .error-code {
@@ -810,6 +801,25 @@
                     <a href="#proxy-routes">Proxy Routes</a>
                     <a href="#public-endpoints">Public Endpoints</a>
                     <a href="#dashboard-api">Dashboard & Analytics</a>
+                    <a href="#time-machine-api">Time Machine</a>
+                    <a href="#dark-debt-api">Dark Debt Scanner</a>
+                    <a href="#invoice-audit-api">Invoice Auditor</a>
+                    <a href="#agent-fleet-api">Agent Fleet</a>
+                    <a href="#drift-api">Drift Analysis</a>
+                    <a href="#fcs-api">FCS Score</a>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>Primitives API</span>
+                    <span class="chevron">▶</span>
+                </div>
+                <div class="sidebar-links">
+                    <a href="#seals-api">Seals</a>
+                    <a href="#imprints-api">Imprints</a>
+                    <a href="#close-packs-api">Close Packs</a>
+                    <a href="#index-api">Index</a>
                 </div>
             </div>
 
@@ -850,6 +860,18 @@
                     <a href="#auth-errors">Authentication</a>
                     <a href="#rate-limits">Rate Limiting</a>
                     <a href="#provider-errors">Provider Errors</a>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <div class="sidebar-section-title" onclick="toggleSection(this)">
+                    <span>Specifications</span>
+                    <span class="chevron">▶</span>
+                </div>
+                <div class="sidebar-links">
+                    <a href="#aiei-spec">AIEI Standard</a>
+                    <a href="#close-pack-format">Close Pack Format</a>
+                    <a href="#sealed-receipts">Sealed Receipts</a>
                 </div>
             </div>
 
@@ -1302,6 +1324,533 @@
                     </div>
                     <div class="endpoint-description">
                         Analyze your usage patterns and get AI-powered recommendations for cost savings and optimization.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Time Machine API -->
+            <section id="time-machine-api">
+                <h3>Time Machine (Admin Key Analytics)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Pull real usage data directly from provider APIs using admin keys. Returns cost, token counts, and model breakdown for the last 30 days.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/time-machine/analyze</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Analyze real AI spend across providers. Pass admin keys to pull live data from OpenAI and Anthropic APIs. Falls back to sealed receipts if admin keys are not provided.
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">json</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code><span class="code-comment">// Request body</span>
+{
+  <span class="code-string">"openai_key"</span>: <span class="code-string">"sk-admin-..."</span>,      <span class="code-comment">// OpenAI admin key (optional)</span>
+  <span class="code-string">"anthropic_key"</span>: <span class="code-string">"sk-ant-admin..."</span>  <span class="code-comment">// Anthropic admin key (optional)</span>
+}
+
+<span class="code-comment">// Response</span>
+{
+  <span class="code-string">"total_cost"</span>: <span class="code-number">0.1276</span>,
+  <span class="code-string">"total_calls"</span>: <span class="code-number">345</span>,
+  <span class="code-string">"models_analyzed"</span>: [<span class="code-string">"gpt-4o-mini-2024-07-18"</span>, <span class="code-string">"gpt-4o-2024-08-06"</span>],
+  <span class="code-string">"total_input_tokens"</span>: <span class="code-number">125000</span>,
+  <span class="code-string">"total_output_tokens"</span>: <span class="code-number">87000</span>,
+  <span class="code-string">"sealed_calls"</span>: <span class="code-number">310</span>,
+  <span class="code-string">"seal_coverage_pct"</span>: <span class="code-number">89</span>,
+  <span class="code-string">"data_source"</span>: <span class="code-string">"openai_admin_api"</span>,
+  <span class="code-string">"organization"</span>: <span class="code-string">"My Org"</span>
+}</code></pre>
+                </div>
+
+                <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 16px; border-radius: 6px; margin: 16px 0;">
+                    <p style="font-weight: 600; margin-bottom: 4px; color: #1e40af;">Key Prefixes</p>
+                    <p style="font-size: 14px; color: var(--text-secondary);"><code>sk-admin-*</code> = OpenAI admin (costs + usage API). <code>sk-ant-admin*</code> = Anthropic admin (cost_report + usage_report). Regular keys fall back to the sealed receipts table.</p>
+                </div>
+
+                <div class="api-endpoint" style="margin-top: 24px;">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/time-machine/sync</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Validate and store provider API keys. Tests key validity against provider APIs before saving.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Dark Debt Scanner API -->
+            <section id="dark-debt-api">
+                <h3>Dark Debt Scanner</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Detect unsealed AI calls — the gap between what your provider reports and what Finault has sealed receipts for. "Dark debt" represents untracked spend.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/dark-debt/scan</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Scan for dark debt by comparing provider-reported usage against sealed receipts. Returns the coverage gap with severity assessment.
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">json</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code><span class="code-comment">// Response</span>
+{
+  <span class="code-string">"provider_total_calls"</span>: <span class="code-number">345</span>,
+  <span class="code-string">"provider_total_cost"</span>: <span class="code-number">0.1276</span>,
+  <span class="code-string">"sealed_total"</span>: <span class="code-number">310</span>,
+  <span class="code-string">"dark_debt_calls"</span>: <span class="code-number">35</span>,
+  <span class="code-string">"dark_debt_pct"</span>: <span class="code-number">10.1</span>,
+  <span class="code-string">"seal_coverage_pct"</span>: <span class="code-number">89.9</span>,
+  <span class="code-string">"severity"</span>: <span class="code-string">"MEDIUM"</span>,
+  <span class="code-string">"message"</span>: <span class="code-string">"10.1% of AI calls are not sealed"</span>
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Invoice Auditor API -->
+            <section id="invoice-audit-api">
+                <h3>AI Invoice Auditor</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Cross-check provider-reported token counts against independent estimates. Detects overcharging or token count discrepancies.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/audit/invoice</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Audit sealed receipts for token count discrepancies between provider-reported and independently estimated values.
+                    </div>
+                </div>
+
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span class="code-block-language">json</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code><span class="code-comment">// Response</span>
+{
+  <span class="code-string">"total_provider_reported"</span>: <span class="code-number">212000</span>,
+  <span class="code-string">"total_finault_counted"</span>: <span class="code-number">198500</span>,
+  <span class="code-string">"discrepancy_tokens"</span>: <span class="code-number">13500</span>,
+  <span class="code-string">"discrepancy_pct"</span>: <span class="code-number">6.37</span>,
+  <span class="code-string">"audit_method"</span>: <span class="code-string">"approximation_v1"</span>,
+  <span class="code-string">"model_breakdown"</span>: [...]
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Agent Fleet API -->
+            <section id="agent-fleet-api">
+                <h3>Agent Fleet Manager</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Track and manage autonomous AI agents with the Imprint system — fingerprint-based identity, cost tracking, authorization levels, and fork detection.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/agents/fleet</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        List all registered agents with their Imprints, total cost, status, and authorization level.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/agents/:id/history</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get sealed transaction history for a specific agent. Returns the full audit trail of every AI call made by the agent.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/agents/:id/authorize</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Set authorization level and budget for an agent. Levels: <code>read-only</code>, <code>standard</code>, <code>elevated</code>, <code>unrestricted</code>.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/agents/forks</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Detect forked agents — agents that share similar fingerprints but different IDs, indicating unauthorized clones.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Drift Analysis API -->
+            <section id="drift-api">
+                <h3>Drift Analysis</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Detect cost drift over time by tracking per-model unit costs across weekly buckets. Identifies models whose costs are trending up or down significantly.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/drift/analyze</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Analyze cost drift across your sealed receipts. Auto-detects drift when called with provider keys. Returns drift events with severity ratings (LOW, MEDIUM, HIGH).
+                    </div>
+                </div>
+            </section>
+
+            <!-- FCS Score API -->
+            <section id="fcs-api">
+                <h3>Financial Confidence Score (FCS)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">A composite evidence-based confidence score (0-100) that measures the quality and reliability of your AI cost governance. Based on seal coverage, reconciliation status, and drift severity.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/fcs/compute</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Compute your Financial Confidence Score. Auto-computes from sealed receipts when called with provider keys. Returns score breakdown by dimension (coverage, reconciliation, drift, freshness).
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════════════════════════════ -->
+            <!-- SPECIFICATIONS                                                 -->
+            <!-- ═══════════════════════════════════════════════════════════════ -->
+
+            <section id="aiei-spec" style="margin-top: 64px; border-top: 2px solid var(--green); padding-top: 48px;">
+                <div style="display: inline-block; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 16px;">Specification</div>
+                <h2>AIEI Standard</h2>
+                <p class="section-description">
+                    AI Economic Intelligence (AIEI) is Finault's open standard for capturing and exchanging AI cost data. It defines a canonical schema for usage records, sealed receipts, and cost governance metadata across providers.
+                </p>
+
+                <div style="background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-top: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 12px;">Core Principles</p>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+                        Every AI transaction gets a sealed receipt with a SHA-256 hash chain. Every receipt is provider-agnostic. Every cost is denominated in USD with 4-decimal precision. The hash chain is append-only and tamper-evident — each seal includes the hash of the previous seal, forming an unbroken chain of custody for AI spend.
+                    </p>
+                </div>
+
+                <div class="code-block" style="margin-top: 24px;">
+                    <div class="code-block-header">
+                        <span class="code-block-language">json</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code><span class="code-comment">// AIEI Sealed Receipt</span>
+{
+  <span class="code-string">"seal_id"</span>: <span class="code-string">"seal_a1b2c3d4"</span>,
+  <span class="code-string">"timestamp"</span>: <span class="code-string">"2026-03-12T10:15:30.000Z"</span>,
+  <span class="code-string">"provider"</span>: <span class="code-string">"openai"</span>,
+  <span class="code-string">"model"</span>: <span class="code-string">"gpt-4o-mini-2024-07-18"</span>,
+  <span class="code-string">"cost_usd"</span>: <span class="code-number">0.0003</span>,
+  <span class="code-string">"tokens_used"</span>: <span class="code-number">1250</span>,
+  <span class="code-string">"input_hash"</span>: <span class="code-string">"sha256:9f86d..."</span>,
+  <span class="code-string">"prev_hash"</span>: <span class="code-string">"sha256:e3b0c..."</span>,
+  <span class="code-string">"seal_hash"</span>: <span class="code-string">"sha256:2cf24..."</span>
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="close-pack-format">
+                <h2>Close Pack Format</h2>
+                <p class="section-description">
+                    A Close Pack is a self-contained JSON document that captures a complete snapshot of AI cost governance for a reporting period. It's designed for CFOs, auditors, and compliance teams — everything needed to close the books on AI spend in one file.
+                </p>
+
+                <div class="code-block" style="margin-top: 24px;">
+                    <div class="code-block-header">
+                        <span class="code-block-language">json</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code><span class="code-comment">// Close Pack structure</span>
+{
+  <span class="code-string">"close_pack_version"</span>: <span class="code-string">"1.0"</span>,
+  <span class="code-string">"period"</span>: { <span class="code-string">"start"</span>: <span class="code-string">"2026-02-01"</span>, <span class="code-string">"end"</span>: <span class="code-string">"2026-02-28"</span> },
+  <span class="code-string">"summary"</span>: {
+    <span class="code-string">"total_cost"</span>: <span class="code-number">1247.89</span>,
+    <span class="code-string">"total_calls"</span>: <span class="code-number">45230</span>,
+    <span class="code-string">"seal_coverage_pct"</span>: <span class="code-number">97.3</span>,
+    <span class="code-string">"fcs_score"</span>: <span class="code-number">92</span>
+  },
+  <span class="code-string">"model_breakdown"</span>: [...],
+  <span class="code-string">"drift_events"</span>: [...],
+  <span class="code-string">"anomalies"</span>: [...],
+  <span class="code-string">"recommendations"</span>: [...],
+  <span class="code-string">"seal_chain_root"</span>: <span class="code-string">"sha256:..."</span>
+}</code></pre>
+                </div>
+            </section>
+
+            <section id="sealed-receipts">
+                <h2>Sealed Receipts</h2>
+                <p class="section-description">
+                    Every AI API call routed through Finault generates a cryptographic sealed receipt. Receipts form a SHA-256 hash chain — each receipt includes the hash of the previous receipt, creating a tamper-evident audit trail. The chain is append-only and can be independently verified.
+                </p>
+
+                <div style="background: var(--bg-light); border: 1px solid var(--border); border-radius: 8px; padding: 24px; margin-top: 24px;">
+                    <p style="font-weight: 600; margin-bottom: 12px;">Hash Chain Verification</p>
+                    <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.8;">
+                        To verify a seal: compute <code>SHA-256(seal_id + timestamp + provider + model + cost_usd + tokens_used + input_hash + prev_hash)</code> and compare against <code>seal_hash</code>. Chain integrity: each seal's <code>prev_hash</code> must equal the previous seal's <code>seal_hash</code>.
+                    </p>
+                </div>
+
+                <div class="code-block" style="margin-top: 24px;">
+                    <div class="code-block-header">
+                        <span class="code-block-language">python</span>
+                        <button class="code-block-copy" onclick="copyCode(this)">Copy</button>
+                    </div>
+                    <pre><code><span class="code-comment"># Verify a sealed receipt with Python SDK</span>
+<span style="color:#93c5fd;">from</span> finault_seal <span style="color:#93c5fd;">import</span> SealClient
+
+client = SealClient(gateway_url=<span class="code-string">"https://gateway.finault.ai"</span>)
+chain = client.get_chain(limit=<span class="code-number">100</span>)
+
+<span class="code-comment"># Verify entire chain integrity</span>
+valid = client.verify_chain(chain)
+print(f<span class="code-string">"Chain valid: {valid}"</span>)  <span class="code-comment"># True if all hashes match</span></code></pre>
+                </div>
+            </section>
+
+            <!-- Primitives API -->
+            <section id="primitives-intro">
+                <h2>Primitives API</h2>
+                <p class="section-description">
+                    The Primitives API provides cryptographic receipts, financial identity for agents, sealed financial summaries, and industry benchmarks. All primitive API calls require Bearer token authentication.
+                </p>
+
+                <div style="background: #f0fdf4; border-left: 4px solid var(--green); padding: 16px; border-radius: 6px; margin: 24px 0;">
+                    <p style="font-weight: 600; margin-bottom: 4px; color: #166534;">Authentication</p>
+                    <p style="font-size: 14px; color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;">Authorization: Bearer sk-finault-YOUR_KEY</p>
+                </div>
+            </section>
+
+            <!-- Seals API -->
+            <section id="seals-api">
+                <h3>Seals — Cryptographic receipts for every AI transaction</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Seals provide immutable, cryptographically-signed receipts for all AI API calls. Each seal contains the complete AIEI envelope with proof of transaction.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/seals</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        List seals. Query params: <code>?limit=100&offset=0&model=gpt-4o&after=2026-03-01</code>
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/seals/:id</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get a seal with full AIEI envelope (who/what/worth/rules/proof).
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/seals/:id/verify</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Verify hash chain integrity. Returns <code>{ valid: true, chain_intact: true }</code>.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/seals</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Create a seal manually for non-gateway transactions.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Imprints API -->
+            <section id="imprints-api">
+                <h3>Imprints — Permanent financial identity for AI agents</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Imprints establish permanent financial identity for individual AI agents within your organization, tracking economics and usage patterns.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/imprints</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        List all agent imprints with economics.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/imprints/:id</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get an agent's full history and recent seals.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/imprints/:id/economics</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Agent P&L: cost breakdown by model, cost per seal, cost per 1K tokens.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Close Packs API -->
+            <section id="close-packs-api">
+                <h3>Close Packs — Sealed monthly financial summaries</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Close Packs are sealed monthly financial summaries that provide immutable records of your organization's spending and activity.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/close-packs/generate</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Generate a Close Pack for a period.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/close-packs</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        List all Close Packs.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/close-packs/:id</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get Close Pack metadata.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/close-packs/:id/verify</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Verify the Close Pack's seal chain integrity.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Index API -->
+            <section id="index-api">
+                <h3>Index — Industry benchmarks from the Finault network</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">The Index provides industry benchmarks and comparative metrics from the broader Finault network, helping you understand your position relative to peer organizations.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/index/benchmarks</span>
+                        <span class="endpoint-auth">Public</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Current benchmarks: cost per model, spend by stage, dark debt average, score distribution.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/index/compare</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Compare your org's metrics against the network average.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monitoring -->
+            <section id="monitoring-api">
+                <h3>Monitoring</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Enable continuous monitoring with encrypted admin key storage and access to real-time digests.</p>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/monitoring/enable</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Enable continuous monitoring with encrypted admin key storage.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="endpoint-path">/v1/monitoring/status</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Check monitoring status.
+                    </div>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="endpoint-path">/v1/digest/:org_id</span>
+                        <span class="endpoint-auth">Auth Required</span>
+                    </div>
+                    <div class="endpoint-description">
+                        Get 7-day digest with trends.
                     </div>
                 </div>
             </section>

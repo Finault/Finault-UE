@@ -30,11 +30,11 @@
 /explorer / 301
 /benchmark / 301
 /research / 301
-/scan / 301
 /close-pack / 301
 /close-pack-spec / 301
 /verify / 301
 /api / 301
+# Note: /scan is now live (full economics scan page)
 
 # Note: Clean URL rewrites (/foo -> /foo.html) are NOT needed here.
 # Cloudflare Pages automatically serves foo.html at /foo natively.

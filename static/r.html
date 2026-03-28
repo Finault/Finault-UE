@@ -617,6 +617,22 @@
             }
 
             try {
+                // First try gateway share endpoint (for shareable scan results)
+                try {
+                    const shareRes = await fetch(`https://finault-gateway-gold.finault.workers.dev/v1/share/${reportId}`);
+                    if (shareRes.ok) {
+                        const shareData = await shareRes.json();
+                        if (shareData && shareData.score !== undefined) {
+                            // Render simplified share view
+                            renderShareView(shareData);
+                            return;
+                        }
+                    }
+                } catch (shareError) {
+                    console.log('[results] Share fetch failed, trying Supabase:', shareError);
+                }
+
+                // Fall through to Supabase Close Pack lookup
                 // Fetch Close Pack by ID
                 const { data, error } = await sb
                     .from('close_packs')
@@ -647,6 +663,77 @@
                 console.error('[results] Load error:', e);
                 showError();
             }
+        }
+
+        // ─── Render Simplified Share View ───
+        function renderShareView(shareData) {
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('resultsContent').style.display = '';
+
+            // Hero section with score and grade
+            const heroEl = document.getElementById('heroNumber');
+            heroEl.textContent = shareData.score;
+            heroEl.className = 'hero-number ' + getScoreClass(shareData.score);
+            document.getElementById('heroLabel').textContent = 'Finault Score';
+            document.getElementById('heroContext').textContent = 'Grade: ' + shareData.grade;
+
+            // Report meta
+            document.getElementById('reportMeta').textContent = 'Shared on ' + new Date(shareData.created_at).toLocaleDateString();
+
+            // Stats
+            const statsHtml = [];
+            if (shareData.total_spend > 0) {
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${formatCurrency(shareData.total_spend)}</div>
+                        <div class="summary-stat-label">Total Spend</div>
+                    </div>
+                `);
+            }
+            if (shareData.total_calls > 0) {
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${formatNumber(shareData.total_calls)}</div>
+                        <div class="summary-stat-label">Total Calls</div>
+                    </div>
+                `);
+            }
+            if (shareData.models_count > 0) {
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${shareData.models_count}</div>
+                        <div class="summary-stat-label">Models Used</div>
+                    </div>
+                `);
+            }
+            if (shareData.dark_debt_pct > 0) {
+                statsHtml.push(`
+                    <div class="summary-stat">
+                        <div class="summary-stat-value">${shareData.dark_debt_pct.toFixed(1)}%</div>
+                        <div class="summary-stat-label">Dark Debt</div>
+                    </div>
+                `);
+            }
+
+            const statsContainer = document.querySelector('.summary-stats');
+            if (statsContainer) statsContainer.innerHTML = statsHtml.join('');
+
+            // Add Finault CTA footer
+            const resultsContent = document.getElementById('resultsContent');
+            const footerEl = document.createElement('div');
+            footerEl.style.cssText = 'margin-top: 40px; padding: 24px; background: linear-gradient(135deg, #0F172A, #1E293B); border-radius: 12px; border: 1px solid rgba(16,185,129,0.2); text-align: center;';
+            footerEl.innerHTML = `
+                <div style="font-size: 13px; color: #94A3B8; margin-bottom: 12px;">Powered by</div>
+                <a href="https://finault.ai/experience" style="display: inline-block; padding: 10px 20px; background: #10B981; color: white; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600;">Get Your Full Score →</a>
+            `;
+            resultsContent.appendChild(footerEl);
+        }
+
+        function getScoreClass(score) {
+            if (score >= 80) return 'excellent';
+            if (score >= 60) return 'good';
+            if (score >= 40) return 'fair';
+            return 'poor';
         }
 
         function showError() {

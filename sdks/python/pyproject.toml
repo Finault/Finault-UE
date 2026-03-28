@@ -55,7 +55,7 @@ Issues = "https://github.com/finault/finault-python/issues"
 Changelog = "https://github.com/finault/finault-python/blob/main/CHANGELOG.md"
 
 [project.scripts]
-finault = "finault.cli:main"
+finault = "finault.sync:main"
 
 [tool.setuptools.packages.find]
 include = ["finault*"]

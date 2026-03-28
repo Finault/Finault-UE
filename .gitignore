@@ -55,9 +55,6 @@ vitest.config.ts.timestamp-*
 # Archive (moved during repo cleanup, not for production)
 _archive/
 
-# Egg info
-*.egg-info/
-
 # SQLite
 *.sqlite
 
