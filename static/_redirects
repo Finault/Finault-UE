@@ -39,3 +39,4 @@
 # Note: Clean URL rewrites (/foo -> /foo.html) are NOT needed here.
 # Cloudflare Pages automatically serves foo.html at /foo natively.
 # Adding explicit 200 rewrites causes infinite redirect loops.
+/setup /setup.html 200
