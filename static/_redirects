@@ -40,3 +40,11 @@
 # Cloudflare Pages automatically serves foo.html at /foo natively.
 # Adding explicit 200 rewrites causes infinite redirect loops.
 /setup /setup.html 200
+
+# Duplicate page redirects (console and dashboard are app.html)
+/console /app.html 200
+/dashboard /app.html 200
+/console.html /app.html 200
+/dashboard.html /app.html 200
+/onboard /setup.html 200
+/onboard.html /setup.html 200
