@@ -54,8 +54,8 @@ jobs:
             "calculateCost" \
             "revenueUsd" \
             "sealToVC" \
-            "generateArticle12" \
-            "generateSB205" \
+            "handleArticle12Export" \
+            "handleColoradoSB205Export" \
             "cachedRead" \
             "accumulateCost" \
             "flushCosts" \
