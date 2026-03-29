@@ -40,3 +40,6 @@ npm-debug.log*
 
 # Dashboard build output
 dashboard/out/
+
+# Lock files
+*.~lock.*

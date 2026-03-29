@@ -7,28 +7,30 @@ The economic proof layer for AI. Sealed receipts connecting cost, revenue, and m
 ## Architecture
 
 ```
-finault-monorepo/
+Finault-UE/
 ├── apps/
-│   ├── gateway/          # Cloudflare Worker — THE gateway (47K lines)
-│   │   ├── gateway-wired.js   # Main gateway (deployed as finault-gateway-gold)
-│   │   └── src/               # Modularized handlers + provider adapters
-│   ├── mcp/              # MCP Server for Claude Desktop (6 tools)
-│   └── status/           # Status page worker (status.finault.ai)
+│   ├── gateway/
+│   │   ├── gateway-wired.js   # THE gateway (47,738 lines, v4.2)
+│   │   └── src/               # Reference handlers/providers/DOs
+│   ├── close-pack/            # Close Pack generator
+│   ├── dashboard/             # Embedded dashboard components
+│   ├── mcp/                   # MCP server for Claude Desktop
+│   ├── status/                # Status page worker
+│   └── verifier-service/      # Seal verification
 ├── database/
-│   └── migrations/       # Supabase SQL migrations (001-071)
+│   └── migrations/            # 71 SQL migrations (001-071)
+├── functions/                 # Cloudflare Pages functions
+├── github-action/             # CI action
 ├── packages/
-│   ├── aiei-spec/        # AIEI standard (Apache 2.0)
-│   └── aiei-validator/   # Schema validator
+│   ├── aiei-spec/             # AIEI standard (MIT)
+│   └── aiei-validator/        # Schema validator
+├── platform/                  # Reference business logic (45 modules)
+├── scripts/                   # Build/deploy scripts
 ├── sdks/
-│   ├── python/           # Python SDK + CLI (`pip install finault`)
-│   └── node/             # Node/TypeScript SDK (`npm install finault`)
-├── static/               # Cloudflare Pages static files
-│   ├── app.html          # Dashboard SPA
-│   ├── index.html        # Landing page
-│   └── experience.html   # Receipt / experience page
-├── dashboard/            # Next.js dashboard
-├── platform/             # Standalone modules (time machine, economic router)
-└── docs/                 # Architecture documentation
+│   ├── python/                # Python SDK + CLI
+│   └── node/                  # Node/TypeScript SDK
+├── static/                    # Cloudflare Pages (HTML, CSS, JS)
+└── tests/                     # Test suite
 ```
 
 ## Four-Layer Architecture

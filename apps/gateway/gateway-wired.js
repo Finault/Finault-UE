@@ -29,11 +29,23 @@
 // Using CommonJS require() for Cloudflare Workers compatibility
 // All modules properly wired to their actual exports
 
-// [v4.2] Legacy requires removed — these modules are archived or inlined below
-// const { AnomalyDetector, Baseline, MathUtils } = require('../modules/anomaly-detection.js');
-// const { ERPIntegrationManager, ... } = require('../modules/erp-integrations.js');
-// const { ProactiveAlertSystem, ... } = require('./space-apple-dashboard.js');
-// const { MagicOnboarding, ... } = require('./magic-onboarding.js');
+const { AnomalyDetector, Baseline, MathUtils } = require('../modules/anomaly-detection.js');
+const { ERPIntegrationManager, QuickBooksOnlineIntegration, NetSuiteIntegration, XeroIntegration, SAPIntegration, OracleIntegration, DynamicsIntegration, SageIntacctIntegration } = require('../modules/erp-integrations.js');
+
+// SPACE APPLE TIER: Dashboard engines that change everything
+const {
+  ProactiveAlertSystem,
+  DrillDownEngine,
+  AutonomousSavingsEngine,
+  GoalTracker,
+  BenchmarkEngine,
+  InsightGenerator,
+  WhatIfEngine,
+  MoneyMachine
+} = require('./space-apple-dashboard.js');
+
+// CRITICISM #10: Magic Onboarding - Upload before signup
+const { MagicOnboarding, MagicParser, MagicSSO, MagicSession } = require('./magic-onboarding.js');
 
 // CRITICISMS #11, #23, #24, #25: Infrastructure (Settings, Rate Limiting, Versioning, Errors)
 const {
@@ -5406,7 +5418,7 @@ export default {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // The Dashboard That Changes Everything
+      // SPACE APPLE TIER: The Dashboard That Changes Everything
       // "The best dashboard is one you never have to look at - it comes to YOU" — Musk
       // "I want to feel like I have a CFO superpower in my pocket" — Jobs
       // ═══════════════════════════════════════════════════════════════
@@ -5913,7 +5925,7 @@ export default {
       }
 
       // Public verification - anyone can verify a proof (no auth required)
-      // Returns beautiful HTML for browsers, JSON for APIs
+      // SPACE APPLE: Returns beautiful HTML for browsers, JSON for APIs
       if (path.startsWith('/v1/verify/') || path.startsWith('/v1/registry/')) {
         const verificationId = path.split('/').pop();
         return await publicVerifyProof(verificationId, env, request);
@@ -5944,7 +5956,7 @@ export default {
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // Autopilot Recovery with Auto-Escalation
+      // SPACE APPLE: Autopilot Recovery with Auto-Escalation
       // Musk: "If nobody responds in 10 days, the system escalates automatically"
       // Jobs: "The customer does nothing - we handle everything"
       // ═══════════════════════════════════════════════════════════════
@@ -10259,13 +10271,13 @@ export default {
   },
 
   // ═══════════════════════════════════════════════════════════════════
-  // SCHEDULED HANDLER - Cron Jobs
+  // SCHEDULED HANDLER - SPACE APPLE Cron Jobs
   // Runs on schedule defined in wrangler.toml
   // This is REAL automation - no human intervention needed
   // "The best dashboard is one you never have to look at" — Musk
   // ═══════════════════════════════════════════════════════════════════
   async scheduled(event, env, ctx) {
-    console.log(`[Finault] Cron triggered at ${new Date().toISOString()}`);
+    console.log(`[SPACE APPLE] Cron triggered at ${new Date().toISOString()}`);
 
     // Initialize if needed
     if (!anomalyDetector) {
@@ -10295,11 +10307,11 @@ export default {
       const orgs = orgsResult.data;
 
       // 1. Run Autopilot Recovery
-      console.log('[Finault] Running Autopilot Recovery...');
+      console.log('[SPACE APPLE] Running Autopilot Recovery...');
       results.autopilot = await runAutopilotRecoveryInternal(env);
 
       // 2. Run Proactive Alerts for all orgs
-      console.log('[Finault] Running Proactive Alerts...');
+      console.log('[SPACE APPLE] Running Proactive Alerts...');
       const alertSystem = new ProactiveAlertSystem(env);
       let totalAlerts = 0;
       for (const org of orgs || []) {
@@ -10313,7 +10325,7 @@ export default {
       results.proactiveAlerts = { orgsProcessed: orgs?.length || 0, alertsSent: totalAlerts };
 
       // 3. Run Autonomous Savings (only for orgs with it enabled)
-      console.log('[Finault] Running Autonomous Savings...');
+      console.log('[SPACE APPLE] Running Autonomous Savings...');
       const autonomousEngine = new AutonomousSavingsEngine(env);
       let totalOptimizations = 0;
       let totalSavings = 0;
@@ -10371,7 +10383,7 @@ export default {
         }
       }
 
-      console.log(`[Finault] Completed:`, {
+      console.log(`[SPACE APPLE] Completed:`, {
         autopilot: {
           disputes_analyzed: results.autopilot?.disputes_analyzed || 0,
           actions_taken: results.autopilot?.actions_taken || 0
@@ -10501,7 +10513,7 @@ export default {
       });
 
     } catch (error) {
-      console.error('[Finault] Error:', error);
+      console.error('[SPACE APPLE] Error:', error);
       await auditLogger?.log('space_apple_error', {
         trigger: event.cron,
         error: error.message,
@@ -18256,7 +18268,7 @@ async function verifyCryptoProof(request, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// "Provider Can't Argue" Dispute Letters
+// SPACE APPLE: "Provider Can't Argue" Dispute Letters
 // Musk Test: This letter gets refunds 90%+ of the time
 // Jobs Test: Reading this, the provider thinks "we can't win this"
 // ═══════════════════════════════════════════════════════════════════
@@ -18666,7 +18678,7 @@ async function publicVerifyProof(verificationId, env, request) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Beautiful Verification Certificate HTML
+// SPACE APPLE: Beautiful Verification Certificate HTML
 // Jobs Test: Auditors see this and say "Wow, this is professional"
 // Musk Test: This closes deals because auditors trust it instantly
 // ═══════════════════════════════════════════════════════════════════
@@ -19400,7 +19412,7 @@ async function getDisputeStats(request, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Autopilot Recovery System
+// SPACE APPLE: Autopilot Recovery System
 // Musk: Disputes that auto-escalate, auto-follow-up, auto-resolve
 // Jobs: Customer sets it up once and money flows back automatically
 // ═══════════════════════════════════════════════════════════════════
@@ -22870,7 +22882,7 @@ async function getDemoData(request, env) {
 }
 
 // ═══════════════════════════════════════════════════════════════════
-// Dashboard Handlers
+// SPACE APPLE TIER: Dashboard Handlers
 // "The best dashboard is one you never have to look at" — Musk
 // "One glance, complete understanding" — Jobs
 // ═══════════════════════════════════════════════════════════════════
